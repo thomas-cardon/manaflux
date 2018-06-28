@@ -28,9 +28,9 @@ function openTab(evt, tabName) {
 }
 
 function minimizeApp() {
-
+	ipcRenderer.send('win-minimize');
 }
 
-function exitApp() {
-	
+function closeApp() {
+	ipcRenderer.send('win-close');
 }

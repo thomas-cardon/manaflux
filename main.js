@@ -7,13 +7,16 @@ const connector = new LCUConnector();
 let win;
 
 function createWindow () {
-  win = new BrowserWindow({ width: 600, height: 600, frame: false });
+  win = new BrowserWindow({ width: 600, height: 600, frame: false, icon: __dirname + '/build/icon.png', backgroundColor: '#000A13', show: false });
 
   win.loadURL(`file://${__dirname}/src/index.html`);
   win.setMenu(null);
 
+  win.once('ready-to-show', () => {
+    win.show();
+  });
 
-  if (process.argv[2] === '--dev') win.webContents.openDevTools({mode: 'detach'});
+  if (process.argv[2] === '--dev') win.webContents.openDevTools({ mode: 'detach' });
 
   /*win.on('ready-to-show', () => {
     connector.on('connect', d => {
@@ -32,9 +35,14 @@ app.on('ready', () => {
 });
 
 autoUpdater.on('update-downloaded', (info) => {
+  console.dir(info);
+
   ipcMain.on('can-update', (event, arg) => autoUpdater.quitAndInstall());
   win.webContents.send('can-update');
 });
+
+ipcMain.on('win-minimize', () => win.minimize());
+ipcMain.on('win-close', () => win.close());
 
 app.on('certificate-error', (event, webContents, url, error, certificate, callback) => {
     event.preventDefault();
