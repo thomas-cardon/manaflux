@@ -1,0 +1,54 @@
+<html>
+   <head>
+      <title>ManaFlux</title>
+      <meta charset="utf-8">
+      <meta name="author" content="Ryzzzen">
+      <link rel="stylesheet" href="assets/css/manaflux.css">
+      <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+   </head>
+   <body>
+      <div class="content">
+        <div class="tab-container">
+           <img src="assets/img/selected.png" id="selected" class="selected" draggable="false" style="margin-left: 0px;">
+           <div class="tab">
+              <button class="tablinks active" onclick="openTab(event, 'Home')" id="defaultOpen">Home</button>
+              <button class="tablinks" onclick="openTab(event, 'Settings')">Settings</button>
+           </div>
+           <div class="controls">
+              <button onclick="minimize_app();"><i class="material-icons icon">remove</i></button>
+              <button onclick="exit_app();"><i class="material-icons icon">clear</i></button>
+           </div>
+        </div>
+         <!-- BEGIN SECTIONS -->
+         <div class="sections">
+            <!-- TABS AND THEIR CONTENTS -->
+            <div id="Home" class="tabcontent center" style="display: block;">
+               <!-- PROGRAM TITLE -->
+               <div class="title">
+                  <h1>MANAFLUX</h1>
+                  <img src="assets/img/underline.png" draggable="false">
+               </div>
+               <button type="button" class="getstarted" id="forceRunesLoading" disabled>LOAD RUNES</button>
+            </div>
+            <script>
+               document.getElementById("defaultOpen").click();
+            </script>
+            <div class="version">
+               <p class="status" id="status">Loading...</p>
+            </div>
+            <div id="Settings" class="tabcontent">
+            </div>
+         </div>
+         <!-- END SECTIONS -->
+      </div>
+      <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+      <script src="assets/js/jquery-3.3.1.min.js"></script>
+      <script src="assets/js/ui.js"></script>
+      <script>if (window.module) module = window.module;</script>
+      <script>
+         // You can also require other files to run in this process
+         require('../renderer.js')
+         require('../ChampionSelect.js')
+      </script>
+   </body>
+</html>

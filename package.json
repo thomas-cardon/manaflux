@@ -1,0 +1,38 @@
+{
+  "name": "manaflux",
+  "version": "1.0.0",
+  "description": "League of Legends automatic runes downloader",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": "https://github.com/electron/electron-quick-start",
+  "keywords": [
+    "League of Legends",
+    "League",
+    "assistant",
+    "masteries",
+    "runes"
+  ],
+  "author": "Ryzzzen",
+  "license": "CC0-1.0",
+  "devDependencies": {
+    "electron": "^2.0.0",
+    "electron-builder": "^20.17.1",
+    "electron-updater": "^2.22.1"
+  },
+  "dependencies": {
+    "axios": "^0.18.0",
+    "cheerio": "^1.0.0-rc.2",
+    "electron-store": "^2.0.0",
+    "lcu-connector": "^1.0.2",
+    "request": "^2.87.0",
+    "request-promise-native": "^1.0.5",
+    "xel": "0.0.138"
+  },
+  "repository": "https://github.com/Ryzzzen/manaflux",
+  "scripts": {
+      "build": "build --win",
+      "ship": "build --win -p always"
+  }
+}
