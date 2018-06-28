@@ -1,4 +1,6 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
+const { autoUpdater } = require('electron-updater');
+
 const LCUConnector = require('lcu-connector');
 const connector = new LCUConnector();
 
@@ -24,11 +26,17 @@ function createWindow () {
   win.on('closed', () => win = null);
 }
 
-app.on('ready', createWindow);
+app.on('ready', () => {
+  createWindow();
+  autoUpdater.checkForUpdates();
+});
+
+autoUpdater.on('update-downloaded', (info) => {
+  ipcMain.on('can-update', (event, arg) => autoUpdater.quitAndInstall());
+  win.webContents.send('can-update');
+});
 
 app.on('certificate-error', (event, webContents, url, error, certificate, callback) => {
-    // On certificate error we disable default behaviour (stop loading the page)
-    // and we then say "it is all fine - true" to the callback
     event.preventDefault();
     callback(true);
 });

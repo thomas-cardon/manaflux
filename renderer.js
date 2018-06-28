@@ -45,6 +45,13 @@ ipcRenderer.once('lcu', async (event, d) => {
   /*
   * Champion Select checker
   */
+
+  ipcRenderer.on('can-update', (event, arg) => {
+    request(Mana.base + 'lol-champ-select/v1/session', function (error, response, body) {
+      if (response && response.statusCode === 404) ipcRenderer.send('can-update');
+    });
+  });
+
   setInterval(function() {
     request(Mana.base + 'lol-champ-select/v1/session', function (error, response, body) {
       if (response && response.statusCode === 404) Mana.emit('champselect', false);
