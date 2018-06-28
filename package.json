@@ -37,8 +37,6 @@
     "appId": "fr.ryzzzen.manaflux",
     "productName": "ManaFlux",
     "copyright": "Copyright © 2018 Ryzzzen",
-    "directories": {
-      "files": ["build/icon.*"]
-    }
+    "files": ["**/*", "build/icon.*"]
   }
 }
