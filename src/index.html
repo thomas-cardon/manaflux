@@ -15,15 +15,12 @@
               <button class="tablinks" onclick="openTab(event, 'Settings')">Settings</button>
            </div>
            <div class="controls">
-              <button onclick="minimize_app();"><i class="material-icons icon">remove</i></button>
-              <button onclick="exit_app();"><i class="material-icons icon">clear</i></button>
+              <button onclick="minimizeApp();"><i class="material-icons icon">remove</i></button>
+              <button onclick="exitApp();"><i class="material-icons icon">clear</i></button>
            </div>
         </div>
          <!-- BEGIN SECTIONS -->
-         <div class="sections">
-            <!-- TABS AND THEIR CONTENTS -->
             <div id="Home" class="tabcontent center" style="display: block;">
-               <!-- PROGRAM TITLE -->
                <div class="title">
                   <h1>MANAFLUX</h1>
                   <img src="assets/img/underline.png" draggable="false">
@@ -43,10 +40,10 @@
       </div>
       <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
       <script src="assets/js/jquery-3.3.1.min.js"></script>
+      <script>const { ipcRenderer } = require('electron');</script>
       <script src="assets/js/ui.js"></script>
       <script>if (window.module) module = window.module;</script>
       <script>
-         // You can also require other files to run in this process
          require('../renderer.js')
          require('../ChampionSelect.js')
       </script>

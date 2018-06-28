@@ -36,23 +36,22 @@ class User {
   }
 
   async updateRunePages(runepages) {
-    console.dir(runepages);
-    
-    this.runes = await this.getRunes();
     let count = await this.getPageCount();
 
-    this.deleteRunePages();
+    await this.deleteRunePages();
+    this.runes = [];
 
     for (let i = 0; i < runepages.length; i++)
-      if (this.runes[i]) await this.createRunePage(runepages[i]);
-
-    return;
+      if (count > i) await this.runes.push(this.createRunePage(runepages[i], { current: count < 1 }));
   }
 
-  async getTidecallRunes(id) {
-    const res = await rp('http://localhost:3000/api/v1/champions/' + id);
-    const { name, statistics } = JSON.parse(res), perks = statistics[0].perks;
-    return { name: 'MF ' + name, primaryStyleId: perks.primary, subStyleId: perks.sub, selectedPerkIds: [perks.perk0.id, perks.perk1.id, perks.perk2.id, perks.perk3.id, perks.perk4.id, perks.perk5.id] };
+  async setCurrentPage(id) {
+    return await rp({
+      method: 'PUT',
+      uri: this.base + 'lol-perks/v1/currentpage',
+      body: { id },
+      json: true
+    });
   }
 
   async getRunes() {
@@ -61,11 +60,11 @@ class User {
     return x.filter(page => page.isEditable);
   }
 
-  async createRunePage(data) {
+  async createRunePage(data, x) {
     return await rp({
       method: 'POST',
       uri: this.base + 'lol-perks/v1/pages',
-      body: data,
+      body: x ? Object.assign(data, x) : data,
       json: true
     });
   }

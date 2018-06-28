@@ -1,4 +1,4 @@
-let Timer, MyTeam = [], TheirTeam = [];
+let Timer, MyTeam = [], TheirTeam = [], Last;
 let User;
 
 const ProviderHandler = new (require('./ProviderHandler'))();
@@ -19,9 +19,14 @@ Mana.on('champselect', function(d) {
 
 function updateDisplay() {
   User = MyTeam.find(elem => elem.summonerId === Mana.user.summoner.summonerId);
-  if (User.championId !== 0) {
-    Mana.status('Loaded runes for ' + Mana.champions[User.championId].name + '...');
-    ProviderHandler.getChampionRunePages(Mana.champions[User.championId], User.assignedPosition === "" ? null : User.assignedPosition).then(runes => Mana.user.updateRunePages(runes));
+  if (Last === User.championId) return;
+
+  if ((Last = User.championId) !== 0) {
+    ProviderHandler.getChampionRunePages(Mana.champions[User.championId], User.assignedPosition === "" ? null : User.assignedPosition).then(runes => {
+      console.dir(runes);
+      Mana.user.updateRunePages(runes);
+      Mana.status('Loaded runes for ' + Mana.champions[User.championId].name + '...');
+    });
   }
 }
 

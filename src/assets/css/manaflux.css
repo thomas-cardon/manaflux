@@ -348,11 +348,10 @@ textarea:disabled {
   top: 0px;
   margin: 0px auto;
   width: 100%;
+  height: 12.8333333%;
   border-top: 2px solid #735828;
   border-bottom: 1px solid rgba(255, 255, 255, 0.4);
-  height: 100px;
   background: linear-gradient(to bottom, rgba(0, 0, 0, 0.65) 0%, rgba(0, 0, 0, 0) 80%);
-  /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
   -webkit-app-region: drag;
 }
 

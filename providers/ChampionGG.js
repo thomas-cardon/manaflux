@@ -32,7 +32,7 @@ class ChampionGGProvider {
       $("img[src^='https://s3.amazonaws.com/solomid-cdn/league/runes_reforged/']", slots).each(function(index) {
         let page = Math.trunc(index / 8), rune = $(this).attr("src").substring(59);
         if (index % 8 === 0) {
-          pages[page].name = 'MF ' + $('.champion-profile h1').text() + " " + role + (page === 0 ? 'HW%' : 'MF');
+          pages[page].name = 'MF ' + $('.champion-profile h1').text() + " " + role + (page === 0 ? ' HW%' : ' MF');
           pages[page].primaryStyleId = styles[rune.substring(5, 6)];
         }
         else if(index % 8 === 5)
