@@ -11,6 +11,7 @@ function createWindow () {
 
   win.loadURL(`file://${__dirname}/src/index.html`);
   win.setMenu(null);
+  win.setMaximizable(false);
 
   win.once('ready-to-show', () => {
     win.show();
@@ -31,7 +32,7 @@ function createWindow () {
 
 app.on('ready', () => {
   createWindow();
-  autoUpdater.checkForUpdates();
+  if (process.argv[2] !== '--dev') autoUpdater.checkForUpdates();
 });
 
 autoUpdater.on('update-downloaded', (info) => {

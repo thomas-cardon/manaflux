@@ -26,7 +26,7 @@ ipcRenderer.once('lcu', async (event, d) => {
 
   Mana.status('Connected...');
 
-  if (!store.has('language')) store.set({ language: 'en_US', runes: {} });
+  if (!store.has('language')) store.set({ language: 'en_US', runes: {}, automaticRunesDownload: true });
 
   Mana.champions = [];
 

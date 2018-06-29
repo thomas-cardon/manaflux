@@ -1,51 +1,63 @@
 <html>
-   <head>
-      <title>ManaFlux</title>
-      <meta charset="utf-8">
-      <meta name="author" content="Ryzzzen">
-      <link rel="stylesheet" href="assets/css/manaflux.css">
-      <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-   </head>
-   <body>
-      <div class="content">
-        <div class="tab-container">
-           <img src="assets/img/selected.png" id="selected" class="selected" draggable="false" style="margin-left: 80px;">
-           <div class="tab">
-              <button class="tablinks active" onclick="openTab(event, 'Home')" id="defaultOpen">Home</button>
-              <button class="tablinks" onclick="openTab(event, 'Settings')">Settings</button>
-           </div>
-           <div class="controls">
-              <button onclick="minimizeApp();"><i class="material-icons icon">remove</i></button>
-              <button onclick="closeApp();"><i class="material-icons icon">clear</i></button>
-           </div>
-        </div>
-         <!-- BEGIN SECTIONS -->
-            <div id="Home" class="tabcontent center" style="display: block;">
-               <div class="title">
-                  <h1>MANAFLUX</h1>
-                  <img src="assets/img/underline.png" draggable="false">
-               </div>
-               <button type="button" class="getstarted" id="forceRunesLoading" disabled>LOAD RUNES</button>
-            </div>
-            <script>
-               document.getElementById("defaultOpen").click();
-            </script>
-            <div class="version">
-               <p class="status" id="status">Loading...</p>
-            </div>
-            <div id="Settings" class="tabcontent">
-            </div>
-         </div>
-         <!-- END SECTIONS -->
+<head>
+  <title>ManaFlux</title>
+  <meta charset="utf-8">
+  <meta name="author" content="Ryzzzen">
+  <link rel="stylesheet" href="assets/css/manaflux.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+  <div class="tab-container">
+    <img src="assets/img/warning.png" id="warning" draggable="false" style="display: none;">
+    <img src="assets/img/selected.png" id="selected" class="selected" draggable="false" style="margin-left: 80px;">
+    <div class="tab">
+      <button class="tablinks active" onclick="openTab(event, 'Home')" id="defaultOpen">Home</button>
+      <button class="tablinks" onclick="openTab(event, 'Settings')">Settings</button>
+    </div>
+    <div class="controls">
+      <button onclick="minimizeApp();"><i class="material-icons icon">remove</i></button>
+      <button onclick="closeApp();"><i class="material-icons icon">clear</i></button>
+    </div>
+  </div>
+  <div class="content">
+    <!-- BEGIN SECTIONS -->
+    <div id="Home" class="tabcontent center" style="display: block;">
+      <div class="title">
+        <h1>MANAFLUX</h1>
+        <img src="assets/img/underline.png" draggable="false">
       </div>
-      <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
-      <script src="assets/js/jquery-3.3.1.min.js"></script>
-      <script>const { ipcRenderer } = require('electron');</script>
-      <script src="assets/js/ui.js"></script>
-      <script>if (window.module) module = window.module;</script>
+      <button type="button" class="getstarted" id="forceRunesLoading" disabled>LOAD RUNES</button>
+    </div>
+    <div id="Settings" class="tabcontent" style="display: block; margin-left: 90px;">
+      <div class="option">
+        <p class="option-name">RUNES</p>
+        <p class="suboption-name">Charger automatiquement</p>
+        <div class="options float-left checkboxContainer">
+          <input type="checkbox">
+          <span class="checkbox"></span>
+          <label>Oui</label>
+        </div>
+      </div>
+    </div>
       <script>
-         require('../renderer.js')
-         require('../ChampionSelect.js')
+      document.getElementById("defaultOpen").click();
       </script>
-   </body>
+      <div class="version">
+        <p class="status" id="status">Loading...</p>
+      </div>
+      <div id="Settings" class="tabcontent">
+      </div>
+    </div>
+    <!-- END SECTIONS -->
+  </div>
+  <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+  <script src="assets/js/jquery-3.3.1.min.js"></script>
+  <script>const { ipcRenderer } = require('electron');</script>
+  <script src="assets/js/ui.js"></script>
+  <script>if (window.module) module = window.module;</script>
+  <script>
+  require('../renderer.js')
+  require('../ChampionSelect.js')
+  </script>
+</body>
 </html>

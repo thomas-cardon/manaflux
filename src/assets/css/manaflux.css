@@ -8,6 +8,11 @@
   src: url("../fonts/Beaufort.ttf");
 }
 
+@font-face {
+  font-family: "spiegel";
+  src: url("../fonts/Spiegel Regular.ttf");
+}
+
 body {
   background: linear-gradient(to bottom, rgba(125, 185, 232, 0) -1%, rgba(50, 96, 122, 0) 65%, rgba(10, 49, 64, 0.8) 100%), url(https://i.4da.ms/Gch1r6.png);
   background-position: center;
@@ -21,6 +26,58 @@ body {
   position: fixed;
   width: 100%;
   user-select: none;
+}
+
+#warning {
+  position: absolute;
+  margin-top: 32px;
+  margin-left: 15px;
+}
+
+.checkbox {
+  width: 18px;
+  min-width: 18px;
+  height: 18px;
+  border: 2px solid #6a5535;
+  background: #101115;
+  margin-right: 10px;
+  position: relative;
+  animation-duration: 1.25s;
+  animation-iteration-count: 1;
+}
+
+.checkbox:before {
+  transform: rotate(45deg);
+}
+
+.checkbox:after {
+  transform: rotate(-45deg);
+}
+
+.checkboxContainer {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: flex-start;
+  -ms-flex-align: start;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.checkboxContainer input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+label {
+  color: #c4b998;
+  font-family: "spiegel", sans-serif;
+  padding-left: 30px;
+  -webkit-transform: translateX(-30px);
+  -ms-transform: translateX(-30px);
+  transform: translateX(-30px);
 }
 
 .option-name {
@@ -357,7 +414,7 @@ textarea:disabled {
 
 .tab {
   margin: 0px auto;
-  margin-top: 20px;
+  margin-top: 10px;
   margin-left: 15px;
   overflow: hidden;
 }
@@ -365,6 +422,8 @@ textarea:disabled {
 .selected {
   position: absolute;
   left: -10px;
+  width: 5%;
+  height: auto;
 }
 
 /* Style the buttons that are used to open the tab content */
@@ -380,7 +439,7 @@ textarea:disabled {
   -webkit-box-shadow: none;
   -moz-box-shadow: none;
   box-shadow: none;
-  font-size: 16px;
+  font-size: 25px;
   margin-left: 28px;
   -webkit-app-region: no-drag;
 }

@@ -3,11 +3,11 @@ function openTab(evt, tabName) {
 	var i, tabcontent, tablinks
 
 	if (tabName == "Home") {
-		document.getElementById("selected").style.marginLeft = "80px"
+		document.getElementById("selected").style.marginLeft = "90px"
 	}
 
 	if (tabName == "Settings") {
-		document.getElementById("selected").style.marginLeft = "200px"
+		document.getElementById("selected").style.marginLeft = "250px"
 	}
 
 	// Get all elements with class="tabcontent" and hide them

@@ -6,7 +6,6 @@
   "scripts": {
     "start": "electron ."
   },
-  "repository": "https://github.com/electron/electron-quick-start",
   "keywords": [
     "League of Legends",
     "League",
@@ -15,7 +14,7 @@
     "runes"
   ],
   "author": "Ryzzzen",
-  "license": "CC0-1.0",
+  "license": "MIT",
   "devDependencies": {
     "electron": "^2.0.0",
     "electron-builder": "^20.17.1"
@@ -34,7 +33,7 @@
       "ship": "build --win -p always"
   },
   "build": {
-    "appId": "fr.ryzzzen.manaflux",
+    "appId": "com.github.ryzzzen.manaflux",
     "productName": "ManaFlux",
     "copyright": "Copyright © 2018 Ryzzzen",
     "files": ["**/*", "build/icon.*"]
