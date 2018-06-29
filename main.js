@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, globalShortcut } = require('electron');
 const { autoUpdater } = require('electron-updater');
 
 const LCUConnector = require('lcu-connector');
@@ -14,18 +14,13 @@ function createWindow () {
   win.setMaximizable(false);
 
   win.once('ready-to-show', () => {
+    connector.on('connect', d => win.webContents.send('lcu', d));
+    connector.start();
+
     win.show();
   });
 
   if (process.argv[2] === '--dev') win.webContents.openDevTools({ mode: 'detach' });
-
-  /*win.on('ready-to-show', () => {
-    connector.on('connect', d => {
-      console.dir(d);
-      win.webContents.send('lcu', d);
-    });
-    connector.start();
-  });*/
 
   win.on('closed', () => win = null);
 }
@@ -33,6 +28,8 @@ function createWindow () {
 app.on('ready', () => {
   createWindow();
   if (process.argv[2] !== '--dev') autoUpdater.checkForUpdates();
+
+  globalShortcut.register('CommandOrControl+Shift+I', () => win.webContents.openDevTools({ mode: 'detach' }));
 });
 
 autoUpdater.on('update-downloaded', (info) => {

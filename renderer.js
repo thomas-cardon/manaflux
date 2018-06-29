@@ -66,5 +66,3 @@ global._devConnect = function(obj) {
   });
   connector.start();
 }
-
-_devConnect();
