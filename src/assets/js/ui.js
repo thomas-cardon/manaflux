@@ -48,7 +48,7 @@ ipcRenderer.once('update-ready', async (event, data) => {
 
 	$('.tabcontent[data-tabid="update"] > .textcontainer').text(jQuery(data.releaseNotes).text());
 
-	$('.tabcontent[data-tabid="update"] > #update').one("click", function() {});
+	$('.tabcontent[data-tabid="update"] > #update').one("click", () => ipcRenderer.send('update-install'));
 });
 
 function getReadableFileSizeString(fileSizeInBytes) {
