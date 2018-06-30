@@ -50,10 +50,11 @@
         <p class="suboption-name" id="version"></p>
         <p class="suboption-name" id="size" style="margin-top: 5px;"></p>
         <div class="textcontainer" style="width: 45%;"></div>
+        <button type="button" id="update" style="margin-top: 10px;">UPDATE</button>
       </div>
     </div>
     <p class="status">Loading...</p>
-    <p class="version">v1.0.4</p>
+    <p class="version"></p>
   </div>
     <!-- END SECTIONS -->
   </div>
@@ -61,8 +62,10 @@
   <script>const { ipcRenderer } = require('electron');</script>
   <script src="assets/js/ui.js"></script>
   <script>
-  require('../renderer.js')
-  require('../ChampionSelect.js')
+  require('../renderer.js');
+  require('../ChampionSelect.js');
+
+  $('.version').text('v' + require('../package.json').version);
   </script>
 </body>
 </html>

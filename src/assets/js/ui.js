@@ -42,10 +42,13 @@ $(document).ready(function() {
 
 ipcRenderer.once('update-ready', async (event, data) => {
 	$('.tablinks[data-tabid="update"]').show();
+
 	$('.tabcontent[data-tabid="update"] > #version').text(`Version ${data.version}`);
 	$('.tabcontent[data-tabid="update"] > #size').text(getReadableFileSizeString(files[0].size));
 
 	$('.tabcontent[data-tabid="update"] > .textcontainer').text(jQuery(data.releaseNotes).text());
+
+	$('.tabcontent[data-tabid="update"] > #update').one("click", function() {});
 });
 
 function getReadableFileSizeString(fileSizeInBytes) {
