@@ -28,6 +28,40 @@ body {
   user-select: none;
 }
 
+.championPortrait {
+  top: 0;
+  z-index: 2;
+  width: 211px;
+  height: 246px;
+  margin-top: 12%;
+  margin-left: 34%;
+  position: absolute;
+}
+
+@keyframes hextechRotation {
+  from {
+      transform: translateZ(0) rotate(10deg);
+  }
+  to {
+      transform: translateZ(0) rotate(40deg);
+  }
+}
+
+.championPortrait > #champion {
+  position: absolute;
+  margin-left: 22%;
+  border-radius: 110px;
+  margin-top: 23%;
+  z-index: -1;
+}
+
+.championPortrait > #bg {
+  z-index: 1;
+  margin-left: -1%;
+  will-change: transform;
+  animation: hextechRotation 10s ease-in-out alternate infinite;
+}
+
 #warning {
   position: absolute;
   margin-top: 32px;
@@ -94,8 +128,6 @@ label {
 
 .title {
   text-align: center;
-  margin-top: 250px;
-  margin-bottom: 50px;
 }
 
 h1 {
@@ -152,11 +184,20 @@ hr {
 .version {
   position: fixed;
   bottom: 15px;
-  left: 15px;
+  right: 15px;
   cursor: default;
+  margin: 0px;
+  color: #a09b8c;
+  opacity: 0.5;
+  transition: opacity .1s ease-in-out;
+  text-decoration: none;
 }
 
 .status {
+  position: fixed;
+  bottom: 15px;
+  left: 15px;
+  cursor: default;
   margin: 0px;
   color: #a09b8c;
   opacity: 0.5;
@@ -209,10 +250,6 @@ hr {
   color: #f0e6d2;
 }
 
-.getstarted {
-  margin-top: -10px;
-}
-
 /*
     SCROLL BAR
 */
@@ -246,6 +283,20 @@ hr {
 /*
     BUTTONS
 */
+
+@keyframes flash {
+  0% {
+    color: #CDBE91;
+  }
+
+  100% {
+    color: #F0E6D2;
+  }
+}
+
+.flash {
+  animation: flash 0.3s alternate infinite;
+}
 
 button {
   display: inline-block;
@@ -297,6 +348,33 @@ button:after {
 }
 
 /*
+* TEXT CONTAINER
+*/
+
+.textcontainer {
+  font-family: 'Open Sans', sans-serif;
+  resize: none;
+  padding: 10px 10px;
+  color: rgb(62.7%, 60.8%, 54.9%);
+  display: block;
+  box-sizing: border-box;
+  border: 1px solid #785A28;
+  background-color: rgba(0, 0, 0, 0.7);
+  outline: none;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset, 0 0 0 1px rgba(0, 0, 0, 0.25);
+}
+
+.textcontainer:focus {
+  background: linear-gradient(to bottom, rgba(7, 16, 25, 0.7), rgba(32, 39, 44, 0.7));
+  border-image: linear-gradient(to bottom, #785a28, #c8aa6e) 1 stretch;
+}
+
+.textcontainer:disabled {
+  color: rgba(230, 33, 66, 0.7) !important;
+  border: 1px solid rgba(230, 33, 66, 0.7);
+}
+
+/*
     TEXT FIELDS
 */
 
@@ -311,7 +389,6 @@ textarea {
   box-sizing: border-box;
   border: 1px solid #785A28;
   background-color: rgba(0, 0, 0, 0.7);
-  appearance: none;
   outline: none;
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset, 0 0 0 1px rgba(0, 0, 0, 0.25);
 }
@@ -444,6 +521,19 @@ textarea:disabled {
   -webkit-app-region: no-drag;
 }
 
+.tab button::before {
+  top: -2px;
+  height: 16px;
+  background: url(assets/img/selected.png) no-repeat center;
+}
+
+.tab button::after {
+  bottom: -1px !important;
+  height: 1px !important;
+  width: 100% !important;
+  background: rgba(242,233,218,0.5) !important;
+}
+
 /* Change background color of buttons on hover */
 
 .tab button:hover {
@@ -459,7 +549,6 @@ textarea:disabled {
 /* Style the tab content */
 
 .tabcontent {
-  display: none;
   border-top: none;
   margin-top: 115px;
 }

@@ -1,16 +1,14 @@
-let Timer, MyTeam = [], TheirTeam = [], Last;
+let GameMode, MyTeam = [], TheirTeam = [], Last;
 let User;
 
 const ProviderHandler = new (require('./ProviderHandler'))();
 
-Mana.on('champselect', function(d) {
-  if (!d && Timer) return destroyDisplay();
+Mana.on('champselect', async function(d) {
+  if (!d && MyTeam.length > 0) return destroyDisplay();
   else if (!d) return;
 
-  if (Timer && Timer.id)
-  clearInterval(Timer.id);
+  GameMode = await Mana.user.getGameMode();
 
-  Timer = d.timer;
   MyTeam = d.myTeam;
   TheirTeam = d.theirTeam;
 
@@ -22,17 +20,26 @@ function updateDisplay() {
   if (Last === User.championId) return;
 
   if ((Last = User.championId) !== 0) {
-    ProviderHandler.getChampionRunePages(Mana.champions[User.championId], User.assignedPosition === "" ? null : User.assignedPosition).then(runes => {
-      console.dir(runes);
+    ProviderHandler.getChampionData(Mana.champions[User.championId], User.assignedPosition === "" ? null : User.assignedPosition, GameMode).then(data => {
+      const { runes, summonerspells } = data;
+
       Mana.user.updateRunePages(runes);
+
+      UI.enableSummonerSpells(summonerspells);
+      UI.enableHextechAnimation(Mana.champions[User.championId].key, runes[0].primaryStyleId);
+
       Mana.status('Loaded runes for ' + Mana.champions[User.championId].name + '...');
+    }).catch(err => {
+      console.error(err);
+      UI.error(err);
     });
   }
 }
 
 function destroyDisplay() {
   Mana.status('Waiting for champion select...');
-
-  Timer = null;
   MyTeam = TheirTeam = [];
+
+  UI.disableSummonerSpells();
+  UI.disableHextechAnimation();
 }

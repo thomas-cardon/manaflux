@@ -1,4 +1,5 @@
 const rp = require('request-promise-native'), cheerio = require('cheerio');
+
 let styles = {
   p: 8000,
   d: 8100,
@@ -16,12 +17,24 @@ class ChampionGGProvider {
   async load() {
   }
 
-  async getRunes(champion, position) {
+  async getData(champion, position, gameMode) {
     const res = await rp(this.base + 'champion/' + champion.key);
-    return await this._scrape(res, champion.key, position ? position.slice(0, 1) + position.slice(1).toLowerCase() : null);
+    const data = await this._scrape(res, champion.key, position ? position.slice(0, 1) + position.slice(1).toLowerCase() : null, gameMode);
+
+    if (data.runes.every(x => x.selectedPerkIds.length === 0)) throw new TypeError("Impossible de récupérer les runes de " + champion.name + " avec Champion.GG.");
+    return data;
   }
 
-  _scrape(html, champion, position) {
+  async getRunes(champion, position, gameMode) {
+    const res = await rp(this.base + 'champion/' + champion.key);
+    const { runes } = await this._scrape(res, champion.key, position ? position.slice(0, 1) + position.slice(1).toLowerCase() : null, gameMode);
+
+    if (runes.every(x => x.selectedPerkIds.length === 0)) throw new TypeError("Impossible de récupérer les runes de " + champion.name + " avec Champion.GG.");
+    return runes;
+  }
+
+
+  _scrape(html, champion, position, gameMode) {
     return new Promise(resolve => {
       let $ = cheerio.load(html);
       let pages = [{ selectedPerkIds: [] }, { selectedPerkIds: [] }];
@@ -40,7 +53,18 @@ class ChampionGGProvider {
         else pages[page].selectedPerkIds.push(parseInt(rune.substring(0, 4)));
       });
 
-      resolve(pages);
+      let summonerspells = [];
+
+      $('.summoner-wrapper > a > img').each(function(index) {
+        const summoner = Mana.summonerspells[$(this).attr('src').slice(51, -4)];
+
+        if (!summoner) return;
+        if (true/*summoner.gameModes.includes(gameMode)*/) summonerspells.push(summoner.id);
+
+        if (index >= 1 && summonerspells.length === 2) return false;
+      });
+
+      resolve({ runes: pages, summonerspells });
     });
   }
 }

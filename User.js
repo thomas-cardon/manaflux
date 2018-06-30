@@ -14,6 +14,14 @@ class User {
     this.summoner = JSON.parse(summoner);
   }
 
+  async getGameMode() {
+    return (await this.getChatMe()).lol.gameMode;
+  }
+
+  async getChatMe() {
+    return JSON.parse(await rp(this.base + 'lol-chat/v1/me'));
+  }
+
   getDynamicPage() {
     return this.dynamicPage;
   }
@@ -36,6 +44,7 @@ class User {
   }
 
   async updateRunePages(runepages) {
+    if (!runepages || runepages.length === 0) return console.log('Tried to update summoner spells but data given was empty.');
     let count = await this.getPageCount();
 
     await this.deleteRunePages();
@@ -43,6 +52,20 @@ class User {
 
     for (let i = 0; i < runepages.length; i++)
       if (count > i) await this.runes.push(this.createRunePage(runepages[i], { current: count < 1 }));
+  }
+
+  async updateSummonerSpells(spells) {
+    if (!spells || spells.length === 0) return console.log('Tried to update summoner spells but data given was empty.');
+
+    let body = {};
+    if (spells.length > 1) body.spell2Id = spells[1];
+    if (spells.length > 0) body.spell1Id = spells[0];
+    return await rp({
+      method: 'PATCH',
+      uri: this.base + 'lol-champ-select/v1/session/my-selection',
+      body,
+      json: true
+    })
   }
 
   async setCurrentPage(id) {
