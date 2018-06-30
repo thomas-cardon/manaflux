@@ -23,12 +23,13 @@ function updateDisplay() {
     ProviderHandler.getChampionData(Mana.champions[User.championId], User.assignedPosition === "" ? null : User.assignedPosition, GameMode).then(data => {
       const { runes, itemsets, summonerspells } = data;
 
-      //for (let itemset of itemsets)
-        //itemset.save();
+      if (Mana.store.get('enableItemSets'))
+        for (let itemset of itemsets)
+          itemset.save();
 
-      Mana.user.updateRunePages(runes);
-
-      if (!Mana.store.get('loadRunesAutomatically', true))
+      if (Mana.store.get('loadRunesAutomatically', true))
+        Mana.user.updateRunePages(runes);
+      else
         $('button#loadRunes').enableManualButton(() => Mana.user.updateRunePages(runes));
 
       if (Mana.store.get('enableSummonerSpellButton'))

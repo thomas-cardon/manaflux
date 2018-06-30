@@ -46,6 +46,9 @@ $(document).ready(function() {
   if (!Mana.store.has('enableSummonerSpellButton'))
     Mana.store.set('enableSummonerSpellButton', false);
 
+  if (!Mana.store.has('enableItemSets'))
+    Mana.store.set('enableItemSets', false);
+    
   if (!Mana.store.has('theme'))
     Mana.store.set('theme', 'magic-repeater-sm.jpg');
 

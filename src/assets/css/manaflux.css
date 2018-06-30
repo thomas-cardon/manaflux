@@ -84,8 +84,9 @@ label {
 }
 
 .option-name {
-  font-size: 25px;
   color: #f0e6d2;
+  font-size: 25px;
+  min-width: 50%;
   margin-bottom: 10px;
 }
 
