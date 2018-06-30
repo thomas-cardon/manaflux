@@ -18,6 +18,7 @@ class MF extends EventEmitter {}
 
 global.Mana = new MF();
 
+Mana.version = require('./package.json').version;
 Mana.status = str => $('.status').text(str);
 Mana.store = new Store();
 
@@ -34,8 +35,21 @@ $(document).ready(function() {
   if (!Mana.store.has('summonerspells'))
     Mana.store.set('summonerspells', {});
 
-  if (!Mana.store.has('automaticRunesDownload'))
-    Mana.store.set('automaticRunesDownload', true);
+  if (Mana.store.get('lastVersion', Mana.version) === '1.1.0') {
+    Mana.store.set('runes', {});
+    Mana.store.set('summonerspells', {});
+  }
+
+  if (!Mana.store.has('loadRunesAutomatically'))
+    Mana.store.set('loadRunesAutomatically', true);
+
+  if (!Mana.store.has('enableSummonerSpellButton'))
+    Mana.store.set('enableSummonerSpellButton', false);
+
+  if (!Mana.store.has('theme'))
+    Mana.store.set('theme', 'magic-repeater-sm.jpg');
+
+  Mana.store.set('lastVersion', Mana.version);
 
   if (!Mana.store.has('leaguePath')) {
     if (!require('fs').existsSync('C:\\Riot Games\\League of Legends')) {
@@ -105,7 +119,7 @@ ipcRenderer.once('lcu', async (event, d) => {
 
   setInterval(function() {
     request(Mana.base + 'lol-champ-select/v1/session', function (error, response, body) {
-      if (response && response.statusCode === 404) Mana.emit('champselect', false);
+      if (response && response.statusCode === 404 && !Mana.fakeMode) Mana.emit('champselect', false);
       else {
         try {
           Mana.emit('champselect', JSON.parse(body));
@@ -128,6 +142,7 @@ global._devConnect = function(obj) {
 }
 
 global._devFakeChampionSelect = function() {
+  Mana.fakeMode = true;
   Mana.emit('champselect', {
     "myTeam": [
       {
@@ -139,7 +154,7 @@ global._devFakeChampionSelect = function() {
         "selectedSkinId": 63000,
         "spell1Id": 7,
         "spell2Id": 12,
-        "summonerId": 98528239,
+        "summonerId": Mana.user.summoner.summonerId,
         "team": 1,
         "wardSkinId": 76
       }
@@ -161,5 +176,5 @@ global._devFakeChampionSelect = function() {
 }
 
 global._devEndFakeChampionSelect = function() {
-  Mana.emit('champselect', false);
+  Mana.fakeMode = false;
 }

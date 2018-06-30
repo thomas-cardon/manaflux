@@ -6,6 +6,10 @@ let connector;
 
 let win;
 
+/*
+* TODO: Penser à créer une "version mini", qui reste toujours devant n'importe quel programme
+*/
+
 function createWindow () {
   win = new BrowserWindow({ width: 600, height: 600, frame: false, icon: __dirname + '/build/icon.png', backgroundColor: '#000A13', disableBlinkFeatures: 'BlockCredentialedSubresources', show: false });
 

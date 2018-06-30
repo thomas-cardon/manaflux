@@ -3,15 +3,26 @@ var UI = {};
 UI.error = function(err) {
 }
 
-let summonerSpells;
+/*
+* Manual Button Handler
+*/
 
-UI.enableSummonerSpells = function(spells) {
-	$('#loadSummonerSpells').show();
+$.fn.enableManualButton = function(cb) {
+	$(this).show().click(cb);
+	return this;
 }
 
-UI.disableSummonerSpells = () => $('#loadSummonerSpells').hide();
+$.fn.disableManualButton = function() {
+	$(this).off().hide();
+	return this;
+}
 
+/*
+* Hextech Animation Handler
+*/
 UI.enableHextechAnimation = function(championKey, primaryStyleId) {
+	if (championKey === 'FiddleSticks') championKey = 'Fiddlesticks';
+
 	$('.championPortrait > #bg').attr('src', 'assets/img/vfx-' + (primaryStyleId === null ? 'white' : primaryStyleId) + '.png');
 	$('.championPortrait > #champion')
 	.attr('src', 'https://ddragon.leagueoflegends.com/cdn/8.3.1/img/champion/' + championKey + '.png')
@@ -23,14 +34,13 @@ UI.disableHextechAnimation = () => {
 	$(".title").animate({ "margin-top": "0%" }, 700, "linear");
 }
 
-$('#loadSummonerSpells').click(function() {
-	Mana.user.updateSummonerSpells(summonerSpells);
-});
-
+/*
+* Tab Handler
+*/
 $(document).ready(function() {
 	$('.tablinks').click(function() {
 		const content = $(`.tabcontent[data-tabid="${$(this).data('tabid')}"]`);
-		document.getElementById("selected").style.marginLeft = (89 + $(this).position().left) + 'px';
+		document.getElementById("selected").style.marginLeft = $(this).data('tabid') !== 'home' ? (89 + $(this).position().left) : 89 + 'px';
 
 		$('.tabcontent').hide();
 		content.show();
@@ -39,6 +49,39 @@ $(document).ready(function() {
 		$(this).addClass('active');
 	});
 });
+
+/*
+* Settings
+*/
+$(document).ready(function() {
+	$(':checkbox[data-settings-key]').each(function() {
+		console.log(`Loading value of ${$(this).data('settings-key')} to: ${Mana.store.get($(this).data('settings-key'))}`);
+		$(this).prop('checked', Mana.store.get($(this).data('settings-key')));
+	});
+
+	$('select[data-settings-key]').each(function() {
+		console.log(`Loading value of ${$(this).data('settings-key')} to: ${Mana.store.get($(this).data('settings-key'))}`);
+		$(this).val(Mana.store.get($(this).data('settings-key')));
+	});
+});
+
+$(':checkbox[data-settings-key]').change(function() {
+	console.log(`Changing value of ${$(this).data('settings-key')} to: ${$(this).is(":checked")}`);
+	Mana.store.set($(this).data('settings-key'), $(this).is(":checked"));
+});
+
+$('select[data-settings-key]').change(function() {
+	console.log(`Changing value of ${$(this).data('settings-key')} to: ${this.value}`);
+	Mana.store.set($(this).data('settings-key'), this.value);
+});
+
+$(document).ready(function() {
+	$('body').css('background', "linear-gradient(to bottom, rgba(125, 185, 232, 0) -1%, rgba(50, 96, 122, 0) 65%, rgba(10, 49, 64, 0.8) 100%), url('./assets/img/" + Mana.store.get('theme', 'magic-repeater-sm.jpg') + "')");
+});
+
+$('select[data-settings-key=theme]').change(function() {
+	$('body').css('background', "linear-gradient(to bottom, rgba(125, 185, 232, 0) -1%, rgba(50, 96, 122, 0) 65%, rgba(10, 49, 64, 0.8) 100%), url('./assets/img/" + this.value + "')");
+})
 
 ipcRenderer.once('update-ready', async (event, data) => {
 	$('.tablinks[data-tabid="update"]').show();

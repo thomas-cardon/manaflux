@@ -27,24 +27,47 @@
         <h1>MANAFLUX</h1>
         <img src="assets/img/underline.png" draggable="false">
       </div>
-      <button type="button" class="getstarted" id="loadSummonerSpells" style="display: none; margin-top: 10px;">LOAD SUMMONER SPELLS</button>
+      <button type="button" id="loadSummonerSpells" style="display: none; margin-top: 10px;">LOAD SUMMONER SPELLS</button>
+      <button type="button" id="loadRunes" style="display: none; margin-top: 10px;">LOAD RUNES</button>
       <div class="championPortrait" style="display: none;">
         <img id="champion">
         <img id="bg">
       </div>
     </div>
-    <div data-tabid="settings" class="tabcontent" style="display: none; margin-left: 90px;">
+    <div data-tabid="settings" class="tabcontent" style="display: none; margin-left: 12%;">
+      <p class="option-name">MISC</p>
       <div class="option">
-        <p class="option-name">RUNES</p>
-        <p class="suboption-name">Charger automatiquement</p>
+        <p class="suboption-name">Runes</p>
         <div class="options float-left checkboxContainer">
-          <input type="checkbox">
-          <span class="checkbox"></span>
-          <label>Oui</label>
+          <input type="checkbox" data-settings-key="loadRunesAutomatically" />
+          <label>Charger automatiquement</label>
         </div>
       </div>
-    </div>
-    <div data-tabid="update" class="tabcontent" style="display: none; margin-left: 90px;">
+      <div class="option">
+        <p class="suboption-name">Sorts d'invocateur</p>
+        <div class="options float-left checkboxContainer">
+          <input type="checkbox" data-settings-key="enableSummonerSpellButton" />
+          <label>Activer le bouton</label>
+        </div>
+      </div>
+      <div class="option">
+        <p class="suboption-name">Thème</p>
+        <select data-settings-key="theme" class="dropdown center-area">
+          <option value="magic-repeater-sm.jpg">Thème par défaut</option>
+          <option value="themes/red-bg.jpg">Rouge</option>
+          <option value="themes/green-bg.jpg">Vert</option>
+          <option value="themes/purple-bg.jpg">Violet</option>
+          <option value="themes/gray-bg.jpg">Gris</option>
+        </select>
+      </div>
+      <p style="
+          color: #c4b998;
+          font-family: &quot;spiegel&quot;, sans-serif;
+          margin-left: -9%;
+          margin-top: 54%;">ManaFlux isn’t endorsed by Riot Games and doesn’t reflect the views or opinions of Riot Games or anyone officially involved in producing or managing League of Legends.
+            League of Legends and Riot Games are trademarks or registered trademarks of Riot Games, Inc. League of Legends © Riot Games, Inc.</p>
+      </div>
+    <div data-tabid="update" class="tabcontent" style="display: none; margin-left: 12%;">
       <div class="option">
         <p class="option-name">MISE A JOUR DISPONIBLE</p>
         <p class="suboption-name" id="version"></p>
@@ -65,7 +88,7 @@
   require('../renderer.js');
   require('../ChampionSelect.js');
 
-  $('.version').text('v' + require('../package.json').version);
+  $('.version').text('v' + Mana.version);
   </script>
 </body>
 </html>

@@ -1,4 +1,5 @@
 const rp = require('request-promise-native'), cheerio = require('cheerio');
+const { ItemSet, Block } = require('../ItemSet');
 
 let styles = {
   p: 8000,
@@ -42,6 +43,10 @@ class ChampionGGProvider {
       let slots = $("div[class^=Slot__LeftSide]");
       let role = $(`li[class^='selected-role'] a[href^='/champion/${champion}']`).first().text().trim();
 
+      /*
+      * Runes
+      */
+
       $("img[src^='https://s3.amazonaws.com/solomid-cdn/league/runes_reforged/']", slots).each(function(index) {
         let page = Math.trunc(index / 8), rune = $(this).attr("src").substring(59);
         if (index % 8 === 0) {
@@ -52,6 +57,10 @@ class ChampionGGProvider {
           pages[page].subStyleId = styles[rune.substring(5, 6)];
         else pages[page].selectedPerkIds.push(parseInt(rune.substring(0, 4)));
       });
+
+      /*
+      * Summoner Spells
+      */
 
       let summonerspells = [];
 
@@ -64,7 +73,27 @@ class ChampionGGProvider {
         if (index >= 1 && summonerspells.length === 2) return false;
       });
 
-      resolve({ runes: pages, summonerspells });
+      /*
+      * ItemSets
+      */
+
+      let itemset = new ItemSet(champion).setTitle($('.champion-profile h1').text() + " " + role);
+      $('.buildwrapper').each(function(index) {
+        const type = $(this).parent().find('h2').text();
+        console.log(type);
+        
+        let block = new Block().setName(type);
+
+        $(this).each(function(index) {
+          if ($(this).hasClass('build-text')) return block.setName(block._set.type += `(${$(this).children().first().text().trim().slice(0, 6)} WinRate)`);
+          console.log($(this).children().first().data('id'));
+          block.addItem($(this).children().first().data('id'));
+        });
+
+        itemset.addBlock(block);
+      });
+
+      resolve({ runes: pages, summonerspells, itemsets: [itemset] });
     });
   }
 }

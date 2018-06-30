@@ -21,13 +21,20 @@ function updateDisplay() {
 
   if ((Last = User.championId) !== 0) {
     ProviderHandler.getChampionData(Mana.champions[User.championId], User.assignedPosition === "" ? null : User.assignedPosition, GameMode).then(data => {
-      const { runes, summonerspells } = data;
+      const { runes, itemsets, summonerspells } = data;
+
+      //for (let itemset of itemsets)
+        //itemset.save();
 
       Mana.user.updateRunePages(runes);
 
-      UI.enableSummonerSpells(summonerspells);
-      UI.enableHextechAnimation(Mana.champions[User.championId].key, runes[0].primaryStyleId);
+      if (!Mana.store.get('loadRunesAutomatically', true))
+        $('button#loadRunes').enableManualButton(() => Mana.user.updateRunePages(runes));
 
+      if (Mana.store.get('enableSummonerSpellButton'))
+        $('button#loadSummonerSpells').enableManualButton(() => Mana.user.updateSummonerSpells(summonerspells));
+
+      UI.enableHextechAnimation(Mana.champions[User.championId].key, runes[0].primaryStyleId);
       Mana.status('Loaded runes for ' + Mana.champions[User.championId].name + '...');
     }).catch(err => {
       console.error(err);
@@ -40,6 +47,11 @@ function destroyDisplay() {
   Mana.status('Waiting for champion select...');
   MyTeam = TheirTeam = [];
 
-  UI.disableSummonerSpells();
   UI.disableHextechAnimation();
+
+  if (!Mana.store.get('loadRunesAutomatically', true))
+    $('button#loadRunes').disableManualButton();
+
+  if (Mana.store.get('enableSummonerSpellButton', true))
+    $('button#loadSummonerSpells').disableManualButton();
 }
