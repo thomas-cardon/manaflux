@@ -35,7 +35,7 @@ $(document).ready(function() {
   if (!Mana.store.has('summonerspells'))
     Mana.store.set('summonerspells', {});
 
-  if (Mana.store.get('lastVersion', Mana.version) === '1.1.0') {
+  if (Mana.store.get('lastVersion', '1.1.0') === '1.1.0') {
     Mana.store.set('runes', {});
     Mana.store.set('summonerspells', {});
   }
@@ -48,9 +48,9 @@ $(document).ready(function() {
 
   if (!Mana.store.has('enableItemSets'))
     Mana.store.set('enableItemSets', false);
-    
+
   if (!Mana.store.has('theme'))
-    Mana.store.set('theme', 'magic-repeater-sm.jpg');
+    Mana.store.set('theme', 'themes/default-bg.jpg');
 
   Mana.store.set('lastVersion', Mana.version);
 
@@ -85,7 +85,7 @@ ipcRenderer.once('lcu', async (event, d) => {
 
   Mana.status('Connected...');
 
-  Mana.champions = [];
+  Mana.champions = {};
   Mana.summonerspells = {};
 
   const championSummaryData = JSON.parse(await rp(Mana.base + 'lol-game-data/assets/v1/champion-summary.json'));
@@ -122,7 +122,7 @@ ipcRenderer.once('lcu', async (event, d) => {
 
   setInterval(function() {
     request(Mana.base + 'lol-champ-select/v1/session', function (error, response, body) {
-      if (response && response.statusCode === 404 && !Mana.fakeMode) Mana.emit('champselect', false);
+      if (response && response.statusCode === 404) Mana.emit('champselect', false);
       else {
         try {
           Mana.emit('champselect', JSON.parse(body));
@@ -146,38 +146,10 @@ global._devConnect = function(obj) {
 
 global._devFakeChampionSelect = function() {
   Mana.fakeMode = true;
-  Mana.emit('champselect', {
-    "myTeam": [
-      {
-        "assignedPosition": "",
-        "cellId": 0,
-        "championId": 63,
-        "championPickIntent": 0,
-        "playerType": "PLAYER",
-        "selectedSkinId": 63000,
-        "spell1Id": 7,
-        "spell2Id": 12,
-        "summonerId": Mana.user.summoner.summonerId,
-        "team": 1,
-        "wardSkinId": 76
-      }
-    ],
-    "rerollsRemaining": 0,
-    "theirTeam": [],
-    "timer": {
-      "adjustedTimeLeftInPhase": 87283,
-      "adjustedTimeLeftInPhaseInSec": 87,
-      "internalNowInEpochMs": 1530351169375,
-      "isInfinite": false,
-      "phase": "BAN_PICK",
-      "timeLeftInPhase": 90283,
-      "timeLeftInPhaseInSec": 90,
-      "totalTimeInPhase": 92720
-    },
-    "trades": []
-  });
+  new (require('./CustomGame'))().create().then(game => game.start());
 }
 
 global._devEndFakeChampionSelect = function() {
   Mana.fakeMode = false;
+  rp({ method: 'POST', uri: Mana.base + 'lol-lobby/v1/lobby/custom/cancel-champ-select' });
 }

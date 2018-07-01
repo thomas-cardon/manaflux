@@ -4,7 +4,7 @@ class ItemSet {
   constructor(key) {
     this.championKey = key.toLowerCase();
 
-    this.file = `${this.championKey}.ManaFlux.${Mana.version}.json`;
+    this.file = `${this.championKey}.ManaFlux.${Mana.gameVersion}.${Mana.version}.json`;
     this.path = path.join(Mana.store.get('leaguePath'), `\\Config\\Champions\\${this.championKey}\\Recommended\\${this.file}`);
 
     this._set = {
@@ -37,12 +37,7 @@ class ItemSet {
   }
 
   addBlock(block) {
-    this._set.blocks.push(block);
-    return this;
-  }
-
-  setBlocks(blocks) {
-    this._set.blocks = blocks;
+    this._set.blocks.push(block.build());
     return this;
   }
 

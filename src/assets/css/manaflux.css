@@ -47,18 +47,20 @@ body {
 }
 
 .championPortrait > #champion {
-  position: absolute;
-  margin-left: 22%;
-  border-radius: 110px;
-  margin-top: 23%;
+  width: 128px;
+  height: 128px;
   z-index: -1;
+  margin-left: 22%;
+  margin-top: 23%;
+  position: absolute;
+  border-radius: 110px;
 }
 
 .championPortrait > #bg {
   z-index: 1;
   margin-left: -1%;
   will-change: transform;
-  animation: hextechRotation 10s ease-in-out alternate infinite;
+  animation: hextechRotation 1s ease-in-out alternate infinite;
 }
 
 #warning {

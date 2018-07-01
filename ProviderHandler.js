@@ -16,6 +16,7 @@ class ProviderHandler {
     };
 
     for (let provider of this.providers) {
+      console.log('Provider used: ' + provider.name);
       try {
         let method;
 
@@ -29,30 +30,33 @@ class ProviderHandler {
           method = 'getRunes';
 
         if (!provider[method]) continue;
+
         const d = await provider[method](champion, position, gameMode);
 
-        if (method === 'getData' || method === 'getRunes') {
-          data.runes = data.runes.concat(d.runes);
-          Mana.store.set(`runes.${storeKey}`, Mana.store.get(`runes.${storeKey}`, []).concat(d.runes));
-        }
-        else if (method === 'getData' || method === 'getItemSets')
+        if (method === 'getData' || method === 'getRunes')
+          Mana.store.set(`runes.${storeKey}`, data.runes = data.runes.concat(d.runes));
+        if (method === 'getData' || method === 'getItemSets')
           data.itemsets = data.itemsets.concat(d.itemsets);
-        else if (method === 'getData' || method === 'getSummonerSpells') {
+        if (method === 'getData' || method === 'getSummonerSpells') {
           data.summonerspells = d.summonerspells;
 
           if (d.summonerspells.length > 0)
-            Mana.store.set(`summonerspells.${storeKey}`, summonerspells);
+            Mana.store.set(`summonerspells.${storeKey}`, d.summonerspells);
         }
 
-        if (data.runes.length === 0 || data.itemsets.length === 0 || data.summonerspells.length === 0)
+        if (data.runes.length === 0 || data.itemsets.length === 0 || data.summonerspells.length === 0) {
+          console.log('Missing data. Using another provider.');
           continue;
+        }
 
-        return { runes, itemsets, summonerspells };
+        return { runes: data.runes, itemsets: data.itemsets, summonerspells: data.summonerspells };
       }
       catch(err) {
         console.error(err);
       }
     }
+
+    return { runes: data.runes, itemsets: data.itemsets, summonerspells: data.summonerspells };
   }
 }
 

@@ -10,6 +10,8 @@ class User {
 
     const summoner = await rp(this.base + 'lol-summoner/v1/current-summoner');
     this.summoner = JSON.parse(summoner);
+
+    Mana.gameVersion = await this.getVersion();
   }
 
   async getGameMode() {
