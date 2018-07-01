@@ -23,17 +23,26 @@ class ChampionGGProvider {
     const data = await this._scrape(res, champion.key, position ? position.slice(0, 1) + position.slice(1).toLowerCase() : null, gameMode);
 
     if (data.runes.every(x => x.selectedPerkIds.length === 0)) throw new TypeError("Impossible de récupérer les runes de " + champion.name + " avec Champion.GG.");
+    if (data.summonerspells.length === 0) throw new TypeError("Impossible de récupérer les sorts d'invocateur de " + champion.name + " avec Champion.GG.");
+    if (data.itemsets.length === 0) throw new TypeError("Impossible de récupérer les sets d'items de " + champion.name + " avec Champion.GG.");
+
     return data;
   }
 
-  async getRunes(champion, position, gameMode) {
-    const res = await rp(this.base + 'champion/' + champion.key);
-    const { runes } = await this._scrape(res, champion.key, position ? position.slice(0, 1) + position.slice(1).toLowerCase() : null, gameMode);
-
-    if (runes.every(x => x.selectedPerkIds.length === 0)) throw new TypeError("Impossible de récupérer les runes de " + champion.name + " avec Champion.GG.");
-    return runes;
+  async getSummonerSpells(champion, position, gameMode) {
+    const { summonerspells } = await this.getData(champion, position, gameMode);
+    return summonerspells;
   }
 
+  async getItemSets(champion, position, gameMode) {
+    const { itemsets } = await this.getData(champion, position, gameMode);
+    return itemsets;
+  }
+
+  async getRunes(champion, position, gameMode) {
+    const { runes } = await this.getData(champion, position, gameMode);
+    return runes;
+  }
 
   _scrape(html, champion, position, gameMode) {
     return new Promise(resolve => {
@@ -81,7 +90,7 @@ class ChampionGGProvider {
       $('.buildwrapper').each(function(index) {
         const type = $(this).parent().find('h2').text();
         console.log(type);
-        
+
         let block = new Block().setName(type);
 
         $(this).each(function(index) {

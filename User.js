@@ -3,8 +3,6 @@ const rp = require('request-promise-native');
 class User {
   constructor(base) {
     this.base = base;
-
-    rp(this.base + 'lol-game-data/assets/v1/champion-summary.json').then(res => console.dir);
   }
 
   async load() {
@@ -16,6 +14,10 @@ class User {
 
   async getGameMode() {
     return (await this.getChatMe()).lol.gameMode;
+  }
+
+  async getVersion(full) {
+    return JSON.parse(await rp(this.base + 'system/v1/builds'))[full ? 'version' : 'gameBranch'];
   }
 
   async getChatMe() {

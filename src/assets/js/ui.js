@@ -1,6 +1,7 @@
 var UI = {};
 
 UI.error = function(err) {
+	$('#warning').show();
 }
 
 /*

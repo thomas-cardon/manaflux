@@ -86,7 +86,6 @@ label {
 .option-name {
   color: #f0e6d2;
   font-size: 25px;
-  min-width: 50%;
   margin-bottom: 10px;
 }
 
@@ -545,6 +544,7 @@ textarea:disabled {
 
 .option {
   margin-bottom: 25px;
+  min-width: 50%;
   float: left;
 }
 
