@@ -77,7 +77,7 @@ $('select[data-settings-key]').change(function() {
 });
 
 $(document).ready(function() {
-	$('body').css('background', "linear-gradient(to bottom, rgba(125, 185, 232, 0) -1%, rgba(50, 96, 122, 0) 65%, rgba(10, 49, 64, 0.8) 100%), url('./assets/img/" + Mana.store.get('theme', 'magic-repeater-sm.jpg') + "')");
+	$('body').css('background', "linear-gradient(to bottom, rgba(125, 185, 232, 0) -1%, rgba(50, 96, 122, 0) 65%, rgba(10, 49, 64, 0.8) 100%), url('./assets/img/" + Mana.store.get('theme') + "')");
 });
 
 $('select[data-settings-key=theme]').change(function() {

@@ -4,18 +4,18 @@ const { autoUpdater } = require('electron-updater');
 const LCUConnector = require('lcu-connector');
 let connector;
 
-let win;
+let win, top;
 
 /*
 * TODO: Penser à créer une "version mini", qui reste toujours devant n'importe quel programme
 */
 
 function createWindow () {
-  win = new BrowserWindow({ width: 600, height: 600, frame: false, icon: __dirname + '/build/icon.png', backgroundColor: '#000A13', disableBlinkFeatures: 'BlockCredentialedSubresources', show: false });
+  win = new BrowserWindow({ width: 600, height: 600, frame: false, icon: __dirname + '/build/icon.png', backgroundColor: '#000A13', maximizable: false, disableBlinkFeatures: 'BlockCredentialedSubresources', show: false });
+  top = new BrowserWindow({ width: 600, height: 100, frame: false, icon: __dirname + '/build/icon.png', backgroundColor: '#000A13', alwaysOnTop: true, maximizable: false, minimizable: false, closable: false, show: false });
 
   win.loadURL(`file://${__dirname}/src/index.html`);
   win.setMenu(null);
-  win.setMaximizable(false);
 
   win.once('ready-to-show', () => win.show());
 
@@ -47,6 +47,27 @@ ipcMain.on('start-lcu-connector', (event, path) => {
 
   connector.once('connect', d => win.webContents.send('lcu', d));
   connector.start();
+});
+
+ipcMain.on('top-window-start', (event, data) => {
+  if (!top) top = new BrowserWindow({ width: 600, height: 100, frame: false, icon: __dirname + '/build/icon.png', backgroundColor: '#000A13', alwaysOnTop: true, maximizable: false, minimizable: false, closable: false, show: false });
+
+  top.loadURL(`file://${__dirname}/src/topwindow.html`);
+  top.show();
+
+  win.once('ready-to-show', () => {
+    top.webContents.send('data', data);
+    ipcMain.once('top-window-ready', () => win.show());
+  });
+});
+
+ipcMain.on('top-window-message', (event, data) => {
+  if (!top) return;
+  win.webContents.send('update-ready', info);
+});
+
+ipcMain.on('main-window-message', (event, data) => {
+  win.webContents.send(data.event, data.body);
 });
 
 ipcMain.on('win-minimize', () => win.minimize());

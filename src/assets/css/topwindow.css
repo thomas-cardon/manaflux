@@ -1,0 +1,26 @@
+@font-face {
+  font-family: "beaufort-bold";
+  src: url("../fonts/Beaufort Bold.ttf");
+}
+
+@font-face {
+  font-family: "beaufort-regular";
+  src: url("../fonts/Beaufort.ttf");
+}
+
+@font-face {
+  font-family: "spiegel";
+  src: url("../fonts/Spiegel Regular.ttf");
+}
+
+body {
+  background-position: center;
+  background-size: cover;
+  background-attachment: fixed;
+  font-family: "beaufort-bold";
+  text-transform: uppercase;
+  margin: 0 auto;
+  position: fixed;
+  width: 100%;
+  user-select: none;
+}
