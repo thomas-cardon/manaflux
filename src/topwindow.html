@@ -7,14 +7,23 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
+  <div class="tab-container">
+    <img src="assets/img/warning.png" id="warning" draggable="false" style="display: none;">
+    <div class="controls">
+      <button onclick="ipcRenderer.send('top-close');"><i class="material-icons icon">clear</i></button>
+    </div>
+  </div>
   <script>
   window.eval = global.eval = function () { throw new Error(`Eval isn't supported for security reasons.`) };
   </script>
   <script src="assets/js/jquery-3.3.1.min.js"  onload="window.$ = window.jQuery = module.exports;"></script>
   <script>const { ipcRenderer } = require('electron');</script>
   <script>
-    ipcRenderer.on('data', data => {
+    ipcRenderer.on('data', (event, data) => {
+      console.dir(data);
+
       $('body').css('background', "linear-gradient(to bottom, rgba(125, 185, 232, 0) -1%, rgba(50, 96, 122, 0) 65%, rgba(10, 49, 64, 0.8) 100%), url('./assets/img/" + data.theme + "')");
+      ipcRenderer.send('top-window-ready');
     });
   </script>
 </body>

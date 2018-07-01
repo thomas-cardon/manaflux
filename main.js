@@ -32,6 +32,7 @@ app.on('ready', () => {
   if (process.argv[2] !== '--dev') autoUpdater.checkForUpdates();
 
   globalShortcut.register('CommandOrControl+Shift+I', () => win.webContents.openDevTools({ mode: 'detach' }));
+  globalShortcut.register('CommandOrControl+Shift+L', () => top.webContents.openDevTools({ mode: 'detach' }));
 });
 
 autoUpdater.on('update-downloaded', (info) => {
@@ -50,14 +51,14 @@ ipcMain.on('start-lcu-connector', (event, path) => {
 });
 
 ipcMain.on('top-window-start', (event, data) => {
-  if (!top) top = new BrowserWindow({ width: 600, height: 100, frame: false, icon: __dirname + '/build/icon.png', backgroundColor: '#000A13', alwaysOnTop: true, maximizable: false, minimizable: false, closable: false, show: false });
+  if (top) top.destroy();
+  top = new BrowserWindow({ width: 600, height: 100, frame: false, icon: __dirname + '/build/icon.png', backgroundColor: '#000A13', alwaysOnTop: true, maximizable: false, minimizable: false, closable: false, show: false });
 
   top.loadURL(`file://${__dirname}/src/topwindow.html`);
-  top.show();
 
-  win.once('ready-to-show', () => {
+  top.once('ready-to-show', () => {
     top.webContents.send('data', data);
-    ipcMain.once('top-window-ready', () => win.show());
+    ipcMain.once('top-window-ready', () => top.show());
   });
 });
 
