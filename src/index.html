@@ -35,7 +35,7 @@
       </div>
     </div>
     <div data-tabid="settings" class="tabcontent" style="display: none; margin-left: 12%;">
-      <p class="option-name">MISC</p>
+      <!--p class="option-name">MISC</p-->
       <div class="option">
         <p class="suboption-name">Runes</p>
         <div class="options float-left checkboxContainer">
@@ -54,6 +54,13 @@
         <p class="suboption-name">Item sets</p>
         <div class="options float-left checkboxContainer">
           <input type="checkbox" data-settings-key="enableItemSets" />
+          <label>Activer</label>
+        </div>
+      </div>
+      <div class="option">
+        <p class="suboption-name">Démarrage automatique</p>
+        <div class="options float-left checkboxContainer">
+          <input type="checkbox" data-settings-key="auto-start" onclick="autoStart(this.checked)" />
           <label>Activer</label>
         </div>
       </div>

@@ -4,6 +4,8 @@ UI.error = function(err) {
 	$('#warning').show();
 }
 
+ipcRenderer.on('error', (event, data) => UI.error(data));
+
 /*
 * Manual Button Handler
 */

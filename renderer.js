@@ -147,6 +147,10 @@ ipcRenderer.once('lcu', async (event, d) => {
   }, 1000);
 });
 
+global.autoStart = function(checked) {
+  ipcRenderer.send(`auto-start-${checked ? 'en' : 'dis'}able`);
+}
+
 global._devConnect = function(obj) {
   connector.on('connect', d => {
     console.dir(d);

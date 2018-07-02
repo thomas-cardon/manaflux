@@ -4,7 +4,8 @@
   "description": "League of Legends automatic runes downloader",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "build": "build --win",
+    "ship": "build --win -p always"
   },
   "keywords": [
     "League of Legends",
@@ -20,22 +21,22 @@
     "electron-builder": "^20.17.1"
   },
   "dependencies": {
+    "auto-launch": "^5.0.5",
     "cheerio": "^1.0.0-rc.2",
     "electron-store": "^2.0.0",
+    "electron-updater": "^2.22.1",
     "lcu-connector": "^1.0.2",
     "request": "^2.87.0",
-    "request-promise-native": "^1.0.5",
-    "electron-updater": "^2.22.1"
+    "request-promise-native": "^1.0.5"
   },
   "repository": "https://github.com/Ryzzzen/manaflux",
-  "scripts": {
-      "build": "build --win",
-      "ship": "build --win -p always"
-  },
   "build": {
     "appId": "com.github.ryzzzen.manaflux",
     "productName": "ManaFlux",
     "copyright": "Copyright © 2018 Ryzzzen",
-    "files": ["**/*", "build/icon.*"]
+    "files": [
+      "**/*",
+      "build/icon.*"
+    ]
   }
 }

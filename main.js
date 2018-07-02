@@ -2,10 +2,17 @@ const { app, BrowserWindow, ipcMain, globalShortcut, Menu, Tray } = require('ele
 const { autoUpdater } = require('electron-updater');
 
 const LCUConnector = require('lcu-connector');
+const AutoLaunch = require('auto-launch');
+
 let connector;
 
 let win, top;
 let tray;
+
+let launcher = new AutoLaunch({
+    name: 'Manaflux',
+    isHidden: true
+});
 
 function createWindow () {
   win = new BrowserWindow({ width: 600, height: 600, frame: false, icon: __dirname + '/build/icon.png', backgroundColor: '#000A13', maximizable: false, disableBlinkFeatures: 'BlockCredentialedSubresources', show: false });
@@ -16,7 +23,7 @@ function createWindow () {
 
   win.once('ready-to-show', () => win.show());
 
-  ipcMain.on('tray', (event, data) => {
+  ipcMain.on('tray', () => {
     if (tray && !tray.isDestroyed()) return;
 
     tray = new Tray(__dirname + '/build/icon.png');
@@ -28,6 +35,18 @@ function createWindow () {
   ipcMain.on('tray-destroy', (event, data) => {
     if (!tray || tray && tray.isDestroyed()) return;
     tray.destroy();
+  });
+
+  ipcMain.on('auto-start-enable', () => {
+    launcher.isEnabled()
+    .then(enabled => !enabled ? launcher.enable() : null)
+    .catch(err => ipcMain.send('error', { type: 'AUTO-START', error: err }));
+  });
+
+  ipcMain.on('auto-start-disable', () => {
+    launcher.isEnabled()
+    .then(enabled => enabled ? launcher.disable() : null)
+    .catch(err => ipcMain.send('error', { type: 'AUTO-START', error: err }));
   });
 
   if (process.argv[2] === '--dev') win.webContents.openDevTools({ mode: 'detach' });
