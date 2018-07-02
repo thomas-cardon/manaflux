@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, globalShortcut } = require('electron');
+const { app, BrowserWindow, ipcMain, globalShortcut, Menu, Tray } = require('electron');
 const { autoUpdater } = require('electron-updater');
 
 const LCUConnector = require('lcu-connector');
@@ -29,6 +29,7 @@ function createWindow () {
 
 app.on('ready', () => {
   createWindow();
+
   if (process.argv[2] !== '--dev') autoUpdater.checkForUpdates();
 
   globalShortcut.register('CommandOrControl+Shift+I', () => win.webContents.openDevTools({ mode: 'detach' }));
@@ -62,14 +63,10 @@ ipcMain.on('top-window-start', (event, data) => {
   });
 });
 
-ipcMain.on('top-window-message', (event, data) => {
-  if (!top) return;
-  win.webContents.send('update-ready', info);
+ipcMain.on('top-window-close', (event, data) => {
+  if (top) top.close();
 });
 
-ipcMain.on('main-window-message', (event, data) => {
-  win.webContents.send(data.event, data.body);
-});
 
 ipcMain.on('win-minimize', () => win.minimize());
 ipcMain.on('win-close', () => win.close());
