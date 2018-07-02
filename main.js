@@ -5,10 +5,7 @@ const LCUConnector = require('lcu-connector');
 let connector;
 
 let win, top;
-
-/*
-* TODO: Penser à créer une "version mini", qui reste toujours devant n'importe quel programme
-*/
+let tray;
 
 function createWindow () {
   win = new BrowserWindow({ width: 600, height: 600, frame: false, icon: __dirname + '/build/icon.png', backgroundColor: '#000A13', maximizable: false, disableBlinkFeatures: 'BlockCredentialedSubresources', show: false });
@@ -18,6 +15,20 @@ function createWindow () {
   win.setMenu(null);
 
   win.once('ready-to-show', () => win.show());
+
+  ipcMain.on('tray', (event, data) => {
+    if (tray && !tray.isDestroyed()) return;
+
+    tray = new Tray(__dirname + '/build/icon.png');
+    tray.setToolTip('Cliquez pour afficher ManaFlux');
+
+    tray.on('click', () => win.isVisible() ? win.hide() : win.show());
+  });
+
+  ipcMain.on('tray-destroy', (event, data) => {
+    if (!tray || tray && tray.isDestroyed()) return;
+    tray.destroy();
+  });
 
   if (process.argv[2] === '--dev') win.webContents.openDevTools({ mode: 'detach' });
 
@@ -67,9 +78,10 @@ ipcMain.on('top-window-close', (event, data) => {
   if (top) top.close();
 });
 
-
-ipcMain.on('win-minimize', () => win.minimize());
+ipcMain.on('win-show', () => win.show());
+ipcMain.on('win-hide', () => win.hide());
 ipcMain.on('win-close', () => win.close());
+ipcMain.on('win-minimize', () => win.minimize());
 
 app.on('certificate-error', (event, webContents, url, error, certificate, callback) => {
     event.preventDefault();

@@ -49,8 +49,19 @@ $(document).ready(function() {
   if (!Mana.store.has('enableItemSets'))
     Mana.store.set('enableItemSets', false);
 
+  if (!Mana.store.has('auto-start'))
+    Mana.store.set('auto-start', false);
+
+  if (!Mana.store.has('enableTrayIcon'))
+    Mana.store.set('enableTrayIcon', true);
+
   if (!Mana.store.has('theme'))
     Mana.store.set('theme', 'themes/default-bg.jpg');
+
+  if (!Mana.store.has('riot-stuff-consent-thingy')) {
+    dialog.showMessageBox({ title: 'Informations', message: 'ManaFlux isn’t endorsed by Riot Games and doesn’t reflect the views or opinions of Riot Games or anyone officially involved in producing or managing League of Legends. League of Legends and Riot Games are trademarks or registered trademarks of Riot Games, Inc.\nLeague of Legends © Riot Games, Inc.' });
+    Mana.store.set('riot-stuff-consent-thingy', true);
+  }
 
   Mana.store.set('lastVersion', Mana.version);
 
