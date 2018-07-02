@@ -102,6 +102,9 @@ $('select[data-settings-key=theme]').change(function() {
 })
 
 ipcRenderer.once('update-ready', async (event, data) => {
+	console.log('Update available ! version: ' + data.version);
+	console.dir(data);
+	
 	$('.tablinks[data-tabid="update"]').show();
 
 	$('.tabcontent[data-tabid="update"] > #version').text(`Version ${data.version}`);
