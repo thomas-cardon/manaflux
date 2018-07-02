@@ -82,7 +82,7 @@ class ChampionGGProvider {
 
       $(this).each(function(index) {
         console.log($(this));
-        
+
         if ($(this).hasClass('build-text')) return block.setName(block._set.type += ` (${$(this).children().first().text().trim().slice(0, 6)} WR)`);
         if (!$(this).is('a')) return;
 

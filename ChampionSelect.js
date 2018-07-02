@@ -35,7 +35,8 @@ function updateDisplay() {
   if (Last === User.championId) return;
   if ((Last = User.championId) === 0) return;
 
-  ipcRenderer.send('tray-destroy');
+  if (Mana.store.get('enableTrayIcon')) UI.show();
+
   ProviderHandler.getChampionData(Mana.champions[User.championId], User.assignedPosition === "" ? null : User.assignedPosition, GameMode).then(data => {
     console.dir(data);
     const { runes, itemsets, summonerspells } = data;
@@ -70,6 +71,6 @@ function destroyDisplay() {
   if (Mana.store.get('enableSummonerSpellButton', true))
     $('button#loadSummonerSpells').disableManualButton();
 
-  if (Mana.store.get('enableTrayIcon', true))
-    ipcRenderer.send('tray');
+  if (Mana.store.get('enableTrayIcon'))
+    UI.tray();
 }

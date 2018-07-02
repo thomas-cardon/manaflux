@@ -21,7 +21,7 @@ function createWindow () {
   win.loadURL(`file://${__dirname}/src/index.html`);
   win.setMenu(null);
 
-  win.once('ready-to-show', () => win.show());
+  win.once('ready-to-show', () => !tray ? win.show());
 
   ipcMain.on('tray', () => {
     if (tray && !tray.isDestroyed()) return;
@@ -37,23 +37,24 @@ function createWindow () {
     tray.destroy();
   });
 
-  ipcMain.on('auto-start-enable', () => {
+  ipcMain.on('auto-start', (event, enable) => {
+    if (process.argv[2] === '--dev') return;
+
     launcher.isEnabled()
-    .then(enabled => !enabled ? launcher.enable() : null)
+    .then(enabled => !enabled && enable ? launcher.enable() : (enabled && !enable ? launcher.disable() : null))
     .catch(err => ipcMain.send('error', { type: 'AUTO-START', error: err }));
   });
 
-  ipcMain.on('auto-start-disable', () => {
-    launcher.isEnabled()
-    .then(enabled => enabled ? launcher.disable() : null)
-    .catch(err => ipcMain.send('error', { type: 'AUTO-START', error: err }));
-  });
-
-  if (process.argv[2] === '--dev') win.webContents.openDevTools({ mode: 'detach' });
+  if (process.argv[2] === '--dev')
+    win.webContents.openDevTools({ mode: 'detach' });
 
   win.on('closed', () => {
     connector.stop();
-    win = null;
+
+    if (top) top.destroy();
+    if (tray && !tray.isDestroyed()) tray.destroy();
+
+    win = top = tray = null;
   });
 }
 
@@ -97,19 +98,22 @@ ipcMain.on('top-window-close', (event, data) => {
   if (top) top.close();
 });
 
-ipcMain.on('win-show', () => win.show());
+ipcMain.on('win-show', () => {
+  if (!win.isVisible()) win.show();
+});
 ipcMain.on('win-hide', () => win.hide());
 ipcMain.on('win-close', () => win.close());
 ipcMain.on('win-minimize', () => win.minimize());
 
+// Needed to access League's local resources
 app.on('certificate-error', (event, webContents, url, error, certificate, callback) => {
+    console.log(url);
+
     event.preventDefault();
     callback(true);
 });
 
 app.on('window-all-closed', () => {
-  // Sur macOS, il est commun pour une application et leur barre de menu
-  // de rester active tant que l'utilisateur ne quitte pas explicitement avec Cmd + Q
   if (process.platform !== 'darwin') app.quit();
 })
 

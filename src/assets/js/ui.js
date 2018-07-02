@@ -4,6 +4,18 @@ UI.error = function(err) {
 	$('#warning').show();
 }
 
+UI.show = function() {
+	ipcRenderer.send('destroy-tray');
+	ipcRenderer.send('win-show');
+}
+
+UI.tray = function() {
+	ipcRenderer.send('win-hide');
+	ipcRenderer.send('tray');
+}
+
+UI.tray();
+
 ipcRenderer.on('error', (event, data) => UI.error(data));
 
 /*

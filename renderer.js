@@ -53,7 +53,7 @@ $(document).ready(function() {
     Mana.store.set('auto-start', false);
 
   if (!Mana.store.has('enableTrayIcon'))
-    Mana.store.set('enableTrayIcon', true);
+    Mana.store.set('enableTrayIcon', false);
 
   if (!Mana.store.has('theme'))
     Mana.store.set('theme', 'themes/default-bg.jpg');
