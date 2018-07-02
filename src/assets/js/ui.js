@@ -104,11 +104,11 @@ $('select[data-settings-key=theme]').change(function() {
 ipcRenderer.once('update-ready', async (event, data) => {
 	console.log('Update available ! version: ' + data.version);
 	console.dir(data);
-	
+
 	$('.tablinks[data-tabid="update"]').show();
 
 	$('.tabcontent[data-tabid="update"] > #version').text(`Version ${data.version}`);
-	$('.tabcontent[data-tabid="update"] > #size').text(getReadableFileSizeString(files[0].size));
+	$('.tabcontent[data-tabid="update"] > #size').text(getReadableFileSizeString(data.files[0].size));
 
 	$('.tabcontent[data-tabid="update"] > .textcontainer').text(jQuery(data.releaseNotes).text());
 
