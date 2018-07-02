@@ -52,7 +52,7 @@ ipcMain.on('start-lcu-connector', (event, path) => {
 
 ipcMain.on('top-window-start', (event, data) => {
   if (top) top.destroy();
-  top = new BrowserWindow({ width: 600, height: 100, frame: false, icon: __dirname + '/build/icon.png', backgroundColor: '#000A13', alwaysOnTop: true, maximizable: false, minimizable: false, closable: false, show: false });
+  top = new BrowserWindow({ width: data.width, height: data.height, frame: false, icon: __dirname + '/build/icon.png', backgroundColor: '#000A13', alwaysOnTop: true, maximizable: false, minimizable: false, closable: false, show: false });
 
   top.loadURL(`file://${__dirname}/src/topwindow.html`);
 

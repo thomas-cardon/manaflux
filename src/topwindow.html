@@ -13,6 +13,13 @@
       <button onclick="ipcRenderer.send('top-close');"><i class="material-icons icon">clear</i></button>
     </div>
   </div>
+  <div class="content">
+    <img src="https://ddragon.leagueoflegends.com/cdn/8.3.1/img/champion/Fiddlesticks.png" class="champion" />
+    <div class="buttons">
+      <button type="button" onclick="ipcRenderer.send('top-close');" id="loadSummonerSpells">LOAD SUMMONER SPELLS</button>
+      <button type="button" onclick="ipcRenderer.send('top-close');" id="loadRunes" style="width: 226.94px;">LOAD RUNES</button>
+    </div>
+  </div>
   <script>
   window.eval = global.eval = function () { throw new Error(`Eval isn't supported for security reasons.`) };
   </script>
