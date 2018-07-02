@@ -21,20 +21,19 @@ function createWindow () {
   win.loadURL(`file://${__dirname}/src/index.html`);
   win.setMenu(null);
 
-  win.once('ready-to-show', () => !tray ? win.show());
+  win.once('ready-to-show', () => !tray ? win.show() : null);
 
-  ipcMain.on('tray', () => {
-    if (tray && !tray.isDestroyed()) return;
+  ipcMain.on('tray', (event, show) => {
+    if (show && tray && !tray.isDestroyed()) return;
+    else if (!show) {
+      if (!tray || tray && tray.isDestroyed()) return;
+      return tray.destroy();
+    }
 
     tray = new Tray(__dirname + '/build/icon.png');
     tray.setToolTip('Cliquez pour afficher ManaFlux');
 
-    tray.on('click', () => win.isVisible() ? win.hide() : win.show());
-  });
-
-  ipcMain.on('tray-destroy', (event, data) => {
-    if (!tray || tray && tray.isDestroyed()) return;
-    tray.destroy();
+    tray.on('click', () => win.isVisible() ? win.hide() : win.showInactive());
   });
 
   ipcMain.on('auto-start', (event, enable) => {

@@ -58,17 +58,17 @@
         </div>
       </div>
       <div class="option">
-        <p class="suboption-name">Démarrage automatique</p>
+        <p class="suboption-name">Démarrage</p>
         <div class="options float-left checkboxContainer">
           <input type="checkbox" data-settings-key="auto-start" onclick="autoStart(this.checked)" />
-          <label>Activer</label>
+          <label>Au lancement de Windows</label>
         </div>
       </div>
       <div class="option">
         <p class="suboption-name">Barre des tâches</p>
         <div class="options float-left checkboxContainer">
-          <input type="checkbox" data-settings-key="enableTrayIcon" />
-          <label>Se ranger automatiquement hors sélection des champions</label>
+          <input type="checkbox" data-settings-key="enableTrayIcon" onclick="UI.tray(this.checked)" />
+          <label>S'y ranger hors sélection des champions</label>
         </div>
       </div>
       <div class="option">

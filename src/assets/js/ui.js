@@ -4,18 +4,21 @@ UI.error = function(err) {
 	$('#warning').show();
 }
 
-UI.show = function() {
-	ipcRenderer.send('destroy-tray');
-	ipcRenderer.send('win-show');
+UI.tray = function(tray = true) {
+	console.log(`${tray ? 'Enabling' : 'Disabling'} Tray Mode.`);
+
+	if (tray) {
+		ipcRenderer.send('win-hide');
+		ipcRenderer.send('tray', true);
+	}
+	else {
+		ipcRenderer.send('tray', false);
+		ipcRenderer.send('win-show');
+	}
 }
 
-UI.tray = function() {
-	ipcRenderer.send('win-hide');
-	ipcRenderer.send('tray');
-}
 
-UI.tray();
-
+window.onbeforeunload = (e) => UI.tray(false);
 ipcRenderer.on('error', (event, data) => UI.error(data));
 
 /*

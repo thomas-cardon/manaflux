@@ -22,6 +22,8 @@ Mana.version = require('./package.json').version;
 Mana.status = str => $('.status').text(str);
 Mana.store = new Store();
 
+if (Mana.store.get('enableTrayIcon')) UI.tray();
+
 console.log('Loading Storage...');
 Mana.status('Loading Storage...');
 

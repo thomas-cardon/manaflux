@@ -35,7 +35,7 @@ function updateDisplay() {
   if (Last === User.championId) return;
   if ((Last = User.championId) === 0) return;
 
-  if (Mana.store.get('enableTrayIcon')) UI.show();
+  if (Mana.store.get('enableTrayIcon')) UI.tray(false);
 
   ProviderHandler.getChampionData(Mana.champions[User.championId], User.assignedPosition === "" ? null : User.assignedPosition, GameMode).then(data => {
     console.dir(data);
