@@ -3,8 +3,6 @@
 // All of the Node.js APIs are available in this process.
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
-const EventEmitter = require('events');
-
 const request = require('request'), rp = require('request-promise-native');
 
 const LCUConnector = require('lcu-connector');
@@ -13,10 +11,6 @@ const connector = new LCUConnector();
 const Store = require('electron-store');
 
 const { dialog } = require('electron').remote;
-
-class MF extends EventEmitter {}
-
-global.Mana = new MF();
 
 Mana.version = require('./package.json').version;
 Mana.status = str => $('.status').text(str);
@@ -87,6 +81,8 @@ $(document).ready(function() {
 
   console.log('Waiting for LCU...');
   Mana.status('Waiting for LCU...');
+
+  Mana.emit('settings', Mana.store);
 });
 
 ipcRenderer.once('lcu', async (event, d) => {

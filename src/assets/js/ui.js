@@ -71,15 +71,16 @@ $(document).ready(function() {
 /*
 * Settings
 */
-$(document).ready(function() {
+Mana.once('settings', store => {
+	$('body').css('background', "linear-gradient(to bottom, rgba(125, 185, 232, 0) -1%, rgba(50, 96, 122, 0) 65%, rgba(10, 49, 64, 0.8) 100%), url('./assets/img/" + Mana.store.get('theme') + "')");
 	$(':checkbox[data-settings-key]').each(function() {
-		console.log(`Loading value of ${$(this).data('settings-key')} to: ${Mana.store.get($(this).data('settings-key'))}`);
-		$(this).prop('checked', Mana.store.get($(this).data('settings-key')));
+		console.log(`Loading value of ${$(this).data('settings-key')} to: ${store.get($(this).data('settings-key'))}`);
+		$(this).prop('checked', store.get($(this).data('settings-key')));
 	});
 
 	$('select[data-settings-key]').each(function() {
-		console.log(`Loading value of ${$(this).data('settings-key')} to: ${Mana.store.get($(this).data('settings-key'))}`);
-		$(this).val(Mana.store.get($(this).data('settings-key')));
+		console.log(`Loading value of ${$(this).data('settings-key')} to: ${store.get($(this).data('settings-key'))}`);
+		$(this).val(store.get($(this).data('settings-key')));
 	});
 });
 
@@ -91,10 +92,6 @@ $(':checkbox[data-settings-key]').change(function() {
 $('select[data-settings-key]').change(function() {
 	console.log(`Changing value of ${$(this).data('settings-key')} to: ${this.value}`);
 	Mana.store.set($(this).data('settings-key'), this.value);
-});
-
-$(document).ready(function() {
-	$('body').css('background', "linear-gradient(to bottom, rgba(125, 185, 232, 0) -1%, rgba(50, 96, 122, 0) 65%, rgba(10, 49, 64, 0.8) 100%), url('./assets/img/" + Mana.store.get('theme') + "')");
 });
 
 $('select[data-settings-key=theme]').change(function() {

@@ -48,7 +48,9 @@ function createWindow () {
     win.webContents.openDevTools({ mode: 'detach' });
 
   win.on('closed', () => {
-    connector.stop();
+    console.log('closed?');
+    
+    if (connector) connector.stop();
 
     if (top) top.destroy();
     if (tray && !tray.isDestroyed()) tray.destroy();

@@ -102,7 +102,13 @@
   window.eval = global.eval = function () { throw new Error(`Eval isn't supported for security reasons.`) };
   </script>
   <script src="assets/js/jquery-3.3.1.min.js"  onload="window.$ = window.jQuery = module.exports;"></script>
-  <script>const { ipcRenderer } = require('electron');</script>
+  <script>
+  const { ipcRenderer } = require('electron');
+  const EventEmitter = require('events');
+
+  class MF extends EventEmitter {}
+  global.Mana = new MF();
+  </script>
   <script src="assets/js/ui.js"></script>
   <script>
   require('../renderer.js');
