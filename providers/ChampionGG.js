@@ -59,7 +59,7 @@ class ChampionGGProvider {
     $("img[src^='https://s3.amazonaws.com/solomid-cdn/league/runes_reforged/']", slots).each(function(index) {
       let page = Math.trunc(index / 8), rune = $(this).attr("src").substring(59);
       if (index % 8 === 0) {
-        pages[page].name = 'MF ' + $('.champion-profile h1').text() + " " + role + (page === 0 ? ' HW%' : ' MF');
+        pages[page].name = $('.champion-profile h1').text() + " " + role + (page === 0 ? ' HW%' : ' MF');
         pages[page].primaryStyleId = styles[rune.substring(5, 6)];
       }
       else if(index % 8 === 5)
@@ -77,7 +77,8 @@ class ChampionGGProvider {
       const summoner = Mana.summonerspells[$(this).attr('src').slice(51, -4)];
 
       if (!summoner) return;
-      if (true/*summoner.gameModes.includes(gameMode)*/) summonerspells.push(summoner.id);
+      console.dir(summoner);
+      if (summoner.gameModes.includes(gameMode)) summonerspells.push(summoner.id);
 
       if (index >= 1 && summonerspells.length === 2) return false;
     });
@@ -103,11 +104,6 @@ class ChampionGGProvider {
 
       itemset.addBlock(block);
     });
-
-    // TODO: Rework this error handling system
-    if (pages.every(x => x.selectedPerkIds.length === 0)) throw new TypeError("Impossible de récupérer les runes de " + champion.name + " avec Champion.GG.");
-    if (summonerspells.length === 0) throw new TypeError("Impossible de récupérer les sorts d'invocateur de " + champion.name + " avec Champion.GG.");
-    //if (data.itemsets.length === 0) throw new TypeError("Impossible de récupérer les sets d'items de " + champion.name + " avec Champion.GG.");
 
     /*
     * Workaround: fix duplicates

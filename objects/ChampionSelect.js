@@ -76,6 +76,8 @@ class ChampionSelect extends EventEmitter {
       for (let itemset of itemsets)
       itemset.save();
 
+      console.dir(summonerspells);
+
       if (Mana.store.get('loadRunesAutomatically', true)) Mana.user.updateRunePages(runes);
       else $('button#loadRunes').enableManualButton(() => Mana.user.updateRunePages(runes), true);
 
