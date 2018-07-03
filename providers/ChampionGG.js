@@ -109,12 +109,10 @@ class ChampionGGProvider {
     * Workaround: fix duplicates
     */
     for (let page of pages) {
-      console.dir(page);
       if (page.selectedPerkIds[0] === page.selectedPerkIds[1]) {
           page.selectedPerkIds.splice(1, 1);
           page.selectedPerkIds.splice(3, 0, fixes[page.primaryStyleId]);
-          console.dir(page);
-          UI.error(new Error("Tentative de réparation des runes: Duplication des keystones avec Champion.GG"));
+          UI.error("Tentative de réparation des runes: Duplication des keystones avec Champion.GG");
       }
     }
 

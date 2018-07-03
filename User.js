@@ -51,17 +51,17 @@ class User {
 
   async updateRunePages(pages) {
     if (!pages || pages.length === 0 || pages.find(x => x.selectedPerkIds.length === 0) === undefined) return UI.error(`Can't update runes: empty`);
-    let count = await this.getPageCount();
+    if (!this._pageCount) this._pageCount = await this.getPageCount();
 
-    count = count > Mana.store.get('maxRunes', 2) ? Mana.store.get('maxRunes', 2) : count;
+    count = this._pageCount > Mana.store.get('maxRunes', 2) ? Mana.store.get('maxRunes', 2) : this._pageCount;
     count = count > pages.length ? pages.length : count;
 
     pages = pages.slice(0, count);
 
-    await this.deleteRunePages();
+    if (this.runes.length - count <= 0) await this.deleteRunePages();
 
     for (let i = 0; i < count; i++)
-      await this.runes.push(this.createRunePage(pages[i], { current: count < 1 }));
+        await this.runes.push(this.createRunePage(pages[i], { current: count < 1 }));
   }
 
   async getRunes() {

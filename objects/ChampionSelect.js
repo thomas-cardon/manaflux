@@ -111,6 +111,8 @@ class ChampionSelect extends EventEmitter {
 
   destroy() {
     this.timer = this.myTeam = this.theirTeam = this.gameMode = null;
+    Mana.user._pageCount = null;
+
     this.inChampionSelect = false;
 
     this.destroyDisplay();
