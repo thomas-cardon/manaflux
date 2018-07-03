@@ -58,7 +58,11 @@ class User {
 
     pages = pages.slice(0, count);
 
-    if (this.runes.length - count <= 0) await this.deleteRunePages();
+    console.dir(pages);
+    console.log(count);
+    console.log(this.runes.length - count);
+
+    if ((this.runes.length - count) <= 0) await this.deleteRunePages();
 
     for (let i = 0; i < count; i++)
         await this.runes.push(this.createRunePage(pages[i], { current: count < 1 }));

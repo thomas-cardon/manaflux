@@ -40,6 +40,23 @@ class ChampionSelect extends EventEmitter {
     return this.myTeam.find(x => x.summonerId === Mana.user.summoner.summonerId);
   }
 
+  getPosition() {
+    switch(this.getCurrentSummoner().assignedPosition) {
+      case 'TOP':
+        return 'top';
+      case 'MIDDLE':
+        return 'middle';
+      case 'JUNGLE':
+        return 'jungle';
+      case 'UTILITY':
+        return 'support';
+      case 'BOTTOM':
+        return 'adc';
+      default:
+        return null;
+    }
+  }
+
   async tick(data) {
     this.emit('tick');
 
@@ -69,14 +86,11 @@ class ChampionSelect extends EventEmitter {
   async updateDisplay() {
     try {
       Mana.status('Updating display');
-
-      const { runes, itemsets, summonerspells } = await ProviderHandler.getChampionData(Mana.champions[this.getCurrentSummoner().championId], this.getCurrentSummoner().assignedPosition === "" ? null : this.getCurrentSummoner().assignedPosition, this.gameMode);
+      const { runes, itemsets, summonerspells } = await ProviderHandler.getChampionData(Mana.champions[this.getCurrentSummoner().championId], this.getPosition(), this.gameMode);
 
       if (Mana.store.get('enableItemSets'))
-      for (let itemset of itemsets)
-      itemset.save();
-
-      console.dir(summonerspells);
+        for (let itemset of itemsets)
+          itemset.save();
 
       if (Mana.store.get('loadRunesAutomatically', true)) Mana.user.updateRunePages(runes);
       else $('button#loadRunes').enableManualButton(() => Mana.user.updateRunePages(runes), true);

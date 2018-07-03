@@ -1,6 +1,6 @@
 class ProviderHandler {
   constructor() {
-    this.providers = [new (require('../providers/ChampionGG.js'))()/*, new (require('../providers/Tidecall.js'))()*/];
+    this.providers = [new (require('../providers/ChampionGG.js'))(), new (require('../providers/LoLFlavor.js'))()];
   }
 
   async getChampionData(champion, position, gameMode) {
@@ -16,7 +16,7 @@ class ProviderHandler {
     };
 
     for (let provider of this.providers) {
-      console.log('Provider used: ' + provider.name);
+      console.log('Using provider: ' + provider.name);
       try {
         let method;
 
@@ -49,14 +49,15 @@ class ProviderHandler {
           continue;
         }
 
-        return { runes: data.runes, itemsets: data.itemsets, summonerspells: data.summonerspells };
+        console.dir(data);
+        return data;
       }
       catch(err) {
         console.error(err);
       }
     }
 
-    return { runes: data.runes, itemsets: data.itemsets, summonerspells: data.summonerspells };
+    return data;
   }
 }
 

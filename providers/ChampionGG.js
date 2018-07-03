@@ -23,10 +23,11 @@ let fixes = {
 class ChampionGGProvider {
   constructor() {
     this.base = 'http://champion.gg/';
+    this.name = 'ChampionGG';
   }
 
   async getData(champion, position, gameMode) {
-    const res = await rp(`${this.base}champion/${champion.key}${position ? '/' + position.toLowerCase() : ''}`);
+    const res = await rp(`${this.base}champion/${champion.key}${position ? '/' + position : ''}`);
     return this._scrape(res, champion.key, gameMode);
   }
 
@@ -116,7 +117,7 @@ class ChampionGGProvider {
       }
     }
 
-    return { runes: pages, summonerspells, itemsets: [itemset] };
+    return { runes: pages, summonerspells, itemsets: [] };
   }
 }
 
