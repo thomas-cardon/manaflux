@@ -4,6 +4,8 @@
   <meta charset="utf-8">
   <meta name="author" content="Ryzzzen">
   <link rel="stylesheet" href="assets/css/manaflux.css">
+  <link rel="stylesheet" href="assets/css/alertify.min.css"/>
+  <link rel="stylesheet" href="assets/css/alertify.rtl.min.css"/>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
@@ -102,6 +104,7 @@
   window.eval = global.eval = function () { throw new Error(`Eval isn't supported for security reasons.`) };
   </script>
   <script src="assets/js/jquery-3.3.1.min.js"  onload="window.$ = window.jQuery = module.exports;"></script>
+  <script src="assets/js/alertify.min.js"></script>
   <script>
   const { ipcRenderer } = require('electron');
   const EventEmitter = require('events');

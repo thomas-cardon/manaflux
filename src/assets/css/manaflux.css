@@ -17,14 +17,17 @@ body {
   background-position: center;
   background-size: cover;
   background-attachment: fixed;
-  /* font-family: 'Patua One', cursive; */
   font-family: "beaufort-bold";
   text-transform: uppercase;
   margin: 0 auto;
-  /* text-align: center; */
   position: fixed;
   width: 100%;
   user-select: none;
+}
+
+.alertify-notifier {
+  color: #ffffff !important;
+  font-size: 12px;
 }
 
 .championPortrait {

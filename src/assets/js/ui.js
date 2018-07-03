@@ -2,7 +2,7 @@ var UI = {};
 
 UI.error = function(err) {
 	$('#warning').show();
-	console.error(err);
+	alertify.notify(err instanceof Error ? err.toString() : err, 'error', 10, () => $('#warning').hide());
 }
 
 UI.tray = function(tray = true) {
