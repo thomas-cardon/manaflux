@@ -10,17 +10,6 @@ class ChampionSelect extends EventEmitter {
     this.on('firstTick', () => console.log('Entering Champion Select'));
     this.on('ended', () => console.log('Leaving Champion Select'));
     this.on('championChange', (id) => console.log(`Changed champion to: #${id} (${Mana.champions[id].name})`));
-
-    /*else if (!d) {
-      console.log(`Cancelled Fake Champion Select. Disabled Fake Mode.`);
-      clearTimeout(taskId);
-      return Mana.fakeMode = taskId = false;
-    }
-
-    if (Mana.fakeMode && !Timer) {
-      console.log(`Fake Mode Enabled. Cancelling Champion Select in ${d.timer.adjustedTimeLeftInPhaseInSec - 2} seconds.`);
-      taskId = setTimeout(() => rp({ method: 'POST', uri: Mana.base + 'lol-lobby/v1/lobby/custom/cancel-champ-select' }), d.timer.adjustedTimeLeftInPhase - 2000);
-    }*/
   }
 
   load() {
