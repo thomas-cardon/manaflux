@@ -123,26 +123,10 @@ ipcRenderer.once('lcu', async (event, d) => {
 
   await Mana.user.load();
 
+  Mana.championselect = new (require('./objects/ChampionSelect'))();
+  Mana.championselect.load();
+
   Mana.status('Waiting for Champion Select...');
-
-  /*
-  * Champion Select checker
-  */
-
-  setInterval(function() {
-    request(Mana.base + 'lol-champ-select/v1/session', function (error, response, body) {
-      if (response && response.statusCode === 404) Mana.emit('champselect', false);
-      else {
-        try {
-          Mana.emit('champselect', JSON.parse(body));
-        }
-        catch(err) {
-          console.error(err);
-          console.log(body);
-        }
-      }
-    });
-  }, 1000);
 });
 
 global.autoStart = function(checked) {

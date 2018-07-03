@@ -2,6 +2,7 @@ var UI = {};
 
 UI.error = function(err) {
 	$('#warning').show();
+	console.error(err);
 }
 
 UI.tray = function(tray = true) {
@@ -13,7 +14,7 @@ UI.tray = function(tray = true) {
 	}
 	else {
 		ipcRenderer.send('tray', false);
-		ipcRenderer.send('win-show');
+		ipcRenderer.send('win-show', true);
 	}
 }
 
@@ -25,7 +26,8 @@ ipcRenderer.on('error', (event, data) => UI.error(data));
 * Manual Button Handler
 */
 
-$.fn.enableManualButton = function(cb) {
+$.fn.enableManualButton = function(cb, off) {
+	if (off) $(this).off();
 	$(this).show().click(cb);
 	return this;
 }

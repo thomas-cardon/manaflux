@@ -1,5 +1,6 @@
 const { app, BrowserWindow, ipcMain, globalShortcut, Menu, Tray } = require('electron');
 const { autoUpdater } = require('electron-updater');
+const platform = require('os').platform();
 
 const LCUConnector = require('lcu-connector');
 const AutoLaunch = require('auto-launch');
@@ -15,8 +16,8 @@ let launcher = new AutoLaunch({
 });
 
 function createWindow () {
-  win = new BrowserWindow({ width: 600, height: 600, frame: false, icon: __dirname + '/build/icon.png', backgroundColor: '#000A13', maximizable: false, disableBlinkFeatures: 'BlockCredentialedSubresources', show: false });
-  top = new BrowserWindow({ width: 600, height: 100, frame: false, icon: __dirname + '/build/icon.png', backgroundColor: '#000A13', alwaysOnTop: true, maximizable: false, minimizable: false, closable: false, show: false });
+  win = new BrowserWindow({ width: 600, height: 600, frame: false, icon: __dirname + '/build/icon.' + (platform === 'win32' ? 'ico' : 'png'), backgroundColor: '#000A13', maximizable: false, disableBlinkFeatures: 'BlockCredentialedSubresources', show: false });
+  top = new BrowserWindow({ width: 600, height: 100, frame: false, icon: __dirname + '/build/icon.' + (platform === 'win32' ? 'ico' : 'png'), backgroundColor: '#000A13', alwaysOnTop: true, maximizable: false, minimizable: false, closable: false, show: false });
 
   win.loadURL(`file://${__dirname}/src/index.html`);
   win.setMenu(null);
@@ -30,7 +31,7 @@ function createWindow () {
       return tray.destroy();
     }
 
-    tray = new Tray(__dirname + '/build/icon.png');
+    tray = new Tray(__dirname + '/build/icon.' + (platform === 'win32' ? 'ico' : 'png'));
     tray.setToolTip('Cliquez pour afficher ManaFlux');
 
     tray.on('click', () => win.isVisible() ? win.hide() : win.showInactive());
@@ -49,7 +50,7 @@ function createWindow () {
 
   win.on('closed', () => {
     console.log('closed?');
-    
+
     if (connector) connector.stop();
 
     if (top) top.destroy();
@@ -99,9 +100,10 @@ ipcMain.on('top-window-close', (event, data) => {
   if (top) top.close();
 });
 
-ipcMain.on('win-show', () => {
-  if (!win.isVisible()) win.show();
+ipcMain.on('win-show', (event, inactive) => {
+  if (!win.isVisible()) win[inactive ? 'showInactive' : 'show']();
 });
+
 ipcMain.on('win-hide', () => win.hide());
 ipcMain.on('win-close', () => win.close());
 ipcMain.on('win-minimize', () => win.minimize());

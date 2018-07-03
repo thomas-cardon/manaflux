@@ -1,6 +1,6 @@
 class ProviderHandler {
   constructor() {
-    this.providers = [new (require('./providers/ChampionGG.js'))()/*, new (require('./providers/Tidecall.js'))()*/];
+    this.providers = [new (require('../providers/ChampionGG.js'))()/*, new (require('../providers/Tidecall.js'))()*/];
   }
 
   async getChampionData(champion, position, gameMode) {

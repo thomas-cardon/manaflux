@@ -9,6 +9,17 @@ let styles = {
   i: 8300
 };
 
+/*
+* There's been a glitch on Champion.GG where it shows two times the same rune...
+*/
+let fixes = {
+  8000: 9103,
+  8100: 8135,
+  8200: 8299,
+  8400: 8451,
+  8300: 8347
+};
+
 class ChampionGGProvider {
   constructor() {
     this.base = 'http://champion.gg/';
@@ -97,6 +108,19 @@ class ChampionGGProvider {
     if (pages.every(x => x.selectedPerkIds.length === 0)) throw new TypeError("Impossible de récupérer les runes de " + champion.name + " avec Champion.GG.");
     if (summonerspells.length === 0) throw new TypeError("Impossible de récupérer les sorts d'invocateur de " + champion.name + " avec Champion.GG.");
     //if (data.itemsets.length === 0) throw new TypeError("Impossible de récupérer les sets d'items de " + champion.name + " avec Champion.GG.");
+
+    /*
+    * Workaround: fix duplicates
+    */
+    for (let page of pages) {
+      console.dir(page);
+      if (page.selectedPerkIds[0] === page.selectedPerkIds[1]) {
+          page.selectedPerkIds.splice(1, 1);
+          page.selectedPerkIds.splice(3, 0, fixes[page.primaryStyleId]);
+          console.dir(page);
+          UI.error(new Error("Tentative de réparation des runes: Duplication des keystones avec Champion.GG"));
+      }
+    }
 
     return { runes: pages, summonerspells, itemsets: [itemset] };
   }
