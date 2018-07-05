@@ -13,16 +13,12 @@ class User {
     return (await this.getChatMe()).lol.gameMode;
   }
 
-  async getVersion(full) {
-    return JSON.parse(await rp(this.base + 'system/v1/builds'))[full ? 'version' : 'gameBranch'];
-  }
-
   async getChatMe() {
     return JSON.parse(await rp(this.base + 'lol-chat/v1/me'));
   }
 
   async updateSummonerSpells(spells) {
-    if (!spells || spells.length !== 2) return UI.error('Tried to update summoner spells but data given was empty.');
+    if (!spells || spells.length !== 2) return UI.error('Can\'t update summoner spells: empty');
     return await rp({
       method: 'PATCH',
       uri: this.base + 'lol-champ-select/v1/session/my-selection',
@@ -47,7 +43,7 @@ class User {
   async updateRunePages(pages) {
     console.log('Updating rune pages');
 
-    if (!pages || pages.length === 0 || pages.find(x => x.selectedPerkIds.length === 0) !== undefined) return UI.error(`Can't update runes: empty`);
+    if (!pages || pages.length === 0 || pages.find(x => x.selectedPerkIds.length === 0) !== undefined) return UI.error('Can\'t update runes: empty');
 
     let count = this._pageCount > Mana.store.get('maxRunes', 2) ? Mana.store.get('maxRunes', 2) : this._pageCount;
     count = count > pages.length ? pages.length : count;

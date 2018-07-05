@@ -10,23 +10,11 @@ class LeaguePlug extends EventEmitter {
 
     this._dirPath = dirPath;
 
-    this.on('connected', d => {
-      let id = setInterval(() => {
-        https.get({
-          host: '127.0.0.1',
-          port: d.port,
-          path: '/lol-login/v1/session',
-          headers: { 'Authorization': this.getAuthenticationToken() },
-          rejectUnauthorized: false,
-        }, res => {
-          if (res.statusCode === 200) {
-            clearInterval(id);
-            this._loggedIn = true;
-            this.emit('logged-in');
-          }
-          else if (res.statusCode === 404) this.emit('logged-off');
-        }).on('error', err => console.error(err));
-      }, 1000);
+    this.on('connected', () => {
+      this.getLoginTimer().then(() => {
+        this._loggedIn = true;
+        this.emit('logged-in');
+      });
     });
 
     this.on('disconnected', () => console.log('lcu-disconnected'));
@@ -36,7 +24,39 @@ class LeaguePlug extends EventEmitter {
 
   start() {
     this._startLockfileWatcher();
+  }
 
+  getLoginTimer() {
+    const self = this;
+    function timer(cb, ms = 0) {
+      setTimeout(() => {
+        self.login().then(loggedIn => {
+          if (!loggedIn) {
+            timer(ms === 0 ? 500 : ms * 1.3);
+            self.emit('logged-off');
+          }
+          else cb();
+        });
+      }, ms);
+    }
+
+    return new Promise(resolve => timer(resolve));
+  }
+
+  login(port = this._lcu.port) {
+    const token = this.getAuthenticationToken();
+    return new Promise((resolve, reject) => {
+      https.get({
+        host: '127.0.0.1',
+        port: port,
+        path: '/lol-login/v1/session',
+        headers: { 'Authorization': token },
+        rejectUnauthorized: false,
+      }, res => {
+        if (res.statusCode === 200) resolve(true);
+        else if (res.statusCode === 404) resolve(false);
+      }).on('error', () => null);
+    });
   }
 
   getAuthenticationToken() {

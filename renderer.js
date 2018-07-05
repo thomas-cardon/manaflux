@@ -81,43 +81,25 @@ $(document).ready(function() {
   }
   else ipcRenderer.send('lcu-connection', Mana.store.get('leaguePath'));
 
-  Mana.status('Waiting for LCU');
+  Mana.status('Connection to LeaguePlug..');
   Mana.emit('settings', Mana.store);
 });
 
 ipcRenderer.on('lcu-connected', async (event, d) => Mana.base = d.baseUri);
-ipcRenderer.once('lcu-connected', async (event, d) => {
-  Mana.champions = {};
-  Mana.summonerspells = {};
-
+ipcRenderer.once('lcu-connected', (event, d) => {
   Mana.user = new (require('./User'))(Mana.base);
+  Mana.client = require('./objects/Client');
   Mana.championselect = new (require('./objects/ChampionSelect'))();
 
-  const championSummaryData = JSON.parse(await rp(d.baseUri + 'lol-game-data/assets/v1/champion-summary.json'));
+  Mana.status('Loading Data');
+  Promise.all([Mana.client.getChampionSummary(), Mana.client.getSummonerSpells()]).then(data => {
+    Mana.champions = data[0];
+    Mana.summonerspells = data[1];
 
-  for (let champion of championSummaryData)
-    Mana.champions[champion.id] = { id: champion.id, key: champion.alias, name: champion.name, img: d.baseUri.slice(0, -1) + champion.squarePortraitPath };
+    Mana.status('Data loaded');
+  });
 
-  Mana.status('Champions loaded');
-
-  const summonerSpellData = JSON.parse(await rp(d.baseUri + 'lol-game-data/assets/v1/summoner-spells.json'));
-
-  for (let spell of summonerSpellData) {
-    const x = spell.iconPath.slice(42, -4).replace('_', '');
-    let key;
-
-    if (x.startsWith('Summoner')) key = "Summoner" + (x.charAt(8).toUpperCase() + x.slice(9));
-    else if ([30, 31, 33, 34, 35, 36, 39].includes(spell.id)) continue;
-
-    Mana.summonerspells[key] = { id: spell.id, key, name: spell.name, gameModes: spell.gameModes };
-
-    if (spell.id === 14)
-      Mana.summonerspells['SummonerDot'] = Mana.summonerspells[key];
-  }
-
-  Mana.status('Summoner Spells loaded');
-  Mana.gameVersion = await Mana.user.getVersion();
-  $('.version').text($('.version').text() + ' - V' + Mana.gameVersion);
+  Mana.client.getVersion().then(ver => $('.version').text($('.version').text() + ' - V' + (Mana.gameVersion = ver)));
 });
 
 ipcRenderer.on('lcu-logged-in', async () => {

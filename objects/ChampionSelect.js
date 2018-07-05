@@ -108,7 +108,9 @@ class ChampionSelect extends EventEmitter {
       if (Mana.store.get('enableSummonerSpells'))
       $('button#loadSummonerSpells').enableManualButton(() => Mana.user.updateSummonerSpells(summonerspells), true);
 
+      if (Mana.store.get('enableAnimations'))
       UI.enableHextechAnimation(Mana.champions[this.getCurrentSummoner().championId].key, runes[0].primaryStyleId);
+
       Mana.status('Loaded runes for ' + Mana.champions[this.getCurrentSummoner().championId].name + '...');
 
       UI.tray(false);

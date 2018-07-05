@@ -78,6 +78,9 @@ Mana.once('settings', store => {
 	$(':checkbox[data-settings-key]').each(function() {
 		console.log(`Loading value of ${$(this).data('settings-key')} to: ${store.get($(this).data('settings-key'))}`);
 		$(this).prop('checked', store.get($(this).data('settings-key')));
+
+		$(this).prop('id', $(this).data('settings-key'));
+		$(this).siblings('label').prop('for', $(this).data('settings-key'));
 	});
 
 	$('select[data-settings-key]').each(function() {
