@@ -7,7 +7,12 @@ class ChampionSelect extends EventEmitter {
     super();
     this.inChampionSelect = false;
 
-    this.on('firstTick', () => console.log('Entering Champion Select'));
+    this.on('firstTick', async () => {
+      console.log('Entering Champion Select');
+
+      Mana.user.runes = await Mana.user.getRunes();
+      Mana.user._pageCount = Mana.user._pageCount || await Mana.user.getPageCount();
+    });
     this.on('ended', () => console.log('Leaving Champion Select'));
     this.on('championChange', (id) => console.log(`Changed champion to: #${id} (${Mana.champions[id].name})`));
   }
@@ -92,10 +97,6 @@ class ChampionSelect extends EventEmitter {
       Mana.status('Updating display');
       const { runes, itemsets, summonerspells } = await ProviderHandler.getChampionData(Mana.champions[this.getCurrentSummoner().championId], this.getPosition(), this.gameMode);
 
-      console.dir(runes);
-      console.dir(itemsets);
-      console.dir(summonerspells);
-
       if (Mana.store.get('enableItemSets')) {
         for (let itemset of itemsets)
           itemset.save();
@@ -104,7 +105,7 @@ class ChampionSelect extends EventEmitter {
       if (Mana.store.get('loadRunesAutomatically')) Mana.user.updateRunePages(runes);
       else $('button#loadRunes').enableManualButton(() => Mana.user.updateRunePages(runes), true);
 
-      if (Mana.store.get('enableSummonerSpellButton'))
+      if (Mana.store.get('enableSummonerSpells'))
       $('button#loadSummonerSpells').enableManualButton(() => Mana.user.updateSummonerSpells(summonerspells), true);
 
       UI.enableHextechAnimation(Mana.champions[this.getCurrentSummoner().championId].key, runes[0].primaryStyleId);
@@ -134,7 +135,7 @@ class ChampionSelect extends EventEmitter {
 
   destroy() {
     this.timer = this.myTeam = this.theirTeam = this.gameMode = null;
-    Mana.user._pageCount = null;
+    Mana.user._pageCount = Mana.user.runes = null;
 
     this.inChampionSelect = false;
 

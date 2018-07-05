@@ -33,15 +33,15 @@ $(document).ready(function() {
   if (!Mana.store.has('summonerspells'))
     Mana.store.set('summonerspells', {});
 
-  if (Mana.store.get('lastVersion', '1.1.0') === '1.1.0') {
-    Mana.store.set('runes', {});
-    Mana.store.set('summonerspells', {});
+  if (Mana.store.get('lastVersion', Mana.version) === '1.1.10') {
+    Mana.store.set('enableSummonerSpells', Mana.store.get('enableSummonerSpellButton', false));
+    Mana.store.delete('enableSummonerSpellButton');
   }
 
   if (!Mana.store.has('loadRunesAutomatically'))
     Mana.store.set('loadRunesAutomatically', true);
 
-  if (!Mana.store.has('enableSummonerSpellButton'))
+  if (!Mana.store.has('enableSummonerSpells'))
     Mana.store.set('enableSummonerSpellButton', false);
 
   if (!Mana.store.has('enableItemSets'))
