@@ -81,7 +81,7 @@ $(document).ready(function() {
   }
   else ipcRenderer.send('lcu-connection', Mana.store.get('leaguePath'));
 
-  Mana.status('Connection to LeaguePlug..');
+  Mana.status('Connection to LeaguePlug');
   Mana.emit('settings', Mana.store);
 });
 

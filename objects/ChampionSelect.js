@@ -1,6 +1,6 @@
 const rp = require('request-promise-native');
 const EventEmitter = require('events');
-const ProviderHandler = new (require('./ProviderHandler'))();
+const ProviderHandler = new (require('./handlers/ProviderHandler'))();
 
 class ChampionSelect extends EventEmitter {
   constructor() {
@@ -14,7 +14,7 @@ class ChampionSelect extends EventEmitter {
       Mana.user._pageCount = Mana.user._pageCount || await Mana.user.getPageCount();
     });
     this.on('ended', () => console.log('Leaving Champion Select'));
-    this.on('championChange', (id) => console.log(`Changed champion to: #${id} (${Mana.champions[id].name})`));
+    this.on('change', (id) => console.log(`Changed champion to: #${id} (${Mana.champions[id].name})`));
   }
 
   load() {
@@ -86,7 +86,7 @@ class ChampionSelect extends EventEmitter {
       if (this._lastChampionId === this.getCurrentSummoner().championId) return;
       if ((this._lastChampionId = this.getCurrentSummoner().championId) === 0) return;
 
-      this.emit('championChange', this.getCurrentSummoner().championId);
+      this.emit('change', this.getCurrentSummoner().championId);
 
       await this.updateDisplay();
     }
@@ -97,21 +97,21 @@ class ChampionSelect extends EventEmitter {
       Mana.status('Updating display');
       const { runes, itemsets, summonerspells } = await ProviderHandler.getChampionData(Mana.champions[this.getCurrentSummoner().championId], this.getPosition(), this.gameMode);
 
-      if (Mana.store.get('enableItemSets')) {
-        for (let itemset of itemsets)
-          itemset.save();
-      }
+      if (Mana.store.get('enableAnimations'))
+      UI.enableHextechAnimation(Mana.champions[this.getCurrentSummoner().championId].key, runes[0].primaryStyleId);
 
-      if (Mana.store.get('loadRunesAutomatically')) Mana.user.updateRunePages(runes);
+      if (Mana.store.get('loadRunesAutomatically')) await Mana.user.updateRunePages(runes);
       else $('button#loadRunes').enableManualButton(() => Mana.user.updateRunePages(runes), true);
 
       if (Mana.store.get('enableSummonerSpells'))
       $('button#loadSummonerSpells').enableManualButton(() => Mana.user.updateSummonerSpells(summonerspells), true);
 
-      if (Mana.store.get('enableAnimations'))
-      UI.enableHextechAnimation(Mana.champions[this.getCurrentSummoner().championId].key, runes[0].primaryStyleId);
+      if (Mana.store.get('enableItemSets')) {
+        for (let itemset of itemsets)
+          itemset.save();
+      }
 
-      Mana.status('Loaded runes for ' + Mana.champions[this.getCurrentSummoner().championId].name + '...');
+      Mana.status('Loaded runes for ' + Mana.champions[this.getCurrentSummoner().championId].name);
 
       UI.tray(false);
     }
