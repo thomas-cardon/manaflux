@@ -549,7 +549,7 @@ textarea:disabled {
 
 .option {
   margin-bottom: 25px;
-  min-width: 50%;
+  width: 50%;
   float: left;
 }
 

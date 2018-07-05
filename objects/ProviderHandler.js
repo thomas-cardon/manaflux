@@ -22,9 +22,9 @@ class ProviderHandler {
 
         if (data.runes.length === 0 && data.itemsets.length === 0 && data.summonerspells.length === 0)
           method = 'getData';
-        else if (data.itemsets.length === 0)
+        else if (data.itemsets.length === 0 && Mana.store.get('enableItemSets'))
           method = 'getItemSets';
-        else if (data.summonerspells.length === 0)
+        else if (data.summonerspells.length === 0 && Mana.store.get('enableSummonerSpells'))
           method = 'getSummonerSpells';
         else if (data.runes.length === 0)
           method = 'getRunes';
@@ -44,7 +44,7 @@ class ProviderHandler {
             Mana.store.set(`summonerspells.${storeKey}`, d.summonerspells);
         }
 
-        if (data.runes.length === 0 || data.itemsets.length === 0 || data.summonerspells.length === 0) {
+        if (data.runes.length === 0 || (data.itemsets.length === 0 && Mana.store.get('enableItemSets')) || (data.summonerspells.length === 0 && Mana.store.get('enableSummonerSpells'))) {
           console.log('Missing data. Using another provider.');
           continue;
         }

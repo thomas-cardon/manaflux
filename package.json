@@ -25,7 +25,6 @@
     "cheerio": "^1.0.0-rc.2",
     "electron-store": "^2.0.0",
     "electron-updater": "^2.22.1",
-    "lcu-connector": "^1.0.2",
     "request": "^2.87.0",
     "request-promise-native": "^1.0.5"
   },

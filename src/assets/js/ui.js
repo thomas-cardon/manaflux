@@ -46,7 +46,7 @@ UI.enableHextechAnimation = function(championKey, primaryStyleId) {
 	$('.championPortrait > #bg').attr('src', 'assets/img/vfx-' + (primaryStyleId ? primaryStyleId : 'white') + '.png');
 	$('.championPortrait > #champion')
 	.attr('src', championKey ? ('https://ddragon.leagueoflegends.com/cdn/8.3.1/img/champion/' + championKey + '.png') : 'assets/img/-1.png')
-	.ready(() => $(".title").animate({ "margin-top": "55%" }, 700, "linear", () => $('.championPortrait').show()));
+	.on('load', () => $(".title").animate({ "margin-top": "55%" }, 700, "linear", () => $('.championPortrait').show()));
 }
 
 UI.disableHextechAnimation = () => {
