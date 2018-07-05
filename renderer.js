@@ -13,13 +13,15 @@ const Store = require('electron-store');
 const { dialog } = require('electron').remote;
 
 Mana.version = require('./package.json').version;
-Mana.status = str => $('.status').text(str);
+Mana.status = str => {
+  $('.status').text(str + '...');
+  console.log(str + '...');
+};
 Mana.store = new Store();
 
 if (Mana.store.get('enableTrayIcon')) UI.tray();
 
-console.log('Loading Storage...');
-Mana.status('Loading Storage...');
+Mana.status('Loading Storage');
 
 $(document).ready(function() {
   if (!Mana.store.has('language'))
@@ -72,39 +74,33 @@ $(document).ready(function() {
         if (filePaths.length === 0) return;
 
         Mana.store.set('leaguePath', filePaths[0]);
-        ipcRenderer.send('start-lcu-connector', Mana.store.get('leaguePath'));
+        ipcRenderer.send('lcu-connection', Mana.store.get('leaguePath'));
       });
     }
     else Mana.store.set('leaguePath', 'C:\\Riot Games\\League of Legends');
   }
-  else ipcRenderer.send('start-lcu-connector', Mana.store.get('leaguePath'));
+  else ipcRenderer.send('lcu-connection', Mana.store.get('leaguePath'));
 
-  console.log('Waiting for LCU...');
-  Mana.status('Waiting for LCU...');
-
+  Mana.status('Waiting for LCU');
   Mana.emit('settings', Mana.store);
 });
 
-ipcRenderer.once('lcu', async (event, d) => {
-  console.dir(d);
-
-  Mana.base = `https://${d.username}:${d.password}@${d.address}:${d.port}/`;
-  Mana.lcu = d;
-  Mana.user = new (require('./User'))(Mana.base);
-
-  Mana.status('Connected...');
-
+ipcRenderer.on('lcu-connected', async (event, d) => Mana.base = d.baseUri);
+ipcRenderer.once('lcu-connected', async (event, d) => {
   Mana.champions = {};
   Mana.summonerspells = {};
 
-  const championSummaryData = JSON.parse(await rp(Mana.base + 'lol-game-data/assets/v1/champion-summary.json'));
+  Mana.user = new (require('./User'))(Mana.base);
+  Mana.championselect = new (require('./objects/ChampionSelect'))();
+
+  const championSummaryData = JSON.parse(await rp(d.baseUri + 'lol-game-data/assets/v1/champion-summary.json'));
 
   for (let champion of championSummaryData)
-    Mana.champions[champion.id] = { id: champion.id, key: champion.alias, name: champion.name, img: Mana.base.slice(0, -1) + champion.squarePortraitPath };
+    Mana.champions[champion.id] = { id: champion.id, key: champion.alias, name: champion.name, img: d.baseUri.slice(0, -1) + champion.squarePortraitPath };
 
-  Mana.status('Champions loaded...');
+  Mana.status('Champions loaded');
 
-  const summonerSpellData = JSON.parse(await rp(Mana.base + 'lol-game-data/assets/v1/summoner-spells.json'));
+  const summonerSpellData = JSON.parse(await rp(d.baseUri + 'lol-game-data/assets/v1/summoner-spells.json'));
 
   for (let spell of summonerSpellData) {
     const x = spell.iconPath.slice(42, -4).replace('_', '');
@@ -119,14 +115,23 @@ ipcRenderer.once('lcu', async (event, d) => {
       Mana.summonerspells['SummonerDot'] = Mana.summonerspells[key];
   }
 
-  Mana.status('Summoner Spells loaded...');
+  Mana.status('Summoner Spells loaded');
+  Mana.gameVersion = await Mana.user.getVersion();
+  $('.version').text($('.version').text() + ' - V' + Mana.gameVersion);
+});
+
+ipcRenderer.on('lcu-logged-in', async () => {
+  Mana.status('Connected');
 
   await Mana.user.load();
-
-  Mana.championselect = new (require('./objects/ChampionSelect'))();
   Mana.championselect.load();
 
-  Mana.status('Waiting for Champion Select...');
+  Mana.status('Waiting for Champion Select');
+});
+
+ipcRenderer.on('lcu-disconnected', async () => {
+  Mana.status('Disconnected');
+  Mana.championselect.destroy().end();
 });
 
 global.autoStart = function(checked) {

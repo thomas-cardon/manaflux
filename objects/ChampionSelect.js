@@ -14,14 +14,18 @@ class ChampionSelect extends EventEmitter {
 
   load() {
     let self = this;
-
+    this._tries = 0;
     this._checkTimer = setInterval(async function() {
       try {
         const session = await self.getSession();
         self.tick(session.body);
+        this._tries = 0;
       }
       catch(err) {
         if (err.statusCode === 404) return self.tick();
+        if (this._tries === 3) return location.reload();
+
+        this._tries++;
         UI.error(err);
       }
     }, 1000);
@@ -88,11 +92,16 @@ class ChampionSelect extends EventEmitter {
       Mana.status('Updating display');
       const { runes, itemsets, summonerspells } = await ProviderHandler.getChampionData(Mana.champions[this.getCurrentSummoner().championId], this.getPosition(), this.gameMode);
 
-      if (Mana.store.get('enableItemSets'))
+      console.dir(runes);
+      console.dir(itemsets);
+      console.dir(summonerspells);
+
+      if (Mana.store.get('enableItemSets')) {
         for (let itemset of itemsets)
           itemset.save();
+      }
 
-      if (Mana.store.get('loadRunesAutomatically', true)) Mana.user.updateRunePages(runes);
+      if (Mana.store.get('loadRunesAutomatically')) Mana.user.updateRunePages(runes);
       else $('button#loadRunes').enableManualButton(() => Mana.user.updateRunePages(runes), true);
 
       if (Mana.store.get('enableSummonerSpellButton'))
@@ -131,6 +140,13 @@ class ChampionSelect extends EventEmitter {
 
     this.destroyDisplay();
     this.emit('ended');
+
+    return this;
+  }
+
+  end() {
+    if (this._checkTimer)
+    clearInterval(this._checkTimer);
   }
 }
 

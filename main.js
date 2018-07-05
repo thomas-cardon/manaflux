@@ -1,8 +1,8 @@
 const { app, BrowserWindow, ipcMain, globalShortcut, Menu, Tray } = require('electron');
 const { autoUpdater } = require('electron-updater');
-const platform = require('os').platform();
+const platform = process.platform;
 
-const LCUConnector = require('lcu-connector');
+const LeaguePlug = require(__dirname + '/objects/lcu/LeaguePlug');
 const AutoLaunch = require('auto-launch');
 
 let connector;
@@ -76,12 +76,30 @@ autoUpdater.on('update-downloaded', (info) => {
   win.webContents.send('update-ready', info);
 });
 
-ipcMain.on('start-lcu-connector', (event, path) => {
-  if (connector) connector.stop();
-  connector = new LCUConnector(require('path').resolve(path, 'LeagueClient.exe'));
+ipcMain.on('lcu-connection', (event, path) => {
+  if (!connector) {
+    connector = new LeaguePlug(path);
 
-  connector.once('connect', d => win.webContents.send('lcu', d));
-  connector.start();
+    connector.on('connected', d => event.sender.send('lcu-connected', d));
+    connector.on('logged-in', () => event.sender.send('lcu-logged-in'));
+    connector.on('logged-off', () => event.sender.send('lcu-logged-off'));
+    connector.on('disconnected', () => event.sender.send('lcu-disconnected'));
+
+    connector.start();
+  }
+  else if (connector.isConnected()) {
+    event.sender.send('lcu-connected', connector.getConnectionData());
+    if (connector.isLoggedIn()) event.sender.send('lcu-logged-in');
+  }
+  else event.sender.send('lcu-disconnected');
+});
+
+ipcMain.on('lcu-is-connected', event => {
+  event.returnValue = connector.isConnected();
+});
+
+ipcMain.on('lcu-is-logged-in', event => {
+  event.returnValue = connector.isLoggedIn();
 });
 
 ipcMain.on('top-window-start', (event, data) => {

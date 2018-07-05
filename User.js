@@ -6,12 +6,7 @@ class User {
   }
 
   async load() {
-    this.runes = await this.getRunes();
-
-    const summoner = await rp(this.base + 'lol-summoner/v1/current-summoner');
-    this.summoner = JSON.parse(summoner);
-
-    Mana.gameVersion = await this.getVersion();
+    this.summoner = JSON.parse(await rp(this.base + 'lol-summoner/v1/current-summoner'));
   }
 
   async getGameMode() {
@@ -50,6 +45,8 @@ class User {
   }
 
   async updateRunePages(pages) {
+    console.log('Updating rune pages');
+
     if (!pages || pages.length === 0 || pages.find(x => x.selectedPerkIds.length === 0) === undefined) return UI.error(`Can't update runes: empty`);
     if (!this._pageCount) this._pageCount = await this.getPageCount();
 
