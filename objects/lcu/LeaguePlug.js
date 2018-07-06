@@ -9,33 +9,29 @@ class LeaguePlug extends EventEmitter {
     super();
 
     this._dirPath = dirPath;
+  }
 
-    this.on('connected', () => {
-      this.getLoginTimer().then(() => {
-        this._loggedIn = true;
-        this.emit('logged-in');
-      });
-    });
-
-    this.on('disconnected', () => console.log('lcu-disconnected'));
-    this.on('logged-in', () => console.log('lcu-logged-in'));
-    this.on('logged-off', () => console.log('lcu-logged-off'));
+  setLeaguePath(path) {
+    this._dirPath = path;
   }
 
   start() {
     this._startLockfileWatcher();
   }
 
+  hasStarted() {
+    return this._lockfileWatcher !== null;
+  }
+
   getLoginTimer() {
     const self = this;
-    function timer(cb, ms = 0) {
-      setTimeout(() => {
+    function timer(cb, ms = 100) {
+      self._loginTimerId = setTimeout(() => {
         self.login().then(loggedIn => {
-          if (!loggedIn) {
-            timer(ms === 0 ? 500 : ms * 1.3);
-            self.emit('logged-off');
-          }
-          else cb();
+          if (loggedIn) return cb();
+
+          timer(cb, ms * 1.6);
+          self.emit('logged-off');
         });
       }, ms);
     }
@@ -71,10 +67,14 @@ class LeaguePlug extends EventEmitter {
         if (err || !stdout || stderr) return resolve();
 
         const data = stdout.match(/[^"]+?(?=RADS)/);
-        if (data.length > 0) resolve(parts[0]);
+        if (data.length > 0) resolve(data[0]);
         else resolve();
       });
     });
+  }
+
+  static async hasLeagueStarted() {
+    return await LeaguePlug.getLeaguePath() !== null;
   }
 
   _readLockfile() {
@@ -90,11 +90,24 @@ class LeaguePlug extends EventEmitter {
   _startLockfileWatcher() {
     this._lockfileWatcher = chokidar.watch(path.join(this._dirPath, 'lockfile'), { disableGlobbing: true })
     .on('add', path => {
-      this._connected = true;
-      this._readLockfile().then(d => {
-        this._authentication = 'Basic ' + Buffer.from('riot:' + d.password).toString('base64');
-        this.emit('connected', this._lcu = d);
-      }).catch(err => this.emit('error', err));
+      console.log('Lockfile change');
+      LeaguePlug.hasLeagueStarted().then(started => {
+        if (!started) return; // Indicates if League is started or not
+        console.log('League has started');
+
+        this._connected = true;
+        this._readLockfile().then(d => {
+          this._authentication = 'Basic ' + Buffer.from('riot:' + d.password).toString('base64');
+          this.emit('connected', this._lcu = d);
+
+          this.getLoginTimer().then(() => {
+            console.log('League is logged in');
+
+            this._loggedIn = true;
+            this.emit('logged-in');
+          });
+        }).catch(err => this.emit('error', err));
+      })
     })
     .on('unlink', path => {
       this._connected = false;
@@ -108,6 +121,7 @@ class LeaguePlug extends EventEmitter {
 
   end() {
     this._endLockfileWatcher();
+    clearTimeout(this._loginTimerId);
   }
 
   isLoggedIn() {

@@ -5,7 +5,15 @@ const platform = process.platform;
 const LeaguePlug = require(__dirname + '/objects/lcu/LeaguePlug');
 const AutoLaunch = require('auto-launch');
 
-let connector;
+process.on('uncaughtException', function (err) {
+  console.error(err);
+});
+
+process.on('unhandledRejection', (reason, p) => {
+  console.log('Unhandled Rejection at:', p, 'reason:', reason);
+});
+
+let connector = new LeaguePlug();
 
 let win, top;
 let tray;
@@ -17,41 +25,18 @@ let launcher = new AutoLaunch({
 
 function createWindow () {
   win = new BrowserWindow({ width: 600, height: 600, frame: false, icon: __dirname + '/build/icon.' + (platform === 'win32' ? 'ico' : 'png'), backgroundColor: '#000A13', maximizable: false, disableBlinkFeatures: 'BlockCredentialedSubresources', show: false });
-  top = new BrowserWindow({ width: 600, height: 100, frame: false, icon: __dirname + '/build/icon.' + (platform === 'win32' ? 'ico' : 'png'), backgroundColor: '#000A13', alwaysOnTop: true, maximizable: false, minimizable: false, closable: false, show: false });
+  top = new BrowserWindow({ width: 600, height: 100, frame: false, icon: __dirname + '/build/icon.' + (platform === 'win32' ? 'ico' : 'png'), backgroundColor: '#000A13', alwaysOnTop: true, maximizable: false, minimizable: false, resizable: false, closable: false, show: false });
 
   win.loadURL(`file://${__dirname}/src/index.html`);
   win.setMenu(null);
 
   win.once('ready-to-show', () => !tray ? win.show() : null);
 
-  ipcMain.on('tray', (event, show) => {
-    if (show && tray && !tray.isDestroyed()) return;
-    else if (!show) {
-      if (!tray || tray && tray.isDestroyed()) return;
-      return tray.destroy();
-    }
-
-    tray = new Tray(__dirname + '/build/icon.' + (platform === 'win32' ? 'ico' : 'png'));
-    tray.setToolTip('Cliquez pour afficher ManaFlux');
-
-    tray.on('click', () => win.isVisible() ? win.hide() : win.showInactive());
-  });
-
-  ipcMain.on('auto-start', (event, enable) => {
-    if (process.argv[2] === '--dev') return;
-
-    launcher.isEnabled()
-    .then(enabled => !enabled && enable ? launcher.enable() : (enabled && !enable ? launcher.disable() : null))
-    .catch(err => ipcMain.send('error', { type: 'AUTO-START', error: err }));
-  });
-
   if (process.argv[2] === '--dev')
     win.webContents.openDevTools({ mode: 'detach' });
 
   win.on('closed', () => {
-    console.log('closed?');
-
-    if (connector) connector.stop();
+    if (connector) connector.end();
 
     if (top) top.destroy();
     if (tray && !tray.isDestroyed()) tray.destroy();
@@ -76,30 +61,64 @@ autoUpdater.on('update-downloaded', (info) => {
   win.webContents.send('update-ready', info);
 });
 
-ipcMain.on('lcu-connection', (event, path) => {
-  if (!connector) {
-    connector = new LeaguePlug(path);
-
-    connector.on('connected', d => event.sender.send('lcu-connected', d));
-    connector.on('logged-in', () => event.sender.send('lcu-logged-in'));
-    connector.on('logged-off', () => event.sender.send('lcu-logged-off'));
-    connector.on('disconnected', () => event.sender.send('lcu-disconnected'));
-
-    connector.start();
+ipcMain.on('tray', (event, show) => {
+  if (show && tray && !tray.isDestroyed()) return;
+  else if (!show) {
+    if (!tray || tray && tray.isDestroyed()) return;
+    return tray.destroy();
   }
-  else if (connector.isConnected()) {
-    event.sender.send('lcu-connected', connector.getConnectionData());
-    if (connector.isLoggedIn()) event.sender.send('lcu-logged-in');
+
+  tray = new Tray(__dirname + '/build/icon.' + (platform === 'win32' ? 'ico' : 'png'));
+  tray.setToolTip('Cliquez pour afficher ManaFlux');
+
+  tray.on('click', () => win.isVisible() ? win.hide() : win.showInactive());
+});
+
+ipcMain.on('auto-start', (event, enable) => {
+  if (process.argv[2] === '--dev') return;
+
+  launcher.isEnabled()
+  .then(enabled => !enabled && enable ? launcher.enable() : (enabled && !enable ? launcher.disable() : null))
+  .catch(err => ipcMain.send('error', { type: 'AUTO-START', error: err }));
+});
+
+ipcMain.on('lcu-league-path', (event) => {
+  let id = setInterval(() => connector.constructor.getLeaguePath().then(dir => {
+    if (!dir) return;
+    clearInterval(id);
+
+    event.sender.send('lcu-league-path', dir);
+  }), 500);
+});
+
+ipcMain.once('lcu-connection', (event, path) => {
+  connector.setLeaguePath(path);
+  console.dir(connector);
+
+  /*if (connector.hasStarted()) {
+    connector.removeAllListeners();
+
+    if (connector.isConnected()) {
+      event.sender.send('lcu-connected', connector.getConnectionData());
+      if (connector.isLoggedIn()) event.sender.send('lcu-logged-in');
+    }
+    else event.sender.send('lcu-disconnected');
   }
-  else event.sender.send('lcu-disconnected');
+  else*/
+  connector.start();
+
+  connector.on('connected', d => event.sender.send('lcu-connected', d));
+  connector.on('logged-in', () => event.sender.send('lcu-logged-in'));
+  connector.on('logged-off', () => event.sender.send('lcu-logged-off'));
+  connector.on('disconnected', () => event.sender.send('lcu-disconnected'));
 });
 
 ipcMain.on('lcu-is-connected', event => {
-  event.returnValue = connector.isConnected();
+  event.sender.send('lcu-is-connected', connector.isConnected());
 });
 
 ipcMain.on('lcu-is-logged-in', event => {
-  event.returnValue = connector.isLoggedIn();
+  event.sender.send('lcu-is-logged-in', connector.isLoggedIn());
 });
 
 ipcMain.on('top-window-start', (event, data) => {

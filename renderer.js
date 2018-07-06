@@ -5,9 +5,6 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 const request = require('request'), rp = require('request-promise-native');
 
-const LCUConnector = require('lcu-connector');
-const connector = new LCUConnector();
-
 const Store = require('electron-store');
 
 const { dialog } = require('electron').remote;
@@ -64,24 +61,18 @@ $(document).ready(function() {
   Mana.store.set('lastVersion', Mana.version);
 
   if (!Mana.store.has('leaguePath')) {
-    if (!require('fs').existsSync('C:\\Riot Games\\League of Legends')) {
-      dialog.showOpenDialog({
-        title: 'Répertoire d\'installation de League of Legends',
-        buttonLabel: 'Sauvegarder',
-        properties: ['openDirectory', 'showHiddenFiles'],
-        message: 'Indiquez où se trouve le répertoire d\'installation du jeu'
-      }, function(filePaths) {
-        if (filePaths.length === 0) return;
+    Mana.status('Démarrage du launcher nécessaire');
+    UI.error('Démarrez le launcher pour que je puisse trouver son emplacement');
 
-        Mana.store.set('leaguePath', filePaths[0]);
-        ipcRenderer.send('lcu-connection', Mana.store.get('leaguePath'));
-      });
-    }
-    else Mana.store.set('leaguePath', 'C:\\Riot Games\\League of Legends');
+    ipcRenderer.once('lcu-league-path', (event, path) => {
+      Mana.status('League Path found');
+      console.log(path);
+
+      Mana.store.set('leaguePath', path);
+      return ipcRenderer.send('lcu-connection', path);
+    }).send('lcu-league-path');
   }
   else ipcRenderer.send('lcu-connection', Mana.store.get('leaguePath'));
-
-  Mana.status('Connection to LeaguePlug');
   Mana.emit('settings', Mana.store);
 });
 
@@ -95,8 +86,6 @@ ipcRenderer.once('lcu-connected', (event, d) => {
   Promise.all([Mana.client.getChampionSummary(), Mana.client.getSummonerSpells()]).then(data => {
     Mana.champions = data[0];
     Mana.summonerspells = data[1];
-
-    Mana.status('Data loaded');
   });
 
   Mana.client.getVersion().then(ver => $('.version').text($('.version').text() + ' - V' + (Mana.gameVersion = ver)));
@@ -113,19 +102,11 @@ ipcRenderer.on('lcu-logged-in', async () => {
 
 ipcRenderer.on('lcu-disconnected', async () => {
   Mana.status('Disconnected');
-  Mana.championselect.destroy().end();
+  if (Mana.championselect) Mana.championselect.destroy().end();
 });
 
 global.autoStart = function(checked) {
   ipcRenderer.send(`auto-start-${checked ? 'en' : 'dis'}able`);
-}
-
-global._devConnect = function(obj) {
-  connector.on('connect', d => {
-    console.dir(d);
-    ipcRenderer.emit('lcu', null, d);
-  });
-  connector.start();
 }
 
 global._devFakeChampionSelect = function() {

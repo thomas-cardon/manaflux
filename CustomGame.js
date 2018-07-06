@@ -152,7 +152,7 @@ class CustomGame {
   }
 
   async create() {
-    const data = await rp({
+    await rp({
       method: 'POST',
       uri: Mana.base + 'lol-lobby/v2/lobby',
       body: this._data,

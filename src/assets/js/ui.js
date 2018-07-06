@@ -5,6 +5,10 @@ UI.error = function(err) {
 	alertify.notify(err instanceof Error ? err.toString() : err, 'error', 10, () => $('#warning').hide());
 }
 
+UI.success = function(msg) {
+	alertify.notify(msg, 'success', 10);
+}
+
 UI.tray = function(tray = true) {
 	console.log(`${tray ? 'Enabling' : 'Disabling'} Tray Mode.`);
 
