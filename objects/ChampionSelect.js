@@ -94,11 +94,13 @@ class ChampionSelect extends EventEmitter {
 
   async updateDisplay() {
     try {
-      Mana.status('Updating display');
-      const { runes, itemsets, summonerspells } = await ProviderHandler.getChampionData(Mana.champions[this.getCurrentSummoner().championId], this.getPosition(), this.gameMode);
+      const champion = Mana.champions[this.getCurrentSummoner().championId];
+
+      Mana.status(`Updating display for ${champion.name}`);
+      const { runes, itemsets, summonerspells } = await ProviderHandler.getChampionData(champion, this.getPosition(), this.gameMode);
 
       if (Mana.store.get('enableAnimations'))
-      UI.enableHextechAnimation(Mana.champions[this.getCurrentSummoner().championId].key, runes[0].primaryStyleId);
+      UI.enableHextechAnimation(champion.key, runes[0].primaryStyleId);
 
       if (Mana.store.get('loadRunesAutomatically')) await Mana.user.updateRunePages(runes);
       else $('button#loadRunes').enableManualButton(() => Mana.user.updateRunePages(runes), true);
