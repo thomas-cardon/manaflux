@@ -25,12 +25,12 @@ class LeaguePlug extends EventEmitter {
 
   getLoginTimer() {
     const self = this;
-    function timer(cb, ms = 100) {
+    function timer(cb, ms = 0) {
       self._loginTimerId = setTimeout(() => {
         self.login().then(loggedIn => {
           if (loggedIn) return cb();
 
-          timer(cb, ms * 1.6);
+          timer(cb, (ms === 0 ? 100 : ms) * 1.6);
           self.emit('logged-off');
         });
       }, ms);
@@ -110,6 +110,8 @@ class LeaguePlug extends EventEmitter {
       })
     })
     .on('unlink', path => {
+      console.log('League has been shut down');
+
       this._connected = false;
       this.emit('disconnected');
     });

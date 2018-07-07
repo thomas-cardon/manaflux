@@ -101,8 +101,8 @@ ipcRenderer.on('lcu-logged-in', async () => {
 });
 
 ipcRenderer.on('lcu-disconnected', async () => {
-  Mana.status('Disconnected');
   if (Mana.championselect) Mana.championselect.destroy().end();
+  Mana.status('Disconnected');
 });
 
 global.autoStart = function(checked) {

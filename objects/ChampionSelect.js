@@ -121,7 +121,7 @@ class ChampionSelect extends EventEmitter {
   }
 
   destroyDisplay() {
-    Mana.status('Waiting for champion select...');
+    Mana.status('Waiting for champion select');
     UI.disableHextechAnimation();
 
     $('button#loadRunes').disableManualButton();
