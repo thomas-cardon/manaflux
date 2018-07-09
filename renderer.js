@@ -4,10 +4,11 @@
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 const request = require('request'), rp = require('request-promise-native');
-
 const Store = require('electron-store');
 
 const { dialog } = require('electron').remote;
+
+const ItemSetHandler = require('./objects/handlers/ItemSetHandler');
 
 Mana.version = require('./package.json').version;
 Mana.status = str => {
@@ -87,6 +88,8 @@ ipcRenderer.once('lcu-connected', (event, d) => {
     if (Mana.store.get('gameVersion') !== ver) {
       Mana.store.set('runes', {});
       Mana.store.set('summonerspells', {});
+
+      ItemSetHandler.getItemSets().then(x => ItemSetHandler.deleteItemSets(x)).catch(UI.error);
     }
 
     Mana.store.set('gameVersion', ver);

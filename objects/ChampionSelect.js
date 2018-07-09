@@ -9,6 +9,8 @@ class ChampionSelect extends EventEmitter {
     super();
     this.inChampionSelect = false;
 
+    ItemSetHandler.getItemSets().then(x => console.dir).catch(UI.error);
+
     this.on('firstTick', async () => {
       console.log('Entering Champion Select');
 
@@ -120,7 +122,7 @@ class ChampionSelect extends EventEmitter {
 
           for (let itemset of old) {
             itemset = await ItemSetHandler.parse(champion.key, itemset);
-            await itemset.remove();
+            await itemset.delete();
           }
 
           Mana.status(`Loading ${itemsets.length} sets for ${champion.name}`);

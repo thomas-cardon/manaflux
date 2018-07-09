@@ -68,7 +68,7 @@ class ItemSet {
     });
   }
 
-  remove() {
+  delete() {
     let p = this.path;
     return new Promise((resolve, reject) => {
       fs.unlink(p, err => {
