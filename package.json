@@ -36,7 +36,9 @@
     "copyright": "Copyright © 2018 Ryzzzen",
     "files": [
       "**/*",
-      "build/icon.*"
+      "build/icon.*",
+      "!screenshots/*",
+      "!*.md"
     ]
   }
 }
