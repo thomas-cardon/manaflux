@@ -3,6 +3,7 @@ var UI = {};
 UI.error = function(err) {
 	$('#warning').show();
 	alertify.notify(err instanceof Error ? err.toString() : err, 'error', 10, () => $('#warning').hide());
+	console.error(err);
 }
 
 UI.success = function(msg) {
@@ -115,8 +116,6 @@ ipcRenderer.once('update-ready', async (event, data) => {
 
 	$('#version').text(`Version ${data.version}`);
 	$('#size').text(getReadableFileSizeString(data.files[0].size));
-
-	$('#releasenotes').text(jQuery(data.releaseNotes).text());
 
 	$('#update').one("click", () => ipcRenderer.send('update-install'));
 });

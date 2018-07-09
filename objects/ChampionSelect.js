@@ -1,6 +1,8 @@
 const rp = require('request-promise-native');
 const EventEmitter = require('events');
+
 const ProviderHandler = new (require('./handlers/ProviderHandler'))();
+const ItemSetHandler = require('./handlers/ItemSetHandler');
 
 class ChampionSelect extends EventEmitter {
   constructor() {
@@ -13,8 +15,14 @@ class ChampionSelect extends EventEmitter {
       Mana.user.runes = await Mana.user.getRunes();
       Mana.user._pageCount = Mana.user._pageCount || await Mana.user.getPageCount();
     });
+
     this.on('ended', () => console.log('Leaving Champion Select'));
-    this.on('change', (id) => console.log(`Changed champion to: #${id} (${Mana.champions[id].name})`));
+    this.on('change', id => {
+      const champion = Mana.champions[id];
+
+      console.log(`Changed champion to: #${id} (${champion.name})`);
+      this.updateDisplay(champion);
+    });
   }
 
   load() {
@@ -69,7 +77,7 @@ class ChampionSelect extends EventEmitter {
   async tick(data) {
     this.emit('tick');
 
-    if (!data && this.inChampionSelect) this.destroy();
+    if (!data && this.inChampionSelect) this.end();
     else if (data) {
       if (!this.inChampionSelect) {
         this.inChampionSelect = true;
@@ -87,15 +95,11 @@ class ChampionSelect extends EventEmitter {
       if ((this._lastChampionId = this.getCurrentSummoner().championId) === 0) return;
 
       this.emit('change', this.getCurrentSummoner().championId);
-
-      await this.updateDisplay();
     }
   }
 
-  async updateDisplay() {
+  async updateDisplay(champion) {
     try {
-      const champion = Mana.champions[this.getCurrentSummoner().championId];
-
       Mana.status(`Updating display for ${champion.name}`);
       const { runes, itemsets, summonerspells } = await ProviderHandler.getChampionData(champion, this.getPosition(), this.gameMode);
 
@@ -105,15 +109,29 @@ class ChampionSelect extends EventEmitter {
       if (Mana.store.get('loadRunesAutomatically')) await Mana.user.updateRunePages(runes);
       else $('button#loadRunes').enableManualButton(() => Mana.user.updateRunePages(runes), true);
 
-      if (Mana.store.get('enableSummonerSpells'))
-      $('button#loadSummonerSpells').enableManualButton(() => Mana.user.updateSummonerSpells(summonerspells), true);
+      Mana.status('Loaded runes for ' + champion.name);
 
-      if (Mana.store.get('enableItemSets')) {
-        for (let itemset of itemsets)
-          itemset.save();
+      if (Mana.store.get('enableSummonerSpells'))
+        $('button#loadSummonerSpells').enableManualButton(() => Mana.user.updateSummonerSpells(summonerspells), true);
+
+      if (Mana.store.get('enableItemSets') && itemsets.length > 0) {
+        try {
+          let old = await ItemSetHandler.getItemSetsByChampionKey(champion.key);
+
+          for (let itemset of old) {
+            itemset = await ItemSetHandler.parse(champion.key, itemset);
+            await itemset.remove();
+          }
+
+          Mana.status(`Loading ${itemsets.length} sets for ${champion.name}`);
+          await Promise.all(itemsets.map(itemset => itemset.save()));
+        }
+        catch(err) {
+          UI.error(err);
+        }
       }
 
-      Mana.status('Loaded runes for ' + Mana.champions[this.getCurrentSummoner().championId].name);
+      Mana.status('Loaded data for ' + champion.name);
 
       UI.tray(false);
     }
@@ -137,7 +155,7 @@ class ChampionSelect extends EventEmitter {
     if (this._checkTimer) clearInterval(this._checkTimer);
   }
 
-  destroy() {
+  end() {
     this.timer = this.myTeam = this.theirTeam = this.gameMode = null;
     Mana.user._pageCount = Mana.user.runes = null;
 
@@ -149,7 +167,7 @@ class ChampionSelect extends EventEmitter {
     return this;
   }
 
-  end() {
+  destroy() {
     if (this._checkTimer)
     clearInterval(this._checkTimer);
   }

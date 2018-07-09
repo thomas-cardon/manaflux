@@ -90,20 +90,12 @@ class ChampionGGProvider {
 
     let itemset = new ItemSet(champion).setTitle($('.champion-profile h1').text() + " " + role);
     $('.build-wrapper').each(function(index) {
-      const type = $(this).parent().find('h2').eq(index).text();
-      let block = new Block().setName(type);
+    	const type = $(this).parent().find('h2').eq(index).text();
+      let block = new Block().setName(type + ` (${$(this).find('div > strong').text().trim().slice(0, 6)} WR)`);
 
-      $(this).each(function(index) {
-        console.log($(this));
-
-        if ($(this).hasClass('build-text')) return block.setName(block._set.type += ` (${$(this).children().first().text().trim().slice(0, 6)} WR)`);
-        if (!$(this).is('a')) return;
-
-        console.log($(this).children().first());
+    	$(this).children('a').each(function(index) {
         block.addItem($(this).children().first().data('id'));
       });
-
-      itemset.addBlock(block);
     });
 
     /*
@@ -117,7 +109,7 @@ class ChampionGGProvider {
       }
     }
 
-    return { runes: pages, summonerspells, itemsets: [] };
+    return { runes: pages, summonerspells, itemsets: [itemset] };
   }
 }
 

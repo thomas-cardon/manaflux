@@ -30,11 +30,6 @@ $(document).ready(function() {
   if (!Mana.store.has('summonerspells'))
     Mana.store.set('summonerspells', {});
 
-  if (Mana.store.get('lastVersion', Mana.version) === '1.1.10') {
-    Mana.store.set('enableSummonerSpells', Mana.store.get('enableSummonerSpellButton', false));
-    Mana.store.delete('enableSummonerSpellButton');
-  }
-
   if (!Mana.store.has('loadRunesAutomatically'))
     Mana.store.set('loadRunesAutomatically', true);
 
@@ -101,7 +96,7 @@ ipcRenderer.on('lcu-logged-in', async () => {
 });
 
 ipcRenderer.on('lcu-disconnected', async () => {
-  if (Mana.championselect) Mana.championselect.destroy().end();
+  if (Mana.championselect) Mana.championselect.end().destroy();
   Mana.status('Disconnected');
 });
 
@@ -109,12 +104,6 @@ global.autoStart = function(checked) {
   ipcRenderer.send(`auto-start-${checked ? 'en' : 'dis'}able`);
 }
 
-global._devFakeChampionSelect = function() {
-  Mana.fakeMode = true;
+global._devChampionSelect = function() {
   new (require('./CustomGame'))().create().then(game => game.start());
-}
-
-global._devEndFakeChampionSelect = function() {
-  Mana.fakeMode = false;
-  rp({ method: 'POST', uri: Mana.base + 'lol-lobby/v1/lobby/custom/cancel-champ-select' });
 }

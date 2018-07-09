@@ -7,7 +7,7 @@ class ProviderHandler {
     const storeKey = champion.id + '.' + (position === null ? gameMode : position);
 
     if (Mana.store.has(`runes.${storeKey}`) && Mana.store.has(`summonerspells.${storeKey}`))
-      return { runes: Mana.store.get(`runes.${storeKey}`), spells: Mana.store.get(`summonerspells.${storeKey}`) };
+      return { runes: Mana.store.get(`runes.${storeKey}`), summonerspells: Mana.store.get(`summonerspells.${storeKey}`), itemsets: [] };
 
     let data = {
       runes: [],
