@@ -49,6 +49,13 @@ class ItemSet {
 
   save() {
     let p = this.path;
+
+    /*
+    * Creates the required folders if needed
+    */
+    require('./handlers/ItemSetHandler')._ensureDir(path.resolve(Mana.store.get('leaguePath') + `\\Config\\Champions\\${this.championKey}`));
+    require('./handlers/ItemSetHandler')._ensureDir(path.resolve(Mana.store.get('leaguePath') + `\\Config\\Champions\\${this.championKey}\\Recommended`));
+
     return new Promise((resolve, reject) => {
       fs.writeFile(p, JSON.stringify(this.build()), 'utf8', err => {
         if (err) return reject(err);

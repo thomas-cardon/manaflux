@@ -11,18 +11,16 @@ class ChampionSelect extends EventEmitter {
 
     ItemSetHandler.getItemSets().then(x => console.dir).catch(UI.error);
 
-    this.on('firstTick', async () => {
-      console.log('Entering Champion Select');
-
-      Mana.user.runes = await Mana.user.getRunes();
-      Mana.user._pageCount = Mana.user._pageCount || await Mana.user.getPageCount();
-    });
-
+    this.on('firstTick', async () => console.log('Entering Champion Select'));
     this.on('ended', () => console.log('Leaving Champion Select'));
-    this.on('change', id => {
+    this.on('change', async id => {
       const champion = Mana.champions[id];
 
       console.log(`Changed champion to: #${id} (${champion.name})`);
+
+      Mana.user.runes = Mana.user.runes || await Mana.user.getRunes();
+      Mana.user._pageCount = Mana.user._pageCount || await Mana.user.getPageCount();
+
       this.updateDisplay(champion);
     });
   }

@@ -18,7 +18,7 @@ class ItemSetHandler {
     return new Promise((resolve, reject) => {
       fs.readdir(path.resolve(Mana.store.get('leaguePath') + `\\Config\\Champions\\`), (err, dir) => {
         if (err) return reject(err);
-        if (dir.length === 0) return reject(Error('Champions folder is empty?'));
+        if (dir.length === 0) return resolve([]);
 
         let arr = [], res = [];
 
@@ -41,8 +41,11 @@ class ItemSetHandler {
   }
 
   static getItemSetsByChampionKey(key) {
-    key = key.toLowerCase();
+    let _ensureDir = this._ensureDir;
     return new Promise((resolve, reject) => {
+      _ensureDir(path.resolve(Mana.store.get('leaguePath') + `\\Config\\Champions\\${key}`));
+      _ensureDir(path.resolve(Mana.store.get('leaguePath') + `\\Config\\Champions\\${key}\\Recommended`));
+
       fs.readdir(path.resolve(Mana.store.get('leaguePath') + `\\Config\\Champions\\${key}\\Recommended`), (err, dir) => {
         if (err) return reject(err);
         if (dir.length === 0) return resolve([]);
@@ -54,6 +57,16 @@ class ItemSetHandler {
         resolve(arr);
       });
     });
+  }
+
+  static _ensureDir(path) {
+    return new Promise((resolve, reject) => {
+      fs.mkdir(path, err => {
+        if (err && err.code === 'EEXIST') resolve();
+        else if (err) reject(err);
+        else resolve();
+      })
+    })
   }
 
   static _readFile(path) {
