@@ -88,15 +88,20 @@ class ChampionGGProvider {
     * ItemSets
     */
 
-    let itemset = new ItemSet(champion).setTitle($('.champion-profile h1').text() + " " + role);
+    let itemset = new ItemSet(champion).setTitle(`${$('.champion-profile h1').text()}${role ? ' ' + role : ''} (Champion.gg)`);
     $('.build-wrapper').each(function(index) {
-    	const type = $(this).parent().find('h2').eq(index).text();
+    	const type = $(this).parent().find('h2').eq(index % 2).text();
       let block = new Block().setName(type + ` (${$(this).find('div > strong').text().trim().slice(0, 6)} WR)`);
 
     	$(this).children('a').each(function(index) {
         block.addItem($(this).children().first().data('id'));
       });
+
+      itemset.addBlock(block);
     });
+
+    // Putting the starters before the build
+    itemset.swapBlock(2, 0).swapBlock(3, 1);
 
     /*
     * Workaround: fix duplicates

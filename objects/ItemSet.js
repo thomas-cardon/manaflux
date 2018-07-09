@@ -36,6 +36,13 @@ class ItemSet {
     return this;
   }
 
+  swapBlock(x, y) {
+    let b = this[x];
+    this[x] = this[y];
+    this[y] = b;
+    return this;
+  }
+
   build() {
     return this._data;
   }
