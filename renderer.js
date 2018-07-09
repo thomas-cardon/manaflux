@@ -83,7 +83,15 @@ ipcRenderer.once('lcu-connected', (event, d) => {
     Mana.summonerspells = data[1];
   });
 
-  Mana.client.getVersion().then(ver => $('.version').text($('.version').text() + ' - V' + (Mana.gameVersion = ver)));
+  Mana.client.getVersion().then(ver => {
+    if (Mana.store.get('gameVersion') !== ver) {
+      Mana.store.set('runes', {});
+      Mana.store.set('summonerspells', {});
+    }
+
+    Mana.store.set('gameVersion', ver);
+    $('.version').text($('.version').text() + ' - V' + (Mana.gameVersion = ver));
+  });
 });
 
 ipcRenderer.on('lcu-logged-in', async () => {
