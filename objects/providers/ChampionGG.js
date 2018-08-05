@@ -26,9 +26,22 @@ class ChampionGGProvider {
     this.name = 'ChampionGG';
   }
 
-  async getData(champion, position, gameMode) {
-    const res = await rp(`${this.base}champion/${champion.key}${position ? '/' + position : ''}`);
-    return this._scrape(res, champion.key, gameMode);
+  async getData(champion, preferredPosition, gameMode) {
+    const res = await rp(`${this.base}champion/${champion.key}${preferredPosition ? '/' + preferredPosition : ''}`);
+    const data = this._scrape(res, champion.key, gameMode);
+
+    let positions = {};
+
+    positions[data.position] = data;
+
+    for (const position in data.availablePositions) {
+      console.log('ChampionGG - Downloading data for position ' + position.position);
+
+      const d = await rp(`${this.base}${r.link}`);
+      positions[position.position] = this._scrape(d, champion.key, gameMode);
+    }
+
+    return positions;
   }
 
   async getSummonerSpells(champion, position, gameMode) {
@@ -51,7 +64,13 @@ class ChampionGGProvider {
     let pages = [{ selectedPerkIds: [] }, { selectedPerkIds: [] }];
 
     let slots = $("div[class^=Slot__LeftSide]");
-    let role = $(`li[class^='selected-role'] a[href^='/champion/${champion}']`).first().text().trim();
+
+    const position = $(`li[class^='selected-role'] a[href^='/champion/${champion}']`).first().text().trim();
+    let availablePositions = [];
+
+    $(`li[class!='selected-role'] a[href^='/champion/${champion}']`).each(function(index) {
+      availablePositions.push({ position: $(this).first().text().trim().toUpperCase(), link: 'https://champion.gg' + $(this).attr('href') });
+    });
 
     /*
     * Runes
@@ -60,7 +79,7 @@ class ChampionGGProvider {
     $("img[src^='https://s3.amazonaws.com/solomid-cdn/league/runes_reforged/']", slots).each(function(index) {
       let page = Math.trunc(index / 8), rune = $(this).attr("src").substring(59);
       if (index % 8 === 0) {
-        pages[page].name = $('.champion-profile h1').text() + " " + role + (page === 0 ? ' HW%' : ' MF');
+        pages[page].name = $('.champion-profile h1').text() + " " + position + (page === 0 ? ' HW%' : ' MF');
         pages[page].primaryStyleId = styles[rune.substring(5, 6)];
       }
       else if(index % 8 === 5)
@@ -78,7 +97,6 @@ class ChampionGGProvider {
       const summoner = Mana.summonerspells[$(this).attr('src').slice(51, -4)];
 
       if (!summoner) return;
-      console.dir(summoner);
       if (summoner.gameModes.includes(gameMode)) summonerspells.push(summoner.id);
 
       if (index >= 1 && summonerspells.length === 2) return false;
@@ -88,7 +106,7 @@ class ChampionGGProvider {
     * ItemSets
     */
 
-    let itemset = new ItemSet(champion).setTitle(`${$('.champion-profile h1').text()}${role ? ' ' + role : ''} (Champion.gg)`);
+    let itemset = new ItemSet(champion).setTitle(`${$('.champion-profile h1').text()} ${position ? (' ' + position + ' ') : ''}(Champion.gg)`);
     $('.build-wrapper').each(function(index) {
     	const type = $(this).parent().find('h2').eq(index % 2).text();
       let block = new Block().setName(type + ` (${$(this).find('div > strong').text().trim().slice(0, 6)} WR)`);
@@ -114,7 +132,7 @@ class ChampionGGProvider {
       }
     }
 
-    return { runes: pages, summonerspells, itemsets: [itemset] };
+    return { runes: pages, summonerspells, itemsets: [itemset], availablePositions, position.toUpperCase() };
   }
 }
 

@@ -11,7 +11,7 @@ class LoLFlavorProvider {
     position = 'middle';
 
     try {
-      if (!position) throw TypeError("Can't find itemsets without position");
+      if (!position || position === gameMode) throw TypeError("Can't find itemsets without position");
       if (position === 'middle') position = 'mid';
 
       const res = await rp({

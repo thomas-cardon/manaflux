@@ -3,61 +3,60 @@ class ProviderHandler {
     this.providers = [new (require('../providers/ChampionGG.js'))(), new (require('../providers/LoLFlavor.js'))()];
   }
 
-  async getChampionData(champion, position, gameMode) {
-    const storeKey = champion.id + '.' + (position === null ? gameMode : position);
+  async getChampionData(champion, preferredPosition, gameMode) {
+    /*
+    * 1/3 Storage Checking
+    */
 
-    if (Mana.store.has(`runes.${storeKey}`) && Mana.store.has(`summonerspells.${storeKey}`))
-      return { runes: Mana.store.get(`runes.${storeKey}`), summonerspells: Mana.store.get(`summonerspells.${storeKey}`), itemsets: [] };
+    if (Mana.store.has(`data.${champion.id}.${preferredPosition}`))
+      return Mana.store.get(`runes.${champion.id}.${preferredPosition}`);
 
-    let data = {
-      runes: [],
-      itemsets: [],
-      summonerspells: []
-    };
+    /*
+     * 2/3 Downloading
+    */
+
+    let positions = {};
 
     for (let provider of this.providers) {
       console.log('Using provider: ' + provider.name);
       try {
-        let method;
+        let method = 'getData';
 
-        if (data.runes.length === 0 && data.itemsets.length === 0 && data.summonerspells.length === 0)
-          method = 'getData';
-        else if (data.itemsets.length === 0 && Mana.store.get('enableItemSets'))
-          method = 'getItemSets';
-        else if (data.summonerspells.length === 0 && Mana.store.get('enableSummonerSpells'))
-          method = 'getSummonerSpells';
-        else if (data.runes.length === 0)
-          method = 'getRunes';
-
-        if (!provider[method]) continue;
-
-        const d = await provider[method](champion, position, gameMode);
-
-        if (method === 'getData' || method === 'getRunes')
-          Mana.store.set(`runes.${storeKey}`, data.runes = data.runes.concat(d.runes));
-        if (method === 'getData' || method === 'getItemSets')
-          data.itemsets = data.itemsets.concat(d.itemsets);
-        if (method === 'getData' || method === 'getSummonerSpells') {
-          data.summonerspells = d.summonerspells;
-
-          if (d.summonerspells.length > 0)
-            Mana.store.set(`summonerspells.${storeKey}`, d.summonerspells);
+        if (positions[preferredPosition]) {
+          if (positions[preferredPosition].itemsets.length === 0 && Mana.store.get('enableItemSets'))
+            method = 'getItemSets';
+          else if (positions[preferredPosition].summonerspells.length === 0 && Mana.store.get('enableSummonerSpells'))
+            method = 'getSummonerSpells';
+          else if (positions[preferredPosition].runes.length === 0)
+            method = 'getRunes';
         }
 
-        if (data.runes.length === 0 || (data.itemsets.length === 0 && Mana.store.get('enableItemSets')) || (data.summonerspells.length === 0 && Mana.store.get('enableSummonerSpells'))) {
-          console.log('Missing data. Using another provider.');
+        if (!provider[method]) {
+          console.log(`Provider ${provider.name} doesn't have a method called #${method}. Skipping.`);
           continue;
         }
 
-        console.dir(data);
-        return data;
+        const d = await provider[method](champion, preferredPosition, gameMode);
+
+        for (let [position, data] of Object.entries(d))
+          positions[position] = Object.assign(positions[position] || { runes: {}, itemsets: {}, summonerspells: {} }, data);
+
+        console.dir(positions);
       }
       catch(err) {
         console.error(err);
       }
     }
 
-    return data;
+    /*
+    * 3/3 Saving
+    */
+
+    for (let [position, data] of Object.entries(positions))
+      Mana.store.set(`data.${champion.id}.${position}`, positions[position].runes = positions[position].runes.concat(d.runes));
+
+    console.dir(positions);
+    return positions;
   }
 }
 

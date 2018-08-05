@@ -18,6 +18,20 @@ let connector = new LeaguePlug();
 let win, top;
 let tray;
 
+var shouldQuit = app.makeSingleInstance(function(commandLine, workingDirectory) {
+  if (win) {
+    if (win.isMinimized()) win.restore();
+    else if (!win.isVisible()) win.show();
+
+    win.focus();
+  }
+});
+
+if (shouldQuit) {
+  app.quit();
+  return;
+}
+
 let launcher = new AutoLaunch({
     name: 'Manaflux',
     isHidden: true
@@ -59,6 +73,16 @@ autoUpdater.on('update-downloaded', (info) => {
 
   ipcMain.on('update-install', (event, arg) => autoUpdater.quitAndInstall());
   win.webContents.send('update-ready', info);
+});
+
+ipcMain.on('champion-select-in', () => {
+  globalShortcut.register('Alt+Left', () => ipcMain.send('runes-previous'));
+  globalShortcut.register('Alt+Right', () => ipcMain.send('runes-next'));
+});
+
+ipcMain.on('champion-select-out', () => {
+  globalShortcut.unregister('Alt+Left');
+  globalShortcut.unregister('Alt+Right');
 });
 
 ipcMain.on('tray', (event, show) => {

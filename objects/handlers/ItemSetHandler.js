@@ -12,51 +12,40 @@ class ItemSetHandler {
     return set;
   }
 
-  static getItemSets() {
-    let self = this;
-    console.log(path.resolve(Mana.store.get('leaguePath') + `\\Config\\Champions\\`));
-    return new Promise((resolve, reject) => {
-      fs.readdir(path.resolve(Mana.store.get('leaguePath') + `\\Config\\Champions\\`), (err, dir) => {
-        if (err) return reject(err);
-        if (dir.length === 0) return resolve([]);
+  static async getItemSets() {
+    const CHAMPIONS_PATH = path.resolve(Mana.store.get('leaguePath') + `\\Config\\Champions\\`);
 
-        let arr = [], res = [];
+    await this._ensureDir(CHAMPIONS_PATH);
+    const dir = await this._readdir(CHAMPIONS_PATH);
 
-        for (let key of dir)
-          arr.push(self.getItemSetsByChampionKey(key));
+    if (dir.length === 0) return [];
 
-        Promise.all(arr).then(values => {
-          for (let x of values)
-            res = res.concat(x);
+    const values = await Promise.all(dir.map(key => self.getItemSetsByChampionKey(key)));
+    let res = [];
 
-          resolve(res);
-        }).catch(reject);
-      });
-    });
+    for (let x of values)
+      res = res.concat(x);
+
+    return res;
+  }
+
+  static async getItemSetsByChampionKey(key) {
+    await this._ensureDir(path.resolve(Mana.store.get('leaguePath') + `\\Config\\Champions\\${key}`));
+    await this._ensureDir(path.resolve(Mana.store.get('leaguePath') + `\\Config\\Champions\\${key}\\Recommended`));
+
+    const dir = await this._readdir(path.resolve(Mana.store.get('leaguePath') + `\\Config\\Champions\\${key}\\Recommended`));
+    if (dir.length === 0) return [];
+
+    let arr = [];
+    for (let file of dir)
+      if (file.startsWith('MFLUX_')) arr.push(path.resolve(Mana.store.get('leaguePath') + `\\Config\\Champions\\${key}\\Recommended\\${file}`));
+
+    return arr;
   }
 
   static async deleteItemSets(list) {
     for (let path of list)
       await this._deleteFile(path);
-  }
-
-  static getItemSetsByChampionKey(key) {
-    let _ensureDir = this._ensureDir;
-    return new Promise((resolve, reject) => {
-      _ensureDir(path.resolve(Mana.store.get('leaguePath') + `\\Config\\Champions\\${key}`));
-      _ensureDir(path.resolve(Mana.store.get('leaguePath') + `\\Config\\Champions\\${key}\\Recommended`));
-
-      fs.readdir(path.resolve(Mana.store.get('leaguePath') + `\\Config\\Champions\\${key}\\Recommended`), (err, dir) => {
-        if (err) return reject(err);
-        if (dir.length === 0) return resolve([]);
-
-        let arr = [];
-        for (let file of dir)
-          if (file.startsWith('MFLUX_')) arr.push(path.resolve(Mana.store.get('leaguePath') + `\\Config\\Champions\\${key}\\Recommended\\${file}`));
-
-        resolve(arr);
-      });
-    });
   }
 
   static _ensureDir(path) {
@@ -67,6 +56,15 @@ class ItemSetHandler {
         else resolve();
       })
     })
+  }
+
+  static _readdir(path) {
+    return new Promise((resolve, reject) => {
+      fs.readdir(path, (err, dir) => {
+        if (err) return reject(err);
+        resolve(dir);
+      });
+    });
   }
 
   static _readFile(path) {

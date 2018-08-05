@@ -1,7 +1,7 @@
 const { EventEmitter } = require('events');
 const fs = require('fs'), path = require('path');
 const chokidar = require('chokidar');
-const cp = require('child_process');
+const { exec } = require('child_process');
 const https = require('https');
 
 class LeaguePlug extends EventEmitter {
@@ -59,16 +59,14 @@ class LeaguePlug extends EventEmitter {
     return this._authentication;
   }
 
-  static getLeaguePath() {
+  static async getLeaguePath() {
+    const command = process.platform === 'win32' ? "WMIC PROCESS WHERE name='LeagueClient.exe' GET commandline" : "ps x -o args | grep 'LeagueClient'";
+
     return new Promise(resolve => {
-      const command = process.platform === 'win32' ? "wmic process where name='LeagueClientUx.exe' get commandline" : "ps x -o args | grep 'LeagueClientUx'";
-
-      cp.exec(command, (err, stdout, stderr) => {
-        if (err || !stdout || stderr) return resolve();
-
-        const data = stdout.match(/[^"]+?(?=RADS)/);
-        if (data.length > 0) resolve(data[0]);
-        else resolve();
+      exec(command, function(error, stdout, stderr) {
+        if (error) throw error;
+        console.log('stdout: ' + stdout);
+        resolve(stdout);
       });
     });
   }

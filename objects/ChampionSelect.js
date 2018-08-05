@@ -16,7 +16,7 @@ class ChampionSelect extends EventEmitter {
     this.on('change', async id => {
       const champion = Mana.champions[id];
 
-      console.log(`Changed champion to: #${id} (${champion.name})`);
+        console.log(`Changed champion to: #${id} (${champion.name})`);
 
       Mana.user.runes = Mana.user.runes || await Mana.user.getRunes();
       Mana.user._pageCount = Mana.user._pageCount || await Mana.user.getPageCount();
@@ -81,6 +81,7 @@ class ChampionSelect extends EventEmitter {
     else if (data) {
       if (!this.inChampionSelect) {
         this.inChampionSelect = true;
+        ipcRenderer.send('champion-select-in');
         this.gameMode = await Mana.user.getGameMode();
         this.emit('firstTick');
       }
@@ -103,15 +104,21 @@ class ChampionSelect extends EventEmitter {
       Mana.status(`Updating display for ${champion.name}`);
       const { runes, itemsets, summonerspells } = await ProviderHandler.getChampionData(champion, this.getPosition(), this.gameMode);
 
-      if (Mana.store.get('enableAnimations'))
-      UI.enableHextechAnimation(champion.key, runes[0].primaryStyleId);
+      if (!runes.length > 0) {
+        Mana.status(`Internal Error: Runes are empty`);
+        UI.error(`Couldn't get runes for ${champion.name}`);
+      }
+      else {
+        if (Mana.store.get('enableAnimations'))
+        UI.enableHextechAnimation(champion.key, runes[0].primaryStyleId);
 
-      if (Mana.store.get('loadRunesAutomatically')) await Mana.user.updateRunePages(runes);
-      else $('button#loadRunes').enableManualButton(() => Mana.user.updateRunePages(runes), true);
+        if (Mana.store.get('loadRunesAutomatically')) await Mana.user.updateRunePages(runes);
+        else $('button#loadRunes').enableManualButton(() => Mana.user.updateRunePages(runes), true);
 
-      Mana.status('Loaded runes for ' + champion.name);
+        Mana.status('Loaded runes for ' + champion.name);
+      }
 
-      if (Mana.store.get('enableSummonerSpells'))
+      if (Mana.store.get('enableSummonerSpells') && summonerspells.length > 0)
         $('button#loadSummonerSpells').enableManualButton(() => Mana.user.updateSummonerSpells(summonerspells), true);
 
       if (Mana.store.get('enableItemSets') && itemsets.length > 0) {
@@ -132,7 +139,6 @@ class ChampionSelect extends EventEmitter {
       }
 
       Mana.status('Loaded data for ' + champion.name);
-
       UI.tray(false);
     }
     catch(err) {
@@ -156,20 +162,21 @@ class ChampionSelect extends EventEmitter {
   }
 
   end() {
+    this.inChampionSelect = false;
+    ipcRenderer.send('champion-select-out');
+
+    this.destroyDisplay();
+
     this.timer = this.myTeam = this.theirTeam = this.gameMode = null;
     Mana.user._pageCount = Mana.user.runes = null;
 
-    this.inChampionSelect = false;
-
-    this.destroyDisplay();
     this.emit('ended');
-
     return this;
   }
 
   destroy() {
     if (this._checkTimer)
-    clearInterval(this._checkTimer);
+      clearInterval(this._checkTimer);
   }
 }
 
