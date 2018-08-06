@@ -8,8 +8,8 @@ class ProviderHandler {
     * 1/3 Storage Checking
     */
 
-    if (Mana.store.has(`data.${champion.id}.${preferredPosition}`))
-      return Mana.store.get(`runes.${champion.id}.${preferredPosition}`);
+    if (Mana.store.has(`data.${champion.key}`))
+      return Mana.store.get(`runes.${champion.key}`);
 
     /*
      * 2/3 Downloading
@@ -50,10 +50,9 @@ class ProviderHandler {
     * 3/3 Saving
     */
 
-    for (let [position, data] of Object.entries(positions))
-      Mana.store.set(`data.${champion.id}.${position}`, data);
-
+    Mana.store.set(`data.${champion.key}`, positions);
     console.dir(positions);
+    
     return positions;
   }
 }
