@@ -20,7 +20,7 @@ class ItemSetHandler {
 
     if (dir.length === 0) return [];
 
-    const values = await Promise.all(dir.map(key => self.getItemSetsByChampionKey(key)));
+    const values = await Promise.all(dir.map(key => this.getItemSetsByChampionKey(key)));
     let res = [];
 
     for (let x of values)

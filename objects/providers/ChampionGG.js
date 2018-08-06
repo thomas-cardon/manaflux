@@ -34,10 +34,12 @@ class ChampionGGProvider {
 
     positions[data.position] = data;
 
-    for (const position in data.availablePositions) {
+    console.dir(data);
+    for (const position of data.availablePositions) {
+      console.dir(position);
       console.log('ChampionGG - Downloading data for position ' + position.position);
 
-      const d = await rp(`${this.base}${r.link}`);
+      const d = await rp(position.link);
       positions[position.position] = this._scrape(d, champion.key, gameMode);
     }
 
@@ -82,7 +84,7 @@ class ChampionGGProvider {
         pages[page].name = $('.champion-profile h1').text() + " " + position + (page === 0 ? ' HW%' : ' MF');
         pages[page].primaryStyleId = styles[rune.substring(5, 6)];
       }
-      else if(index % 8 === 5)
+      else if (index % 8 === 5)
       pages[page].subStyleId = styles[rune.substring(5, 6)];
       else pages[page].selectedPerkIds.push(parseInt(rune.substring(0, 4)));
     });
@@ -106,7 +108,7 @@ class ChampionGGProvider {
     * ItemSets
     */
 
-    let itemset = new ItemSet(champion).setTitle(`${$('.champion-profile h1').text()} ${position ? (' ' + position + ' ') : ''}(Champion.gg)`);
+    let itemset = new ItemSet(champion).setTitle(`CGG ${$('.champion-profile h1').text()} - ${position}`);
     $('.build-wrapper').each(function(index) {
     	const type = $(this).parent().find('h2').eq(index % 2).text();
       let block = new Block().setName(type + ` (${$(this).find('div > strong').text().trim().slice(0, 6)} WR)`);
@@ -124,15 +126,23 @@ class ChampionGGProvider {
     /*
     * Workaround: fix duplicates
     */
-    for (let page of pages) {
-      if (page.selectedPerkIds[0] === page.selectedPerkIds[1]) {
-          page.selectedPerkIds.splice(1, 1);
-          page.selectedPerkIds.splice(3, 0, fixes[page.primaryStyleId]);
-          UI.error("Tentative de réparation des runes: Duplication des keystones avec Champion.GG");
+
+    let i = pages.length;
+    while (i--) {
+      const page = pages[i];
+
+      if (page.selectedPerkIds[0] === undefined && page.selectedPerkIds[1] === undefined) {
+        pages.splice(i, 1);
+        UI.error("Champion.GG - Impossible de récupérer les runes: STILL_GATHERING_DATA??");
+      }
+      else if (page.selectedPerkIds[0] === page.selectedPerkIds[1]) {
+        page.selectedPerkIds.splice(1, 1);
+        page.selectedPerkIds.splice(3, 0, fixes[page.primaryStyleId]);
+        UI.error("Champion.GG - Tentative de réparation des runes: Duplication des keystones");
       }
     }
 
-    return { runes: pages, summonerspells, itemsets: [itemset], availablePositions, position.toUpperCase() };
+    return { runes: pages, summonerspells, itemsets: [itemset], availablePositions, position: position.toUpperCase() };
   }
 }
 

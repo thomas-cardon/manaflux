@@ -40,8 +40,6 @@ class ProviderHandler {
 
         for (let [position, data] of Object.entries(d))
           positions[position] = Object.assign(positions[position] || { runes: {}, itemsets: {}, summonerspells: {} }, data);
-
-        console.dir(positions);
       }
       catch(err) {
         console.error(err);
@@ -53,7 +51,7 @@ class ProviderHandler {
     */
 
     for (let [position, data] of Object.entries(positions))
-      Mana.store.set(`data.${champion.id}.${position}`, positions[position].runes = positions[position].runes.concat(d.runes));
+      Mana.store.set(`data.${champion.id}.${position}`, data);
 
     console.dir(positions);
     return positions;

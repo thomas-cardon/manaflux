@@ -9,8 +9,6 @@ class ChampionSelect extends EventEmitter {
     super();
     this.inChampionSelect = false;
 
-    ItemSetHandler.getItemSets().then(x => console.dir).catch(UI.error);
-
     this.on('firstTick', async () => console.log('Entering Champion Select'));
     this.on('ended', () => console.log('Leaving Champion Select'));
     this.on('change', async id => {
@@ -102,7 +100,8 @@ class ChampionSelect extends EventEmitter {
   async updateDisplay(champion) {
     try {
       Mana.status(`Updating display for ${champion.name}`);
-      const { runes, itemsets, summonerspells } = await ProviderHandler.getChampionData(champion, this.getPosition(), this.gameMode);
+      const data = await ProviderHandler.getChampionData(champion, this.getPosition(), this.gameMode);
+      const { runes, itemsets, summonerspells } = data[this.getPosition()] ? data[this.getPosition()] : data[Object.keys(data)[0]];
 
       if (!runes.length > 0) {
         Mana.status(`Internal Error: Runes are empty`);
