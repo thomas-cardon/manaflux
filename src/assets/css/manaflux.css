@@ -25,6 +25,10 @@ body {
   user-select: none;
 }
 
+.buttons {
+  margin: 10px;
+}
+
 .alertify-notifier {
   color: #ffffff !important;
   font-size: 12px;

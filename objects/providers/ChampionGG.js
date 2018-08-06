@@ -63,9 +63,14 @@ class ChampionGGProvider {
 
   _scrape(html, champion, gameMode) {
     let $ = cheerio.load(html);
-    let pages = [{ selectedPerkIds: [] }, { selectedPerkIds: [] }];
 
+    let pages = [{ selectedPerkIds: [] }, { selectedPerkIds: [] }];
     let slots = $("div[class^=Slot__LeftSide]");
+
+    /*
+    * Ensuring it's the good name for jQuery, in case of exceptions like FiddleSticks being named Fiddlesticks on the website...
+    */
+    champion = $('.champion-profile > h1').text();
 
     const position = $(`li[class^='selected-role'] a[href^='/champion/${champion}']`).first().text().trim();
     let availablePositions = [];

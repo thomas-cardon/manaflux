@@ -56,18 +56,12 @@ class ChampionSelect extends EventEmitter {
 
   getPosition() {
     switch(this.getCurrentSummoner().assignedPosition) {
-      case 'TOP':
-        return 'top';
-      case 'MIDDLE':
-        return 'middle';
-      case 'JUNGLE':
-        return 'jungle';
       case 'UTILITY':
-        return 'support';
+        return 'SUPPORT';
       case 'BOTTOM':
-        return 'adc';
+        return 'ADC';
       default:
-        return null;
+        return this.getCurrentSummoner().assignedPosition;
     }
   }
 
@@ -99,56 +93,64 @@ class ChampionSelect extends EventEmitter {
   async updateDisplay(champion) {
     try {
       Mana.status(`Updating display for ${champion.name}`);
-      const data = await ProviderHandler.getChampionData(champion, this.getPosition(), this.gameMode);
-      const { runes, itemsets, summonerspells } = data[this.getPosition()] ? data[this.getPosition()] : data[Object.keys(data)[0]];
+      const res = await ProviderHandler.getChampionData(champion, this.getPosition(), this.gameMode);
 
-      /*
-      * Runes display
-      */
+      $('#positions').unbind().empty().hide();
 
-      if (!runes.length > 0) {
-        Mana.status(`Internal Error: Runes are empty`);
-        UI.error(`Couldn't get runes for ${champion.name}`);
+      for (let position in res) {
+        if (res[position].runes.length === 0)
+          UI.error(`Couldn't get runes for ${champion.name}, position: ${this.value}`);
+        else $('#positions').append(`<option value="${position}">${position === 'ADC' ? 'ADC' : position.charAt(0).toUpperCase() + position.slice(1) }</option>`)
       }
-      else {
+
+      $('#positions').change(async function() {
+        let data = res[this.value];
+        $('button#loadRunes, button#loadSummonerSpells').disableManualButton();
+
+        /*
+        * Runes display
+        */
+
         if (Mana.store.get('enableAnimations'))
-        UI.enableHextechAnimation(champion.key, runes[0].primaryStyleId);
+          UI.enableHextechAnimation(champion.key, data.runes[0].primaryStyleId);
 
-        if (Mana.store.get('loadRunesAutomatically')) await Mana.user.updateRunePages(runes);
-        else $('button#loadRunes').enableManualButton(() => Mana.user.updateRunePages(runes), true);
+        // TODO: Change hextech animation according to active rune page change
 
-        Mana.status('Loaded runes for ' + champion.name);
-      }
+        if (Mana.store.get('loadRunesAutomatically')) await Mana.user.updateRunePages(data.runes);
+        else $('button#loadRunes').enableManualButton(() => Mana.user.updateRunePages(data.runes), true);
 
-      /*
-      * Runes display
-      */
+        Mana.status(`Loaded runes for ${champion.name} (${this.value})`);
 
-      if (Mana.store.get('enableSummonerSpells') && summonerspells.length > 0)
-        $('button#loadSummonerSpells').enableManualButton(() => Mana.user.updateSummonerSpells(summonerspells), true);
+        /*
+        * Summoner Spells display
+        */
 
-      /*
-      * Item Sets display
-      */
+        if (Mana.store.get('enableSummonerSpells') && data.summonerspells.length > 0)
+          $('button#loadSummonerSpells').enableManualButton(() => Mana.user.updateSummonerSpells(data.summonerspells), true);
 
-      if (Mana.store.get('enableItemSets') && itemsets.length > 0) {
-        try {
-          let old = await ItemSetHandler.getItemSetsByChampionKey(champion.key);
+        /*
+        * Item Sets display
+        */
 
-          for (let itemset of old) {
-            itemset = await ItemSetHandler.parse(champion.key, itemset);
-            await itemset.delete();
+        if (Mana.store.get('enableItemSets') && data.itemsets.length > 0) {
+          try {
+            let old = await ItemSetHandler.getItemSetsByChampionKey(champion.key);
+
+            for (let itemset of old) {
+              itemset = await ItemSetHandler.parse(champion.key, itemset);
+              await itemset.delete();
+            }
+
+            Mana.status(`Loaded ${data.itemsets.length} sets for ${champion.name} (${this.value})`);
+            await Promise.all(data.itemsets.map(itemset => itemset.save()));
           }
-
-          Mana.status(`Loading ${itemsets.length} sets for ${champion.name}`);
-          await Promise.all(itemsets.map(itemset => itemset.save()));
+          catch(err) {
+            UI.error(err);
+          }
         }
-        catch(err) {
-          UI.error(err);
-        }
-      }
+      });
 
-      Mana.status('Loaded data for ' + champion.name);
+      $('#positions').val(res[this.getPosition()] ? this.getPosition() : Object.keys(res)[0]).trigger('change').show();
       UI.tray(false);
     }
     catch(err) {
@@ -162,6 +164,8 @@ class ChampionSelect extends EventEmitter {
 
     $('button#loadRunes').disableManualButton();
     $('button#loadSummonerSpells').disableManualButton();
+
+    $('#positions').unbind().empty().hide();
 
     if (Mana.store.get('enableTrayIcon'))
     UI.tray();

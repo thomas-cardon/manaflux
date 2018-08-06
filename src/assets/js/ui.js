@@ -92,16 +92,16 @@ Mana.once('settings', store => {
 		console.log(`Loading value of ${$(this).data('settings-key')} to: ${store.get($(this).data('settings-key'))}`);
 		$(this).val(store.get($(this).data('settings-key')));
 	});
-});
 
-$(':checkbox[data-settings-key]').change(function() {
-	console.log(`Changing value of ${$(this).data('settings-key')} to: ${$(this).is(":checked")}`);
-	Mana.store.set($(this).data('settings-key'), $(this).is(":checked"));
-});
+	$(':checkbox[data-settings-key]').change(function() {
+		console.log(`Changing value of ${$(this).data('settings-key')} to: ${$(this).is(":checked")}`);
+		store.set($(this).data('settings-key'), $(this).is(":checked"));
+	});
 
-$('select[data-settings-key]').change(function() {
-	console.log(`Changing value of ${$(this).data('settings-key')} to: ${this.value}`);
-	Mana.store.set($(this).data('settings-key'), this.value);
+	$('select[data-settings-key]').change(function() {
+		console.log(`Changing value of ${$(this).data('settings-key')} to: ${this.value}`);
+		store.set($(this).data('settings-key'), this.value);
+	});
 });
 
 $('select[data-settings-key=theme]').change(function() {
