@@ -31,7 +31,7 @@ class LoLFlavorProvider {
     preferredPosition = preferredPosition.charAt(0).toUpperCase() + preferredPosition.slice(1);
 
     itemset.blocks[0].type = 'Consommables | set mis-à-jour le ' + itemset.title.split(' - ')[1];
-    itemset.title = `${champion.name} ${gameMode === 'ARAM' ? 'ARAM' : preferredPosition} (LoLFlavor)`;
+    itemset.title = `LFR ${champion.name} - ${gameMode === 'ARAM' ? 'ARAM' : preferredPosition}`;
 
     return { itemsets: [itemset] };
   }
