@@ -27,11 +27,15 @@ class LoLFlavorProvider {
     }
   }
 
-  async _aggregate(itemset, champion, preferredPosition, gameMode) {
-    preferredPosition = preferredPosition.charAt(0).toUpperCase() + preferredPosition.slice(1);
+  async _aggregate(itemset, champion, position, gameMode) {
+    position = position.charAt(0).toUpperCase() + position.slice(1);
 
-    itemset.blocks[0].type = 'Consommables | set mis-à-jour le ' + itemset.title.split(' - ')[1];
-    itemset.title = `LFR ${champion.name} - ${gameMode === 'ARAM' ? 'ARAM' : preferredPosition}`;
+    let itemset = new ItemSet(champion.key, position);
+
+    itemset._data = itemset;
+    itemset._data.blocks[0].type = 'Consommables | set mis-à-jour le ' + itemset.title.split(' - ')[1];
+
+    itemset.setTitle(`LFR ${champion.name} - ${gameMode === 'ARAM' ? 'ARAM' : preferredPosition}`)
 
     return { itemsets: [itemset] };
   }

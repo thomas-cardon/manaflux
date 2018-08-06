@@ -113,7 +113,7 @@ class ChampionGGProvider {
     * ItemSets
     */
 
-    let itemset = new ItemSet(champion).setTitle(`CGG ${$('.champion-profile h1').text()} - ${position}`);
+    let itemset = new ItemSet(champion, position).setTitle(`CGG ${$('.champion-profile h1').text()} - ${position}`);
     $('.build-wrapper').each(function(index) {
     	const type = $(this).parent().find('h2').eq(index % 2).text();
       let block = new Block().setName(type + ` (${$(this).find('div > strong').text().trim().slice(0, 6)} WR)`);
