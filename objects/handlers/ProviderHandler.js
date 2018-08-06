@@ -9,7 +9,7 @@ class ProviderHandler {
     */
 
     if (Mana.store.has(`data.${champion.key}`))
-      return Mana.store.get(`runes.${champion.key}`);
+      return Mana.store.get(`data.${champion.key}`);
 
     /*
      * 2/3 Downloading
@@ -52,7 +52,7 @@ class ProviderHandler {
 
     Mana.store.set(`data.${champion.key}`, positions);
     console.dir(positions);
-    
+
     return positions;
   }
 }

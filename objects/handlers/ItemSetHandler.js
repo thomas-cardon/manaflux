@@ -79,9 +79,10 @@ class ItemSetHandler {
   static _deleteFile(path) {
     return new Promise((resolve, reject) => {
       fs.unlink(path, err => {
-        if (err && err.code === 'ENOENT') resolve(false);
-        else if (err) reject(err);
-        else resolve(true);
+        if (!err) return resolve(true);
+
+        if (err.code === 'ENOENT') resolve(false);
+        else reject(err);
       });
     });
   }

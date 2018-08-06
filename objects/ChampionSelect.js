@@ -134,15 +134,10 @@ class ChampionSelect extends EventEmitter {
 
         if (Mana.store.get('enableItemSets') && data.itemsets.length > 0) {
           try {
-            let old = await ItemSetHandler.getItemSetsByChampionKey(champion.key);
+            let old = await ItemSetHandler.deleteItemSets(await ItemSetHandler.getItemSetsByChampionKey(champion.key));
 
-            for (let itemset of old) {
-              itemset = await ItemSetHandler.parse(champion.key, itemset);
-              await itemset.delete();
-            }
-
-            Mana.status(`Loaded ${data.itemsets.length} sets for ${champion.name} (${this.value})`);
-            await Promise.all(data.itemsets.map(itemset => itemset.save()));
+            Mana.status(`Saving ${data.itemsets.length} ItemSets for ${champion.name} (${this.value})`);
+            data.itemsets.map(itemset => ItemSetHandler.parse(champion.key, itemset).then(x => x.save()));
           }
           catch(err) {
             UI.error(err);

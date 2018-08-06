@@ -1,10 +1,10 @@
 const fs = require('fs'), path = require('path');
 
 class ItemSet {
-  constructor(key, file = `MFLUX_${key.toLowerCase()}_${Mana.gameVersion}_${Mana.version}.json`) {
+  constructor(key, file) {
     this.championKey = key.toLowerCase();
 
-    this.file = file;
+    this.file = file || `MFLUX_${this.championKey}_${Mana.gameVersion}_${Mana.version}.json`;
     this.path = path.resolve(Mana.store.get('leaguePath') + `\\Config\\Champions\\${this.championKey}\\Recommended\\${this.file}`);
 
     this._data = {
