@@ -14,9 +14,7 @@ process.on('unhandledRejection', (reason, p) => {
 });
 
 let connector = new LeaguePlug();
-
-let win, top;
-let tray;
+let win, tray;
 
 const shouldQuit = app.makeSingleInstance(function(commandLine, workingDirectory) {
   if (win) {
@@ -36,7 +34,6 @@ let launcher = new AutoLaunch({
 
 function createWindow () {
   win = new BrowserWindow({ width: 600, height: 600, frame: false, icon: __dirname + '/build/icon.' + (platform === 'win32' ? 'ico' : 'png'), backgroundColor: '#000A13', maximizable: false, disableblinkfeatures: 'BlockCredentialedSubresources', show: false });
-  top = new BrowserWindow({ width: 600, height: 100, frame: false, icon: __dirname + '/build/icon.' + (platform === 'win32' ? 'ico' : 'png'), backgroundColor: '#000A13', alwaysOnTop: true, maximizable: false, minimizable: false, resizable: false, closable: false, show: false });
 
   win.loadURL(`file://${__dirname}/src/index.html`);
   win.setMenu(null);
@@ -48,11 +45,9 @@ function createWindow () {
 
   win.on('closed', () => {
     if (connector) connector.end();
-
-    if (top) top.destroy();
     if (tray && !tray.isDestroyed()) tray.destroy();
 
-    win = top = tray = null;
+    win = tray = null;
   });
 }
 
@@ -62,7 +57,6 @@ app.on('ready', () => {
   if (process.argv[2] !== '--dev') autoUpdater.checkForUpdates();
 
   globalShortcut.register('CommandOrControl+Shift+I', () => win.webContents.openDevTools({ mode: 'detach' }));
-  globalShortcut.register('CommandOrControl+Shift+L', () => top.webContents.openDevTools({ mode: 'detach' }));
 });
 
 autoUpdater.on('update-downloaded', (info) => {
@@ -128,22 +122,6 @@ ipcMain.on('lcu-is-connected', event => {
 
 ipcMain.on('lcu-is-logged-in', event => {
   event.sender.send('lcu-is-logged-in', connector.isLoggedIn());
-});
-
-ipcMain.on('top-window-start', (event, data) => {
-  if (top) top.destroy();
-  top = new BrowserWindow({ width: data.width, height: data.height, frame: false, icon: __dirname + '/build/icon.png', backgroundColor: '#000A13', alwaysOnTop: true, maximizable: false, minimizable: false, closable: false, show: false });
-
-  top.loadURL(`file://${__dirname}/src/topwindow.html`);
-
-  top.once('ready-to-show', () => {
-    top.webContents.send('data', data);
-    ipcMain.once('top-window-ready', () => top.show());
-  });
-});
-
-ipcMain.on('top-window-close', (event, data) => {
-  if (top) top.close();
 });
 
 ipcMain.on('win-show', (event, inactive) => {
