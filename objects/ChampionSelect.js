@@ -13,8 +13,7 @@ class ChampionSelect extends EventEmitter {
     this.on('ended', () => console.log('Leaving Champion Select'));
     this.on('change', async id => {
       const champion = Mana.champions[id];
-
-        console.log(`Changed champion to: #${id} (${champion.name})`);
+      console.log(`Changed champion to: #${id} (${champion.name})`);
 
       Mana.user.runes = Mana.user.runes || await Mana.user.getRunes();
       Mana.user._pageCount = Mana.user._pageCount || await Mana.user.getPageCount();
@@ -103,6 +102,10 @@ class ChampionSelect extends EventEmitter {
       const data = await ProviderHandler.getChampionData(champion, this.getPosition(), this.gameMode);
       const { runes, itemsets, summonerspells } = data[this.getPosition()] ? data[this.getPosition()] : data[Object.keys(data)[0]];
 
+      /*
+      * Runes display
+      */
+
       if (!runes.length > 0) {
         Mana.status(`Internal Error: Runes are empty`);
         UI.error(`Couldn't get runes for ${champion.name}`);
@@ -117,8 +120,16 @@ class ChampionSelect extends EventEmitter {
         Mana.status('Loaded runes for ' + champion.name);
       }
 
+      /*
+      * Runes display
+      */
+
       if (Mana.store.get('enableSummonerSpells') && summonerspells.length > 0)
         $('button#loadSummonerSpells').enableManualButton(() => Mana.user.updateSummonerSpells(summonerspells), true);
+
+      /*
+      * Item Sets display
+      */
 
       if (Mana.store.get('enableItemSets') && itemsets.length > 0) {
         try {
