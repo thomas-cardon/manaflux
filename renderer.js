@@ -25,8 +25,8 @@ $(document).ready(function() {
   if (!Mana.store.has('language'))
     Mana.store.set('language', 'en_US');
 
-  if (!Mana.store.has('runes'))
-    Mana.store.set('runes', {});
+  if (!Mana.store.has('data'))
+    Mana.store.set('data', {});
 
   if (!Mana.store.has('summonerspells'))
     Mana.store.set('summonerspells', {});
@@ -86,9 +86,7 @@ ipcRenderer.once('lcu-connected', (event, d) => {
 
   Mana.client.getVersion().then(ver => {
     if (Mana.store.get('gameVersion') !== ver) {
-      Mana.store.set('runes', {});
-      Mana.store.set('summonerspells', {});
-
+      Mana.store.set('data', {});
       ItemSetHandler.getItemSets().then(x => ItemSetHandler.deleteItemSets(x)).catch(UI.error);
     }
 
