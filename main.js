@@ -18,7 +18,7 @@ let connector = new LeaguePlug();
 let win, top;
 let tray;
 
-var shouldQuit = app.makeSingleInstance(function(commandLine, workingDirectory) {
+const shouldQuit = app.makeSingleInstance(function(commandLine, workingDirectory) {
   if (win) {
     if (win.isMinimized()) win.restore();
     else if (!win.isVisible()) win.show();
@@ -27,10 +27,7 @@ var shouldQuit = app.makeSingleInstance(function(commandLine, workingDirectory) 
   }
 });
 
-if (shouldQuit) {
-  app.quit();
-  return;
-}
+if (shouldQuit) return app.quit();
 
 let launcher = new AutoLaunch({
     name: 'Manaflux',
@@ -115,20 +112,8 @@ ipcMain.on('lcu-league-path', (event) => {
   }), 500);
 });
 
-ipcMain.once('lcu-connection', (event, path) => {
+ipcMain.on('lcu-connection', (event, path) => {
   connector.setLeaguePath(path);
-  console.dir(connector);
-
-  /*if (connector.hasStarted()) {
-    connector.removeAllListeners();
-
-    if (connector.isConnected()) {
-      event.sender.send('lcu-connected', connector.getConnectionData());
-      if (connector.isLoggedIn()) event.sender.send('lcu-logged-in');
-    }
-    else event.sender.send('lcu-disconnected');
-  }
-  else*/
   connector.start();
 
   connector.on('connected', d => event.sender.send('lcu-connected', d));
