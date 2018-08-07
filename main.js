@@ -66,9 +66,16 @@ autoUpdater.on('update-downloaded', (info) => {
   win.webContents.send('update-ready', info);
 });
 
-ipcMain.on('champion-select-in', () => {
-  globalShortcut.register('Alt+Left', () => ipcMain.send('runes-previous'));
-  globalShortcut.register('Alt+Right', () => ipcMain.send('runes-next'));
+ipcMain.on('champion-select-in', (event, arg) => {
+  globalShortcut.register('Alt+Left', () => {
+    console.log('Shortcut pressed: Alt+Left');
+    event.sender.send('runes-previous');
+  });
+
+  globalShortcut.register('Alt+Right', () => {
+    console.log('Shortcut pressed: Alt+Right');
+    event.sender.send('runes-next');
+  });
 });
 
 ipcMain.on('champion-select-out', () => {
@@ -94,7 +101,7 @@ ipcMain.on('auto-start', (event, enable) => {
 
   launcher.isEnabled()
   .then(enabled => !enabled && enable ? launcher.enable() : (enabled && !enable ? launcher.disable() : null))
-  .catch(err => ipcMain.send('error', { type: 'AUTO-START', error: err }));
+  .catch(err => event.sender.send('error', { type: 'AUTO-START', error: err }));
 });
 
 ipcMain.on('lcu-league-path', (event) => {
@@ -143,6 +150,8 @@ app.on('certificate-error', (event, webContents, url, error, certificate, callba
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
 })
+
+app.on('will-quit', () => globalShortcut.unregisterAll());
 
 app.on('activate', () => {
   if (win === null) createWindow();

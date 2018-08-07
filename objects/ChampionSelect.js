@@ -102,12 +102,16 @@ class ChampionSelect extends EventEmitter {
 
       for (let position in res) {
         if (res[position].runes.length === 0)
-          UI.error(`Couldn't get runes for ${champion.name}, position: ${this.value}`);
+          UI.error(`Couldn't get runes for ${champion.name}, position: ${position}`);
         else $('#positions').append(`<option value="${position}">${position === 'ADC' ? 'ADC' : position.charAt(0).toUpperCase() + position.slice(1) }</option>`)
       }
 
       $('#positions').change(async function() {
         let data = res[this.value];
+
+        console.log(this.value);
+        console.dir(data);
+
         $('button#loadRunes, button#loadSummonerSpells').disableManualButton();
 
         /*
@@ -149,19 +153,30 @@ class ChampionSelect extends EventEmitter {
       });
 
       ipcRenderer.on('runes-previous', () => {
-        const keys = Object.keys(res);
-        let i = keys.length, positionIndex = keys.indexOf($('#positions').val());
+        console.log('Shortcut: Previous Runes');
 
-        if (i - positionIndex > 0)
-          $('#positions').val(res[keys[positionIndex--]]).trigger('change');
+        const keys = Object.keys(res);
+
+        let i = keys.length, positionIndex = keys.indexOf($('#positions').val());
+        let newIndex = positionIndex;
+
+        if (newIndex === 0) newIndex = i - 1;
+        else newIndex--;
+
+        $('#positions').val(keys[newIndex]).trigger('change');
       });
 
       ipcRenderer.on('runes-next', () => {
+        console.log('Shortcut: Next Runes');
+
         const keys = Object.keys(res);
         let i = keys.length, positionIndex = keys.indexOf($('#positions').val());
+        let newIndex = positionIndex;
 
-        if (positionIndex + 1 < i)
-          $('#positions').val(res[keys[positionIndex++]]).trigger('change');
+        if (newIndex === i - 1) newIndex = 0;
+        else newIndex++;
+
+        $('#positions').val(keys[newIndex]).trigger('change');
       });
 
       $('#positions').val(res[this.getPosition()] ? this.getPosition() : Object.keys(res)[0]).trigger('change').show();

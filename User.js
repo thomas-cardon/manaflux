@@ -3,9 +3,7 @@ const rp = require('request-promise-native');
 class User {
   load() {
     const self = this;
-    return new Promise((resolve, reject) => {
-      self._waitForConnection(d => resolve(self.summoner = d), reject);
-    });
+    return new Promise((resolve, reject) => self._waitForConnection(d => resolve(self.summoner = d), reject));
   }
   async _waitForConnection(cb, reject) {
     try {

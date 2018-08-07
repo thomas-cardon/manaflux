@@ -50,7 +50,7 @@ class ProviderHandler {
     * 3/3 Saving
     */
 
-    Mana.store.set(`data.${champion.key}`, positions);
+    if (positions !== {}) Mana.store.set(`data.${champion.key}`, positions);
     console.dir(positions);
 
     return positions;
