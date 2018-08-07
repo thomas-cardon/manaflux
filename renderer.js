@@ -96,16 +96,14 @@ ipcRenderer.once('lcu-connected', (event, d) => {
 });
 
 ipcRenderer.on('lcu-logged-in', async () => {
-  Mana.status('Connected');
+  Mana.status('Connecting (be sure to be logged on League of Legends)');
 
   await Mana.user.load();
   Mana.championselect.load();
 
   Mana.status('Waiting for Champion Select');
 
-  global._devChampionSelect = function() {
-    new (require('./CustomGame'))().create().then(game => game.start());
-  }
+  global._devChampionSelect = () => new (require('./CustomGame'))().create().then(game => game.start());
 });
 
 ipcRenderer.on('lcu-disconnected', async () => {

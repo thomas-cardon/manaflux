@@ -1,8 +1,23 @@
 const rp = require('request-promise-native');
 
 class User {
-  async load() {
-    this.summoner = JSON.parse(await rp(Mana.base + 'lol-summoner/v1/current-summoner'));
+  load() {
+    const self = this;
+    return new Promise((resolve, reject) => {
+      self._waitForConnection(d => resolve(self.summoner = d), reject);
+    });
+  }
+  async _waitForConnection(cb, reject) {
+    try {
+      const res = await rp(Mana.base + 'lol-summoner/v1/current-summoner');
+      cb(JSON.parse(res));
+    }
+    catch(err) {
+      if (err.statusCode === 404) {
+        setTimeout(() => this._waitForConnection(cb, reject), 1000);
+      }
+      reject(err);
+    }
   }
 
   async getGameMode() {
