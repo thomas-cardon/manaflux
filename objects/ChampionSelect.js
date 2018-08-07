@@ -96,8 +96,9 @@ class ChampionSelect extends EventEmitter {
       const res = await ProviderHandler.getChampionData(champion, this.getPosition(), this.gameMode);
 
       $('#positions').unbind().empty().hide();
-      ipcRenderer.removeListener('runes-previous');
-      ipcRenderer.removeListener('runes-next');
+
+      ipcRenderer.removeAllListeners('runes-previous');
+      ipcRenderer.removeAllListeners('runes-next');
 
       for (let position in res) {
         if (res[position].runes.length === 0)
