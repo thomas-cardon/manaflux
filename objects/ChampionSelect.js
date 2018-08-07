@@ -96,6 +96,8 @@ class ChampionSelect extends EventEmitter {
       const res = await ProviderHandler.getChampionData(champion, this.getPosition(), this.gameMode);
 
       $('#positions').unbind().empty().hide();
+      ipcRenderer.removeListener('runes-previous');
+      ipcRenderer.removeListener('runes-next');
 
       for (let position in res) {
         if (res[position].runes.length === 0)
@@ -143,6 +145,22 @@ class ChampionSelect extends EventEmitter {
             UI.error(err);
           }
         }
+      });
+
+      ipcRenderer.on('runes-previous', () => {
+        const keys = Object.keys(res);
+        let i = keys.length, positionIndex = keys.indexOf($('#positions').val());
+
+        if (i - positionIndex > 0)
+          $('#positions').val(res[keys[positionIndex--]]).trigger('change');
+      });
+
+      ipcRenderer.on('runes-next', () => {
+        const keys = Object.keys(res);
+        let i = keys.length, positionIndex = keys.indexOf($('#positions').val());
+
+        if (positionIndex + 1 < i)
+          $('#positions').val(res[keys[positionIndex++]]).trigger('change');
       });
 
       $('#positions').val(res[this.getPosition()] ? this.getPosition() : Object.keys(res)[0]).trigger('change').show();

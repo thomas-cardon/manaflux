@@ -102,9 +102,15 @@ ipcRenderer.on('lcu-logged-in', async () => {
   Mana.championselect.load();
 
   Mana.status('Waiting for Champion Select');
+
+  global._devChampionSelect = function() {
+    new (require('./CustomGame'))().create().then(game => game.start());
+  }
 });
 
 ipcRenderer.on('lcu-disconnected', async () => {
+  global._devChampionSelect = () => console.log(`Couldn't start a game: LeaguePlug is disconnected`);
+
   if (Mana.championselect) Mana.championselect.end().destroy();
   Mana.status('Disconnected');
 });
@@ -113,6 +119,4 @@ global.autoStart = function(checked) {
   ipcRenderer.send(`auto-start-${checked ? 'en' : 'dis'}able`);
 }
 
-global._devChampionSelect = function() {
-  new (require('./CustomGame'))().create().then(game => game.start());
-}
+global._devChampionSelect = () => console.log(`Couldn't start a game: LeaguePlug is disconnected`);
