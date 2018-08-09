@@ -127,8 +127,7 @@ class ChampionGGProvider {
       itemset.addBlock(block);
     });
 
-    // Putting the starters before the build
-    // itemset.swapBlock(2, 0).swapBlock(3, 1);
+    itemset.swapBlock(2, 0).swapBlock(3, 1);
 
     /*
     * Workaround: fix duplicates

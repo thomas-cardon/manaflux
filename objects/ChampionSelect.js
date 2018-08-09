@@ -145,7 +145,11 @@ class ChampionSelect extends EventEmitter {
             let old = await ItemSetHandler.deleteItemSets(await ItemSetHandler.getItemSetsByChampionKey(champion.key));
 
             Mana.status(`Saving ${data.itemsets.length} ItemSets for ${champion.name} (${this.value})`);
-            data.itemsets.map(itemset => ItemSetHandler.parse(champion.key, itemset).then(x => x.save()));
+
+            for (const set of data.itemsets) {
+              console.dir(set._data);
+              await set.save();
+            }
           }
           catch(err) {
             UI.error(err);

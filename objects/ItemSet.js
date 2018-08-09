@@ -32,23 +32,19 @@ class ItemSet {
   }
 
   addBlock(block) {
-    this._data.blocks.push(block.build());
+    this._data.blocks.push(block);
     return this;
   }
 
   swapBlock(x, y) {
-    let b = this[x];
-    this[x] = this[y];
-    this[y] = b;
+    let b = this._data.blocks[x];
+    this._data.blocks[x] = this._data.blocks[y];
+    this._data.blocks[y] = b;
     return this;
   }
 
-  build() {
-    return this._data;
-  }
-
   save() {
-    let p = this.path;
+    const p = this.path, data = JSON.stringify(this._data);
 
     /*
     * Creates the required folders if needed
@@ -56,8 +52,10 @@ class ItemSet {
     require('./handlers/ItemSetHandler')._ensureDir(path.resolve(Mana.store.get('leaguePath') + `\\Config\\Champions\\${this.championKey}`));
     require('./handlers/ItemSetHandler')._ensureDir(path.resolve(Mana.store.get('leaguePath') + `\\Config\\Champions\\${this.championKey}\\Recommended`));
 
+    console.dir(data);
+
     return new Promise((resolve, reject) => {
-      fs.writeFile(p, JSON.stringify(this.build()), 'utf8', err => {
+      fs.writeFile(p, data, 'utf8', err => {
         if (err) return reject(err);
         resolve();
       });
@@ -89,31 +87,28 @@ class ItemSet {
 
 class Block {
   constructor() {
-    this._data = { type: "Unknown ManaFlux Block", items: [] };
+    this.type = "Unknown ManaFlux Block";
+    this.items = [];
   }
 
   enableTutorialMode() {
-    this._data.recMath = true;
+    this.recMath = true;
     return this;
   }
 
   setName(name) {
-    this._data.type = name;
+    this.type = name;
     return this;
   }
 
   setItems(array) {
-    this._data.items = array;
+    this.items = array;
     return this;
   }
 
   addItem(id, count = 1) {
-    this._data.items.push({ id: `${id}`, count });
+    this.items.push({ id: `${id}`, count });
     return this;
-  }
-
-  build() {
-    return this._data;
   }
 }
 

@@ -8,8 +8,17 @@ class ProviderHandler {
     * 1/3 Storage Checking
     */
 
-    if (Mana.store.has(`data.${champion.key}`))
-      return Mana.store.get(`data.${champion.key}`);
+    console.dir(champion);
+
+    if (Mana.store.has(`data.${champion.key}`)) {
+      let data = Mana.store.get(`data.${champion.key}`);
+
+      for (let [position, data] of Object.entries(data))
+        for (let i = 0; i < data.itemsets.length; i++)
+          data.itemsets[i] = require('./ItemSetHandler').parse(champion.key, data.itemsets[i]._data);
+
+      return data;
+    }
 
     /*
      * 2/3 Downloading
