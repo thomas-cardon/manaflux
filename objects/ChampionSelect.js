@@ -146,10 +146,8 @@ class ChampionSelect extends EventEmitter {
 
             Mana.status(`Saving ${data.itemsets.length} ItemSets for ${champion.name} (${this.value})`);
 
-            for (const set of data.itemsets) {
-              console.dir(set._data);
+            for (const set of data.itemsets)
               await set.save();
-            }
           }
           catch(err) {
             UI.error(err);

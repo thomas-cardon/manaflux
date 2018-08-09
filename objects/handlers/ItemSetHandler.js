@@ -3,9 +3,7 @@ const { ItemSet, Block } = require('../ItemSet');
 
 class ItemSetHandler {
 
-  static async parse(key, obj) {
-    if (typeof obj === 'string') obj = await ItemSetHandler._readFile(obj);
-
+  static parse(key, obj) {
     let set = new ItemSet(key);
     set._data = obj;
 
