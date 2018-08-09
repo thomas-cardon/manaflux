@@ -100,17 +100,18 @@ class ChampionSelect extends EventEmitter {
       ipcRenderer.removeAllListeners('runes-previous');
       ipcRenderer.removeAllListeners('runes-next');
 
+      console.dir(res);
+
       for (let position in res) {
-        if (res[position].runes.length === 0)
+        if (res[position].runes.length === 0) {
           UI.error(`Couldn't get runes for ${champion.name}, position: ${position}`);
+          delete res[position];
+        }
         else $('#positions').append(`<option value="${position}">${position === 'ADC' ? 'ADC' : position.charAt(0).toUpperCase() + position.slice(1) }</option>`)
       }
 
       $('#positions').change(async function() {
         let data = res[this.value];
-
-        console.log(this.value);
-        console.dir(data);
 
         $('button#loadRunes, button#loadSummonerSpells').disableManualButton();
 
@@ -156,12 +157,14 @@ class ChampionSelect extends EventEmitter {
         console.log('Shortcut: Previous Runes');
 
         const keys = Object.keys(res);
-
         let i = keys.length, positionIndex = keys.indexOf($('#positions').val());
         let newIndex = positionIndex;
 
         if (newIndex === 0) newIndex = i - 1;
         else newIndex--;
+
+        // Useless to reload runes again if it's the same runes..
+        if (newIndex === positionIndex) return;
 
         $('#positions').val(keys[newIndex]).trigger('change');
       });
@@ -175,6 +178,9 @@ class ChampionSelect extends EventEmitter {
 
         if (newIndex === i - 1) newIndex = 0;
         else newIndex++;
+
+        // Useless to reload runes again if it's the same runes..
+        if (newIndex === positionIndex) return;
 
         $('#positions').val(keys[newIndex]).trigger('change');
       });

@@ -27,14 +27,16 @@ class ChampionGGProvider {
   }
 
   async getData(champion, preferredPosition, gameMode) {
+    console.log(`${this.base}champion/${champion.key}${preferredPosition ? '/' + preferredPosition.toLowerCase() : ''}`);
+
     const res = await rp(`${this.base}champion/${champion.key}${preferredPosition ? '/' + preferredPosition.toLowerCase() : ''}`);
     const data = this._scrape(res, champion.key, gameMode);
 
     let positions = {};
-
     positions[data.position] = data;
 
-    console.dir(data);
+    console.dir(positions);
+
     for (const position of data.availablePositions) {
       console.dir(position);
       console.log('ChampionGG - Downloading data for position ' + position.position);
@@ -72,10 +74,10 @@ class ChampionGGProvider {
     */
     champion = $('.champion-profile > h1').text();
 
-    const position = $(`li[class^='selected-role'] a[href^='/champion/${champion}']`).first().text().trim();
+    const position = $(`li[class^='selected-role'] > a[href^='/champion/']`).first().text().trim();
     let availablePositions = [];
 
-    $(`li[class!='selected-role'] a[href^='/champion/${champion}']`).each(function(index) {
+    $(`li[class!='selected-role'] > a[href^='/champion/']`).each(function(index) {
       availablePositions.push({ position: $(this).first().text().trim().toUpperCase(), link: 'https://champion.gg' + $(this).attr('href') });
     });
 
@@ -113,7 +115,7 @@ class ChampionGGProvider {
     * ItemSets
     */
 
-    let itemset = new ItemSet(champion, position).setTitle(`CGG ${$('.champion-profile h1').text()} - ${position}`);
+    let itemset = new ItemSet(champion, position).setTitle(`CGG ${champion} - ${position}`);
     $('.build-wrapper').each(function(index) {
     	const type = $(this).parent().find('h2').eq(index % 2).text();
       let block = new Block().setName(type + ` (${$(this).find('div > strong').text().trim().slice(0, 6)} WR)`);
