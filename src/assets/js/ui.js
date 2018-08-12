@@ -11,8 +11,6 @@ UI.success = function(msg) {
 }
 
 UI.tray = function(tray = true) {
-	console.log(`${tray ? 'Enabling' : 'Disabling'} Tray Mode.`);
-
 	if (tray) {
 		ipcRenderer.send('win-hide');
 		ipcRenderer.send('tray', true);
