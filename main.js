@@ -1,4 +1,6 @@
 const { app, BrowserWindow, ipcMain, globalShortcut, Menu, Tray } = require('electron');
+const i18n = new (require('../objects/i18n'));
+
 const { autoUpdater } = require('electron-updater');
 const platform = process.platform;
 
@@ -10,7 +12,7 @@ process.on('uncaughtException', function (err) {
 });
 
 process.on('unhandledRejection', (reason, p) => {
-  console.log('Unhandled Rejection at:', p, 'reason:', reason);
+  console.log(`${i18n.__('process-unhandled-rejection')}: ${p}, ${i18n.__('reason')}: ${reason}`);
 });
 
 let connector = new LeaguePlug();
@@ -27,10 +29,7 @@ const shouldQuit = app.makeSingleInstance(function(commandLine, workingDirectory
 
 if (shouldQuit) return app.quit();
 
-let launcher = new AutoLaunch({
-    name: 'Manaflux',
-    isHidden: true
-});
+let launcher = new AutoLaunch({ name: 'Manaflux', isHidden: true });
 
 function createWindow () {
   win = new BrowserWindow({ width: 600, height: 600, frame: false, icon: __dirname + '/build/icon.' + (platform === 'win32' ? 'ico' : 'png'), backgroundColor: '#000A13', maximizable: false, disableblinkfeatures: 'BlockCredentialedSubresources', show: false });
@@ -59,23 +58,14 @@ app.on('ready', () => {
   globalShortcut.register('CommandOrControl+Shift+I', () => win.webContents.openDevTools({ mode: 'detach' }));
 });
 
-autoUpdater.on('update-downloaded', (info) => {
-  console.dir(info);
-
+autoUpdater.on('update-downloaded', info => {
   ipcMain.on('update-install', (event, arg) => autoUpdater.quitAndInstall());
   win.webContents.send('update-ready', info);
 });
 
 ipcMain.on('champion-select-in', (event, arg) => {
-  globalShortcut.register('Alt+Left', () => {
-    console.log('Shortcut pressed: Alt+Left');
-    event.sender.send('runes-previous');
-  });
-
-  globalShortcut.register('Alt+Right', () => {
-    console.log('Shortcut pressed: Alt+Right');
-    event.sender.send('runes-next');
-  });
+  globalShortcut.register('Alt+Left', () => event.sender.send('runes-previous'));
+  globalShortcut.register('Alt+Right', () => event.sender.send('runes-next'));
 });
 
 ipcMain.on('champion-select-out', () => {
@@ -91,7 +81,7 @@ ipcMain.on('tray', (event, show) => {
   }
 
   tray = new Tray(__dirname + '/build/icon.' + (platform === 'win32' ? 'ico' : 'png'));
-  tray.setToolTip('Cliquez pour afficher ManaFlux');
+  tray.setToolTip(i18n.__('tray-show'));
 
   tray.on('click', () => win.isVisible() ? win.hide() : win.showInactive());
 });
@@ -138,14 +128,6 @@ ipcMain.on('win-show', (event, inactive) => {
 ipcMain.on('win-hide', () => win.hide());
 ipcMain.on('win-close', () => win.close());
 ipcMain.on('win-minimize', () => win.minimize());
-
-// Needed to access League's local resources
-app.on('certificate-error', (event, webContents, url, error, certificate, callback) => {
-    console.log(url);
-
-    event.preventDefault();
-    callback(true);
-});
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();

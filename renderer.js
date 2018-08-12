@@ -22,9 +22,6 @@ if (Mana.store.get('enableTrayIcon')) UI.tray();
 Mana.status('Loading Storage');
 
 $(document).ready(function() {
-  if (!Mana.store.has('language'))
-    Mana.store.set('language', 'en_US');
-
   if (!Mana.store.has('data'))
     Mana.store.set('data', {});
 

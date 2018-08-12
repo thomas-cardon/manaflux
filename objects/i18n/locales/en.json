@@ -1,4 +1,6 @@
 {
+  "process-unhandled-rejection": "Unhandled rejection at",
+  "reason": "reason",
   "eval": "Eval isn't supported for security reasons.",
   "info": "Info",
   "error": "Error",
@@ -10,6 +12,7 @@
   "path-found": "Path found",
   "connected": "Connected",
   "disconnected": "Disconnected",
+  "tray-show": "Click here to show ManaFlux.",
   "league-client-connection": "Connecting to League Client.",
   "league-client-disconnected": "Disconnected from League Client",
   "league-client-start-required": "Please start League Client",

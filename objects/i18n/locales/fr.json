@@ -1,4 +1,6 @@
 {
+  "process-unhandled-rejection": "Rejection non gérée à",
+  "reason": "raison",
   "eval": "La commande Eval n'est pas supportée pour des raisons de sécurité.",
   "info": "Informations",
   "error": "Erreur",
@@ -10,6 +12,7 @@
   "path-found": "Répertoire d'installation trouvé",
   "connected": "Connecté",
   "disconnected": "Déconnecté",
+  "tray-show": "Cliquez ici pour afficher ManaFlux.",
   "league-client-connection": "Connexion à League Client.",
   "league-client-disconnected": "Déconnecté de League Client",
   "league-client-start-required": "Démarrage de League Client requis",
