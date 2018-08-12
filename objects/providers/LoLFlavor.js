@@ -33,7 +33,7 @@ class LoLFlavorProvider {
     let itemset = new ItemSet(champion.key, position);
 
     itemset._data = itemset;
-    itemset._data.blocks[0].type = 'Consommables | set mis-à-jour le ' + itemset.title.split(' - ')[1];
+    itemset._data.blocks[0].type = i18n.__('itemsets-block-consumables');
 
     itemset.setTitle(`LFR ${champion.name} - ${gameMode === 'ARAM' ? 'ARAM' : preferredPosition}`)
 

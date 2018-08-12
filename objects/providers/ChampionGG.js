@@ -27,8 +27,6 @@ class ChampionGGProvider {
   }
 
   async getData(champion, preferredPosition, gameMode) {
-    console.log(`${this.base}champion/${champion.key}${preferredPosition ? '/' + preferredPosition.toLowerCase() : ''}`);
-
     const res = await rp(`${this.base}champion/${champion.key}${preferredPosition ? '/' + preferredPosition.toLowerCase() : ''}`);
     const data = this._scrape(res, champion.key, gameMode);
 
