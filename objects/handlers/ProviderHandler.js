@@ -41,7 +41,7 @@ class ProviderHandler {
         }
 
         if (!provider[method]) {
-          console.log(`Provider ${provider.name} doesn't have a method called #${method}. Skipping.`);
+          console.log(`[ProviderHandler] ${provider.name} ${i18n.__('providerhandler-skipped')}: #${method}`);
           continue;
         }
 

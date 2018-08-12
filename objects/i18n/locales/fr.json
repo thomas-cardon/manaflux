@@ -20,6 +20,7 @@
   "champion-select-waiting": "En attente de la sélection des champions",
   "champion-select-hide": "S'y cacher hors sélection des champions",
   "developer-game-start-error": "Impossible de démarrer une partie en mode développement",
+  "providerhandler-skipped": "à été sauté à cause d'une méthode manquante",
   "providers-error-itemsets-not-found": "Impossible de trouver un set d'objet",
   "providers-error-data": "Impossible d'aggréger les données requises",
   "providers-cgg-runes-fix": "Tentative de réparation des runes",
