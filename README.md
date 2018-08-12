@@ -4,7 +4,14 @@ A dead simple runes (and now summoner spells + itemsets !) downloader for League
 
 ![ManaFlux Main Page](screenshots/1.png "Main page")
 
-> There's only one language for now. It's some kind of french and english.. I know I messed up. In a next update it will be fixed.
+> Support for English and French has been added ! It's automatic: ManaFlux will use your system to know what language it's supposed to load.
+
+## Key Features
+- Automatic Runes, Item Sets, and Summoner Spells downloading
+- Ability to change positions (roles, e.g MIDDLE, TOP) using the User Interface or the shortcuts
+<kbd>Alt+Left Arrow</kbd> or <kbd>Alt+Right Arrow</kbd>
+- You can hide it automatically in taskbar when you're not in champion select
+- Instead of controlling your mouse to setup your runes, ManaFlux injects them directly in the client, so you don't have to do anything but pick your champion.
 
 ## Getting Started
 
@@ -13,7 +20,7 @@ A dead simple runes (and now summoner spells + itemsets !) downloader for League
  The software will be installed on your computer then launched.
 
 #### Mac OS X and Linux
- > You'll need to clone and build it by yourself: `npm install && electron .`
+ > You'll need to clone and build it by yourself: `npm install && electron .` Support is unofficial, but if you find an issue feel free to open a ticket.
 
 
 ## Will I get banned if I use this ?
@@ -25,4 +32,5 @@ A dead simple runes (and now summoner spells + itemsets !) downloader for League
 ### Built with
 - [Electron](https://electronjs.org/)
 - [NodeJS](https://nodejs.org)
-- Web Technologies: HTML, CSS and JS for rendering
+- Web Technologies: HTML5, CSS3 and JavaScript for rendering
+- Theme inspired from League of Legends
