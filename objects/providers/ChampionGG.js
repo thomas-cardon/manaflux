@@ -39,7 +39,7 @@ class ChampionGGProvider {
 
     for (const position of data.availablePositions) {
       console.dir(position);
-      console.log('ChampionGG - Downloading data for position ' + position.position);
+      console.log(`[Champion.GG] Gathering data for ${position.position} position`);
 
       const d = await rp(position.link);
       positions[position.position] = this._scrape(d, champion.key, gameMode);
@@ -112,10 +112,40 @@ class ChampionGGProvider {
     });
 
     /*
+    * Skills
+    */
+
+    let skills = $('.skill').slice(1, -1);
+    skills.splice(3, 2);
+
+    let sums = [{ key: 'A', sum: 0 }, { key: 'Z', sum: 0 }, { key: 'E', sum: 0 }];
+    let skillorders = {};
+
+    skills.each(function(index) {
+      $(this).find('div').children().each(function(i) {
+        if (!$(this).hasClass('selected')) return;
+        sums[index % 3].sum += (18 - i);
+      });
+
+      console.log('Skill ' + sums[index % 3].key + ': ' + sums[index % 3].sum);
+
+      if (index % 3 === 0) {
+        sums = sums.sort((a, b) => b.sum - a.sum);
+        skillorders[index === 0 ? 'mf' : 'hw%'] = `${sums[0].key} => ${sums[1].key} => ${sums[2].key}`;
+        sums[0].sum = sums[1].sum = sums[2].sum = 0;
+      }
+    });
+
+    console.dir(skillorders);
+
+    /*
     * ItemSets
     */
 
     let itemset = new ItemSet(champion, position).setTitle(`CGG ${champion} - ${position}`);
+    itemset.addBlock(new Block().setName(`${i18n.__('itemsets-block-starter')}${skillorders.mf}`));
+    itemset.addBlock(new Block().setName(i18n.__('itemsets-block-consumables')).addItem(2003).addItem(2138).addItem(2139).addItem(2140));
+
     $('.build-wrapper').each(function(index) {
     	const type = $(this).parent().find('h2').eq(index % 2).text();
       let block = new Block().setName(type + ` (${$(this).find('div > strong').text().trim().slice(0, 6)} WR)`);
@@ -127,7 +157,8 @@ class ChampionGGProvider {
       itemset.addBlock(block);
     });
 
-    itemset.swapBlock(2, 0).swapBlock(3, 1);
+    itemset.swapBlock(4, 2).swapBlock(3, 1);
+    itemset.addBlock(new Block().setName(`Trinkets`).addItem(2055).addItem(3340).addItem(3341).addItem(3348).addItem(3363));
 
     /*
     * Workaround: fix duplicates
@@ -139,12 +170,12 @@ class ChampionGGProvider {
 
       if (page.selectedPerkIds[0] === undefined && page.selectedPerkIds[1] === undefined) {
         pages.splice(i, 1);
-        UI.error("Champion.GG - Impossible de récupérer les runes: STILL_GATHERING_DATA??");
+        UI.error(`[Champion.GG] ${i18n.__('providers-error-data')}`);
       }
       else if (page.selectedPerkIds[0] === page.selectedPerkIds[1]) {
         page.selectedPerkIds.splice(1, 1);
         page.selectedPerkIds.splice(3, 0, fixes[page.primaryStyleId]);
-        UI.error("Champion.GG - Tentative de réparation des runes: Duplication des keystones");
+        UI.error(`[Champion.GG] ${i18n.__('providers-cgg-runes-fix')}`);
       }
     }
 

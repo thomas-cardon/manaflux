@@ -20,7 +20,7 @@ class LoLFlavorProvider {
       return this._aggregate(res, champion, preferredPosition, gameMode);
     }
     catch(err) {
-      UI.error('LoLFlavor - Couldn\'t find item sets');
+      UI.error(`[LoLFlavor] ${i18n.__('providers-error-itemsets-not-found')}`);
       console.error(err);
 
       if (err.statusCode === 404) return { itemsets: [] };

@@ -49,23 +49,25 @@ $(document).ready(function() {
   if (!Mana.store.has('theme'))
     Mana.store.set('theme', 'themes/default-bg.jpg');
 
-  if (!Mana.store.has('riot-stuff-consent-thingy')) {
-    dialog.showMessageBox({ title: 'Informations', message: 'ManaFlux isn’t endorsed by Riot Games and doesn’t reflect the views or opinions of Riot Games or anyone officially involved in producing or managing League of Legends. League of Legends and Riot Games are trademarks or registered trademarks of Riot Games, Inc.\nLeague of Legends © Riot Games, Inc.' });
-    Mana.store.set('riot-stuff-consent-thingy', true);
+  if (!Mana.store.has('riot-consent')) {
+    dialog.showMessageBox({ title: i18n.__('info'), message: i18n.__('consent') });
+    Mana.store.set('riot-consent', true);
   }
 
   Mana.store.set('lastVersion', Mana.version);
 
   if (!Mana.store.has('leaguePath')) {
-    Mana.status('Démarrage du launcher nécessaire');
-    UI.error('Démarrez le launcher pour que je puisse trouver son emplacement');
+    Mana.status(i18n.__('league-client-start-required'));
+    UI.error(i18n.__('league-client-start-required-explanation'));
 
     ipcRenderer.once('lcu-league-path', (event, path) => {
-      Mana.status('League Path found');
-      console.log(path);
+      Mana.status('League: ' + i18n.__('path-found'));
+
+      console.log(`[LeaguePlug] ${i18n.__('path-found')}`);
+      console.log(`[LeaguePlug] ${path}`);
 
       Mana.store.set('leaguePath', path);
-      return ipcRenderer.send('lcu-connection', path);
+      ipcRenderer.send('lcu-connection', path);
     }).send('lcu-league-path');
   }
   else ipcRenderer.send('lcu-connection', Mana.store.get('leaguePath'));
@@ -78,7 +80,7 @@ ipcRenderer.once('lcu-connected', (event, d) => {
   Mana.client = require('./objects/Client');
   Mana.championselect = new (require('./objects/ChampionSelect'))();
 
-  Mana.status('Loading Data');
+  Mana.status(i18n.__('loading-data'));
   Promise.all([Mana.client.getChampionSummary(), Mana.client.getSummonerSpells()]).then(data => {
     Mana.champions = data[0];
     Mana.summonerspells = data[1];
@@ -96,25 +98,25 @@ ipcRenderer.once('lcu-connected', (event, d) => {
 });
 
 ipcRenderer.on('lcu-logged-in', async () => {
-  Mana.status('Connecting (be sure to be logged on League of Legends)');
+  Mana.status(i18n.__('league-client-connection'));
 
   await Mana.user.load();
   Mana.championselect.load();
 
-  Mana.status('Waiting for Champion Select');
+  Mana.status(i18n.__('champion-select-waiting'));
 
   global._devChampionSelect = () => new (require('./CustomGame'))().create().then(game => game.start());
 });
 
 ipcRenderer.on('lcu-disconnected', async () => {
-  global._devChampionSelect = () => console.log(`Couldn't start a game: LeaguePlug is disconnected`);
+  global._devChampionSelect = () => console.log(`[${i18n.__('error')}] ${i18n.__('developer-game-start-error')}\n${i18n.__('league-client-disconnected')}`);
 
   if (Mana.championselect) Mana.championselect.end().destroy();
-  Mana.status('Disconnected');
+  Mana.status(i18n.__('disconnected'));
 });
 
 global.autoStart = function(checked) {
   ipcRenderer.send(`auto-start-${checked ? 'en' : 'dis'}able`);
 }
 
-global._devChampionSelect = () => console.log(`Couldn't start a game: LeaguePlug is disconnected`);
+global._devChampionSelect = () => console.log(`[${i18n.__('error')}] ${i18n.__('developer-game-start-error')}\n${i18n.__('league-client-disconnected')}`);

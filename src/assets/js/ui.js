@@ -63,6 +63,11 @@ UI.disableHextechAnimation = () => {
 * Tab Handler
 */
 $(document).ready(function() {
+	$('[data-i18n]').each(function() {
+		console.log(`[Localization] Loading value: ${$(this).data('i18n')}`);
+		$(this).text(i18n.__($(this).data('i18n')));
+	});
+
 	$('.tablinks').click(function() {
 		const content = $(`.tabcontent[data-tabid="${$(this).data('tabid')}"]`);
 		document.getElementById("selected").style.marginLeft = $(this).data('tabid') !== 'home' ? (89 + $(this).position().left) : 89 + 'px';

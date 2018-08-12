@@ -13,9 +13,9 @@
     <img src="assets/img/warning.png" id="warning" draggable="false" style="display: none;">
     <img src="assets/img/selected.png" id="selected" class="selected" draggable="false" style="margin-left: 89px;">
     <div class="tab">
-      <button class="tablinks active" data-tabid="home">Home</button>
-      <button class="tablinks" data-tabid="settings">Settings</button>
-      <button class="tablinks flash" data-tabid="update" style="display: none;">Update</button>
+      <button data-i18n="menu-home" class="tablinks active" data-tabid="home"></button>
+      <button data-i18n="menu-settings" class="tablinks" data-tabid="settings"></button>
+      <button data-i18n="menu-update" class="tablinks flash" data-tabid="update" style="display: none;"></button>
     </div>
     <div class="controls">
       <button onclick="ipcRenderer.send('win-minimize');"><i class="material-icons icon">remove</i></button>
@@ -30,8 +30,8 @@
         <img src="assets/img/underline.png" draggable="false">
       </div>
       <div class="buttons">
-        <button type="button" id="loadSummonerSpells" style="display: none;">LOAD SUMMONER SPELLS</button>
-        <button type="button" id="loadRunes" style="display: none; margin: 10px;">LOAD RUNES</button>
+        <button type="button" data-i18n="button-load-summoner-spells" id="loadSummonerSpells" style="display: none;"></button>
+        <button type="button" data-i18n="button-load-summoner-spells" id="loadRunes" style="display: none; margin: 10px;"></button>
         <select style="display: none; margin: 10px;" id="positions" class="dropdown center-area"></select>
       </div>
       <div class="championPortrait" style="display: none;">
@@ -45,79 +45,81 @@
         <p class="suboption-name">Runes</p>
         <div class="options float-left checkboxContainer">
           <input type="checkbox" data-settings-key="loadRunesAutomatically" />
-          <label>Charger automatiquement</label>
+          <label data-i18n="load-automatically"></label>
         </div>
       </div>
       <div class="option">
-        <p class="suboption-name">Sorts d'invocateur</p>
+        <p class="suboption-name" data-i18n="summonerspells"></p>
         <div class="options float-left checkboxContainer">
           <input type="checkbox" data-settings-key="enableSummonerSpells" />
-          <label>Activer</label>
+          <label data-i18n="enable"></label>
         </div>
       </div>
       <div class="option">
-        <p class="suboption-name">Item sets</p>
+        <p class="suboption-name" data-i18n="itemsets"></p>
         <div class="options float-left checkboxContainer">
           <input type="checkbox" data-settings-key="enableItemSets" />
-          <label>Activer</label>
+          <label data-i18n="enable"></label>
         </div>
       </div>
       <div class="option">
-        <p class="suboption-name">Démarrage</p>
+        <p class="suboption-name" data-i18n="startup"></p>
         <div class="options float-left checkboxContainer">
           <input type="checkbox" data-settings-key="auto-start" onclick="autoStart(this.checked)" />
-          <label>Au lancement de Windows</label>
+          <label data-i18n="startup-windows"></label>
         </div>
       </div>
       <div class="option">
-        <p class="suboption-name">Barre des tâches</p>
+        <p class="suboption-name" data-i18n="taskbar"></p>
         <div class="options float-left checkboxContainer">
           <input type="checkbox" data-settings-key="enableTrayIcon" onclick="UI.tray(this.checked)" />
-          <label>S'y ranger hors sélection des champions</label>
+          <label data-i18n="champion-select-hide"></label>
         </div>
       </div>
       <div class="option">
-        <p class="suboption-name">Animations</p>
+        <p class="suboption-name" data-i18n="animations"></p>
         <div class="options float-left checkboxContainer">
           <input type="checkbox" data-settings-key="enableAnimations" />
-          <label>Activer</label>
+          <label data-i18n="enable"></label>
         </div>
       </div>
       <div class="option">
-        <p class="suboption-name">Thème</p>
+        <p class="suboption-name" data-i18n="theme"></p>
         <select data-settings-key="theme" class="dropdown center-area">
-          <option value="themes/default-bg.jpg">Thème par défaut</option>
-          <option value="themes/forest-bg.png">Forêt</option>
-          <option value="themes/red-bg.jpg">Rouge 1</option>
-          <option value="themes/red1-bg.jpg">Rouge 2</option>
-          <option value="themes/green-bg.jpg">Vert</option>
-          <option value="themes/purple-bg.jpg">Violet</option>
-          <option value="themes/gray-bg.jpg">Gris</option>
+          <option data-i18n="theme-default" value="themes/default-bg.jpg"></option>
+          <option data-i18n="theme-forest" value="themes/forest-bg.png"></option>
+          <option data-i18n="theme-shurima-desert" value="themes/shurima-desert-bg.jpg"></option>
+          <option data-i18n="color-red" value="themes/red-bg.jpg"></option>
+          <option data-i18n="color-red" value="themes/red1-bg.jpg"></option>
+          <option data-i18n="color-green" value="themes/green-bg.jpg"></option>
+          <option data-i18n="color-purple" value="themes/purple-bg.jpg"></option>
+          <option data-i18n="color-gray" value="themes/gray-bg.jpg"></option>
         </select>
       </div>
       </div>
     <div data-tabid="update" class="tabcontent" style="display: none; margin-left: 12%;">
       <div class="option">
-        <p class="option-name">MISE A JOUR DISPONIBLE</p>
+        <p class="option-name" data-i18n="update-available"></p>
         <p class="suboption-name" id="version"></p>
         <p class="suboption-name" id="size" style="margin-top: 5px;"></p>
         <!--div class="textcontainer" id="releasenotes" style="width: 45%;"></div-->
-        <button type="button" id="update" style="margin-top: 10px;">UPDATE</button>
+        <button type="button" id="update" style="margin-top: 10px;" data-i18n="menu-update"></button>
       </div>
     </div>
-    <p class="status">Loading...</p>
+      <p class="status" data-i18n="loading"></p>
     <p class="version"></p>
   </div>
     <!-- END SECTIONS -->
   </div>
   <script>
-  window.eval = global.eval = function () { throw new Error(`Eval isn't supported for security reasons.`) };
+  window.eval = global.eval = function () { throw new Error(i18n.__('eval')) };
   </script>
   <script src="assets/js/jquery-3.3.1.min.js" onload="window.$ = window.jQuery = module.exports;"></script>
   <script src="assets/js/alertify.min.js"></script>
   <script>
   const { ipcRenderer } = require('electron');
   const EventEmitter = require('events');
+  const i18n = new(require('../objects/i18n'));
 
   class MF extends EventEmitter {}
   global.Mana = new MF();

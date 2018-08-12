@@ -8,11 +8,12 @@ class ItemSet {
     this.path = path.resolve(Mana.store.get('leaguePath') + `\\Config\\Champions\\${this.championKey}\\Recommended\\${this.file}`);
 
     this._data = {
-      title: 'Unknown ManaFlux ItemSet',
+      title: i18n.__('itemsets-unknown'),
       type: 'custom',
       map: 'any',
       mode: 'any',
-      blocks: []
+      blocks: [],
+      priority: true
     };
   }
 
