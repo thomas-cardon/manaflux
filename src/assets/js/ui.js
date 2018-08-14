@@ -65,14 +65,13 @@ $(document).ready(function() {
 	});
 
 	$('.tablinks').click(function() {
-		const content = $(`.tabcontent[data-tabid="${$(this).data('tabid')}"]`);
-		document.getElementById("selected").style.marginLeft = ($(this).offset().left + ($(this).width() / 2)) + 'px';
-
 		$('.tabcontent').hide();
-		content.show();
+		$(`.tabcontent[data-tabid="${$(this).data('tabid')}"]`).show();
 
 		$('.tablinks').removeClass('active');
 		$(this).addClass('active');
+		
+		document.getElementById("selected").style.marginLeft = ($(this).offset().left + ($(this).width() / 2)) + 'px';
 	});
 	$('button[data-tabid="home"]').click();
 });
