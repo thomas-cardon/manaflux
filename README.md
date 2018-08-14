@@ -26,11 +26,9 @@ A dead simple runes (and now summoner spells + itemsets !) downloader for League
 ## Will I get banned if I use this ?
 > Nope. As stated by a Rioter named RiotSargonas [here](https://www.reddit.com/r/leagueoflegends/comments/80d4r0/runebook_the_ultimate_rune_pages_manager_that_you/duv2r22), things that interact with the desktop client (not the game) will never get you banned.
 
-
-## Credits
-> Thanks to [Nick Cano](https://nickcano.com) for his article about Reverse Engineering.
 ### Built with
 - [Electron](https://electronjs.org/)
 - [NodeJS](https://nodejs.org)
 - Web Technologies: HTML5, CSS3 and JavaScript for rendering
 - Theme inspired from League of Legends
+- [LeaguePlug](https://github.com/Ryzzzen/leagueplug), Simplifies the connection to League of Legends client

@@ -107,7 +107,7 @@ ipcMain.on('lcu-connection', async (event, path) => {
   connector.start();
 
   connector.getConnectionHandler().on('connected', d => event.sender.send('lcu-connected', d));
-  connector.getConnectionHandler().on('logged-in', () => event.sender.send('lcu-logged-in'));
+  connector.getConnectionHandler().on('logged-in', d => event.sender.send('lcu-logged-in', d));
   connector.getConnectionHandler().on('logged-off', () => event.sender.send('lcu-logged-off'));
   connector.getConnectionHandler().on('disconnected', () => event.sender.send('lcu-disconnected'));
 });

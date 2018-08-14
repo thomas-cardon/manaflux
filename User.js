@@ -1,7 +1,6 @@
 const rp = require('request-promise-native');
 
 class User {
-
   load(data) {
     self.summoner = data;
   }

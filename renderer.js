@@ -94,10 +94,10 @@ ipcRenderer.once('lcu-connected', async (event, d) => {
   }
 });
 
-ipcRenderer.on('lcu-logged-in', async () => {
+ipcRenderer.on('lcu-logged-in', async (event, data) => {
   Mana.status(i18n.__('league-client-connection'));
 
-  await Mana.user.load();
+  await Mana.user.load(data);
   Mana.championselect.load();
 
   Mana.status(i18n.__('champion-select-waiting'));
