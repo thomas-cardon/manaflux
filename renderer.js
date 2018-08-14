@@ -72,26 +72,26 @@ $(document).ready(function() {
 });
 
 ipcRenderer.on('lcu-connected', async (event, d) => Mana.base = d.baseUri);
-ipcRenderer.once('lcu-connected', (event, d) => {
+ipcRenderer.once('lcu-connected', async (event, d) => {
   Mana.user = new (require('./User'))(Mana.base);
   Mana.client = require('./objects/Client');
   Mana.championselect = new (require('./objects/ChampionSelect'))();
 
   Mana.status(i18n.__('loading-data'));
-  Promise.all([Mana.client.getChampionSummary(), Mana.client.getSummonerSpells()]).then(data => {
-    Mana.champions = data[0];
-    Mana.summonerspells = data[1];
-  });
 
-  Mana.client.getVersion().then(ver => {
-    if (Mana.store.get('gameVersion') !== ver) {
-      Mana.store.set('data', {});
-      ItemSetHandler.getItemSets().then(x => ItemSetHandler.deleteItemSets(x)).catch(UI.error);
-    }
+  const data = await Promise.all([Mana.client.getChampionSummary(), Mana.client.getSummonerSpells()]);
 
-    Mana.store.set('gameVersion', ver);
-    $('.version').text($('.version').text() + ' - V' + (Mana.gameVersion = ver));
-  });
+  Mana.champions = data[0];
+  Mana.summonerspells = data[1];
+
+  const ver = await Mana.client.getVersion();
+  Mana.store.set('gameVersion', ver);
+  $('.version').text($('.version').text() + ' - V' + (Mana.gameVersion = ver));
+
+  if (Mana.store.get('gameVersion') !== ver) {
+    Mana.store.set('data', {});
+    ItemSetHandler.getItemSets().then(x => ItemSetHandler.deleteItemSets(x)).catch(UI.error);
+  }
 });
 
 ipcRenderer.on('lcu-logged-in', async () => {

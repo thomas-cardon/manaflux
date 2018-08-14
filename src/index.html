@@ -121,6 +121,11 @@
   const EventEmitter = require('events');
   const i18n = new (require('../objects/i18n'));
 
+  process.on('unhandledRejection', (reason, p) => console.log(`${i18n.__('process-unhandled-rejection')}: ${p}, ${i18n.__('reason')}: ${reason}`));
+  process.on('uncaughtException', function (err) {
+    console.error(err);
+  });
+
   class MF extends EventEmitter {}
   global.Mana = new MF();
   </script>

@@ -24,18 +24,13 @@ class ChampionSelect extends EventEmitter {
 
   load() {
     let self = this;
-    this._tries = 0;
     this._checkTimer = setInterval(async function() {
       try {
         const session = await self.getSession();
         self.tick(session.body);
-        this._tries = 0;
       }
       catch(err) {
         if (err.statusCode === 404) return self.tick();
-        if (this._tries === 3) return location.reload();
-
-        this._tries++;
         UI.error(err);
       }
     }, 1000);
@@ -222,12 +217,12 @@ class ChampionSelect extends EventEmitter {
     Mana.user._pageCount = Mana.user.runes = null;
 
     this.emit('ended');
+
     return this;
   }
 
   destroy() {
-    if (this._checkTimer)
-      clearInterval(this._checkTimer);
+    clearInterval(this._checkTimer);
   }
 }
 

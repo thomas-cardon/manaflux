@@ -1,18 +1,15 @@
 const { app, BrowserWindow, ipcMain, globalShortcut, Menu, Tray } = require('electron');
-const i18n = new (require('../objects/i18n'));
+const i18n = new (require('./objects/i18n'));
 
 const { autoUpdater } = require('electron-updater');
 const platform = process.platform;
 
-const LeaguePlug = require(__dirname + '/objects/lcu/LeaguePlug');
+const LeaguePlug = require('leagueplug');
 const AutoLaunch = require('auto-launch');
 
+process.on('unhandledRejection', (reason, p) => console.log(`${i18n.__('process-unhandled-rejection')}: ${p}, ${i18n.__('reason')}: ${reason}`));
 process.on('uncaughtException', function (err) {
   console.error(err);
-});
-
-process.on('unhandledRejection', (reason, p) => {
-  console.log(`${i18n.__('process-unhandled-rejection')}: ${p}, ${i18n.__('reason')}: ${reason}`);
 });
 
 let connector = new LeaguePlug();
@@ -94,32 +91,29 @@ ipcMain.on('auto-start', (event, enable) => {
   .catch(err => event.sender.send('error', { type: 'AUTO-START', error: err }));
 });
 
-ipcMain.on('lcu-league-path', (event) => {
-  let id = setInterval(() => connector.constructor.getLeaguePath().then(dir => {
-    if (!dir) return;
-    clearInterval(id);
-
-    event.sender.send('lcu-league-path', dir);
-  }), 500);
+ipcMain.on('lcu-league-path', event => {
+  const id = setInterval(async () => {
+    try {
+      await connector.load();
+      clearInterval(id);
+      event.sender.send('lcu-league-path', dir);
+    }
+    catch(err) {}
+  }, 500);
 });
 
-ipcMain.on('lcu-connection', (event, path) => {
-  connector.setLeaguePath(path);
+ipcMain.on('lcu-connection', async (event, path) => {
+  connector.getPathHandler().setLeaguePath(path);
   connector.start();
 
-  connector.on('connected', d => event.sender.send('lcu-connected', d));
-  connector.on('logged-in', () => event.sender.send('lcu-logged-in'));
-  connector.on('logged-off', () => event.sender.send('lcu-logged-off'));
-  connector.on('disconnected', () => event.sender.send('lcu-disconnected'));
+  connector.getConnectionHandler().on('connected', d => event.sender.send('lcu-connected', d));
+  connector.getConnectionHandler().on('logged-in', () => event.sender.send('lcu-logged-in'));
+  connector.getConnectionHandler().on('logged-off', () => event.sender.send('lcu-logged-off'));
+  connector.getConnectionHandler().on('disconnected', () => event.sender.send('lcu-disconnected'));
 });
 
-ipcMain.on('lcu-is-connected', event => {
-  event.sender.send('lcu-is-connected', connector.isConnected());
-});
-
-ipcMain.on('lcu-is-logged-in', event => {
-  event.sender.send('lcu-is-logged-in', connector.isLoggedIn());
-});
+ipcMain.on('lcu-is-connected', event => event.sender.send('lcu-is-connected', connector.isConnected()));
+ipcMain.on('lcu-is-logged-in', event => event.sender.send('lcu-is-logged-in', connector.isLoggedIn()));
 
 ipcMain.on('win-show', (event, inactive) => {
   if (!win.isVisible()) win[inactive ? 'showInactive' : 'show']();
