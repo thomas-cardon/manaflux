@@ -6,9 +6,7 @@ UI.error = function(err) {
 	console.error(err);
 }
 
-UI.success = function(msg) {
-	alertify.notify(msg, 'success', 10);
-}
+UI.success = msg => alertify.notify(msg, 'success', 10);
 
 UI.tray = function(tray = true) {
 	if (tray) {
@@ -68,7 +66,7 @@ $(document).ready(function() {
 
 	$('.tablinks').click(function() {
 		const content = $(`.tabcontent[data-tabid="${$(this).data('tabid')}"]`);
-		document.getElementById("selected").style.marginLeft = $(this).data('tabid') !== 'home' ? (89 + $(this).position().left) : 89 + 'px';
+		document.getElementById("selected").style.marginLeft = ($(this).offset().left + ($(this).width() / 2)) + 'px';
 
 		$('.tabcontent').hide();
 		content.show();
@@ -76,6 +74,7 @@ $(document).ready(function() {
 		$('.tablinks').removeClass('active');
 		$(this).addClass('active');
 	});
+	$('button[data-tabid="home"]').click();
 });
 
 /*

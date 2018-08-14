@@ -1,6 +1,6 @@
 {
   "name": "manaflux",
-  "version": "1.4.3",
+  "version": "1.4.4",
   "description": "League of Legends automatic runes downloader",
   "main": "main.js",
   "scripts": {
