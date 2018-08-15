@@ -40,7 +40,7 @@ function createWindow () {
     win.webContents.openDevTools({ mode: 'detach' });
 
   win.on('closed', () => {
-    if (connector) connector.end();
+    if (connector) connector.getConnectionHandler().end();
     if (tray && !tray.isDestroyed()) tray.destroy();
 
     win = tray = null;
