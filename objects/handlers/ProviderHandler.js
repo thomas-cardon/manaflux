@@ -7,9 +7,6 @@ class ProviderHandler {
     /*
     * 1/3 Storage Checking
     */
-
-    console.dir(champion);
-
     if (Mana.store.has(`data.${champion.key}`)) {
       let data = Mana.store.get(`data.${champion.key}`);
 
@@ -41,10 +38,10 @@ class ProviderHandler {
             method = 'getRunes';
         }
 
-        if (!provider[method]) {
+        /*if (!provider[method]) {
           console.log(`[ProviderHandler] ${provider.name} ${i18n.__('providerhandler-skipped')}: #${method}`);
           continue;
-        }
+        }*/
 
         const d = await provider[method](champion, preferredPosition, gameMode);
 

@@ -28,7 +28,7 @@ class ChampionGGProvider {
 
   async getData(champion, preferredPosition, gameMode) {
     const res = await rp(`${this.base}champion/${champion.key}${preferredPosition ? '/' + preferredPosition.toLowerCase() : ''}`);
-    const data = this._scrape(res, champion.key, gameMode);
+    const data = this._scrape(res, champion, gameMode);
 
     let positions = {};
     positions[data.position] = data;
@@ -36,8 +36,8 @@ class ChampionGGProvider {
     console.dir(positions);
 
     for (const position of data.availablePositions) {
-      console.dir(position);
       console.log(`[Champion.GG] Gathering data for ${position.name} position`);
+      console.dir(position);
 
       const d = await rp(position.link);
       positions[position.name] = this._scrape(d, champion.key, gameMode);
@@ -47,46 +47,19 @@ class ChampionGGProvider {
   }
 
   async getSummonerSpells(champion, position, gameMode) {
-    const { summonerspells } = await this.getData(champion, position, gameMode);
-    return summonerspells;
+    return await this.getData(champion, position, gameMode).summonerspells;
   }
 
   async getItemSets(champion, position, gameMode) {
-    const { itemsets } = await this.getData(champion, position, gameMode);
-    return itemsets;
+    return await this.getData(champion, position, gameMode).itemsets;
   }
 
   async getRunes(champion, position, gameMode) {
-    const { runes } = await this.getData(champion, position, gameMode);
-    return runes;
-  }
-
-  convertSkillOrderToLanguage(letter) {
-    if (i18n._locale === 'fr') {
-      switch(letter) {
-        case 'Q':
-        return 'A';
-        case 'W':
-        return 'Z';
-        default:
-        return letter;
-      }
-    }
-
-    return letter;
+    return await this.getData(champion, position, gameMode).runes;
   }
 
   _scrape(html, champion, gameMode) {
-    const convertSkillOrderToLanguage = this.convertSkillOrderToLanguage;
-    let $ = cheerio.load(html);
-
-    let pages = [{ selectedPerkIds: [] }, { selectedPerkIds: [] }];
-    let slots = $("div[class^=Slot__LeftSide]");
-
-    /*
-    * Ensuring it's the good name for jQuery, in case of exceptions like FiddleSticks being named Fiddlesticks on the website...
-    */
-    champion = $('.champion-profile > h1').text();
+    const $ = cheerio.load(html);
 
     const position = $(`li[class^='selected-role'] > a[href^='/champion/']`).first().text().trim();
     let availablePositions = [];
@@ -95,14 +68,44 @@ class ChampionGGProvider {
       availablePositions.push({ name: $(this).first().text().trim().toUpperCase(), link: 'https://champion.gg' + $(this).attr('href') });
     });
 
-    /*
-    * Runes
-    */
+    const summonerspells = this.scrapeSummonerSpells($);
+
+    const skillorder = this.scrapeSkillOrder($);
+    const itemsets = this.scrapeItemSets($, champion, skillorder);
+
+    let runes = this.scrapeRunes($, champion);
+
+    let i = runes.length;
+    while (i--) {
+      const page = runes[i];
+
+      if (page.selectedPerkIds[0] === undefined && page.selectedPerkIds[1] === undefined) {
+        runes.splice(i, 1);
+        UI.error(`[Champion.GG] ${i18n.__('providers-error-data')}`);
+      }
+      else if (page.selectedPerkIds[0] === page.selectedPerkIds[1]) {
+        page.selectedPerkIds.splice(1, 1);
+        page.selectedPerkIds.splice(3, 0, fixes[page.primaryStyleId]);
+        UI.error(`[Champion.GG] ${i18n.__('providers-cgg-runes-fix')}`);
+      }
+    }
+
+    return { runes, summonerspells, itemsets, availablePositions, position: position.toUpperCase() };
+  }
+
+  /**
+   * Scrapes item sets from a Champion.gg page
+   * @param {cheerio} $ - The cheerio object
+   * @param {object} champion - A champion object, from Mana.champions
+   */
+  scrapeRunes($, champion) {
+    let pages = [{ selectedPerkIds: [] }, { selectedPerkIds: [] }];
+    let slots = $("div[class^=Slot__LeftSide]");
 
     $("img[src^='https://s3.amazonaws.com/solomid-cdn/league/runes_reforged/']", slots).each(function(index) {
       let page = Math.trunc(index / 8), rune = $(this).attr("src").substring(59);
       if (index % 8 === 0) {
-        pages[page].name = `CGG ${$('.champion-profile h1').text()} ${position} ${page === 0 ? 'HW%' : 'MF'}`;
+        pages[page].name = `CGG ${champion.name} ${position} ${page === 0 ? 'HW%' : 'MF'}`;
         pages[page].primaryStyleId = styles[rune.substring(5, 6)];
       }
       else if (index % 8 === 5)
@@ -110,10 +113,14 @@ class ChampionGGProvider {
       else pages[page].selectedPerkIds.push(parseInt(rune.substring(0, 4)));
     });
 
-    /*
-    * Summoner Spells
-    */
+    return pages;
+  }
 
+  /**
+   * Scrapes summoner spells from a Champion.gg page
+   * @param {cheerio} $ - The cheerio object
+   */
+  scrapeSummonerSpells($) {
     let summonerspells = [];
 
     $('.summoner-wrapper > a > img').each(function(index) {
@@ -125,15 +132,19 @@ class ChampionGGProvider {
       if (index >= 1 && summonerspells.length === 2) return false;
     });
 
-    /*
-    * Skills
-    */
+    return summonerspells;
+  }
 
+  /**
+   * Scrapes skill order from a Champion.gg page
+   * @param {cheerio} $ - The cheerio object
+   */
+  scrapeSkillOrder($) {
     let skills = $('.skill').slice(1, -1);
     skills.splice(3, 2);
 
-    let sums = [{ key: convertSkillOrderToLanguage('Q'), sum: 0 }, { key: convertSkillOrderToLanguage('W'), sum: 0 }, { key: 'E', sum: 0 }];
-    let skillorders = {};
+    let sums = [{ key: this.convertSkillOrderToLanguage('Q'), sum: 0 }, { key: this.convertSkillOrderToLanguage('W'), sum: 0 }, { key: 'E', sum: 0 }];
+    let skillorder = {};
 
     skills.each(function(index) {
       $(this).find('div').children().each(function(i) {
@@ -141,57 +152,40 @@ class ChampionGGProvider {
         sums[index % 3].sum += (18 - i);
       });
 
-      console.log('Skill ' + sums[index % 3].key + ': ' + sums[index % 3].sum);
-
       if (index % 3 === 0) {
         sums = sums.sort((a, b) => b.sum - a.sum);
-        skillorders[index === 0 ? 'mf' : 'hw%'] = `${sums[0].key} => ${sums[1].key} => ${sums[2].key}`;
+        skillorder[index === 0 ? 'mf' : 'hw%'] = `${sums[0].key} => ${sums[1].key} => ${sums[2].key}`;
         sums[0].sum = sums[1].sum = sums[2].sum = 0;
       }
     });
 
-    console.dir(skillorders);
+    return skillorder;
+  }
 
-    /*
-    * ItemSets
-    */
-
-    let itemset = new ItemSet(champion, position).setTitle(`CGG ${champion} - ${position}`);
+  /**
+   * Scrapes item sets from a Champion.gg page
+   * @param {cheerio} $ - The cheerio object
+   * @param {object} champion - A champion object, from Mana.champions
+   * @param {object} skillorder
+   */
+  scrapeItemSets($, champion, skillorder) {
+    let itemset = new ItemSet(champion.key, position).setTitle(`CGG ${champion} - ${position}`);
 
     $('.build-wrapper').each(function(index) {
-    	const type = $(this).parent().find('h2').eq(index % 2).text();
+      const type = $(this).parent().find('h2').eq(index % 2).text();
       let block = new Block().setName(type + ` (${$(this).find('div > strong').text().trim().slice(0, 6)} WR)`);
 
-    	$(this).children('a').each(function(index) {
+      $(this).children('a').each(function(index) {
         block.addItem($(this).children().first().data('id'));
       });
 
       itemset.addBlock(block);
     });
 
-    itemset.addBlock(new Block().setName(i18n.__('itemsets-block-consumables') + `: ${skillorders.mf}`).addItem(2003).addItem(2138).addItem(2139).addItem(2140));
+    itemset.addBlock(new Block().setName(i18n.__('itemsets-block-consumables') + `: ${skillorder.mf}`).addItem(2003).addItem(2138).addItem(2139).addItem(2140));
     itemset.addBlock(new Block().setName('Trinkets').addItem(2055).addItem(3340).addItem(3341).addItem(3348).addItem(3363));
 
-    /*
-    * Workaround: fix duplicates
-    */
-
-    let i = pages.length;
-    while (i--) {
-      const page = pages[i];
-
-      if (page.selectedPerkIds[0] === undefined && page.selectedPerkIds[1] === undefined) {
-        pages.splice(i, 1);
-        UI.error(`[Champion.GG] ${i18n.__('providers-error-data')}`);
-      }
-      else if (page.selectedPerkIds[0] === page.selectedPerkIds[1]) {
-        page.selectedPerkIds.splice(1, 1);
-        page.selectedPerkIds.splice(3, 0, fixes[page.primaryStyleId]);
-        UI.error(`[Champion.GG] ${i18n.__('providers-cgg-runes-fix')}`);
-      }
-    }
-
-    return { runes: pages, summonerspells, itemsets: [itemset], availablePositions, position: position.toUpperCase() };
+    return [itemset];
   }
 }
 

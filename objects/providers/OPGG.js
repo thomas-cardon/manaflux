@@ -1,7 +1,8 @@
 const rp = require('request-promise-native'), cheerio = require('cheerio');
 const { ItemSet, Block } = require('../ItemSet');
+const Provider = require('./Provider');
 
-class OPGGProvider {
+class OPGGProvider extends Provider {
   constructor() {
     this.base = 'https://www.op.gg';
     this.name = 'OP.GG';
@@ -60,21 +61,6 @@ class OPGGProvider {
   async getRunes(champion, position, gameMode) {
     const { runes } = await this.getData(champion, position, gameMode);
     return runes;
-  }
-
-  convertSkillOrderToLanguage(letter) {
-    if (i18n._locale === 'fr') {
-      switch(letter) {
-        case 'Q':
-        return 'A';
-        case 'W':
-        return 'Z';
-        default:
-        return letter;
-      }
-    }
-
-    return letter;
   }
 
   _scrape(html, champion, position, gameMode) {

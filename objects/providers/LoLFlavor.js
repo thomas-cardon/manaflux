@@ -1,7 +1,8 @@
 const rp = require('request-promise-native');
 const { ItemSet, Block } = require('../ItemSet');
+const Provider = require('./Provider');
 
-class LoLFlavorProvider {
+class LoLFlavorProvider extends Provider {
   constructor() {
     this.base = 'http://lolflavor.com/champions/';
     this.name = 'LoLFlavor';
@@ -20,10 +21,8 @@ class LoLFlavorProvider {
       return this._aggregate(res, champion, preferredPosition, gameMode);
     }
     catch(err) {
-      UI.error(`[LoLFlavor] ${i18n.__('providers-error-itemsets-not-found')}`);
-      console.error(err);
-
-      if (err.statusCode === 404) return { itemsets: [] };
+      if (err.statusCode === 404) throw Error(i18n.__('providers-error-itemsets-not-found'));
+      else throw err;
     }
   }
 
