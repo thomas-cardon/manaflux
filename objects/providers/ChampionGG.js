@@ -37,10 +37,10 @@ class ChampionGGProvider {
 
     for (const position of data.availablePositions) {
       console.dir(position);
-      console.log(`[Champion.GG] Gathering data for ${position.position} position`);
+      console.log(`[Champion.GG] Gathering data for ${position.name} position`);
 
       const d = await rp(position.link);
-      positions[position.position] = this._scrape(d, champion.key, gameMode);
+      positions[position.name] = this._scrape(d, champion.key, gameMode);
     }
 
     return positions;
@@ -76,7 +76,7 @@ class ChampionGGProvider {
     let availablePositions = [];
 
     $(`li[class!='selected-role'] > a[href^='/champion/']`).each(function(index) {
-      availablePositions.push({ position: $(this).first().text().trim().toUpperCase(), link: 'https://champion.gg' + $(this).attr('href') });
+      availablePositions.push({ name: $(this).first().text().trim().toUpperCase(), link: 'https://champion.gg' + $(this).attr('href') });
     });
 
     /*
