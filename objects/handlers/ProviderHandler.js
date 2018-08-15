@@ -28,6 +28,7 @@ class ProviderHandler {
 
     for (let provider of this.providers) {
       console.log('Using provider: ' + provider.name);
+
       try {
         let method = 'getData';
 
@@ -49,6 +50,8 @@ class ProviderHandler {
 
         for (let [position, data] of Object.entries(d))
           positions[position] = Object.assign(positions[position] || { runes: {}, itemsets: {}, summonerspells: {} }, data);
+
+        break;
       }
       catch(err) {
         console.error(err);

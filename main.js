@@ -102,7 +102,12 @@ ipcMain.on('lcu-league-path', event => {
   }, 500);
 });
 
-ipcMain.on('lcu-connection', async (event, path) => {
+ipcMain.on('lcu-connection', (event, path) => {
+  if (connector.getConnectionHandler().hasStarted()) {
+    connector.getConnectionHandler().removeAllListeners();
+    connector.getConnectionHandler().end();
+  }
+
   connector.getPathHandler().setLeaguePath(path);
   connector.start();
 

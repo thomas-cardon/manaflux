@@ -1,8 +1,10 @@
 const app = require('electron').app ? require('electron').app : require('electron').remote.app;
 const fs = require('fs'), path = require('path');
-let language, locale = 'en' || app.getLocale();
+let language, locale = app.getLocale() || 'en';
 
 function i18n() {
+  this._locale = locale;
+
   try {
     if(fs.existsSync(path.join(__dirname, '/locales/', locale + '.json')))
       language = JSON.parse(fs.readFileSync(path.join(__dirname, '/locales/',  locale + '.json'), 'utf8'));

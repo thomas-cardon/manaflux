@@ -1,13 +1,13 @@
 const rp = require('request-promise-native'), cheerio = require('cheerio');
 const { ItemSet, Block } = require('../ItemSet');
 
-class ChampionGGProvider {
+class OPGGProvider {
   constructor() {
     this.base = 'https://www.op.gg';
     this.name = 'OP.GG';
   }
 
-  convertPosition(pos) {
+  getOPGGPosition(pos) {
     switch(pos.toLowerCase()) {
       case 'middle':
         return 'mid';
@@ -18,23 +18,32 @@ class ChampionGGProvider {
     }
   }
 
+  convertOPGGPosition(pos) {
+    switch(pos.toLowerCase()) {
+      case 'mid':
+        return 'middle';
+      case 'bot':
+        return 'adc';
+      default:
+        return pos.toLowerCase();
+    }
+  }
+
   async getData(champion, preferredPosition, gameMode) {
-    const res = await rp(`${this.base}/champion/${champion.key}/statistics/${this.convertPosition(preferredPosition)}`);
-    const data = this._scrape(res, champion, gameMode, this.convertPosition(preferredPosition));
+    const res = await rp(`${this.base}/champion/${champion.key}/statistics${preferredPosition ? '/' + this.convertOPGGPosition(preferredPosition) : ''}`);
+    const data = this._scrape(res, champion, gameMode, this.getOPGGPosition(preferredPosition));
 
     let positions = {};
     positions[data.position] = data;
 
-    console.dir(positions);
-
     for (const position of data.availablePositions) {
-      console.dir(position);
       console.log(`[OP.GG] Gathering data for ${position.name} position`);
 
       const d = await rp(position.link);
       positions[position.name] = this._scrape(d, champion, position.name, gameMode);
     }
 
+    console.dir(positions);
     return positions;
   }
 
@@ -53,18 +62,36 @@ class ChampionGGProvider {
     return runes;
   }
 
+  convertSkillOrderToLanguage(letter) {
+    if (i18n._locale === 'fr') {
+      switch(letter) {
+        case 'Q':
+        return 'A';
+        case 'W':
+        return 'Z';
+        default:
+        return letter;
+      }
+    }
+
+    return letter;
+  }
+
   _scrape(html, champion, position, gameMode) {
     let $ = cheerio.load(html);
-    const version = $('.champion-index__version').text().trim().slice(-4);
 
-    if (version != Mana.gameVersion) UI.error(Error('OP.GG: ' + i18n.__('providers-error-outdated')))
+    const version = $('.champion-index__version').text().trim().slice(-4);
+    const convertSkillOrderToLanguage = this.convertSkillOrderToLanguage, convertOPGGPosition = this.convertOPGGPosition;
+
+    if (version != Mana.gameVersion) UI.error('OP.GG: ' + i18n.__('providers-error-outdated'));
 
     let pages = [{ selectedPerkIds: [] }, { selectedPerkIds: [] }];
 
+    position = convertOPGGPosition($('li.champion-stats-header__position.champion-stats-header__position--active').data('position')).toUpperCase();
     let availablePositions = [];
 
     $('[data-position] > a').each(function(index) {
-      availablePositions.push({ name: $(this).attr('href'), link: 'https://op.gg' + $(this).attr('href') });
+      availablePositions.push({ name: convertOPGGPosition($(this).parent().data('position')).toUpperCase(), link: 'https://op.gg' + $(this).attr('href') });
     });
 
     /*
@@ -72,11 +99,14 @@ class ChampionGGProvider {
     */
 
     $('.perk-page').find('img.perk-page__image.tip').slice(0, 4).each(function(index) {
-      pages[Math.trunc(index / 2)][index % 2 === 0 ? 'primaryStyleId' : 'subStyleId'] = parseInt($(this).attr('src').slice(-8, -4));
+      const page = Math.trunc(index / 2);
+
+      pages[page].name = `OPGG ${champion.name} ${position}`;
+      pages[page][index % 2 === 0 ? 'primaryStyleId' : 'subStyleId'] = parseInt($(this).attr('src').slice(-8, -4));
     });
 
     $('.perk-page__item--active').find('img').slice(0, 12).each(function(index) {
-      pages[Math.trunc(index / 6)].selectedPerkIds.push(parseInt($(this).attr('src').slice(-8, -4));
+      pages[Math.trunc(index / 6)].selectedPerkIds.push(parseInt($(this).attr('src').slice(-8, -4)));
     });
 
     /*
@@ -99,26 +129,27 @@ class ChampionGGProvider {
     */
 
     let skillorder = '';
-    const skills = $('.champion-stats__list:eq(2) > li:not(.champion-stats__list__arrow) > img').each(function(index) {
-      skillorder += (skillorder !== '' ? ' => ') + $(this).siblings().text();
+    const skills = $('.champion-stats__list').eq(2).find('li:not(.champion-stats__list__arrow) > img').each(function(index) {
+      skillorder += (skillorder !== '' ? ' => ' : '') + convertSkillOrderToLanguage($(this).siblings().text());
     });
 
     /*
     * ItemSets
     */
-    const itemrows = $('.champion-overview__table:eq(1)').find('.champion-overview__row');
+    const itemrows = $('.champion-overview__table').eq(1).find('.champion-overview__row');
 
     let itemset = new ItemSet(champion.key, position).setTitle(`OPG ${champion.name} - ${position}`);
     let boots = new Block().setName(`${i18n.__('itemsets-block-boots')}`);
 
     // Starter
     itemrows.slice(0, 2).each(function(index) {
-      let starter = new Block().setName(`${i18n.__('itemsets-block-starter-numbered').replace("{n}", index + 1)}${skillorder}`);
+      let starter = new Block().setName(`${i18n.__('itemsets-block-starter-numbered').replace("{n}", index + 1)} ${skillorder}`);
       let pots = 0;
 
       $(this).find('img').each(function(index) {
+        const id = $(this).attr('src').slice(44, 48);
         if (id === '2003') return pots++; // Avoid having the same potion multiple times
-        starter.addItem($(this).attr('src').slice(44, 48));
+        starter.addItem(id);
       });
 
       if (pots > 0) starter.addItem(2003, pots);
@@ -131,7 +162,7 @@ class ChampionGGProvider {
     let recommanded = [];
     itemrows.slice(2, -3).find('li:not(.champion-stats__list__arrow) > img').each(function(index) {
       const id = $(this).attr('src').slice(44, 48);
-      if (!recommanded.includes(id) recommanded.push(id);
+      if (!recommanded.includes(id)) recommanded.push(id);
     });
 
     // Boots
@@ -143,8 +174,8 @@ class ChampionGGProvider {
     itemset.addBlock(new Block().setName(i18n.__('itemsets-block-recommanded')).setItems(recommanded));
     itemset.addBlock(new Block().setName(i18n.__('itemsets-block-consumables')).addItem(2003).addItem(2138).addItem(2139).addItem(2140));
 
-    return { runes: pages, summonerspells, itemsets: [itemset], availablePositions, position: position.toUpperCase() };
+    return { runes: pages, summonerspells, itemsets: [itemset], availablePositions, position };
   }
 }
 
-module.exports = ChampionGGProvider;
+module.exports = OPGGProvider;

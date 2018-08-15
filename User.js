@@ -2,7 +2,7 @@ const rp = require('request-promise-native');
 
 class User {
   load(data) {
-    self.summoner = data;
+    this.summoner = data;
   }
 
   async getGameMode() {

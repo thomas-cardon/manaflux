@@ -61,7 +61,23 @@ class ChampionGGProvider {
     return runes;
   }
 
+  convertSkillOrderToLanguage(letter) {
+    if (i18n._locale === 'fr') {
+      switch(letter) {
+        case 'Q':
+        return 'A';
+        case 'W':
+        return 'Z';
+        default:
+        return letter;
+      }
+    }
+
+    return letter;
+  }
+
   _scrape(html, champion, gameMode) {
+    const convertSkillOrderToLanguage = this.convertSkillOrderToLanguage;
     let $ = cheerio.load(html);
 
     let pages = [{ selectedPerkIds: [] }, { selectedPerkIds: [] }];
@@ -86,7 +102,7 @@ class ChampionGGProvider {
     $("img[src^='https://s3.amazonaws.com/solomid-cdn/league/runes_reforged/']", slots).each(function(index) {
       let page = Math.trunc(index / 8), rune = $(this).attr("src").substring(59);
       if (index % 8 === 0) {
-        pages[page].name = $('.champion-profile h1').text() + " " + position + (page === 0 ? ' HW%' : ' MF');
+        pages[page].name = `CGG ${$('.champion-profile h1').text()} ${position} ${page === 0 ? 'HW%' : 'MF'}`;
         pages[page].primaryStyleId = styles[rune.substring(5, 6)];
       }
       else if (index % 8 === 5)
@@ -116,7 +132,7 @@ class ChampionGGProvider {
     let skills = $('.skill').slice(1, -1);
     skills.splice(3, 2);
 
-    let sums = [{ key: 'A', sum: 0 }, { key: 'Z', sum: 0 }, { key: 'E', sum: 0 }];
+    let sums = [{ key: convertSkillOrderToLanguage('Q'), sum: 0 }, { key: convertSkillOrderToLanguage('W'), sum: 0 }, { key: 'E', sum: 0 }];
     let skillorders = {};
 
     skills.each(function(index) {
@@ -141,8 +157,6 @@ class ChampionGGProvider {
     */
 
     let itemset = new ItemSet(champion, position).setTitle(`CGG ${champion} - ${position}`);
-    itemset.addBlock(new Block().setName(`${i18n.__('itemsets-block-starter')}${skillorders.mf}`));
-    itemset.addBlock(new Block().setName(i18n.__('itemsets-block-consumables')).addItem(2003).addItem(2138).addItem(2139).addItem(2140));
 
     $('.build-wrapper').each(function(index) {
     	const type = $(this).parent().find('h2').eq(index % 2).text();
@@ -155,8 +169,8 @@ class ChampionGGProvider {
       itemset.addBlock(block);
     });
 
-    itemset.swapBlock(4, 2).swapBlock(3, 1);
-    itemset.addBlock(new Block().setName(`Trinkets`).addItem(2055).addItem(3340).addItem(3341).addItem(3348).addItem(3363));
+    itemset.addBlock(new Block().setName(i18n.__('itemsets-block-consumables') + `: ${skillorders.mf}`).addItem(2003).addItem(2138).addItem(2139).addItem(2140));
+    itemset.addBlock(new Block().setName('Trinkets').addItem(2055).addItem(3340).addItem(3341).addItem(3348).addItem(3363));
 
     /*
     * Workaround: fix duplicates
