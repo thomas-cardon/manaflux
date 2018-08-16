@@ -34,8 +34,6 @@ class ChampionGGProvider extends Provider {
     let positions = {};
     positions[data.position] = data;
 
-    console.dir(positions);
-
     for (const position of data.availablePositions) {
       console.log(`[Champion.GG] Gathering data for ${position.name} position`);
       console.dir(position);
@@ -107,7 +105,7 @@ class ChampionGGProvider extends Provider {
     $("img[src^='https://s3.amazonaws.com/solomid-cdn/league/runes_reforged/']", slots).each(function(index) {
       let page = Math.trunc(index / 8), rune = $(this).attr("src").substring(59);
       if (index % 8 === 0) {
-        pages[page].name = `CGG ${champion.name} ${position} ${page === 0 ? 'HW%' : 'MF'}`;
+        pages[page].name = `CGG${page + 1} ${champion.name} ${position} (${page === 0 ? 'HW%' : 'MF'})`;
         pages[page].primaryStyleId = styles[rune.substring(5, 6)];
       }
       else if (index % 8 === 5)
@@ -173,17 +171,25 @@ class ChampionGGProvider extends Provider {
    * @param {object} skillorder
    */
   scrapeItemSets($, champion, position, skillorder) {
-    let itemset = new ItemSet(champion.key, position).setTitle(`CGG ${champion.name} - ${position}`);
+    let itemset = new ItemSet(champion.key, position.toUpperCase()).setTitle(`CGG ${champion.name} - ${position}`);
 
     $('.build-wrapper').each(function(index) {
       const type = $(this).parent().find('h2').eq(index % 2).text();
-      let block = new Block().setName(type + ` (${$(this).find('div > strong').text().trim().slice(0, 6)} WR)`);
+      let block = new Block();
 
       $(this).children('a').each(function(index) {
-        block.addItem($(this).children().first().data('id'));
+        block.addItem($(this).children().first().data('id'), 1);
       });
 
-      itemset.addBlock(block);
+      if (index === 0)
+          itemset._data.blocks[2] = block.setName(i18n.__('providers-cgg-blocks-completed-build-mf') + ` | ${$(this).find('div > strong').text().trim().slice(0, 6)} WR`);
+      else if (index === 1)
+          itemset._data.blocks[3] = block.setName(i18n.__('providers-cgg-blocks-completed-build-hw%') + ` | ${$(this).find('div > strong').text().trim().slice(0, 6)} WR`);
+      else if (index === 2)
+        itemset._data.blocks[0] = block.setName(i18n.__('providers-cgg-blocks-starters-mf') + ` | ${$(this).find('div > strong').text().trim().slice(0, 6)} WR`);
+      else if (index === 3)
+        itemset._data.blocks[1] = block.setName(i18n.__('providers-cgg-blocks-starters-hw%') + ` | ${$(this).find('div > strong').text().trim().slice(0, 6)} WR`);
+      else itemset.addBlock(block.setName(type + ` | ${$(this).find('div > strong').text().trim().slice(0, 6)} WR`));
     });
 
     itemset.addBlock(new Block().setName(i18n.__('itemsets-block-consumables') + `: ${skillorder.mf}`).addItem(2003).addItem(2138).addItem(2139).addItem(2140));

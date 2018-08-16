@@ -45,15 +45,14 @@ class ItemSet {
   }
 
   save() {
+    for (let i = 0; i < this._data.blocks.length; i++)
+      this._data.blocks[i].sort();
+
     const p = this.path, data = JSON.stringify(this._data);
 
-    /*
-    * Creates the required folders if needed
-    */
+    // Creates the required folders if needed
     require('./handlers/ItemSetHandler')._ensureDir(path.resolve(Mana.store.get('leaguePath') + `\\Config\\Champions\\${this.championKey}`));
     require('./handlers/ItemSetHandler')._ensureDir(path.resolve(Mana.store.get('leaguePath') + `\\Config\\Champions\\${this.championKey}\\Recommended`));
-
-    console.dir(data);
 
     return new Promise((resolve, reject) => {
       fs.writeFile(p, data, 'utf8', err => {
@@ -110,6 +109,20 @@ class Block {
   addItem(id, count = 1) {
     this.items.push({ id: `${id}`, count });
     return this;
+  }
+
+  /**
+   * Sorts objects correctly, such as potions etc
+   */
+  sort() {
+    let items = {};
+
+    for (let i = 0; i < this.items.length; i++)
+      items[this.items[i].id] = ++this.items[i].count || 1;
+
+    this.items = [];
+    for (var [id, count] of Object.entries(items))
+      this.items.push({ id, count });
   }
 }
 

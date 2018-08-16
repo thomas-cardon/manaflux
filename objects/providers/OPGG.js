@@ -81,7 +81,7 @@ class OPGGProvider extends Provider {
     const summonerspells = this.scrapeSummonerSpells($);
 
     const skillorder = this.scrapeSkillOrder($);
-    const itemsets = this.scrapeItemSets($, champion, position, skillorder);
+    const itemsets = this.scrapeItemSets($, champion, position.charAt(0).toUpperCase() + position.slice(1), skillorder);
 
     const runes = this.scrapeRunes($, champion, position);
 
@@ -163,13 +163,14 @@ class OPGGProvider extends Provider {
       let starter = new Block().setName(`${i18n.__('itemsets-block-starter-numbered').replace("{n}", index + 1)} ${skillorder}`);
       let pots = 0;
 
+      let items = {};
       $(this).find('img').each(function(index) {
         const id = $(this).attr('src').slice(44, 48);
-        if (id === '2003') return pots++; // Avoid having the same potion multiple times
-        starter.addItem(id);
+        items[id] = items[id] + 1 || 1;
       });
 
-      if (pots > 0) starter.addItem(2003, pots);
+      for (var [id, count] of Object.entries(items))
+        starter.addItem(id, count);
 
       itemset.addBlock(starter);
     });
