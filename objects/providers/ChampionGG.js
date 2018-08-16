@@ -1,5 +1,6 @@
 const rp = require('request-promise-native'), cheerio = require('cheerio');
 const { ItemSet, Block } = require('../ItemSet');
+const Provider = require('./Provider');
 
 let styles = {
   p: 8000,
@@ -20,10 +21,10 @@ let fixes = {
   8300: 8347
 };
 
-class ChampionGGProvider {
+class ChampionGGProvider extends Provider {
   constructor() {
+    super('championgg', 'ChampionGG');
     this.base = 'http://champion.gg/';
-    this.name = 'ChampionGG';
   }
 
   async getData(champion, preferredPosition, gameMode) {
@@ -40,7 +41,7 @@ class ChampionGGProvider {
       console.dir(position);
 
       const d = await rp(position.link);
-      positions[position.name] = this._scrape(d, champion.key, gameMode);
+      positions[position.name] = this._scrape(d, champion, gameMode);
     }
 
     return positions;
@@ -68,12 +69,12 @@ class ChampionGGProvider {
       availablePositions.push({ name: $(this).first().text().trim().toUpperCase(), link: 'https://champion.gg' + $(this).attr('href') });
     });
 
-    const summonerspells = this.scrapeSummonerSpells($);
+    const summonerspells = this.scrapeSummonerSpells($, gameMode);
 
     const skillorder = this.scrapeSkillOrder($);
-    const itemsets = this.scrapeItemSets($, champion, skillorder);
+    const itemsets = this.scrapeItemSets($, champion, position, skillorder);
 
-    let runes = this.scrapeRunes($, champion);
+    let runes = this.scrapeRunes($, champion, position);
 
     let i = runes.length;
     while (i--) {
@@ -97,8 +98,9 @@ class ChampionGGProvider {
    * Scrapes item sets from a Champion.gg page
    * @param {cheerio} $ - The cheerio object
    * @param {object} champion - A champion object, from Mana.champions
+   * @param {string} position - Limited to: TOP, JUNGLE, MIDDLE, ADC, SUPPORT
    */
-  scrapeRunes($, champion) {
+  scrapeRunes($, champion, position) {
     let pages = [{ selectedPerkIds: [] }, { selectedPerkIds: [] }];
     let slots = $("div[class^=Slot__LeftSide]");
 
@@ -119,8 +121,9 @@ class ChampionGGProvider {
   /**
    * Scrapes summoner spells from a Champion.gg page
    * @param {cheerio} $ - The cheerio object
+   * @param {string} gameMode - A gamemode, from League Client, such as CLASSIC, ARAM, etc.
    */
-  scrapeSummonerSpells($) {
+  scrapeSummonerSpells($, gameMode) {
     let summonerspells = [];
 
     $('.summoner-wrapper > a > img').each(function(index) {
@@ -166,10 +169,11 @@ class ChampionGGProvider {
    * Scrapes item sets from a Champion.gg page
    * @param {cheerio} $ - The cheerio object
    * @param {object} champion - A champion object, from Mana.champions
+   * @param {string} position - Limited to: TOP, JUNGLE, MIDDLE, ADC, SUPPORT
    * @param {object} skillorder
    */
-  scrapeItemSets($, champion, skillorder) {
-    let itemset = new ItemSet(champion.key, position).setTitle(`CGG ${champion} - ${position}`);
+  scrapeItemSets($, champion, position, skillorder) {
+    let itemset = new ItemSet(champion.key, position).setTitle(`CGG ${champion.name} - ${position}`);
 
     $('.build-wrapper').each(function(index) {
       const type = $(this).parent().find('h2').eq(index % 2).text();

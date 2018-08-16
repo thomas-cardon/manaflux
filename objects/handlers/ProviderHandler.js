@@ -1,6 +1,6 @@
 class ProviderHandler {
   constructor() {
-    this.providers = [new (require('../providers/OPGG.js'))(), new (require('../providers/ChampionGG.js'))(), new (require('../providers/LoLFlavor.js'))()];
+    this.providers = [new (require('../providers/ChampionGG.js'))(), new (require('../providers/OPGG.js'))(), new (require('../providers/LoLFlavor.js'))()];
   }
 
   async getChampionData(champion, preferredPosition, gameMode) {

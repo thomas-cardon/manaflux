@@ -4,8 +4,8 @@ const Provider = require('./Provider');
 
 class LoLFlavorProvider extends Provider {
   constructor() {
+    super('lolflavor', 'LoLFlavor');
     this.base = 'http://lolflavor.com/champions/';
-    this.name = 'LoLFlavor';
   }
 
   async getItemSets(champion, preferredPosition, gameMode) {

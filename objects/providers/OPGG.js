@@ -4,8 +4,8 @@ const Provider = require('./Provider');
 
 class OPGGProvider extends Provider {
   constructor() {
+    super('opgg', 'OP.GG');
     this.base = 'https://www.op.gg';
-    this.name = 'OP.GG';
   }
 
   getOPGGPosition(pos) {
@@ -67,27 +67,40 @@ class OPGGProvider extends Provider {
     let $ = cheerio.load(html);
 
     const version = $('.champion-index__version').text().trim().slice(-4);
-    const convertSkillOrderToLanguage = this.convertSkillOrderToLanguage, convertOPGGPosition = this.convertOPGGPosition;
+    const convertOPGGPosition = this.convertOPGGPosition;
 
     if (version != Mana.gameVersion) UI.error('OP.GG: ' + i18n.__('providers-error-outdated'));
 
-    let pages = [{ selectedPerkIds: [] }, { selectedPerkIds: [] }];
-
-    position = convertOPGGPosition($('li.champion-stats-header__position.champion-stats-header__position--active').data('position')).toUpperCase();
+    position = this.convertOPGGPosition($('li.champion-stats-header__position.champion-stats-header__position--active').data('position')).toUpperCase();
     let availablePositions = [];
 
     $('[data-position] > a').each(function(index) {
       availablePositions.push({ name: convertOPGGPosition($(this).parent().data('position')).toUpperCase(), link: 'https://op.gg' + $(this).attr('href') });
     });
 
-    /*
-    * Runes
-    */
+    const summonerspells = this.scrapeSummonerSpells($);
+
+    const skillorder = this.scrapeSkillOrder($);
+    const itemsets = this.scrapeItemSets($, champion, position, skillorder);
+
+    const runes = this.scrapeRunes($, champion, position);
+
+    return { runes, summonerspells, itemsets, availablePositions, position };
+  }
+
+  /**
+   * Scrapes item sets from a Champion.gg page
+   * @param {cheerio} $ - The cheerio object
+   * @param {object} champion - A champion object, from Mana.champions
+   * @param {string} position - Limited to: TOP, JUNGLE, MIDDLE, ADC, SUPPORT
+   */
+  scrapeRunes($, champion, position) {
+    let pages = [{ selectedPerkIds: [] }, { selectedPerkIds: [] }];
 
     $('.perk-page').find('img.perk-page__image.tip').slice(0, 4).each(function(index) {
       const page = Math.trunc(index / 2);
 
-      pages[page].name = `OPGG ${champion.name} ${position}`;
+      pages[page].name = `OPG${page + 1} ${champion.name} ${position}`;
       pages[page][index % 2 === 0 ? 'primaryStyleId' : 'subStyleId'] = parseInt($(this).attr('src').slice(-8, -4));
     });
 
@@ -95,10 +108,15 @@ class OPGGProvider extends Provider {
       pages[Math.trunc(index / 6)].selectedPerkIds.push(parseInt($(this).attr('src').slice(-8, -4)));
     });
 
-    /*
-    * Summoner Spells
-    */
+    return pages;
+  }
 
+  /**
+   * Scrapes summoner spells from a Champion.gg page
+   * @param {cheerio} $ - The cheerio object
+   * @param {string} gameMode - A gamemode, from League Client, such as CLASSIC, ARAM, etc.
+   */
+  scrapeSummonerSpells($, gameMode) {
     let summonerspells = [];
 
     $("img[src^='//opgg-static.akamaized.net/images/lol/spell/Summoner']").slice(0, 2).each(function(index) {
@@ -110,18 +128,31 @@ class OPGGProvider extends Provider {
       if (index >= 1 && summonerspells.length === 2) return false;
     });
 
-    /*
-    * Skills
-    */
+    return summonerspells;
+  }
 
+  /**
+   * Scrapes skill order from a Champion.gg page
+   * @param {cheerio} $ - The cheerio object
+   * @param {function} convertSkillOrderToLanguage - Default function
+   */
+  scrapeSkillOrder($, convertSkillOrderToLanguage = this.convertSkillOrderToLanguage) {
     let skillorder = '';
     const skills = $('.champion-stats__list').eq(2).find('li:not(.champion-stats__list__arrow) > img').each(function(index) {
       skillorder += (skillorder !== '' ? ' => ' : '') + convertSkillOrderToLanguage($(this).siblings().text());
     });
 
-    /*
-    * ItemSets
-    */
+    return skillorder;
+  }
+
+  /**
+   * Scrapes item sets from a Champion.gg page
+   * @param {cheerio} $ - The cheerio object
+   * @param {object} champion - A champion object, from Mana.champions
+   * @param {string} position - Limited to: TOP, JUNGLE, MIDDLE, ADC, SUPPORT
+   * @param {object} skillorder
+   */
+  scrapeItemSets($, champion, position, skillorder) {
     const itemrows = $('.champion-overview__table').eq(1).find('.champion-overview__row');
 
     let itemset = new ItemSet(champion.key, position).setTitle(`OPG ${champion.name} - ${position}`);
@@ -142,6 +173,7 @@ class OPGGProvider extends Provider {
 
       itemset.addBlock(starter);
     });
+
     itemset.addBlock(new Block().setName(`Trinkets`).addItem(2055).addItem(3340).addItem(3341).addItem(3348).addItem(3363));
 
     // Recommanded Items
@@ -160,7 +192,7 @@ class OPGGProvider extends Provider {
     itemset.addBlock(new Block().setName(i18n.__('itemsets-block-recommanded')).setItems(recommanded));
     itemset.addBlock(new Block().setName(i18n.__('itemsets-block-consumables')).addItem(2003).addItem(2138).addItem(2139).addItem(2140));
 
-    return { runes: pages, summonerspells, itemsets: [itemset], availablePositions, position };
+    return [itemset];
   }
 }
 
