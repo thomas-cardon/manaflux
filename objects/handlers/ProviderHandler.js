@@ -60,7 +60,6 @@ class ProviderHandler {
     */
 
     if (positions !== {}) Mana.store.set(`data.${champion.key}`, positions);
-    console.dir(positions);
 
     return positions;
   }

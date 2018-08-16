@@ -19,7 +19,7 @@ Mana.store = new Store();
 
 if (Mana.store.get('enableTrayIcon')) UI.tray();
 
-Mana.status('Loading Storage');
+Mana.status(i18n.__('loading-storage'));
 
 $(document).ready(function() {
   if (!Mana.store.has('data'))
