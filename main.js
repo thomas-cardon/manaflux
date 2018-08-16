@@ -4,7 +4,7 @@ const i18n = new (require('./objects/i18n'));
 const { autoUpdater } = require('electron-updater');
 const platform = process.platform;
 
-const LeaguePlug = require('leagueplug');
+const LeaguePlug = require('./objects/leagueplug');
 const AutoLaunch = require('auto-launch');
 
 process.on('unhandledRejection', (reason, p) => console.log(`${i18n.__('process-unhandled-rejection')}: ${p}, ${i18n.__('reason')}: ${reason}`));
