@@ -118,7 +118,7 @@ class Block {
     let items = {};
 
     for (let i = 0; i < block.items.length; i++)
-      items[block.items[i].id] = ++block.items[i].count || 1;
+      items[block.items[i].id] = items[block.items[i].id] + 1 || block.items[i].count;
 
     block.items = [];
     for (var [id, count] of Object.entries(items))
