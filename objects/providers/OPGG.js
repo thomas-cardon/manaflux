@@ -81,7 +81,7 @@ class OPGGProvider extends Provider {
     const summonerspells = this.scrapeSummonerSpells($);
 
     const skillorder = this.scrapeSkillOrder($);
-    const itemsets = this.scrapeItemSets($, champion, position.charAt(0).toUpperCase() + position.slice(1), skillorder);
+    const itemsets = this.scrapeItemSets($, champion, position.charAt(0) + position.slice(1).toLowerCase(), skillorder);
 
     const runes = this.scrapeRunes($, champion, position);
 

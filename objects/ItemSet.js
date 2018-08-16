@@ -46,7 +46,7 @@ class ItemSet {
 
   save() {
     for (let i = 0; i < this._data.blocks.length; i++)
-      this._data.blocks[i].sort();
+      Block.sort(this._data.blocks[i]);
 
     const p = this.path, data = JSON.stringify(this._data);
 
@@ -114,15 +114,15 @@ class Block {
   /**
    * Sorts objects correctly, such as potions etc
    */
-  sort() {
+  static sort(block = this) {
     let items = {};
 
-    for (let i = 0; i < this.items.length; i++)
-      items[this.items[i].id] = ++this.items[i].count || 1;
+    for (let i = 0; i < block.items.length; i++)
+      items[block.items[i].id] = ++block.items[i].count || 1;
 
-    this.items = [];
+    block.items = [];
     for (var [id, count] of Object.entries(items))
-      this.items.push({ id, count });
+      block.items.push({ id, count });
   }
 }
 
