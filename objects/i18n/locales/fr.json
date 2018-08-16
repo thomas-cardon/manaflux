@@ -7,7 +7,7 @@
   "enable": "Activer",
   "disable": "Désactiver",
   "loading": "Chargement",
-  "loading-data": "Chargement des données",
+  "loading-data": "Chargement des données (connectez-vous si ce n'est pas déjà fait)",
   "loading-storage": "Chargement du stockage",
   "load-automatically": "Charger automatiquement",
   "path-found": "Répertoire d'installation trouvé",

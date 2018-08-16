@@ -96,7 +96,7 @@ ipcMain.on('lcu-league-path', event => {
     try {
       await connector.load();
       clearInterval(id);
-      event.sender.send('lcu-league-path', dir);
+      event.sender.send('lcu-league-path', connector.getPathHandler().getLeaguePath());
     }
     catch(err) {}
   }, 500);
