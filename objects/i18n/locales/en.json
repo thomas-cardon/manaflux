@@ -6,7 +6,7 @@
   "error": "Error",
   "enable": "Enable",
   "disable": "Disable",
-  "loading": "Loading",
+  "loading": "Loading (login if it is not done already)",
   "loading-data": "Loading data (login if it is not done already)",
   "loading-storage": "Loading storage",
   "load-automatically": "Load automatically",

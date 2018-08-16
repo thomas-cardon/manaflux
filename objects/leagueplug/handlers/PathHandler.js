@@ -36,7 +36,8 @@ class PathHandler {
     const command = process.platform === 'win32' ? "WMIC PROCESS WHERE name='LeagueClient.exe' GET commandline" : "ps x -o args | grep 'LeagueClient'";
 
     return new Promise((resolve, reject) => {
-      exec(command, function(error, stdout, stderr) {
+      exec(command, process.platform === 'win32' ? { shell: 'cmd.exe' } : {}, function(error, stdout, stderr) {
+        console.dir(arguments);
         if (error) return reject(err);
 
         const matches = stdout.match(/[^"]+?(?=RADS)/gm);

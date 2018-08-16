@@ -1,5 +1,4 @@
 const { EventEmitter } = require('events');
-const { exec } = require('child_process');
 
 class LeaguePlug extends EventEmitter {
   constructor() {

@@ -6,7 +6,7 @@
   "error": "Erreur",
   "enable": "Activer",
   "disable": "Désactiver",
-  "loading": "Chargement",
+  "loading": "Chargement (connectez-vous si ce n'est pas déjà fait)",
   "loading-data": "Chargement des données (connectez-vous si ce n'est pas déjà fait)",
   "loading-storage": "Chargement du stockage",
   "load-automatically": "Charger automatiquement",
