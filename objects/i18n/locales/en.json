@@ -14,7 +14,7 @@
   "connected": "Connected",
   "disconnected": "Disconnected",
   "tray-show": "Click here to show ManaFlux.",
-  "league-client-connection": "Connecting to League Client.",
+  "league-client-connection": "Connecting to League Client. (start if it is not already)",
   "league-client-disconnected": "Disconnected from League Client",
   "league-client-start-required": "Please start League Client",
   "league-client-start-required-explanation": "Please start League Client to find its install folder",
