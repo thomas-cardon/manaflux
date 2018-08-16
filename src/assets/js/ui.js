@@ -42,11 +42,9 @@ $.fn.disableManualButton = function() {
 * Hextech Animation Handler
 */
 UI.enableHextechAnimation = function(championKey, primaryStyleId) {
-	if (championKey === 'FiddleSticks') championKey = 'Fiddlesticks';
-
 	$('.championPortrait > #bg').attr('src', 'assets/img/vfx-' + (primaryStyleId ? primaryStyleId : 'white') + '.png');
 	$('.championPortrait > #champion')
-	.attr('src', championKey ? `https://ddragon.leagueoflegends.com/cdn/${Mana.gameVersion}.1/img/champion/${championKey}.png` : 'assets/img/-1.png')
+	.attr('src', championKey ? `https://ddragon.leagueoflegends.com/cdn/${Mana.gameVersion}.1/img/champion/${championKey.charAt(0) + championKey.slice(1).toLowerCase()}.png` : 'assets/img/-1.png')
 	.on('load', () => $(".title").animate({ "margin-top": "55%" }, 700, "linear", () => $('.championPortrait').show()));
 }
 
@@ -70,7 +68,7 @@ $(document).ready(function() {
 
 		$('.tablinks').removeClass('active');
 		$(this).addClass('active');
-		
+
 		document.getElementById("selected").style.marginLeft = ($(this).offset().left + ($(this).width() / 2)) + 'px';
 	});
 	$('button[data-tabid="home"]').click();
