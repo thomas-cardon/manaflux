@@ -5,7 +5,7 @@
   "main": "main.js",
   "scripts": {
     "build": "build --win",
-    "ship": "build --win -p always"
+    "ship": "build --win --ia32 --x64 -p always"
   },
   "keywords": [
     "League of Legends",
