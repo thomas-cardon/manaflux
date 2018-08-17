@@ -181,8 +181,10 @@ class OPGGProvider extends Provider {
     let recommanded = [];
     itemrows.slice(2, -3).find('li:not(.champion-stats__list__arrow) > img').each(function(index) {
       const id = $(this).attr('src').slice(44, 48);
-      if (!recommanded.includes(id)) recommanded.push(id);
+      if (!recommanded.includes(id)) recommanded.push({ id, count: 1 });
     });
+
+    itemset.addBlock(new Block().setName(i18n.__('itemsets-block-recommanded')).setItems(recommanded));
 
     // Boots
     itemrows.slice(-3).find('img').each(function(index) {
@@ -190,7 +192,6 @@ class OPGGProvider extends Provider {
     });
 
     itemset.addBlock(boots);
-    itemset.addBlock(new Block().setName(i18n.__('itemsets-block-recommanded')).setItems(recommanded));
     itemset.addBlock(new Block().setName(i18n.__('itemsets-block-consumables')).addItem(2003).addItem(2138).addItem(2139).addItem(2140));
 
     return [itemset];
