@@ -47,14 +47,24 @@ class User {
     count = count > pages.length ? pages.length : count;
 
     pages = pages.slice(0, count);
-    if ((this.runes.length - count) <= 0) await this.deleteRunePages();
 
-    for (let i = 0; i < count; i++)
-        await this.runes.push(this.createRunePage(pages[i], { current: count < 1 }));
+    for (let i = 0; i < count; i++) {
+      if (!this.runes[i]) continue;
+      await this.updateRunePage(this.runes[i].id, Object.assign(this.runes[i], pages[i], { current: count < 1, id: this.runes[i].id }));
+    }
   }
 
   async getRunes() {
     return JSON.parse(await rp(Mana.base + 'lol-perks/v1/pages')).filter(page => page.isEditable);
+  }
+
+  async updateRunePage(id, page) {
+    return await rp({
+      method: 'PUT',
+      uri: Mana.base + `lol-perks/v1/pages/${id}`,
+      body: page,
+      json: true
+    });
   }
 
   async createRunePage(data, x) {
