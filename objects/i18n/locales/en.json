@@ -53,7 +53,7 @@
   "button-load-runes": "LOAD RUNES",
   "summonerspells": "Summoner Spells",
   "itemsets": "Item Sets",
-  "itemsets-save-status": "Saving %s ItemSets for %s (%s)",
+  "itemsets-save-status": "Saving some ItemSets for %s (%s)",
   "itemsets-unknown": "Unknown ManaFlux ItemSet",
   "itemsets-block-starter": "Starter | Skill Order:",
   "itemsets-block-starter-numbered": "Starter %s | Skill Order:",

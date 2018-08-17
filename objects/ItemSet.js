@@ -4,7 +4,7 @@ class ItemSet {
   constructor(key, file) {
     this.championKey = key.toLowerCase();
 
-    this.file = (file && file.startsWith('MFLUX_')) ? file : `MFLUX_${this.championKey}${file ? '_' + file + '_' : '_'}${Mana.gameVersion}_${Mana.version}.json`;
+    this.file = (file && file.startsWith('MFLUX_')) ? file : `MFLUX_${this.championKey}${file ? ('_' + file + '_') : '_'}${Mana.gameVersion}_${Mana.version}.json`;
     this.path = path.resolve(Mana.store.get('leaguePath') + `\\Config\\Champions\\${this.championKey}\\Recommended\\${this.file}`);
 
     this._data = {

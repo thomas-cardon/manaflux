@@ -139,29 +139,32 @@ class ChampionSelect extends EventEmitter {
 
         if (Mana.store.get('enableSummonerSpells') && data.summonerspells.length > 0)
           $('button#loadSummonerSpells').enableManualButton(() => Mana.user.updateSummonerSpells(data.summonerspells).catch(err => { UI.error(err); captureException(err); }), true);
-
-        /*
-        * Item Sets display
-        */
-
-        if (Mana.store.get('enableItemSets') && data.itemsets.length > 0) {
-          try {
-            let old = await ItemSetHandler.deleteItemSets(await ItemSetHandler.getItemSetsByChampionKey(champion.key));
-
-            Mana.status(i18n.__('itemsets-save-status', data.itemsets.length, champion.name, this.value));
-
-            for (const set of data.itemsets)
-              await set.save();
-          }
-          catch(err) {
-            UI.error(err);
-            captureException(err);
-          }
-        }
       });
 
+      /*
+      * Item Sets display
+      */
+      if (Mana.store.get('enableItemSets')) {
+        try {
+          let old = await ItemSetHandler.deleteItemSets(await ItemSetHandler.getItemSetsByChampionKey(champion.key));
+
+          Mana.status(i18n.__('itemsets-save-status', champion.name, this.value));
+
+          for (let position in res)
+            for (const set of res[position].itemsets)
+              await set.save();
+        }
+        catch(err) {
+          UI.error(err);
+          captureException(err);
+        }
+      }
+
+      /*
+      * Shortcuts handling
+      */
       ipcRenderer.on('runes-previous', () => {
-        console.log('Shortcut: Previous Runes');
+        console.log('[Shortcuts] Selecting previous position..');
 
         const keys = Object.keys(res);
         let i = keys.length, positionIndex = keys.indexOf($('#positions').val());
@@ -177,7 +180,7 @@ class ChampionSelect extends EventEmitter {
       });
 
       ipcRenderer.on('runes-next', () => {
-        console.log('Shortcut: Next Runes');
+        console.log('[Shortcuts] Selecting next position..');
 
         const keys = Object.keys(res);
         let i = keys.length, positionIndex = keys.indexOf($('#positions').val());
@@ -210,8 +213,7 @@ class ChampionSelect extends EventEmitter {
 
     $('#positions').unbind().empty().hide();
 
-    if (Mana.store.get('enableTrayIcon'))
-    UI.tray();
+    if (Mana.store.get('enableTrayIcon')) UI.tray();
   }
 
   destroyTimer() {
@@ -220,7 +222,10 @@ class ChampionSelect extends EventEmitter {
 
   end() {
     this.inChampionSelect = false;
+
     ipcRenderer.send('champion-select-out');
+    ipcRenderer.removeAllListeners('runes-previous');
+    ipcRenderer.removeAllListeners('runes-next');
 
     this.destroyDisplay();
 
