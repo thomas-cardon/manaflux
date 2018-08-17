@@ -14,7 +14,7 @@ class User {
   }
 
   async updateSummonerSpells(spells) {
-    if (!spells || spells.length !== 2) return UI.error('Can\'t update summoner spells: empty');
+    if (!spells || spells.length !== 2) throw Error(i18n.__('summoner-spells-empty-error'));
     return await rp({
       method: 'PATCH',
       uri: Mana.base + 'lol-champ-select/v1/session/my-selection',
@@ -37,10 +37,11 @@ class User {
   }
 
   async updateRunePages(pages) {
-    console.log('Updating rune pages');
+    if (Mana.user.summoner.summonerLevel < 8) throw Error(i18n.__('runes-safeguard-level-error'));
+    console.log(`[Runes] ${i18n.__('loading')}`);
 
     this.runes = this.runes || await this.getRunes();
-    if (!pages || pages.length === 0 || pages.find(x => x.selectedPerkIds.length === 0) !== undefined) return UI.error('Can\'t update runes: empty');
+    if (!pages || pages.length === 0 || pages.find(x => x.selectedPerkIds.length === 0) !== undefined) throw Error(i18n.__('runes-empty-error'));
 
     let count = this._pageCount > Mana.store.get('maxRunes', 2) ? Mana.store.get('maxRunes', 2) : this._pageCount;
     count = count > pages.length ? pages.length : count;

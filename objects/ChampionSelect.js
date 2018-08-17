@@ -119,8 +119,15 @@ class ChampionSelect extends EventEmitter {
 
         // TODO: Change hextech animation according to active rune page change
 
-        if (Mana.store.get('loadRunesAutomatically')) await Mana.user.updateRunePages(data.runes);
-        else $('button#loadRunes').enableManualButton(() => Mana.user.updateRunePages(data.runes), true);
+        if (Mana.store.get('loadRunesAutomatically')) {
+          try {
+            await Mana.user.updateRunePages(data.runes);
+          }
+          catch(err) {
+            UI.error(err);
+          }
+        }
+        else $('button#loadRunes').enableManualButton(() => Mana.user.updateRunePages(data.runes).catch(UI.error), true);
 
         Mana.status(`Loaded runes for ${champion.name} (${this.value})`);
 
@@ -129,7 +136,7 @@ class ChampionSelect extends EventEmitter {
         */
 
         if (Mana.store.get('enableSummonerSpells') && data.summonerspells.length > 0)
-          $('button#loadSummonerSpells').enableManualButton(() => Mana.user.updateSummonerSpells(data.summonerspells), true);
+          $('button#loadSummonerSpells').enableManualButton(() => Mana.user.updateSummonerSpells(data.summonerspells).catch(UI.error), true);
 
         /*
         * Item Sets display
