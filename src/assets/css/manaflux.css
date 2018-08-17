@@ -29,6 +29,32 @@ body {
   margin: 10px;
 }
 
+#nav-menu {
+  margin-top: -40px;
+  margin-left: 15px;
+  -webkit-app-region: no-drag;
+}
+
+.tab-arrow {
+  border: solid #735828;
+  border-width: 0 4px 4px 0;
+  display: inline-block;
+  padding: 4px;
+}
+
+.tab-arrow:hover {
+  border: solid #f0e6d2;
+  border-width: 0 4px 4px 0;
+}
+
+.arrow-right {
+  transform: rotate(-45deg);
+}
+
+.arrow-left {
+  transform: rotate(135deg);
+}
+
 .alertify-notifier {
   color: #ffffff !important;
   font-size: 12px;

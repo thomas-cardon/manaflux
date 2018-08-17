@@ -21,10 +21,14 @@
       <button onclick="ipcRenderer.send('win-minimize');"><i class="material-icons icon">remove</i></button>
       <button onclick="ipcRenderer.send('win-close');"><i class="material-icons icon">clear</i></button>
     </div>
+    <div id="nav-menu" style="display: none;">
+      <a onclick="UI.nav(-1)"><i class="tab-arrow arrow-left"></i></a>
+      <a onclick="UI.nav(1)"><i class="tab-arrow arrow-right"></i></a>
+    </div>
   </div>
   <div class="content">
     <!-- BEGIN SECTIONS -->
-    <div data-tabid="home" class="tabcontent center" style="display: block;">
+    <div data-tabid="home" data-tabn=0 class="tabcontent center" style="display: block;">
       <div class="title">
         <h1>MANAFLUX</h1>
         <img src="assets/img/underline.png" draggable="false">
@@ -39,8 +43,7 @@
         <img id="bg">
       </div>
     </div>
-    <div data-tabid="settings" class="tabcontent" style="display: none; margin-left: 12%;">
-      <!--p class="option-name">MISC</p-->
+    <div data-tabid="settings" data-tabn=0 class="tabcontent" style="display: none; margin-left: 12%;">
       <div class="option">
         <p class="suboption-name" data-i18n="runes"></p>
         <div class="options float-left checkboxContainer">
@@ -97,7 +100,16 @@
         </select>
       </div>
     </div>
-    <div data-tabid="update" class="tabcontent" style="display: none; margin-left: 12%;">
+    <div data-tabid="settings" data-tabn=1 class="tabcontent" style="display: none; margin-left: 12%;">
+      <div class="option">
+        <p class="suboption-name" data-i18n="summonerspells"></p>
+        <div class="options float-left checkboxContainer">
+          <input type="checkbox" data-settings-key="enableSummonerSpells" />
+          <label data-i18n="enable"></label>
+        </div>
+      </div>
+    </div>
+    <div data-tabid="update" data-tabn=0 class="tabcontent" style="display: none; margin-left: 12%;">
       <div class="option">
         <p class="option-name" data-i18n="update-available"></p>
         <p class="suboption-name" id="version"></p>
@@ -106,7 +118,7 @@
         <button type="button" id="update" style="margin-top: 10px;" data-i18n="menu-update"></button>
       </div>
     </div>
-      <p class="status" data-i18n="loading"></p>
+    <p class="status" data-i18n="loading"></p>
     <p class="version"></p>
   </div>
     <!-- END SECTIONS -->

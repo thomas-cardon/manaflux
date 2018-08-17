@@ -53,6 +53,20 @@ UI.disableHextechAnimation = () => {
 	$(".title").animate({ "margin-top": "0%" }, 700, "linear");
 }
 
+// Navigation menus (if there's multiple tabs for the same thing such as settings)
+let navigationId = 0;
+UI.nav = n => {
+	const tabcontent = $(`.tabcontent[data-tabid=${$('.tablinks.active').data('tabid')}][data-tabn=${navigationId + n}]`);
+	if (tabcontent.length > 0) {
+		navigationId += n;
+
+		console.log(`[Navigation] Heading to tab #${tabcontent.data('tabid')}, n:${navigationId}`);
+		$('.tabcontent').hide();
+		tabcontent.show();
+	}
+	else console.log(`[Navigation] Can't navigate to tab #${$('.tablinks.active').data('tabid')}, n:${navigationId + n}`);
+}
+
 /*
 * Tab Handler
 */
@@ -64,13 +78,18 @@ $(document).ready(function() {
 
 	$('.tablinks').click(function() {
 		$('.tabcontent').hide();
-		$(`.tabcontent[data-tabid="${$(this).data('tabid')}"]`).show();
+		$(`.tabcontent[data-tabid=${$(this).data('tabid')}][data-tabn=0]`).show();
 
 		$('.tablinks').removeClass('active');
 		$(this).addClass('active');
 
+		/* Navigation Menus */
+		if ($(`.tabcontent[data-tabid=${$(this).data('tabid')}][data-tabn=1]`).length) $('#nav-menu').show();
+		else $('#nav-menu').hide();
+
 		document.getElementById("selected").style.marginLeft = ($(this).offset().left + ($(this).width() / 2)) + 'px';
 	});
+
 	$('button[data-tabid="home"]').click();
 });
 
