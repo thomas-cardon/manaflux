@@ -28,6 +28,7 @@ class ItemSetHandler {
   }
 
   static async getItemSetsByChampionKey(key) {
+    await this._ensureDir(path.resolve(Mana.store.get('leaguePath') + `\\Config\\Champions`));
     await this._ensureDir(path.resolve(Mana.store.get('leaguePath') + `\\Config\\Champions\\${key}`));
     await this._ensureDir(path.resolve(Mana.store.get('leaguePath') + `\\Config\\Champions\\${key}\\Recommended`));
 
