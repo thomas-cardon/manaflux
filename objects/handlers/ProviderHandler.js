@@ -38,15 +38,12 @@ class ProviderHandler {
             method = 'getRunes';
         }
 
-        /*if (!provider[method]) {
-          console.log(`[ProviderHandler] ${provider.name} ${i18n.__('providerhandler-skipped')}: #${method}`);
-          continue;
-        }*/
-
         const d = await provider[method](champion, preferredPosition, gameMode);
 
-        for (let [position, data] of Object.entries(d))
+        for (let [position, data] of Object.entries(d)) {
+          position.summonerspells = this.sortSummonerSpells(position.summonerspells);
           positions[position] = Object.assign(positions[position] || { runes: {}, itemsets: {}, summonerspells: {} }, data);
+        }
 
         break;
       }
@@ -62,6 +59,10 @@ class ProviderHandler {
     if (positions !== {}) Mana.store.set(`data.${champion.key}`, positions);
 
     return positions;
+  }
+
+  sortSummonerSpells(spells) {
+    return spells.sort((a, b) => a === 4 || a === 6 ? (Mana.store.get('summoner-spells-priority') === "f" ? 1 : -1) : -1);
   }
 }
 
