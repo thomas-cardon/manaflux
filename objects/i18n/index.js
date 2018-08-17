@@ -1,6 +1,6 @@
 const app = require('electron').app ? require('electron').app : require('electron').remote.app;
 const fs = require('fs'), path = require('path');
-let language, locale = app.getLocale() || 'en';
+let language, locale = app.getLocale().toLowerCase() || 'en';
 
 function i18n() {
   this._locale = locale;
