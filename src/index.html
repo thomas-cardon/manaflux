@@ -117,14 +117,15 @@
   <script src="assets/js/jquery-3.3.1.min.js" onload="window.$ = window.jQuery = module.exports;"></script>
   <script src="assets/js/alertify.min.js"></script>
   <script>
+  const { init } = require('@sentry/electron');
+  init({ dsn: 'https://521785db4e5242119dd9a3820b87e83f@sentry.io/1264182' });
+
+  process.on('unhandledRejection', (reason, p) => console.log(`${i18n.__('process-unhandled-rejection')}: ${p}, ${i18n.__('reason')}: ${reason}`));
+  process.on('uncaughtException', console.error);
+
   const { ipcRenderer } = require('electron');
   const EventEmitter = require('events');
   const i18n = new (require('../objects/i18n'));
-
-  process.on('unhandledRejection', (reason, p) => console.log(`${i18n.__('process-unhandled-rejection')}: ${p}, ${i18n.__('reason')}: ${reason}`));
-  process.on('uncaughtException', function (err) {
-    console.error(err);
-  });
 
   class MF extends EventEmitter {}
   global.Mana = new MF();

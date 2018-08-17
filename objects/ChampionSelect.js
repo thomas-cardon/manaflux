@@ -3,6 +3,7 @@ const EventEmitter = require('events');
 
 const ProviderHandler = new (require('./handlers/ProviderHandler'))();
 const ItemSetHandler = require('./handlers/ItemSetHandler');
+const { captureException } = require('@sentry/electron');
 
 class ChampionSelect extends EventEmitter {
   constructor() {
@@ -125,9 +126,10 @@ class ChampionSelect extends EventEmitter {
           }
           catch(err) {
             UI.error(err);
+            captureException(err);
           }
         }
-        else $('button#loadRunes').enableManualButton(() => Mana.user.updateRunePages(data.runes).catch(UI.error), true);
+        else $('button#loadRunes').enableManualButton(() => Mana.user.updateRunePages(data.runes).catch(err => { UI.error(err); captureException(err); }), true);
 
         Mana.status(`Loaded runes for ${champion.name} (${this.value})`);
 
@@ -136,7 +138,7 @@ class ChampionSelect extends EventEmitter {
         */
 
         if (Mana.store.get('enableSummonerSpells') && data.summonerspells.length > 0)
-          $('button#loadSummonerSpells').enableManualButton(() => Mana.user.updateSummonerSpells(data.summonerspells).catch(UI.error), true);
+          $('button#loadSummonerSpells').enableManualButton(() => Mana.user.updateSummonerSpells(data.summonerspells).catch(err => { UI.error(err); captureException(err); }), true);
 
         /*
         * Item Sets display
@@ -153,6 +155,7 @@ class ChampionSelect extends EventEmitter {
           }
           catch(err) {
             UI.error(err);
+            captureException(err);
           }
         }
       });
@@ -194,6 +197,7 @@ class ChampionSelect extends EventEmitter {
     }
     catch(err) {
       UI.error(err);
+      captureException(err);
     }
   }
 
