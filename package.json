@@ -1,6 +1,6 @@
 {
   "name": "manaflux",
-  "version": "1.4.13",
+  "version": "1.4.14",
   "description": "League of Legends automatic runes downloader",
   "main": "main.js",
   "scripts": {
@@ -21,6 +21,7 @@
     "electron-builder": "^20.17.1"
   },
   "dependencies": {
+    "@sentry/electron": "^0.8.1",
     "auto-launch": "^5.0.5",
     "cheerio": "^1.0.0-rc.2",
     "chokidar": "^2.0.4",
