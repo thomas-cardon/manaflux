@@ -24,11 +24,11 @@ let fixes = {
 class ChampionGGProvider extends Provider {
   constructor() {
     super('championgg', 'ChampionGG');
-    this.base = 'http://champion.gg/';
+    this.base = 'https://champion.gg/';
   }
 
   async getData(champion, preferredPosition, gameMode) {
-    const res = await rp(`${this.base}champion/${champion.key}${preferredPosition ? '/' + preferredPosition.toLowerCase() : ''}?league=`);
+    const res = await rp(`${this.base}champion/${champion.key}${preferredPosition ? '/' + preferredPosition.toLowerCase() : '/middle'}?league=`);
     const data = this._scrape(res, champion, gameMode);
 
     let positions = {};
