@@ -131,7 +131,7 @@ class ChampionSelect extends EventEmitter {
         }
         else $('button#loadRunes').enableManualButton(() => Mana.user.updateRunePages(data.runes).catch(err => { UI.error(err); captureException(err); }), true);
 
-        Mana.status(`Loaded runes for ${champion.name} (${this.value})`);
+        Mana.status(i18n.__('runes-loaded', champion.name, this.value));
 
         /*
         * Summoner Spells display

@@ -32,6 +32,7 @@
   "providers-cgg-blocks-completed-build-mf": "Completed build (Most Frequent)",
   "runes-safeguard-level-error": "ManaFlux doesn't allow loading runes until you unlock them. Sorry!",
   "runes-empty-error": "Error: Rune Pages downloaded are empty",
+  "runes-loaded": "Runes loaded for %s (%s)",
   "summoner-spells-empty-error": "Error: Summoner Spells downloaded are empty",
   "theme": "Theme",
   "theme-default": "Default Theme",
