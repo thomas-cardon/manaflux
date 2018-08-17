@@ -26,12 +26,12 @@ class LoLFlavorProvider extends Provider {
     }
   }
 
-  async _aggregate(itemset, champion, position, gameMode) {
+  async _aggregate(data, champion, position, gameMode) {
     position = position.charAt(0).toUpperCase() + position.slice(1);
 
     let itemset = new ItemSet(champion.key, position);
 
-    itemset._data = itemset;
+    itemset._data = data;
     itemset._data.blocks[0].type = i18n.__('itemsets-block-consumables');
 
     itemset.setTitle(`LFR ${champion.name} - ${gameMode === 'ARAM' ? 'ARAM' : preferredPosition}`)

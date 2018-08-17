@@ -28,7 +28,7 @@ class ChampionGGProvider extends Provider {
   }
 
   async getData(champion, preferredPosition, gameMode) {
-    const res = await rp(`${this.base}champion/${champion.key}${preferredPosition ? '/' + preferredPosition.toLowerCase() : ''}`);
+    const res = await rp(`${this.base}champion/${champion.key}${preferredPosition ? '/' + preferredPosition.toLowerCase() : ''}?league=`);
     const data = this._scrape(res, champion, gameMode);
 
     let positions = {};
