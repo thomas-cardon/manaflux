@@ -51,7 +51,7 @@ class PathHandler {
   _getDrives() {
     return new Promise((resolve, reject) => {
       drivelist.list((error, drives) => {
-        if (error) return reject(err);
+        if (error) return reject(error);
         resolve(drives);
       });
     });
