@@ -7,8 +7,7 @@ const platform = process.platform;
 const LeaguePlug = require('./objects/leagueplug');
 const AutoLaunch = require('auto-launch');
 
-const { init } = require('@sentry/electron');
-init({ dsn: 'https://521785db4e5242119dd9a3820b87e83f@sentry.io/1264182' });
+require('./crash-reporting.js');
 
 process.on('unhandledRejection', (reason, p) => console.log(`${i18n.__('process-unhandled-rejection')}: ${p}, ${i18n.__('reason')}: ${reason}`));
 process.on('uncaughtException', function (err) {
