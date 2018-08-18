@@ -6,6 +6,7 @@
   <link rel="stylesheet" href="assets/css/manaflux.css">
   <link rel="stylesheet" href="assets/css/alertify.min.css"/>
   <link rel="stylesheet" href="assets/css/alertify.rtl.min.css"/>
+  <link rel="stylesheet" href="assets/css/jquery-ui.min.css">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
@@ -108,6 +109,11 @@
           <option data-i18n="summoner-spells-priority-flash-f" value=f></option>
         </select>
       </div>
+      <div class="option">
+        <center><p class="suboption-name" data-i18n="providers-order"></p></center>
+        <ul class="sortable" data-settings-key="providers-order", data-settings-sortable-list-values="championgg,opgg,lolflavor">
+        </ul>
+      </div>
     </div>
     <div data-tabid="update" data-tabn=0 class="tabcontent" style="display: none; margin-left: 12%;">
       <div class="option">
@@ -127,6 +133,7 @@
   window.eval = global.eval = function () { throw new Error(i18n.__('eval')) };
   </script>
   <script src="assets/js/jquery-3.3.1.min.js" onload="window.$ = window.jQuery = module.exports;"></script>
+  <script src="assets/js/jquery-ui.min.js"></script>
   <script src="assets/js/alertify.min.js"></script>
   <script>
   const { init } = require('@sentry/electron');

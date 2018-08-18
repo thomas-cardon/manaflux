@@ -98,28 +98,47 @@ $(document).ready(function() {
 */
 Mana.once('settings', store => {
 	$('body').css('background', "linear-gradient(to bottom, rgba(125, 185, 232, 0) -1%, rgba(50, 96, 122, 0) 65%, rgba(10, 49, 64, 0.8) 100%), url('./assets/img/" + Mana.store.get('theme') + "')");
+
+	/* select element support */
+	$('select[data-settings-key]').change(function() {
+		console.log(`Changing value of ${$(this).data('settings-key')} to: ${this.value}`);
+		store.set($(this).data('settings-key'), this.value);
+	}).each(function() {
+		console.log(`Loading value of ${$(this).data('settings-key')} to: ${store.get($(this).data('settings-key'))}`);
+		$(this).val(store.get($(this).data('settings-key')));
+	});
+
+	/* checkbox element support */
 	$(':checkbox[data-settings-key]').each(function() {
 		console.log(`Loading value of ${$(this).data('settings-key')} to: ${store.get($(this).data('settings-key'))}`);
 		$(this).prop('checked', store.get($(this).data('settings-key')));
 
 		$(this).prop('id', $(this).data('settings-key'));
 		$(this).siblings('label').prop('for', $(this).data('settings-key'));
-	});
-
-	$('select[data-settings-key]').each(function() {
-		console.log(`Loading value of ${$(this).data('settings-key')} to: ${store.get($(this).data('settings-key'))}`);
-		$(this).val(store.get($(this).data('settings-key')));
-	});
-
-	$(':checkbox[data-settings-key]').change(function() {
+	}).change(function() {
 		console.log(`Changing value of ${$(this).data('settings-key')} to: ${$(this).is(":checked")}`);
 		store.set($(this).data('settings-key'), $(this).is(":checked"));
 	});
 
-	$('select[data-settings-key]').change(function() {
-		console.log(`Changing value of ${$(this).data('settings-key')} to: ${this.value}`);
-		store.set($(this).data('settings-key'), this.value);
-	});
+	/* sortable lists support */
+	$(".sortable[data-settings-key]").each(function() {
+		$(this).sortable({
+			update: function(event, ui) {
+				let array = [];
+				$(this).children().each(function() {
+					array.push($(this).attr('value'));
+				});
+
+				store.set($(this).data('settings-key'), array);
+				console.log(`Changing value of ${$(this).data('settings-key')} to: ${array}`);
+			}
+		});
+
+		const values = store.get($(this).data('settings-key'), $(this).data('settings-sortable-list-values').split(','));
+
+		for (let i = 0; i < values.length; i++)
+			$(this).append(`<li class="ui-state-default sortable-button" value="${values[i]}">${i18n.__('settings-' + $(this).data('settings-key') + '-' + values[i])}</li>`);
+	})
 });
 
 $('select[data-settings-key=theme]').change(function() {

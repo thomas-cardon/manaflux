@@ -29,6 +29,22 @@ body {
   margin: 10px;
 }
 
+.sortable-button {
+  font-weight: normal !important;
+  color: #cdbe91 !important;
+  cursor: pointer !important;
+  padding: 9px !important;
+  border-top: 1px solid #1f2123 !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  height: 20px !important;
+  margin-top: 5px !important;
+  background-color: rgba(30, 35, 40, 0.5) !important;
+  border: 1px solid transparent !important;
+  border-image: linear-gradient(to top, #695625 0%, #A9852D 23%, #B88D35 93%, #C8AA6E 100%) 1 !important;
+  max-width: 80% !important;
+}
+
 #nav-menu {
   margin-top: -40px;
   margin-left: 15px;
