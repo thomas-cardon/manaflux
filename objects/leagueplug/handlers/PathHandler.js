@@ -1,6 +1,7 @@
 const fs = require('fs'), path = require('path');
+const i18n = new (require('../../i18n'));
 const { exec } = require('child_process');
-const drivelist = require('drivelist');
+const { dialog } = require('electron');
 
 class PathHandler {
   async load() {
@@ -21,15 +22,18 @@ class PathHandler {
   }
 
   async findLeaguePath() {
-    const drives = await this._getDrives();
+    console.log('[PathHandler] Trying to find path.');
+    if (await this._exists('C:\\Riot Games\\League of Legends\\')) return 'C:\\Riot Games\\League of Legends\\';
 
-    for (let i = 0; i < drives.length; i++) {
-      const path = drives[i].mountpoints[0].path + 'Riot Games\\League of Legends\\';
-      if (await this._exists(path)) return path;
+    let leaguePath = await this.getLeaguePathByCommandLine();
+    console.log(`[PathHandler] Path found by commandline: ${leaguePath}`);
+
+    while(!leaguePath || await !this._exists(path.resolve(leaguePath + '\\LeagueClient.' + (process.platform === 'win32' ? 'exe' : 'app'))) /* OSX WIN ONLY SHOULD CHANGE SOON */ ) {
+      leaguePath = dialog.showOpenDialog({properties: ['openDirectory', 'showHiddenFiles'], message: i18n.__('league-client-enter-path'), title: i18n.__('league-client-enter-path') })[0];
     }
 
-    const path = await this.getLeaguePathByCommandLine();
-    return path === false ? null : path;
+    console.log(`[PathHandler] Path selected: ${leaguePath}`);
+    return leaguePath;
   }
 
   async getLeaguePathByCommandLine() {
@@ -37,22 +41,12 @@ class PathHandler {
 
     return new Promise((resolve, reject) => {
       exec(command, process.platform === 'win32' ? { shell: 'cmd.exe' } : {}, function(error, stdout, stderr) {
-        console.dir(arguments);
         if (error) return reject(error);
 
         const matches = stdout.match(/[^"]+?(?=RADS)/gm);
 
         if (!matches || matches.length === 0) resolve(false);
         else resolve(matches[0]);
-      });
-    });
-  }
-
-  _getDrives() {
-    return new Promise((resolve, reject) => {
-      drivelist.list((error, drives) => {
-        if (error) return reject(error);
-        resolve(drives);
       });
     });
   }

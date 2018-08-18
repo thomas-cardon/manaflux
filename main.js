@@ -9,11 +9,6 @@ const AutoLaunch = require('auto-launch');
 
 require('./crash-reporting.js');
 
-process.on('unhandledRejection', (reason, p) => console.log(`${i18n.__('process-unhandled-rejection')}: ${p}, ${i18n.__('reason')}: ${reason}`));
-process.on('uncaughtException', function (err) {
-  console.error(err);
-});
-
 let connector = new LeaguePlug();
 let win, tray;
 
@@ -94,13 +89,12 @@ ipcMain.on('auto-start', (event, enable) => {
 });
 
 ipcMain.on('lcu-league-path', event => {
-  const id = setInterval(async () => {
-    try {
-      await connector.load();
+  console.log('asking league path');
+  const id = setInterval(() => {
+    connector.getPathHandler().findLeaguePath().then(path => {
       clearInterval(id);
-      event.sender.send('lcu-league-path', connector.getPathHandler().getLeaguePath());
-    }
-    catch(err) {}
+      event.sender.send('lcu-league-path', path);
+    });
   }, 500);
 });
 
