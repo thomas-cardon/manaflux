@@ -28,7 +28,7 @@ class ChampionGGProvider extends Provider {
   }
 
   async getData(champion, preferredPosition, gameMode) {
-    const res = await rp(`${this.base}champion/${champion.key}${preferredPosition ? '/' + preferredPosition.slice(0, 1) + preferredPosition.slice(1).toLowerCase() : '/Middle'}?league=`);
+    const res = await rp(`${this.base}champion/${champion.key}`);
     const data = this._scrape(res, champion, gameMode);
 
     let positions = {};
@@ -193,7 +193,7 @@ class ChampionGGProvider extends Provider {
     });
 
     itemset.addBlock(new Block().setName(i18n.__('itemsets-block-consumables') + `: ${skillorder.mf}`).addItem(2003).addItem(2138).addItem(2139).addItem(2140));
-    itemset._data.blocks[2] = new Block().setName('Trinkets').addItem(2055).addItem(3340).addItem(3341).addItem(3348).addItem(3363));
+    itemset._data.blocks[2] = new Block().setName('Trinkets').addItem(2055).addItem(3340).addItem(3341).addItem(3348).addItem(3363);
 
     return [itemset];
   }
