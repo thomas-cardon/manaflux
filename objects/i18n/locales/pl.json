@@ -21,7 +21,7 @@
   "champion-select-waiting": "Czekam na wybór bohatera",
   "champion-select-hide": "Ukryj, gdy brakuje wyboru bohatera",
   "developer-game-start-error": "Nie można uruchomić gry developera",
-  "providerhandler-skipped": "został pominięty z powodu braku metody",
+  "providers-skipped": "został pominięty z powodu braku metody",
   "providers-error-itemsets-not-found": "Nie można znaleźć zestawów przedmiotów",
   "providers-error-outdated": "Nieaktualne dane",
   "providers-error-data": "Nie można zebrać danych",
