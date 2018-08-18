@@ -54,7 +54,7 @@ class ConnectionHandler extends EventEmitter {
       fs.readFile(path.join(leaguePath, 'lockfile'), 'utf8', (err, data) => {
         if (err) return reject(err);
         const d = data.split(':');
-        resolve({ pid: d[1], port: d[2], password: d[3], protocol: d[4], baseUri: `${d[4]}://riot:${d[3]}@127.0.0.1:${d[2]}/` });
+        resolve({ pid: d[1], port: d[2], password: d[3], protocol: d[4], authToken: 'Basic ' + Buffer.from('riot:' + d[3]).toString('base64'), baseUri: `${d[4]}://riot:${d[3]}@127.0.0.1:${d[2]}/` });
       });
     });
   }
@@ -65,7 +65,7 @@ class ConnectionHandler extends EventEmitter {
       console.log(`[LeaguePlug] [ConnectionHandler] League of Legends connection data detected`);
       const lockfile = await this._readLockfile(leaguePath);
 
-      this._authentication = 'Basic ' + Buffer.from('riot:' + lockfile.password).toString('base64');
+      this._authentication = lockfile.authToken;
       this._connected = true;
 
       this.emit('connected', this._lcu = lockfile);

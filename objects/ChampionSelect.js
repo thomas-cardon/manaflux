@@ -117,7 +117,7 @@ class ChampionSelect extends EventEmitter {
         */
 
         if (Mana.store.get('enableAnimations'))
-          UI.enableHextechAnimation(champion.key, data.runes[0].primaryStyleId);
+          UI.enableHextechAnimation(champion, data.runes[0].primaryStyleId);
 
         // TODO: Change hextech animation according to active rune page change
 

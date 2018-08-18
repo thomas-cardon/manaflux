@@ -27,7 +27,7 @@ async function getChampionSummary(d = {}) {
   const championSummaryData = JSON.parse(await rp(Mana.base + 'lol-game-data/assets/v1/champion-summary.json'));
 
   for (let champion of championSummaryData)
-    d[champion.id] = { id: champion.id, key: champion.alias, name: champion.name, img: Mana.base.slice(0, -1) + champion.squarePortraitPath };
+    d[champion.id] = { id: champion.id, key: champion.alias, name: champion.name, img: 'http://localhost:3681' + champion.squarePortraitPath };
 
   return d;
 }

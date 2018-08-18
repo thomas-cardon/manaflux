@@ -71,13 +71,20 @@ $(document).ready(function() {
   Mana.emit('settings', Mana.store);
 });
 
-ipcRenderer.on('lcu-connected', async (event, d) => Mana.base = d.baseUri);
+ipcRenderer.on('lcu-connected', async (event, d) => {
+  Mana.base = d.baseUri;
+  Mana.riot = d;
+});
+
 ipcRenderer.once('lcu-connected', async (event, d) => {
   Mana.user = new (require('./User'))(Mana.base);
   Mana.client = require('./objects/Client');
   Mana.championselect = new (require('./objects/ChampionSelect'))();
 
   Mana.status(i18n.__('loading-data'));
+
+  Mana.assetsProxy = new (require('./objects/RiotAssetsProxy'))();
+  Mana.assetsProxy.load();
 
   const data = await Promise.all([Mana.client.getChampionSummary(), Mana.client.getSummonerSpells()]);
 

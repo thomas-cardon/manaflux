@@ -41,10 +41,10 @@ $.fn.disableManualButton = function() {
 /*
 * Hextech Animation Handler
 */
-UI.enableHextechAnimation = function(championKey, primaryStyleId) {
+UI.enableHextechAnimation = function(champion, primaryStyleId) {
 	$('.championPortrait > #bg').attr('src', 'assets/img/vfx-' + (primaryStyleId ? primaryStyleId : 'white') + '.png');
 	$('.championPortrait > #champion')
-	.attr('src', championKey ? `https://ddragon.leagueoflegends.com/cdn/${Mana.gameVersion}.1/img/champion/${championKey.charAt(0) + championKey.slice(1).toLowerCase()}.png` : 'assets/img/-1.png')
+	.attr('src', champion.img)
 	.on('load', () => $(".title").animate({ "margin-top": "55%" }, 700, "linear", () => $('.championPortrait').show()));
 }
 
