@@ -38,7 +38,7 @@ class PathHandler {
     return new Promise((resolve, reject) => {
       exec(command, process.platform === 'win32' ? { shell: 'cmd.exe' } : {}, function(error, stdout, stderr) {
         console.dir(arguments);
-        if (error) return reject(err);
+        if (error) return reject(error);
 
         const matches = stdout.match(/[^"]+?(?=RADS)/gm);
 
