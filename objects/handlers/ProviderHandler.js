@@ -30,7 +30,7 @@ class ProviderHandler {
 
     let positions = {};
 
-    let providerOrder = Mana.store.get('providers-order');
+    let providerOrder = Mana.store.get('providers-order', ['championgg', 'opgg', 'lolflavor']);
     providerOrder.splice(providerOrder.indexOf('lolflavor'), 1);
     providerOrder.push('lolflavor');
     console.dir(providerOrder);
