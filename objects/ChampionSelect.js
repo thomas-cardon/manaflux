@@ -96,6 +96,7 @@ class ChampionSelect extends EventEmitter {
       ipcRenderer.removeAllListeners('runes-previous');
       ipcRenderer.removeAllListeners('runes-next');
 
+      if (Object.keys(res).length === 0) throw Error(i18n.__('providers-error-data'));
       console.dir(res);
 
       for (let position in res) {
