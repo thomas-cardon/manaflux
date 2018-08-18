@@ -66,7 +66,7 @@ class OPGGProvider extends Provider {
   _scrape(html, champion, position, gameMode) {
     let $ = cheerio.load(html);
 
-    const version = $('.champion-index__version').text().trim().slice(-4);
+    const version = $('.champion-stats-header-version').text().trim().slice(-4);
     const convertOPGGPosition = this.convertOPGGPosition;
 
     if (version != Mana.gameVersion) UI.error('OP.GG: ' + i18n.__('providers-error-outdated'));
