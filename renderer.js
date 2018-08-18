@@ -55,12 +55,9 @@ $(document).ready(function() {
 
   if (!Mana.store.has('leaguePath')) {
     Mana.status(i18n.__('league-client-start-required'));
-    UI.error(i18n.__('league-client-start-required-explanation'));
 
     ipcRenderer.once('lcu-league-path', (event, path) => {
       Mana.status('League: ' + i18n.__('path-found'));
-
-      console.log(`[LeaguePlug] ${i18n.__('path-found')}`);
       console.log(`[LeaguePlug] ${path}`);
 
       Mana.store.set('leaguePath', path);

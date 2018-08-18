@@ -1,21 +1,19 @@
 const app = require('electron').app ? require('electron').app : require('electron').remote.app;
 const fs = require('fs'), path = require('path');
-const { captureException } = require('@sentry/electron');
 
-let defaultLanguage, language, locale = app.getLocale().toLowerCase();
+let defaultLanguage = {}, language = {}, locale = app.getLocale().toLowerCase();
 
 function i18n() {
   this._locale = locale;
 
   try {
+    defaultLanguage = JSON.parse(fs.readFileSync(path.join(__dirname, '/locales/en.json'), 'utf8'));
+
     if(fs.existsSync(path.join(__dirname, '/locales/', locale + '.json')))
       language = JSON.parse(fs.readFileSync(path.join(__dirname, '/locales/',  locale + '.json'), 'utf8')) || {};
-
-    defaultLanguage = JSON.parse(fs.readFileSync(path.join(__dirname, '/locales/en.json'), 'utf8'));
   }
   catch(err) {
-    captureException(err);
-    UI.error(err);
+    console.error(err);
   }
 }
 
