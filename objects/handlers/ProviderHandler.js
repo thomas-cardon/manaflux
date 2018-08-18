@@ -1,6 +1,10 @@
 class ProviderHandler {
   constructor() {
-    this.providers = [new (require('../providers/ChampionGG.js'))(), new (require('../providers/OPGG.js'))(), new (require('../providers/LoLFlavor.js'))()];
+    this.providers = {
+      championgg: new (require('../providers/ChampionGG.js'))(),
+      opgg: new (require('../providers/OPGG.js'))(),
+      lolflavor: new (require('../providers/LoLFlavor.js'))()
+    };
   }
 
   async getChampionData(champion, preferredPosition, gameMode) {
@@ -14,7 +18,7 @@ class ProviderHandler {
         for (let i = 0; i < data.itemsets.length; i++)
           data.itemsets[i] = require('./ItemSetHandler').parse(champion.key, data.itemsets[i]._data, position);
 
-        data.summonerspells = this.sortSummonerSpells(data.summonerspells);
+        data.summonerspells = this.sortSummonerSpells(data.summonerspells || []);
       }
 
       return d;
@@ -26,7 +30,9 @@ class ProviderHandler {
 
     let positions = {};
 
-    for (let provider of this.providers) {
+    let providerOrder = Mana.store.get('providers-order');
+    for (let i = 0; i < providerOrder.length; i++) {
+      const provider = this.providers[providerOrder[i]];
       console.log('Using provider: ' + provider.name);
 
       try {
@@ -41,10 +47,10 @@ class ProviderHandler {
             method = 'getRunes';
         }
 
-        const d = await provider[method](champion, preferredPosition, gameMode);
+        const d = await provider[method](champion, preferredPosition, gameMode) || {};
 
         for (let [position, data] of Object.entries(d)) {
-          position.summonerspells = this.sortSummonerSpells(position.summonerspells);
+          data.summonerspells = this.sortSummonerSpells(data.summonerspells || []);
           positions[position] = Object.assign(positions[position] || { runes: {}, itemsets: {}, summonerspells: {} }, data);
         }
 
