@@ -128,7 +128,7 @@ Mana.once('settings', store => {
 				$(this).children().each(function() {
 					array.push($(this).attr('value'));
 				});
-				
+
 				store.set($(this).data('settings-key'), array);
 				console.log(`Changing value of #${$(this).data('settings-key')} to: ${array}`);
 			}

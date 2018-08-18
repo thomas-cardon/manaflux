@@ -156,11 +156,11 @@ class OPGGProvider extends Provider {
     const itemrows = $('.champion-overview__table').eq(1).find('.champion-overview__row');
 
     let itemset = new ItemSet(champion.key, position).setTitle(`OPG ${champion.name} - ${position}`);
-    let boots = new Block().setName(`${i18n.__('itemsets-block-boots')}`);
+    let boots = new Block().setName(i18n.__('itemsets-block-boots'));
 
     // Starter
     itemrows.slice(0, 2).each(function(index) {
-      let starter = new Block().setName(`${i18n.__('itemsets-block-starter-numbered').replace("{n}", index + 1)} ${skillorder}`);
+      let starter = new Block().setName(i18n.__('itemsets-block-starter-numbered', index + 1, skillorder));
       let pots = 0;
 
       let items = {};

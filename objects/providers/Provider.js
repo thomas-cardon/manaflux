@@ -5,19 +5,19 @@ class Provider {
   }
 
   async getData(champion, preferredPosition, gameMode) {
-    console.log(`[ProviderHandler] ${this.name} ${i18n.__('providers-skipped')}: #getData`);
+    throw Error(`[ProviderHandler] ${this.name} ${i18n.__('providers-skipped')}: #getData`);
   }
 
   async getSummonerSpells(champion, position, gameMode) {
-    console.log(`[ProviderHandler] ${this.name} ${i18n.__('providers-skipped')}: #getSummonerSpells`);
+    throw Error(`[ProviderHandler] ${this.name} ${i18n.__('providers-skipped')}: #getSummonerSpells`);
   }
 
   async getItemSets(champion, position, gameMode) {
-    console.log(`[ProviderHandler] ${this.name} ${i18n.__('providers-skipped')}: #getItemSets`);
+    throw Error(`[ProviderHandler] ${this.name} ${i18n.__('providers-skipped')}: #getItemSets`);
   }
 
   async getRunes(champion, position, gameMode) {
-    console.log(`[ProviderHandler] ${this.name} ${i18n.__('providers-skipped')}: #getRunes`);
+    throw Error(`[ProviderHandler] ${this.name} ${i18n.__('providers-skipped')}: #getRunes`);
   }
 
   convertSkillOrderToLanguage(letter) {

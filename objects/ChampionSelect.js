@@ -101,7 +101,7 @@ class ChampionSelect extends EventEmitter {
 
       for (let position in res) {
         if (res[position].runes.length === 0) {
-          UI.error(`Couldn't get runes for ${champion.name}, position: ${position}`);
+          UI.error(i18n.__('providers-error-runes', champion.name, position));
           delete res[position];
         }
         else $('#positions').append(`<option value="${position}">${position === 'ADC' ? 'ADC' : position.charAt(0).toUpperCase() + position.slice(1) }</option>`)
@@ -149,7 +149,7 @@ class ChampionSelect extends EventEmitter {
         try {
           let old = await ItemSetHandler.deleteItemSets(await ItemSetHandler.getItemSetsByChampionKey(champion.key));
 
-          Mana.status(i18n.__('itemsets-save-status', champion.name, this.value));
+          Mana.status(i18n.__('itemsets-save-status', champion.name));
 
           for (let position in res)
             for (const set of res[position].itemsets)

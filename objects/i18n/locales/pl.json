@@ -57,7 +57,7 @@
   "button-load-runes": "ZAŁADUJ RUNY",
   "summonerspells": "Czary przywoływacza",
   "itemsets": "Zestawy przedmiotów",
-  "itemsets-save-status": "Zapisywanie niektórych zestawów przedmiotów dla %s (%s)",
+  "itemsets-save-status": "Zapisywanie niektórych zestawów przedmiotów dla %s",
   "itemsets-unknown": "Nieznany Zestaw przedmiotów ManaFlux",
   "itemsets-block-starter": "Starter | Kolejność Umiejętności:",
   "itemsets-block-starter-numbered": "Starter {n} | Kolejność Umiejętności:",

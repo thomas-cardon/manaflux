@@ -53,7 +53,7 @@
   "button-load-runes": "CHARGER RUNES",
   "summonerspells": "Sorts d'invocateur",
   "itemsets": "Sets d'objets",
-  "itemsets-save-status": "Sauvegarde des sets d'objets pour %s (%s)",
+  "itemsets-save-status": "Sauvegarde des sets d'objets pour %s",
   "itemsets-unknown": "Set d'objet ManaFlux inconnu",
   "itemsets-block-starter": "Starter | Sorts:",
   "itemsets-block-starter-numbered": "Starter {n} | Sorts:",
