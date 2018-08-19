@@ -7,6 +7,16 @@ class ItemSetHandler {
     let set = new ItemSet(key, position);
     set._data = obj;
 
+    for (let i = 0; i < set._data.blocks.length; i++) {
+      if (!set._data.blocks[i].items) continue;
+
+      let items = {};
+      for (let j = 0; j < set._data.blocks[i].items.length; j++)
+        items[set._data.blocks[i].items[j].id] = set._data.blocks[i].items[j].count;
+
+      set._data.blocks[i] = new Block(set._data.blocks[i].type, items, set._data.blocks[i].recMath);
+    }
+
     return set;
   }
 

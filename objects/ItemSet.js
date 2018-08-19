@@ -4,7 +4,7 @@ class ItemSet {
   constructor(key, file) {
     this.championKey = key.toLowerCase();
 
-    this.file = (file && file.startsWith('MFLUX_')) ? file : `MFLUX_${this.championKey}${file ? ('_' + file + '_') : '_'}${Mana.gameVersion}_${Mana.version}.json`;
+    this.file = (file && file.startsWith('MFLUX_')) ? file : `MFLUX_${this.championKey}${file ? ('_' + file.toLowerCase() + '_') : '_'}${Mana.gameVersion}_${Mana.version}.json`;
     this.path = path.resolve(Mana.store.get('leaguePath') + `\\Config\\Champions\\${this.championKey}\\Recommended\\${this.file}`);
 
     this._data = {
@@ -46,7 +46,7 @@ class ItemSet {
 
   save() {
     for (let i = 0; i < this._data.blocks.length; i++)
-      Block.sort(this._data.blocks[i]);
+      this._data.blocks[i] = this._data.blocks[i].build();
 
     const p = this.path, data = JSON.stringify(this._data);
 
@@ -86,9 +86,10 @@ class ItemSet {
 }
 
 class Block {
-  constructor() {
-    this.type = "Unknown ManaFlux Block";
-    this.items = [];
+  constructor(type, items, recMath) {
+    this.type = type || "Unknown ManaFlux Block";
+    this.items = items || {};
+    this.recMath = recMath;
   }
 
   enableTutorialMode() {
@@ -101,28 +102,24 @@ class Block {
     return this;
   }
 
-  setItems(array) {
-    this.items = array;
+  setItems(o) {
+    this.items = o;
     return this;
   }
 
   addItem(id, count = 1) {
-    this.items.push({ id: `${id}`, count });
+    this.items[id] = this.items[id] + 1 || count;
     return this;
   }
 
-  /**
-   * Sorts objects correctly, such as potions etc
-   */
-  static sort(block = this) {
-    let items = {};
+  build() {
+    let o = { type: this.type, recMath: this.recMath };
+    o.items = [];
 
-    for (let i = 0; i < block.items.length; i++)
-      items[block.items[i].id] = items[block.items[i].id] + 1 || block.items[i].count;
+    for (let item in this.items)
+      o.items.push({ id: item, count: this.items[item] });
 
-    block.items = [];
-    for (var [id, count] of Object.entries(items))
-      block.items.push({ id, count });
+    return JSON.stringify(o);
   }
 }
 
