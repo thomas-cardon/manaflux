@@ -4,7 +4,7 @@ A dead simple runes (and now summoner spells + itemsets !) downloader for League
 
 ![ManaFlux Main Page](screenshots/1.png "Main page")
 
-> Support for English and French has been added ! It's automatic: ManaFlux will use your system to know what language it's supposed to load.
+> Support for Polish and Portuguese brasilian has been added ! It's automatic: ManaFlux will use your system to know what language it's supposed to load.
 
 ## Key Features
 - Automatic Runes, Item Sets, and Summoner Spells downloading
@@ -12,6 +12,7 @@ A dead simple runes (and now summoner spells + itemsets !) downloader for League
 <kbd>Alt+Left Arrow</kbd> or <kbd>Alt+Right Arrow</kbd>
 - You can hide it automatically in taskbar when you're not in champion select
 - Instead of controlling your mouse to setup your runes, ManaFlux injects them directly in the client, so you don't have to do anything but pick your champion.
+- Optimized network requests!
 
 ## Getting Started
 
