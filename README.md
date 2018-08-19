@@ -33,3 +33,6 @@ A dead simple runes (and now summoner spells + itemsets !) downloader for League
 - Web Technologies: HTML5, CSS3 and JavaScript for rendering
 - Theme inspired from League of Legends
 - [LeaguePlug](https://github.com/Ryzzzen/leagueplug), Simplifies the connection to League of Legends client
+
+#### Credits
+Thanks to my friends who gave me the idea of making this software, without them this would've not existed!
