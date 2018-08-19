@@ -158,7 +158,7 @@ class OPGGProvider extends Provider {
     let itemset = new ItemSet(champion.key, position).setTitle(`OPG ${champion.name} - ${position}`);
     let boots = new Block().setName(i18n.__('itemsets-block-boots'));
 
-    // Starter
+    /* Block Starter */
     itemrows.slice(0, 2).each(function(index) {
       let starter = new Block().setName(i18n.__('itemsets-block-starter-numbered', index + 1, skillorder));
       let pots = 0;
@@ -177,16 +177,15 @@ class OPGGProvider extends Provider {
 
     itemset.addBlock(new Block().setName(`Trinkets`).addItem(2055).addItem(3340).addItem(3341).addItem(3348).addItem(3363));
 
-    // Recommanded Items
-    let recommanded = [];
+    /* Block Recommanded */
+    let recommanded = new Block().setName(i18n.__('itemsets-block-recommanded'));
     itemrows.slice(2, -3).find('li:not(.champion-stats__list__arrow) > img').each(function(index) {
-      const id = $(this).attr('src').slice(44, 48);
-      if (!recommanded.includes(id)) recommanded.push({ id, count: 1 });
+      recommanded.addItem($(this).attr('src').slice(44, 48));
     });
 
-    itemset.addBlock(new Block().setName(i18n.__('itemsets-block-recommanded')).setItems(recommanded));
+    itemset.addBlock(recommanded);
 
-    // Boots
+    /* Block Boots */
     itemrows.slice(-3).find('img').each(function(index) {
       boots.addItem($(this).attr('src').slice(44, 48));
     });
