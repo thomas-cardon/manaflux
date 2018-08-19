@@ -180,7 +180,7 @@ class OPGGProvider extends Provider {
     /* Block Recommanded */
     let recommanded = new Block().setName(i18n.__('itemsets-block-recommanded'));
     itemrows.slice(2, -3).find('li:not(.champion-stats__list__arrow) > img').each(function(index) {
-      recommanded.addItem($(this).attr('src').slice(44, 48));
+      recommanded.addItem($(this).attr('src').slice(44, 48), false);
     });
 
     itemset.addBlock(recommanded);
