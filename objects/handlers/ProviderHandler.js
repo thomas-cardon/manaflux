@@ -33,7 +33,6 @@ class ProviderHandler {
     let providerOrder = Mana.store.get('providers-order', ['championgg', 'opgg', 'lolflavor']);
     providerOrder.splice(providerOrder.indexOf('lolflavor'), 1);
     providerOrder.push('lolflavor');
-    console.dir(providerOrder);
 
     for (let i = 0; i < providerOrder.length; i++) {
       const provider = this.providers[providerOrder[i]];
