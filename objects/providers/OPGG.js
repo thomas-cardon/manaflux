@@ -134,12 +134,11 @@ class OPGGProvider extends Provider {
   /**
    * Scrapes skill order from a Champion.gg page
    * @param {cheerio} $ - The cheerio object
-   * @param {function} convertSkillOrderToLanguage - Default function
    */
-  scrapeSkillOrder($, convertSkillOrderToLanguage = this.convertSkillOrderToLanguage) {
+  scrapeSkillOrder($) {
     let skillorder = '';
     const skills = $('.champion-stats__list').eq(2).find('li:not(.champion-stats__list__arrow) > img').each(function(index) {
-      skillorder += (skillorder !== '' ? ' => ' : '') + i18n.__('key_' + ($(this).siblings().text()));
+      skillorder += (skillorder !== '' ? ' => ' : '') + i18n.__('key-' + ($(this).siblings().text()));
     });
 
     return skillorder;
