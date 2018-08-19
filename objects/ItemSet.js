@@ -119,7 +119,7 @@ class Block {
     for (let item in this.items)
       o.items.push({ id: item, count: this.items[item] });
 
-    return JSON.stringify(o);
+    return o;
   }
 }
 
