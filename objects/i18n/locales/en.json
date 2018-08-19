@@ -1,6 +1,5 @@
 {
-  "process-unhandled-rejection": "Unhandled rejection at",
-  "reason": "reason",
+  "process-unhandled-rejection": "Unhandled rejection at %s, reason: %s",
   "eval": "Eval isn't supported for security reasons.",
   "info": "Info",
   "error": "Error",
@@ -66,6 +65,10 @@
   "itemsets-block-recommanded": "Recommanded Items",
   "itemsets-block-boots": "Boots (choose one)",
   "itemsets-block-consumables": "Consumables",
+  "key-Q": "Q",
+  "key-W": "W",
+  "key-E": "E",
+  "key-R": "R",
   "runes": "Runes",
   "animations": "Animations",
   "taskbar": "Taskbar",

@@ -1,6 +1,5 @@
 {
-  "process-unhandled-rejection": "Nieobsługiwane odrzucenie w",
-  "reason": "Powód",
+  "process-unhandled-rejection": "Nieobsługiwane odrzucenie w %s, powód: %s",
   "eval": "Eval nie jest obsługiwany ze względów bezpieczeństwa.",
   "info": "Info",
   "error": "Błąd",
@@ -60,7 +59,7 @@
   "itemsets-save-status": "Zapisywanie niektórych zestawów przedmiotów dla %s",
   "itemsets-unknown": "Nieznany Zestaw przedmiotów ManaFlux",
   "itemsets-block-starter": "Starter | Kolejność Umiejętności:",
-  "itemsets-block-starter-numbered": "Starter {n} | Kolejność Umiejętności:",
+  "itemsets-block-starter-numbered": "Starter %s | Kolejność Umiejętności: %s",
   "itemsets-block-recommanded": "Polecane przedmioty",
   "itemsets-block-boots": "Buty (wybierz jedne)",
   "itemsets-block-consumables": "Zaopatrzenie",

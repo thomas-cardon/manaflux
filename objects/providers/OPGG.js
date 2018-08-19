@@ -139,7 +139,7 @@ class OPGGProvider extends Provider {
   scrapeSkillOrder($, convertSkillOrderToLanguage = this.convertSkillOrderToLanguage) {
     let skillorder = '';
     const skills = $('.champion-stats__list').eq(2).find('li:not(.champion-stats__list__arrow) > img').each(function(index) {
-      skillorder += (skillorder !== '' ? ' => ' : '') + convertSkillOrderToLanguage($(this).siblings().text());
+      skillorder += (skillorder !== '' ? ' => ' : '') + i18n.__('key_' + ($(this).siblings().text()));
     });
 
     return skillorder;

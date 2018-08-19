@@ -19,21 +19,6 @@ class Provider {
   async getRunes(champion, position, gameMode) {
     throw Error(`[ProviderHandler] ${this.name} ${i18n.__('providers-skipped')}: #getRunes`);
   }
-
-  convertSkillOrderToLanguage(letter) {
-    if (i18n._locale === 'fr') {
-      switch(letter) {
-        case 'Q':
-        return 'A';
-        case 'W':
-        return 'Z';
-        default:
-        return letter;
-      }
-    }
-
-    return letter;
-  }
 }
 
 module.exports = Provider;

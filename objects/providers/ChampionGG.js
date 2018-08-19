@@ -144,7 +144,7 @@ class ChampionGGProvider extends Provider {
     let skills = $('.skill').slice(1, -1);
     skills.splice(3, 2);
 
-    let sums = [{ key: this.convertSkillOrderToLanguage('Q'), sum: 0 }, { key: this.convertSkillOrderToLanguage('W'), sum: 0 }, { key: 'E', sum: 0 }];
+    let sums = [{ key: i18n.__('key_Q'), sum: 0 }, { key: i18n.__('key_W'), sum: 0 }, { key: i18n.__('key_E'), sum: 0 }];
     let skillorder = {};
 
     skills.each(function(index) {

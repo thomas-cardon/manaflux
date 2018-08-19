@@ -1,6 +1,5 @@
 {
-  "process-unhandled-rejection": "Rejeição não tratada em",
-  "reason": "razão",
+  "process-unhandled-rejection": "Rejeição não tratada em %s, razão: %s",
   "eval": "Eval não é suportado por razões de segurança.",
   "info": "Info",
   "error": "Erro",
@@ -47,7 +46,7 @@
   "itemsets": "Conjunto de Itens",
   "itemsets-unknown": "Conjunto de itens ManaxFlux desconhecido",
   "itemsets-block-starter": "Iniciante | Ordem de Habilidades:",
-  "itemsets-block-starter-numbered": "Iniciante {n} | Ordem de Habilidades:",
+  "itemsets-block-starter-numbered": "Iniciante %s | Ordem de Habilidades: %s",
   "itemsets-block-recommanded": "Itens Recomendados",
   "itemsets-block-boots": "Botas (escolha uma)",
   "itemsets-block-consumables": "Consumíveis",
