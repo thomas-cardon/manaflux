@@ -108,7 +108,7 @@ class Block {
   }
 
   addItem(id, count = 1) {
-    this.items[id] = this.items[id] + 1 || count;
+    this.items[id] = (count === false) ? 1 : this.items[id] + count || count;
     return this;
   }
 
