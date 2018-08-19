@@ -50,6 +50,7 @@ class User {
 
     for (let i = 0; i < count; i++) {
       if (!this.runes[i]) continue;
+      if (this.runes[i].selectedPerkIds === pages[i].selectedPerkIds && this.runes[i].name === pages[i].name) continue;
       await this.updateRunePage(this.runes[i].id, Object.assign(this.runes[i], pages[i], { current: count < 1, id: this.runes[i].id }));
     }
   }
