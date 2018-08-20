@@ -1,4 +1,6 @@
 const { app, BrowserWindow, ipcMain, globalShortcut, Menu, Tray } = require('electron');
+
+global.log = new (require('./objects/handlers/LoggingHandler'))(3);
 const i18n = new (require('./objects/i18n'));
 
 const { autoUpdater } = require('electron-updater');
@@ -33,12 +35,18 @@ function createWindow () {
 
   win.once('ready-to-show', () => !tray ? win.show() : null);
 
+  log.setBrowserWindow(win);
+  log.onMessage((type, message) => {
+    console[type].call(this, message)
+  });
+
   if (process.argv[2] === '--dev')
     win.webContents.openDevTools({ mode: 'detach' });
 
   win.on('closed', () => {
     if (connector) connector.getConnectionHandler().end();
     if (tray && !tray.isDestroyed()) tray.destroy();
+    if (log.stream) log.stream.end();
 
     win = tray = null;
   });
@@ -89,11 +97,11 @@ ipcMain.on('auto-start', (event, enable) => {
 });
 
 ipcMain.on('lcu-league-path', event => {
-  console.log('asking league path');
+  log.log(2, '[IPC] Asked for League\'s path');
   const id = setInterval(() => {
     connector.getPathHandler().findLeaguePath().then(path => {
-      clearInterval(id);
       event.sender.send('lcu-league-path', path);
+      clearInterval(id);
     });
   }, 500);
 });

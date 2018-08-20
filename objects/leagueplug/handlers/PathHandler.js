@@ -22,18 +22,18 @@ class PathHandler {
   }
 
   async findLeaguePath() {
-    console.log('[PathHandler] Trying to find path.');
+    log.log(2, '[PathHandler] Trying to find path.');
     if (await this._exists('C:\\Riot Games\\League of Legends\\')) return 'C:\\Riot Games\\League of Legends\\';
 
     let leaguePath = await this.getLeaguePathByCommandLine();
-    console.log(`[PathHandler] Path found by commandline: ${leaguePath}`);
+    log.log(2, `[PathHandler] Path found by commandline: ${leaguePath}`);
 
-    while(!leaguePath || await !this._exists(path.resolve(leaguePath + '\\LeagueClient.' + (process.platform === 'win32' ? 'exe' : 'app'))) /* OSX WIN ONLY SHOULD CHANGE SOON */ ) {
-      leaguePath = dialog.showOpenDialog({properties: ['openDirectory', 'showHiddenFiles'], message: i18n.__('league-client-enter-path'), title: i18n.__('league-client-enter-path') })[0];
+    while(!leaguePath || leaguePath.length === 0 || await !this._exists(path.resolve(leaguePath + '\\LeagueClient.' + (process.platform === 'win32' ? 'exe' : 'app'))) /* OSX WIN ONLY SHOULD CHANGE SOON */ ) {
+      leaguePath = dialog.showOpenDialog({properties: ['openDirectory', 'showHiddenFiles'], message: i18n.__('league-client-enter-path'), title: i18n.__('league-client-enter-path') });
     }
 
-    console.log(`[PathHandler] Path selected: ${leaguePath}`);
-    return leaguePath;
+    console.log(`[PathHandler] Path selected: ${leaguePath[0]}`);
+    return leaguePath[0];
   }
 
   async getLeaguePathByCommandLine() {
@@ -43,10 +43,11 @@ class PathHandler {
       exec(command, process.platform === 'win32' ? { shell: 'cmd.exe' } : {}, function(error, stdout, stderr) {
         if (error) return reject(error);
 
+        log.log(3, stdout);
         const matches = stdout.match(/[^"]+?(?=RADS)/gm);
 
         if (!matches || matches.length === 0) resolve(false);
-        else resolve(matches[0]);
+        else resolve(log.log(3, matches[0]));
       });
     });
   }

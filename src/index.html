@@ -143,7 +143,14 @@
 
   const { ipcRenderer } = require('electron');
   const EventEmitter = require('events');
+
+  const log = new (require('../objects/handlers/LoggingHandler'))(3);
   const i18n = new (require('../objects/i18n'));
+
+  log.onMessage((type, message) => {
+    if (type === 'dir' && typeof message === 'string') message = JSON.parse(message);
+    console[type].call(this, message);
+  });
 
   class MF extends EventEmitter {}
   global.Mana = new MF();

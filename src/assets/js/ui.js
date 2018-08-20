@@ -1,9 +1,31 @@
 var UI = {};
 
-UI.error = function(err) {
+/**
+* Shows a status on the UI and logs it into LoggingHandler
+* @param {prefix} string - What will be written before the message in the logs
+* @param {translationString} string - Allows ManaFlux to show a translated message on the UI and in english in the logs
+* @param {parameters} string... - Translation parameters
+*/
+UI.status = (prefix, ...args) => {
+  let x = i18n.__.call(i18n, ...args);
+  let y = i18n.__d.call(i18n, ...args);
+
+  $('.status').text(x + '...');
+  log.log(2, `[${prefix}] ${y}...`);
+};
+
+/**
+* Shows an error on the UI and logs it into LoggingHandler
+* @param {translationString} string - Allows ManaFlux to show a translated message on the UI and in english in the logs
+* @param {parameters} string... - Translation parameters
+*/
+UI.error = function(...args) {
+	let x = i18n.__.call(i18n, ...args);
+	let y = i18n.__d.call(i18n, ...args);
+
 	$('#warning').show();
-	alertify.notify(err instanceof Error ? err.toString() : err, 'error', 10, () => $('#warning').hide());
-	console.error(err);
+	alertify.notify(args[0] instanceof Error ? args[0].toString() : x, 'error', 10, () => $('#warning').hide());
+	log.error(2, y);
 }
 
 UI.success = msg => alertify.notify(msg, 'success', 10);
@@ -23,10 +45,7 @@ UI.tray = function(tray = true) {
 window.onbeforeunload = (e) => UI.tray(false);
 ipcRenderer.on('error', (event, data) => UI.error(data));
 
-/*
-* Manual Button Handler
-*/
-
+/* Manual Button Handler */
 $.fn.enableManualButton = function(cb, off) {
 	if (off) $(this).off();
 	$(this).show().click(cb);
@@ -38,9 +57,7 @@ $.fn.disableManualButton = function() {
 	return this;
 }
 
-/*
-* Hextech Animation Handler
-*/
+/* Hextech Animation Handler */
 UI.enableHextechAnimation = function(champion, primaryStyleId) {
 	$('.championPortrait > #bg').attr('src', 'assets/img/vfx-' + (primaryStyleId ? primaryStyleId : 'white') + '.png');
 	$('.championPortrait > #champion')
@@ -53,26 +70,24 @@ UI.disableHextechAnimation = () => {
 	$(".title").animate({ "margin-top": "0%" }, 700, "linear");
 }
 
-// Navigation menus (if there's multiple tabs for the same thing such as settings)
+/* Navigation menus */
 let navigationId = 0;
 UI.nav = n => {
 	const tabcontent = $(`.tabcontent[data-tabid=${$('.tablinks.active').data('tabid')}][data-tabn=${navigationId + n}]`);
 	if (tabcontent.length > 0) {
 		navigationId += n;
 
-		console.log(`[Navigation] Heading to tab #${tabcontent.data('tabid')}, n:${navigationId}`);
+		log.log(2, `[Navigation] Heading to tab #${tabcontent.data('tabid')}, n:${navigationId}`);
 		$('.tabcontent').hide();
 		tabcontent.show();
 	}
-	else console.log(`[Navigation] Can't navigate to tab #${$('.tablinks.active').data('tabid')}, n:${navigationId + n}`);
+	else log.log(2, `[Navigation] Can't navigate to tab #${$('.tablinks.active').data('tabid')}, n:${navigationId + n}`);
 }
 
-/*
-* Tab Handler
-*/
+/* Tab Handler */
 $(document).ready(function() {
 	$('[data-i18n]').each(function() {
-		console.log(`[Localization] Loading value: ${$(this).data('i18n')}`);
+		log.log(2, `[Localization] Loading value: ${$(this).data('i18n')}`);
 		$(this).text(i18n.__($(this).data('i18n')));
 	});
 
@@ -101,22 +116,22 @@ Mana.once('settings', store => {
 
 	/* select element support */
 	$('select[data-settings-key]').change(function() {
-		console.log(`Changing value of ${$(this).data('settings-key')} to: ${this.value}`);
+		log.log(2, `[Settings] Changing value of ${$(this).data('settings-key')} to: ${this.value}`);
 		store.set($(this).data('settings-key'), this.value);
 	}).each(function() {
-		console.log(`Loading value of ${$(this).data('settings-key')} to: ${store.get($(this).data('settings-key'))}`);
+		log.log(2, `[Settings] Loading value of ${$(this).data('settings-key')} to: ${store.get($(this).data('settings-key'))}`);
 		$(this).val(store.get($(this).data('settings-key')));
 	});
 
 	/* checkbox element support */
 	$(':checkbox[data-settings-key]').each(function() {
-		console.log(`Loading value of ${$(this).data('settings-key')} to: ${store.get($(this).data('settings-key'))}`);
+		log.log(2, `[Settings] Loading value of ${$(this).data('settings-key')} to: ${store.get($(this).data('settings-key'))}`);
 		$(this).prop('checked', store.get($(this).data('settings-key')));
 
 		$(this).prop('id', $(this).data('settings-key'));
 		$(this).siblings('label').prop('for', $(this).data('settings-key'));
 	}).change(function() {
-		console.log(`Changing value of ${$(this).data('settings-key')} to: ${$(this).is(":checked")}`);
+		log.log(2, `[Settings] Changing value of ${$(this).data('settings-key')} to: ${$(this).is(":checked")}`);
 		store.set($(this).data('settings-key'), $(this).is(":checked"));
 	});
 
@@ -130,7 +145,7 @@ Mana.once('settings', store => {
 				});
 
 				store.set($(this).data('settings-key'), array);
-				console.log(`Changing value of #${$(this).data('settings-key')} to: ${array}`);
+				log.log(2, `[Settings] Changing value of #${$(this).data('settings-key')} to: ${array}`);
 			}
 		});
 
@@ -146,8 +161,8 @@ $('select[data-settings-key=theme]').change(function() {
 })
 
 ipcRenderer.once('update-ready', async (event, data) => {
-	console.log('Update available ! version: ' + data.version);
-	console.dir(data);
+	log.log(2, '[Update] Available! version: ' + data.version);
+	log.dir(3, data);
 
 	$('.tablinks[data-tabid="update"]').show();
 

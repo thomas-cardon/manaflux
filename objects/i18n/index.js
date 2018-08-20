@@ -11,11 +11,18 @@ function i18n() {
       this._language = JSON.parse(fs.readFileSync(path.join(__dirname, '/locales/',  this._locale + '.json'), 'utf8')) || {};
   }
   catch(err) {
-    console.error(err);
+    log.error(0, err);
   }
 }
 
+i18n.prototype.__d = function(...args) {
+  args[0] = this._default[args[0]] || args[0];
+  return args[0].includes("%s") ? require('util').format.call(this, ...args) : args[0];
+}
+
 i18n.prototype.__ = function(...args) {
+  console.dir(args);
+
   args[0] = this._language[args[0]] || this._default[args[0]] || args[0];
   return args[0].includes("%s") ? require('util').format.call(this, ...args) : args[0];
 }

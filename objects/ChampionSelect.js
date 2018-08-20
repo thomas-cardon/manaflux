@@ -10,11 +10,11 @@ class ChampionSelect extends EventEmitter {
     super();
     this.inChampionSelect = false;
 
-    this.on('firstTick', async () => console.log('Entering Champion Select'));
-    this.on('ended', () => console.log('Leaving Champion Select'));
+    this.on('firstTick', async () => log.log(2, '[ChampionSelect] Entering'));
+    this.on('ended', () => log.log(2, '[ChampionSelect] Leaving'));
     this.on('change', async id => {
       const champion = Mana.champions[id];
-      console.log(`Changed champion to: #${id} (${champion.name})`);
+      log.log(2, `[ChampionSelect] Changed champion to: #${id} (${champion.name})`);
 
       Mana.user.runes = Mana.user.runes || await Mana.user.getRunes();
       Mana.user._pageCount = Mana.user._pageCount || await Mana.user.getPageCount();
@@ -88,7 +88,7 @@ class ChampionSelect extends EventEmitter {
 
   async updateDisplay(champion) {
     try {
-      Mana.status(`Updating display for ${champion.name}`);
+      UI.status('ChampionSelect', 'champion-updating-display', champion.name);
       const res = await ProviderHandler.getChampionData(champion, this.getPosition(), this.gameMode);
 
       $('#positions').unbind().empty().hide();
@@ -101,7 +101,7 @@ class ChampionSelect extends EventEmitter {
 
       for (let position in res) {
         if (res[position].runes.length === 0) {
-          UI.error(i18n.__('providers-error-runes', champion.name, position));
+          UI.error('providers-error-runes', champion.name, position);
           delete res[position];
         }
         else $('#positions').append(`<option value="${position}">${position === 'ADC' ? 'ADC' : position.charAt(0).toUpperCase() + position.slice(1) }</option>`)
@@ -131,8 +131,7 @@ class ChampionSelect extends EventEmitter {
           }
         }
         else $('button#loadRunes').enableManualButton(() => Mana.user.updateRunePages(data.runes).catch(err => { UI.error(err); captureException(err); }), true);
-
-        Mana.status(i18n.__('runes-loaded', champion.name, this.value));
+        UI.status('ChampionSelect', 'runes-loaded', champion.name, this.value);
 
         /*
         * Summoner Spells display
@@ -148,8 +147,7 @@ class ChampionSelect extends EventEmitter {
       if (Mana.store.get('enableItemSets')) {
         try {
           let old = await ItemSetHandler.deleteItemSets(await ItemSetHandler.getItemSetsByChampionKey(champion.key));
-
-          Mana.status(i18n.__('itemsets-save-status', champion.name));
+          UI.status('ChampionSelect', 'itemsets-save-status', champion.name);
 
           for (let position in res)
             for (const set of res[position].itemsets)
@@ -206,7 +204,7 @@ class ChampionSelect extends EventEmitter {
   }
 
   destroyDisplay() {
-    Mana.status(i18n.__('champion-select-waiting'));
+    UI.status('ChampionSelect', 'champion-select-waiting');
     UI.disableHextechAnimation();
 
     $('button#loadRunes').disableManualButton();
