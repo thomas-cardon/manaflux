@@ -9,7 +9,7 @@ const { captureException } = require('@sentry/electron');
 class RiotAssetsProxy {
   onRequest(req, res) {
     if (req.url === '/favicon.ico') return;
-    console.log(`[RiotAssetsProxy] ${Mana.base}${req.url.slice(1)}`);
+    log.log(3, `[RiotAssetsProxy] ${Mana.base}${req.url.slice(1)}`);
 
     try {
       request.get(Mana.base + req.url.slice(1)).pipe(res);
@@ -26,7 +26,7 @@ class RiotAssetsProxy {
     this._server.listen(3681, 'localhost', (err) => {
       if (err) return captureException(err);
 
-      console.log(`[RiotAssetsProxy] Listening on port 3681`);
+      log.log(2, `[RiotAssetsProxy] Listening on port 3681`);
     });
   }
 

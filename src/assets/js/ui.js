@@ -20,12 +20,19 @@ UI.status = (prefix, ...args) => {
 * @param {parameters} string... - Translation parameters
 */
 UI.error = function(...args) {
+  $('#warning').show();
+
+  if (args[0] instanceof Error) {
+    alertify.notify(args[0].toString(), 'error', 10, () => $('#warning').hide());
+    return log.error(1, args[0]);
+  }
+
 	let x = i18n.__.call(i18n, ...args);
 	let y = i18n.__d.call(i18n, ...args);
 
 	$('#warning').show();
 	alertify.notify(args[0] instanceof Error ? args[0].toString() : x, 'error', 10, () => $('#warning').hide());
-	log.error(2, y);
+	return log.error(2, y);
 }
 
 UI.success = msg => alertify.notify(msg, 'success', 10);
@@ -149,7 +156,23 @@ Mana.once('settings', store => {
 			}
 		});
 
-		const values = store.get($(this).data('settings-key'), $(this).data('settings-sortable-list-values').split(','));
+    const mergeIfMissing = $(this).data('settings-merge-list-if-missing-value') || false;
+
+    const defaultValues = $(this).data('settings-sortable-list-values').split(',');
+		const values = store.get($(this).data('settings-key'), defaultValues);
+
+    if (mergeIfMissing) {
+      let saveNeeded;
+      for (let i = 0; i < defaultValues.length; i++) {
+        if (values.indexOf(defaultValues[i]) === -1) {
+          values.push(defaultValues[i]);
+          saveNeeded = true;
+        }
+      }
+
+      if (saveNeeded)
+        store.set($(this).data('settings-key'), values);
+    }
 
 		for (let i = 0; i < values.length; i++)
 			$(this).append(`<li class="ui-state-default sortable-button" value="${values[i]}">${i18n.__('settings-' + $(this).data('settings-key') + '-' + values[i])}</li>`);

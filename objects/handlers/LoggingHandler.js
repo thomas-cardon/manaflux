@@ -41,7 +41,9 @@ LoggingHandler.prototype.dir = function(level, x) {
 
 LoggingHandler.prototype.error = function(level, error) {
   if (this.level < level) return;
-  console.error.call(this, `[${this._getTimestamp()}] [${this.isRenderer ? 'Renderer' : 'Main'}] ${error}`);
+  console.log.call(this, `[${this._getTimestamp()}] [${this.isRenderer ? 'Renderer' : 'Main'}] Error`);
+  console.error(error);
+
   this.send(level, 'error', error);
 }
 
