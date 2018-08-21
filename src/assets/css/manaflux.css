@@ -138,6 +138,7 @@ label {
   color: #f0e6d2;
   font-size: 25px;
   margin-bottom: 10px;
+  letter-spacing: 0.025rem;
 }
 
 .suboption-name {
@@ -234,6 +235,25 @@ hr {
 
 .icon {
   font-size: 20px !important;
+}
+
+/* Number inputs */
+
+input[type="number"], input[type="text"] {
+  display: inline-block;
+  position: relative;
+  cursor: pointer;
+  width: 200px;
+  font-family: 'beaufort-bold', sans-serif;
+  color: rgb(62.7%, 60.8%, 54.9%);
+  letter-spacing: 0.025rem;
+  padding: 10px 14px;
+  background-color: rgba(30, 35, 40, 0.5);
+  border: 1px solid transparent;
+  border-image: linear-gradient(to top, #695625 0%, #A9852D 23%, #B88D35 93%, #C8AA6E 100%) 1;
+  outline: none;
+  box-sizing: border-box;
+  -webkit-appearance: none;
 }
 
 /* Style the buttons that are used to open the tab content */
@@ -435,7 +455,6 @@ textarea:disabled {
   width: 200px;
   font-family: 'beaufort-bold', sans-serif;
   color: rgb(62.7%, 60.8%, 54.9%);
-  ;
   letter-spacing: 0.025rem;
   outline: none;
   padding: 10px 14px;
@@ -445,11 +464,8 @@ textarea:disabled {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
   box-sizing: border-box;
   -webkit-appearance: none;
-  -moz-appearance: none;
 }
 
 .dropdown:active {
