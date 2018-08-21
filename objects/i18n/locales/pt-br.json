@@ -28,7 +28,7 @@
   "champion-select-hide": "Esconder quando não estiver selecionando um campeão",
   "developer-game-start-error": "Não foi possível iniciar um jogo de desenvolvimento",
   "providers-skipped": "foi ignorado por causa de método não encontrado",
-  "providers-order": "Order dos Provedores",
+  "providers-order": "Ordem dos Provedores",
   "providers-error-itemsets-not-found": "Não foi possível encontrar o conjunto de itens",
   "providers-error-outdated": "Dados desatualizados",
   "providers-error-data": "Não foi possível encontrar os dados",
