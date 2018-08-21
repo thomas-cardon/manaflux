@@ -25,6 +25,7 @@
   "league-client-start-required": "Please start League Client",
   "league-client-start-required-explanation": "Please start League Client to find its install folder",
   "league-client-enter-path": "Please open your League of Legends folder",
+  "league-client-path": "League folders",
   "champion-select-waiting": "Waiting for Champion Select",
   "champion-updating-display": "Updating display for %s",
   "champion-select-hide": "Hide when out of Champion Select",

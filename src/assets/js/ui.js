@@ -115,9 +115,7 @@ $(document).ready(function() {
 	$('button[data-tabid="home"]').click();
 });
 
-/*
-* Settings
-*/
+/* Settings */
 Mana.once('settings', store => {
 	$('body').css('background', "linear-gradient(to bottom, rgba(125, 185, 232, 0) -1%, rgba(50, 96, 122, 0) 65%, rgba(10, 49, 64, 0.8) 100%), url('./assets/img/" + Mana.store.get('theme') + "')");
 
@@ -153,7 +151,7 @@ Mana.once('settings', store => {
 
 	/* sortable lists support */
 	$(".sortable[data-settings-key]").each(function() {
-		$(this).sortable({
+    $(this).css('list-style', 'disc inside').sortable({
 			update: function(event, ui) {
 				let array = [];
 				$(this).children().each(function() {
