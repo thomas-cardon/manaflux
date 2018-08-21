@@ -1,5 +1,4 @@
 const fs = require('fs'), path = require('path');
-const i18n = new (require('../../i18n'));
 const { exec } = require('child_process');
 const { dialog } = require('electron');
 
@@ -29,16 +28,12 @@ class PathHandler {
     let leaguePath = await this.getLeaguePathByCommandLine();
     log.log(2, `[PathHandler] Path found by commandline: ${leaguePath}`);
 
-    /* OSX WIN ONLY SHOULD CHANGE SOON */
     while(!leaguePath || await !this._exists(path.resolve(leaguePath + '\\LeagueClient.' + (process.platform === 'win32' ? 'exe' : 'app')))) {
-      console.log(i18n.__('league-client-enter-path'));
-      leaguePath = log.dir(3, dialog.showOpenDialog({properties: ['openDirectory', 'showHiddenFiles'], message: i18n.__('league-client-enter-path'), title: i18n.__('league-client-enter-path') }));
-
-      if (leaguePath.length > 0) leaguePath = leaguePath[0];
-      else leaguePath = false;
+      leaguePath = log.dir(3, dialog.showOpenDialog({ properties: ['openDirectory', 'showHiddenFiles'], message: 'Please open League of Legends folder', title: 'Please open League of Legends folder' }));
+      leaguePath = leaguePath.length > 0 ? leaguePath[0] : false;
     }
 
-    console.log(`[PathHandler] Path selected: ${leaguePath}`);
+    log.log(2, `[PathHandler] Path selected: ${leaguePath}`);
     return leaguePath;
   }
 
