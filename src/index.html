@@ -76,16 +76,33 @@
       <div class="option">
         <p class="suboption-name" data-i18n="taskbar"></p>
         <div class="options float-left checkboxContainer">
-          <input type="checkbox" data-settings-key="enableTrayIcon" onclick="UI.tray(this.checked)" />
+          <input type="checkbox" data-settings-key="enableTrayIcon" class="center-area" onclick="UI.tray(this.checked)" />
           <label data-i18n="champion-select-hide"></label>
         </div>
       </div>
       <div class="option">
         <p class="suboption-name" data-i18n="animations"></p>
         <div class="options float-left checkboxContainer">
-          <input type="checkbox" data-settings-key="enableAnimations" />
+          <input type="checkbox" data-settings-key="enableAnimations" class="center-area" />
           <label data-i18n="enable"></label>
         </div>
+      </div>
+    </div>
+    <div data-tabid="settings" data-tabn=1 class="tabcontent" style="display: none; margin-left: 12%;">
+      <div class="option">
+        <p class="suboption-name" data-i18n="runes-max"></p>
+        <input type="number" data-settings-key="runes-max" class="center-area" min="1" step="1" />
+      </div>
+      <div class="option">
+        <p class="suboption-name" data-i18n="summoner-spells-priority"></p>
+        <select data-settings-key="summoner-spells-priority" class="dropdown center-area">
+          <option data-i18n="summoner-spells-priority-flash-d" value=d></option>
+          <option data-i18n="summoner-spells-priority-flash-f" value=f></option>
+        </select>
+      </div>
+      <div class="option">
+        <p class="suboption-name" data-i18n="league-client-path"></p>
+        <input type="text" data-settings-key="leaguePath" class="center-area" disabled />
       </div>
       <div class="option">
         <p class="suboption-name" data-i18n="theme"></p>
@@ -101,29 +118,14 @@
         </select>
       </div>
     </div>
-    <div data-tabid="settings" data-tabn=1 class="tabcontent" style="display: none; margin-left: 12%;">
-      <div class="option">
-        <p class="suboption-name" data-i18n="runes-max"></p>
-        <input data-settings-key="runes-max" type="number" min="1" step="1" />
-      </div>
-      <div class="option">
-        <p class="suboption-name" data-i18n="summoner-spells-priority"></p>
-        <select data-settings-key="summoner-spells-priority" class="dropdown center-area">
-          <option data-i18n="summoner-spells-priority-flash-d" value=d></option>
-          <option data-i18n="summoner-spells-priority-flash-f" value=f></option>
-        </select>
-      </div>
+    <div data-tabid="settings" data-tabn=2 class="tabcontent" style="display: none; margin-left: 12%;">
       <div class="option">
         <p class="suboption-name" data-i18n="empty-cache-settings-option"></p>
-        <button data-custom-component="empty-cache">Vider le cache</button>
+        <button data-custom-component="empty-cache" data-i18n="empty-cache-button"></button>
       </div>
       <div class="option">
         <p class="suboption-name" data-i18n="reset-settings-settings-option"></p>
-        <button data-custom-component="reset-settings">Réinitialiser</button>
-      </div>
-      <div class="option">
-        <p class="suboption-name" data-i18n="league-client-path"></p>
-        <input data-settings-key="leaguePath" type="text" disabled />
+        <button data-custom-component="reset-settings-button" data-i18n="reset-settings-button"></button>
       </div>
       <div class="option">
         <p class="suboption-name" data-i18n="providers-order"></p>
