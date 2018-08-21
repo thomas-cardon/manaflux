@@ -1,7 +1,7 @@
 {
   "name": "manaflux",
   "version": "1.5.3",
-  "description": "League of Legends automatic runes downloader",
+  "description": "Manaflux downloads automatically your runes, itemsets, and summonerspells and injects them to your League client seamlessly!",
   "main": "main.js",
   "scripts": {
     "build": "build --win",
@@ -12,7 +12,8 @@
     "League",
     "assistant",
     "masteries",
-    "runes"
+    "runes",
+    "perks"
   ],
   "author": "Ryzzzen",
   "license": "MIT",
