@@ -1,8 +1,7 @@
-const app = require('electron').app ? require('electron').app : require('electron').remote.app;
 const fs = require('fs'), path = require('path');
 
 function i18n() {
-  this._locale = app.getLocale().toLowerCase();
+  this._locale = (require('electron').app ? require('electron').app : require('electron').remote.app).getLocale().toLowerCase();
 
   try {
     this._default = JSON.parse(fs.readFileSync(path.join(__dirname, '/locales/en.json'), 'utf8'));
