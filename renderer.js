@@ -76,7 +76,8 @@ ipcRenderer.on('lcu-connected', async (event, d) => {
 
 ipcRenderer.once('lcu-connected', async (event, d) => {
   Mana.user = new (require('./objects/User'))(Mana.base);
-  Mana.client = require('./objects/Client');
+  Mana.client = new (require('./objects/riot/Client'))();
+
   Mana.championselect = new (require('./objects/ChampionSelect'))();
 
   UI.status('Status', 'loading-data-login');
@@ -89,20 +90,20 @@ ipcRenderer.once('lcu-connected', async (event, d) => {
   Mana.champions = data[0];
   Mana.summonerspells = data[1];
 
-  const ver = await Mana.client.getVersion();
-  Mana.store.set('gameVersion', ver);
-  $('.version').text($('.version').text() + ' - V' + (Mana.gameVersion = ver));
+  $('.version').text($('.version').text() + ' - V' + Mana.client.branch);
 
-  if (Mana.store.get('gameVersion') !== ver) {
+  if (Mana.store.get('lastBranchSeen') !== ver) {
     Mana.store.set('data', {});
     ItemSetHandler.getItemSets().then(x => ItemSetHandler.deleteItemSets(x)).catch(UI.error);
   }
+
+  Mana.store.set('lastBranchSeen', Mana.client.branch);
 });
 
 ipcRenderer.on('lcu-logged-in', async (event, data) => {
   UI.status('League', 'league-client-connection');
 
-  await Mana.user.load(data);
+  await Mana.user._load(data);
   Mana.championselect.load();
 
   UI.status('Status', 'champion-select-waiting');
