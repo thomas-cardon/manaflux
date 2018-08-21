@@ -29,6 +29,13 @@ body {
   margin: 10px;
 }
 
+.sortable {
+  list-style: disc inside;
+  width: 88%;
+  margin: 0;
+  padding: 0;
+}
+
 .sortable-button {
   font-weight: normal !important;
   color: #cdbe91 !important;
