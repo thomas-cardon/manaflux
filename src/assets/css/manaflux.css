@@ -246,7 +246,6 @@ hr {
 
 /* Number inputs */
 input[type="number"]:disabled, input[type="text"]:disabled {
-  user-select: none;
   cursor: auto;
 }
 
