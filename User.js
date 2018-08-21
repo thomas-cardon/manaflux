@@ -13,6 +13,10 @@ class User {
     return JSON.parse(await rp(Mana.base + 'lol-chat/v1/me'));
   }
 
+  async getPerksInventory() {
+    return JSON.parse(await rp(Mana.base + 'lol-perks/v1/inventory'));
+  }
+
   async updateSummonerSpells(spells) {
     if (!spells || spells.length !== 2) throw Error(i18n.__('summoner-spells-empty-error'));
     return await rp({
@@ -37,10 +41,12 @@ class User {
   }
 
   async updateRunePages(pages) {
-    if (Mana.user.summoner.summonerLevel < 8) throw Error(i18n.__('runes-safeguard-level-error'));
-    console.log(`[Runes] ${i18n.__('loading')}`);
+    if (Mana.user.summoner.summonerLevel < 8) return UI.error('runes-safeguard-level-error');
+    log.log(2, `[Runes] ${i18n.__('loading')}`);
 
     this.runes = this.runes || await this.getRunes();
+    this._pageCount = this._pageCount || await this.getPerksInventory().ownedPageCount;
+
     if (!pages || pages.length === 0 || pages.find(x => x.selectedPerkIds.length === 0) !== undefined) throw Error(i18n.__('runes-empty-error'));
 
     let count = this._pageCount > Mana.store.get('maxRunes', 2) ? Mana.store.get('maxRunes', 2) : this._pageCount;
@@ -49,8 +55,9 @@ class User {
     pages = pages.slice(0, count);
 
     for (let i = 0; i < count; i++) {
-      if (!this.runes[i]) continue;
-      if (this.runes[i].selectedPerkIds === pages[i].selectedPerkIds && this.runes[i].name === pages[i].name) continue;
+      if (!this.runes[i]) await this.runes.push(this.createRunePage(Object.assign(pages[i], { current: count < 1 })));
+      else if (this.runes[i].selectedPerkIds === pages[i].selectedPerkIds && this.runes[i].name === pages[i].name) continue;
+
       await this.updateRunePage(this.runes[i].id, Object.assign(this.runes[i], pages[i], { current: count < 1, id: this.runes[i].id }));
     }
   }
@@ -68,11 +75,11 @@ class User {
     });
   }
 
-  async createRunePage(data, x) {
+  async createRunePage(x) {
     return await rp({
       method: 'POST',
       uri: Mana.base + 'lol-perks/v1/pages',
-      body: x ? Object.assign(data, x) : data,
+      body: x,
       json: true
     });
   }
