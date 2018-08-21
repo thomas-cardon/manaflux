@@ -2,14 +2,14 @@ const http = require('http'), request = require('request');
 const { captureException } = require('@sentry/electron');
 
 /*
-* RiotAssetsProxy
+* GameAssetsProxy
 * This class allows ManaFlux to load League's assets such as champion images directly from the client
 * without using DataDragon. It's made this way to bypass Chrome's credentialed subresource requests blocking
 */
-class RiotAssetsProxy {
+class GameAssetsProxy {
   onRequest(req, res) {
     if (req.url === '/favicon.ico') return;
-    log.log(3, `[RiotAssetsProxy] ${Mana.base}${req.url.slice(1)}`);
+    log.log(3, `[GameAssetsProxy] ${Mana.base}${req.url.slice(1)}`);
 
     try {
       request.get(Mana.base + req.url.slice(1)).pipe(res);

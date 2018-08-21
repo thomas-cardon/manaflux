@@ -76,13 +76,13 @@ ipcRenderer.on('lcu-connected', async (event, d) => {
 
 ipcRenderer.once('lcu-connected', async (event, d) => {
   Mana.user = new (require('./objects/User'))(Mana.base);
-  Mana.client = new (require('./objects/riot/Client'))();
+  Mana.client = new (require('./objects/riot/leagueoflegends/Client'))();
 
   Mana.championselect = new (require('./objects/ChampionSelect'))();
 
   UI.status('Status', 'loading-data-login');
 
-  Mana.assetsProxy = new (require('./objects/RiotAssetsProxy'))();
+  Mana.assetsProxy = new (require('./objects/riot/leagueoflegends/GameAssetsProxy'))();
   Mana.assetsProxy.load();
 
   const data = await Promise.all([Mana.client.getChampionSummary(), Mana.client.getSummonerSpells()]);
