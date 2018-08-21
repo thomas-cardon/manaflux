@@ -42,6 +42,12 @@ $(document).ready(function() {
   if (!Mana.store.has('theme'))
     Mana.store.set('theme', 'themes/default-bg.jpg');
 
+  if (!Mana.store.has('runes-max'))
+    Mana.store.set('runes-max', 2);
+
+  if (!Mana.store.has('summoner-spells-priority'))
+    Mana.store.set('summoner-spells-priority', 'd');
+
   if (!Mana.store.has('riot-consent')) {
     dialog.showMessageBox({ title: i18n.__('info'), message: i18n.__('consent') });
     Mana.store.set('riot-consent', true);

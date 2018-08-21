@@ -49,7 +49,7 @@ class User {
 
     if (!pages || pages.length === 0 || pages.find(x => x.selectedPerkIds.length === 0) !== undefined) throw Error(i18n.__('runes-empty-error'));
 
-    let count = this._pageCount > Mana.store.get('maxRunes', 2) ? Mana.store.get('maxRunes', 2) : this._pageCount;
+    let count = this._pageCount > Mana.store.get('runes-max', 2) ? Mana.store.get('runes-max', 2) : this._pageCount;
     count = count > pages.length ? pages.length : count;
 
     pages = pages.slice(0, count);
