@@ -1,6 +1,6 @@
 const rp = require('request-promise-native');
 
-class Client {
+class GameClient {
   constructor() {
     const builds = this.getSystemBuilds();
     const self = this;

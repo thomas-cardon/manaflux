@@ -76,28 +76,27 @@ ipcRenderer.on('lcu-connected', async (event, d) => {
 
 ipcRenderer.once('lcu-connected', async (event, d) => {
   Mana.user = new (require('./objects/User'))(Mana.base);
-  Mana.client = new (require('./objects/riot/leagueoflegends/Client'))();
+  Mana.gameClient = new (require('./objects/riot/leagueoflegends/GameClient'))();
+  Mana.assetsProxy = new (require('./objects/riot/leagueoflegends/GameAssetsProxy'))();
 
   Mana.championselect = new (require('./objects/ChampionSelect'))();
 
   UI.status('Status', 'loading-data-login');
 
-  Mana.assetsProxy = new (require('./objects/riot/leagueoflegends/GameAssetsProxy'))();
   Mana.assetsProxy.load();
-
-  const data = await Promise.all([Mana.client.getChampionSummary(), Mana.client.getSummonerSpells()]);
+  const data = await Promise.all([Mana.gameClient.getChampionSummary(), Mana.gameClient.getSummonerSpells()]);
 
   Mana.champions = data[0];
   Mana.summonerspells = data[1];
 
-  $('.version').text($('.version').text() + ' - V' + Mana.client.branch);
+  $('.version').text($('.version').text() + ' - V' + Mana.gameClient.branch);
 
   if (Mana.store.get('lastBranchSeen') !== ver) {
     Mana.store.set('data', {});
     ItemSetHandler.getItemSets().then(x => ItemSetHandler.deleteItemSets(x)).catch(UI.error);
   }
 
-  Mana.store.set('lastBranchSeen', Mana.client.branch);
+  Mana.store.set('lastBranchSeen', Mana.gameClient.branch);
 });
 
 ipcRenderer.on('lcu-logged-in', async (event, data) => {
