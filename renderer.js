@@ -79,7 +79,7 @@ ipcRenderer.once('lcu-connected', async (event, d) => {
   Mana.client = require('./objects/Client');
   Mana.championselect = new (require('./objects/ChampionSelect'))();
 
-  UI.status('Status', 'loading-data');
+  UI.status('Status', 'loading-data-login');
 
   Mana.assetsProxy = new (require('./objects/RiotAssetsProxy'))();
   Mana.assetsProxy.load();
