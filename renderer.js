@@ -11,15 +11,11 @@ const { dialog } = require('electron').remote;
 const ItemSetHandler = require('./objects/handlers/ItemSetHandler');
 
 Mana.version = require('./package.json').version;
-Mana.status = str => {
-  $('.status').text(str + '...');
-  console.log(str + '...');
-};
 Mana.store = new Store();
 
 if (Mana.store.get('enableTrayIcon')) UI.tray();
 
-Mana.status(i18n.__('loading-storage'));
+UI.status('Status', 'loading-storage');
 
 $(document).ready(function() {
   if (!Mana.store.has('data'))
@@ -54,11 +50,10 @@ $(document).ready(function() {
   Mana.store.set('lastVersion', Mana.version);
 
   if (!Mana.store.has('leaguePath')) {
-    Mana.status(i18n.__('league-client-start-required'));
+    UI.status('Status', 'league-client-start-required');
 
     ipcRenderer.once('lcu-league-path', (event, path) => {
-      Mana.status('League: ' + i18n.__('path-found'));
-      console.log(`[LeaguePlug] ${path}`);
+      UI.status('League', 'path-found');
 
       Mana.store.set('leaguePath', path);
       ipcRenderer.send('lcu-connection', path);
@@ -78,7 +73,7 @@ ipcRenderer.once('lcu-connected', async (event, d) => {
   Mana.client = require('./objects/Client');
   Mana.championselect = new (require('./objects/ChampionSelect'))();
 
-  Mana.status(i18n.__('loading-data'));
+  UI.status('Status', 'loading-data');
 
   Mana.assetsProxy = new (require('./objects/RiotAssetsProxy'))();
   Mana.assetsProxy.load();
@@ -99,12 +94,12 @@ ipcRenderer.once('lcu-connected', async (event, d) => {
 });
 
 ipcRenderer.on('lcu-logged-in', async (event, data) => {
-  Mana.status(i18n.__('league-client-connection'));
+  UI.status('League', 'league-client-connection');
 
   await Mana.user.load(data);
   Mana.championselect.load();
 
-  Mana.status(i18n.__('champion-select-waiting'));
+  UI.status('Status', 'champion-select-waiting');
 
   global._devChampionSelect = () => new (require('./CustomGame'))().create().then(game => game.start());
 });
@@ -113,7 +108,7 @@ ipcRenderer.on('lcu-disconnected', async () => {
   global._devChampionSelect = () => console.log(`[${i18n.__('error')}] ${i18n.__('developer-game-start-error')}\n${i18n.__('league-client-disconnected')}`);
 
   if (Mana.championselect) Mana.championselect.end().destroy();
-  Mana.status(i18n.__('disconnected'));
+  UI.status('League', 'disconnected');
 });
 
 global.autoStart = function(checked) {

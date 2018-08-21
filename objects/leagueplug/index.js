@@ -27,10 +27,6 @@ class LeaguePlug extends EventEmitter {
   getConnectionHandler() {
     return this.connectionHandler;
   }
-
-  async isConnected() {
-
-  }
 }
 
 module.exports = LeaguePlug;

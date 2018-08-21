@@ -38,13 +38,13 @@ class OPGGProvider extends Provider {
     positions[data.position] = data;
 
     for (const position of data.availablePositions) {
-      console.log(`[OP.GG] Gathering data for ${position.name} position`);
+      log.log(2, `[ProviderHandler] [OP.GG] Gathering data for ${position.name} position`);
 
       const d = await rp(position.link);
       positions[position.name] = this._scrape(d, champion, position.name, gameMode);
     }
 
-    console.dir(positions);
+    log.dir(3, positions);
     return positions;
   }
 

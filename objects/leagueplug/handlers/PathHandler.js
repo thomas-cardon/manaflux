@@ -21,15 +21,21 @@ class PathHandler {
     return await this.getLeaguePathByCommandLine() !== false;
   }
 
+  /* TODO: Support for Garena - OS X - Linux */
   async findLeaguePath() {
-    console.log('[PathHandler] Trying to find path.');
+    log.log(2, '[PathHandler] Trying to find path.');
     if (await this._exists('C:\\Riot Games\\League of Legends\\')) return 'C:\\Riot Games\\League of Legends\\';
 
     let leaguePath = await this.getLeaguePathByCommandLine();
-    console.log(`[PathHandler] Path found by commandline: ${leaguePath}`);
+    log.log(2, `[PathHandler] Path found by commandline: ${leaguePath}`);
 
-    while(!leaguePath || await !this._exists(path.resolve(leaguePath + '\\LeagueClient.' + (process.platform === 'win32' ? 'exe' : 'app'))) /* OSX WIN ONLY SHOULD CHANGE SOON */ ) {
-      leaguePath = dialog.showOpenDialog({properties: ['openDirectory', 'showHiddenFiles'], message: i18n.__('league-client-enter-path'), title: i18n.__('league-client-enter-path') })[0];
+    /* OSX WIN ONLY SHOULD CHANGE SOON */
+    while(!leaguePath || await !this._exists(path.resolve(leaguePath + '\\LeagueClient.' + (process.platform === 'win32' ? 'exe' : 'app')))) {
+      console.log(i18n.__('league-client-enter-path'));
+      leaguePath = log.dir(3, dialog.showOpenDialog({properties: ['openDirectory', 'showHiddenFiles'], message: i18n.__('league-client-enter-path'), title: i18n.__('league-client-enter-path') }));
+
+      if (leaguePath.length > 0) leaguePath = leaguePath[0];
+      else leaguePath = false;
     }
 
     console.log(`[PathHandler] Path selected: ${leaguePath}`);
@@ -37,16 +43,17 @@ class PathHandler {
   }
 
   async getLeaguePathByCommandLine() {
-    const command = process.platform === 'win32' ? "WMIC PROCESS WHERE name='LeagueClient.exe' GET commandline" : "ps x -o args | grep 'LeagueClient'";
+    const command = process.platform === 'win32' ? "WMIC.exe PROCESS WHERE name='LeagueClient.exe' GET commandline" : "ps x -o args | grep 'LeagueClient'";
 
     return new Promise((resolve, reject) => {
-      exec(command, process.platform === 'win32' ? { shell: 'cmd.exe' } : {}, function(error, stdout, stderr) {
-        if (error) return reject(error);
+      exec(command, process.platform === 'win32' ? { shell: 'C:\\WINDOWS\\system32\\cmd.exe', cwd: 'C:\\Windows\\System32\\wbem\\' } : {}, function(error, stdout, stderr) {
+        if (error) return reject(log.error(3, error));
 
+        log.dir(3, stdout);
         const matches = stdout.match(/[^"]+?(?=RADS)/gm);
 
         if (!matches || matches.length === 0) resolve(false);
-        else resolve(matches[0]);
+        else resolve(log.log(3, matches[0]));
       });
     });
   }

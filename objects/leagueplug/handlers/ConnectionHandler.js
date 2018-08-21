@@ -21,10 +21,13 @@ class ConnectionHandler extends EventEmitter {
 
           timer(cb, 500);
           self.emit('logged-off');
+        }).catch(err => {
+          log.error(2, err);
         });
       }, ms);
     }
 
+    log.log(3, '[ConnectionHandler] Checking session...');
     return new Promise(resolve => timer(data => resolve(data)));
   }
 
@@ -45,7 +48,7 @@ class ConnectionHandler extends EventEmitter {
           res.on('end', () => resolve(JSON.parse(body)));
         }
         else if (res.statusCode === 404) resolve(false);
-      }).on('error', () => null);
+      }).on('error', err => reject(err));
     });
   }
 
@@ -62,8 +65,10 @@ class ConnectionHandler extends EventEmitter {
   _startLockfileWatcher(leaguePath) {
     this._lockfileWatcher = chokidar.watch(path.join(leaguePath, 'lockfile'), { disableGlobbing: true })
     .on('add', async path => {
-      console.log(`[LeaguePlug] [ConnectionHandler] League of Legends connection data detected`);
-      const lockfile = await this._readLockfile(leaguePath);
+      log.log(2, '[ConnectionHandler] League of Legends connection data detected');
+      log.log(2, '[ConnectionHandler] Reading connection file');
+
+      const lockfile = log.dir(3, await this._readLockfile(leaguePath));
 
       this._authentication = lockfile.authToken;
       this._connected = true;
@@ -71,13 +76,13 @@ class ConnectionHandler extends EventEmitter {
       this.emit('connected', this._lcu = lockfile);
 
       const loginData = await this.waitForConnection();
-      console.log(`[LeaguePlug] [ConnectionHandler] Player is logged into League of Legends`);
+      log.log(2, '[ConnectionHandler] Player is logged into League of Legends');
 
       this._loggedIn = true;
-      this.emit('logged-in', loginData);
+      this.emit('logged-in', log.dir(3, loginData));
     })
     .on('unlink', path => {
-      console.log(`[LeaguePlug] [ConnectionHandler] League of Legends has been probably closed`);
+      log.log(2, '[ConnectionHandler] Connection to League has ended');
 
       this._connected = false;
       this.emit('disconnected');

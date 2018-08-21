@@ -1,32 +1,28 @@
 const app = require('electron').app ? require('electron').app : require('electron').remote.app;
 const fs = require('fs'), path = require('path');
 
-class i18n {
-  constructor() {
-    this._locale = locale;
+function i18n() {
+  this._locale = app.getLocale().toLowerCase();
 
-    try {
-      this._default = JSON.parse(fs.readFileSync(path.join(__dirname, '/locales/en.json'), 'utf8'));
+  try {
+    this._default = JSON.parse(fs.readFileSync(path.join(__dirname, '/locales/en.json'), 'utf8'));
 
-      if(fs.existsSync(path.join(__dirname, '/locales/', locale + '.json')))
-        this._language = JSON.parse(fs.readFileSync(path.join(__dirname, '/locales/',  locale + '.json'), 'utf8')) || {};
-    }
-    catch(err) {
-      console.error(err);
-    }
+    if(fs.existsSync(path.join(__dirname, '/locales/', this._locale + '.json')))
+      this._language = JSON.parse(fs.readFileSync(path.join(__dirname, '/locales/',  this._locale + '.json'), 'utf8')) || {};
   }
-
-  __(...args) {
-    console.log(args[0]);
-    console.log(this._default[args[0]]);
-    console.log(this._language[args[0]]);
-
-    args[0] = this._language[args[0]] || this._default[args[0]] || args[0];
-    return args[0].includes("%s") ? require('util').format.call(this, ...args) : args[0];
+  catch(err) {
+    log.error(0, err);
   }
 }
 
-let defaultLanguage = {}, language = {}, locale = app.getLocale().toLowerCase();
+i18n.prototype.__d = function(...args) {
+  args[0] = this._default[args[0]] || args[0];
+  return args[0].includes("%s") ? require('util').format.call(this, ...args) : args[0];
+}
 
+i18n.prototype.__ = function(...args) {
+  args[0] = this._language[args[0]] || this._default[args[0]] || args[0];
+  return args[0].includes("%s") ? require('util').format.call(this, ...args) : args[0];
+}
 
 module.exports = i18n;
