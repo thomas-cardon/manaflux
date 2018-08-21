@@ -52,6 +52,14 @@ UI.tray = function(tray = true) {
 window.onbeforeunload = (e) => UI.tray(false);
 ipcRenderer.on('error', (event, data) => UI.error(data));
 
+/* Custom components */
+$('[data-custom-component]').each(function() {
+  const key = $(this).data('custom-component');
+  const ev = $(this).data('custom-component-event') || 'click';
+
+  $(this).on(ev, () => require(__dirname + '\\assets\\js\\custom-components\\' + key + '.js')($(this)));
+});
+
 /* Manual Button Handler */
 $.fn.enableManualButton = function(cb, off) {
 	if (off) $(this).off();
@@ -98,7 +106,7 @@ $(document).ready(function() {
 		$(this).text(i18n.__($(this).data('i18n')));
 	});
 
-	$('.tablinks').click(function() {
+	$('.tablinks').click(function() {    
 		$('.tabcontent').hide();
 		$(`.tabcontent[data-tabid=${$(this).data('tabid')}][data-tabn=0]`).show();
 
