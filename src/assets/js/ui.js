@@ -106,7 +106,9 @@ $(document).ready(function() {
 		$(this).text(i18n.__($(this).data('i18n')));
 	});
 
-	$('.tablinks').click(function() {    
+	$('.tablinks').click(function() {
+    navigationId = 0;
+    
 		$('.tabcontent').hide();
 		$(`.tabcontent[data-tabid=${$(this).data('tabid')}][data-tabn=0]`).show();
 
