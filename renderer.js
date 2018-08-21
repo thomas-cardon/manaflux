@@ -75,7 +75,7 @@ ipcRenderer.on('lcu-connected', async (event, d) => {
 });
 
 ipcRenderer.once('lcu-connected', async (event, d) => {
-  Mana.user = new (require('./User'))(Mana.base);
+  Mana.user = new (require('./objects/User'))(Mana.base);
   Mana.client = require('./objects/Client');
   Mana.championselect = new (require('./objects/ChampionSelect'))();
 
