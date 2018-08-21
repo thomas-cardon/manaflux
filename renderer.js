@@ -6,11 +6,11 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 const request = require('request'), rp = require('request-promise-native');
 const Store = require('electron-store');
 
-const { dialog } = require('electron').remote;
+const { dialog, app } = require('electron').remote;
 
 const ItemSetHandler = require('./objects/handlers/ItemSetHandler');
 
-Mana.version = require('./package.json').version;
+Mana.version = app.getVersion();
 Mana.store = new Store();
 
 if (Mana.store.get('enableTrayIcon')) UI.tray();
