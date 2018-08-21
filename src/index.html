@@ -163,7 +163,7 @@
   const EventEmitter = require('events');
 
   const log = new (require('../objects/handlers/LoggingHandler'))(3);
-  const i18n = new (require('../objects/i18n'));
+  global.i18n = new (require('../objects/i18n'));
 
   log.onMessage((type, message) => {
     if (type === 'dir' && typeof message === 'string') message = JSON.parse(message);
