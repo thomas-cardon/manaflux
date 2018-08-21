@@ -57,7 +57,12 @@ app.on('ready', () => {
 
   if (process.argv[2] !== '--dev') autoUpdater.checkForUpdates();
 
-  globalShortcut.register('CommandOrControl+Shift+I', () => win.webContents.openDevTools({ mode: 'detach' }));
+  globalShortcut.register('CommandOrControl+Shift+I', () => {
+    if (!win.isFocused() && !win.isDevToolsFocused()) return;
+
+    if (win.webContents.isDevToolsOpened()) win.webContents.closeDevTools();
+    else win.webContents.openDevTools({ mode: 'detach' });
+  });
 });
 
 ipcMain.on('restart', () => {
