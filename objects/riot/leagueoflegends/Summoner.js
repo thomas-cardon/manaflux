@@ -1,6 +1,6 @@
 class Summoner {
   constructor(data) {
-    _load(data);
+    if (data) this._load(data);
   }
 
   getAccountId() {
