@@ -33,6 +33,8 @@ class PerksInventory {
     pages = pages.slice(0, count);
 
     for (let i = 0; i < count; i++) {
+      if (perks[i] && Mana.store.get('runes-delete-method')) await this.deletePerkPage(perks[i]);
+
       if (!perks[i]) await perks.push(this.createPerkPage(Object.assign(pages[i], { current: count < 1 })));
       else if (perks[i].selectedPerkIds === pages[i].selectedPerkIds && perks[i].name === pages[i].name) continue;
 
@@ -63,9 +65,9 @@ class PerksInventory {
     });
   }
 
-  async deletePerkPage(id, index) {
-    let x = await rp.del(Mana.base + 'lol-perks/v1/pages/' + id);
-    //this._perks.splice(index || x.indexOf(), 1);
+  async deletePerkPage(page, index = this._perks.indexOf(page)) {
+    let x = await rp.del(Mana.base + 'lol-perks/v1/pages/' + page.id);
+    this._perks.splice(index, 1);
     return x;
   }
 

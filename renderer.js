@@ -45,6 +45,9 @@ $(document).ready(function() {
   if (!Mana.store.has('runes-max'))
     Mana.store.set('runes-max', 2);
 
+  if (!Mana.store.has('runes-updating-method'))
+    Mana.store.set('runes-updating-method', false);
+
   if (!Mana.store.has('summoner-spells-priority'))
     Mana.store.set('summoner-spells-priority', 'd');
 
