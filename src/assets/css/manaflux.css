@@ -119,12 +119,6 @@ body {
   animation: hextechRotation 1s ease-in-out alternate infinite;
 }
 
-#warning {
-  position: absolute;
-  margin-top: 32px;
-  margin-left: 15px;
-}
-
 .checkboxContainer {
   display: -webkit-flex;
   display: -ms-flexbox;

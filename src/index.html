@@ -4,14 +4,17 @@
   <meta charset="utf-8">
   <meta name="author" content="Ryzzzen">
   <link rel="stylesheet" href="assets/css/manaflux.css">
+  <link rel="stylesheet" href="assets/css/components/loading/loading.css">
+  <link rel="stylesheet" href="assets/css/components/warning/warning.css">
   <link rel="stylesheet" href="assets/css/alertify.min.css"/>
   <link rel="stylesheet" href="assets/css/alertify.rtl.min.css"/>
   <link rel="stylesheet" href="assets/css/jquery-ui.min.css">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
+  <img src="assets/img/warning.png" id="warning" draggable="false" style="display: none;">
+  <img src="assets/css/components/loading/loading-rolling-1s-200px.gif" id="loading"></img>
   <div class="tab-container">
-    <img src="assets/img/warning.png" id="warning" draggable="false" style="display: none;">
     <img src="assets/img/selected.png" id="selected" class="selected" draggable="false">
     <div class="tab">
       <button data-i18n="menu-home" class="tablinks active" data-tabid="home"></button>
@@ -88,10 +91,10 @@
         </div>
       </div>
       <div class="option">
-        <p class="suboption-name" data-i18n="runes-updating-method"></p>
+        <p class="suboption-name" data-i18n="runes-delete-method"></p>
         <div class="options float-left checkboxContainer">
-          <input type="checkbox" data-settings-key="runes-updating-method" class="center-area" />
-          <label data-i18n="enable"></label>
+          <input type="checkbox" data-settings-key="runes-delete-method" class="center-area" />
+          <label data-i18n="runes-delete-enable"></label>
         </div>
       </div>
     </div>

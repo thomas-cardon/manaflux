@@ -110,6 +110,7 @@ ipcRenderer.on('lcu-logged-in', async (event, data) => {
   Mana.championSelectHandler.load();
 
   UI.status('Status', 'champion-select-waiting');
+  $('#loading').hide();
 
   global._devChampionSelect = () => new (require('./CustomGame'))().create().then(game => game.start());
 });
