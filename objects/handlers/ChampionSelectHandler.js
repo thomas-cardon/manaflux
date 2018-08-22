@@ -68,8 +68,8 @@ class ChampionSelectHandler {
     if (Object.keys(data).length === 0) return log.error(1, i18n.__('providers-error-data'));
     log.dir(3, data);
 
-    for (let position in data) {
-      if (data[position].runes.length === 0) {
+    for (const [position, d] of Object.entries(data)) {
+      if (d.runes.length === 0) {
         UI.error('providers-error-runes', champion.name, position);
         delete data[position];
       }
@@ -77,56 +77,22 @@ class ChampionSelectHandler {
     }
 
     $('#positions').change(() => {
-      log.log(3, this.value);
-      this.onPositionChange(data[this.value]);
-    });
-
-    /* Shortcuts handling */
-    ipcRenderer.on('runes-previous', () => {
-      log.log(2, '[Shortcuts] Selecting previous position..');
-
-      const keys = Object.keys(data);
-      let i = keys.length, positionIndex = keys.indexOf($('#positions').val());
-      let newIndex = positionIndex;
-
-      if (newIndex === 0) newIndex = i - 1;
-      else newIndex--;
-
-      /* Useless to change position if it's already the one chosen */
-      if (newIndex !== positionIndex) $('#positions').val(keys[newIndex]).trigger('change');
-    });
-
-    ipcRenderer.on('runes-next', () => {
-      log.log(2, '[Shortcuts] Selecting next position..');
-
-      const keys = Object.keys(data);
-      let i = keys.length, positionIndex = keys.indexOf($('#positions').val());
-      let newIndex = positionIndex;
-
-      if (newIndex === i - 1) newIndex = 0;
-      else newIndex++;
-
-      /* Useless to change position if it's already the one chosen */
-      if (newIndex !== positionIndex) $('#positions').val(keys[newIndex]).trigger('change');
+      console.log(this.value);
+      this.onPositionChange(this.value, data[this.value]);
     });
 
     let chosenPosition = this.gameModes[this.gameMode].getPosition();
-    if (!chosenPosition || !data[this.gameModes[this.gameMode].getPosition()])
-     chosenPosition = Object.keys(data)[0];
-    else chosenPosition = data[this.gameModes[this.gameMode].getPosition()];
-
-    log.log(3, this.gameModes[this.gameMode].getPosition());
-    log.log(3, Object.keys(data)[0]);
     log.log(3, chosenPosition);
 
-    $('#positions').val(chosenPosition).trigger('change').show();
+    if (!chosenPosition || !data[this.gameModes[this.gameMode].getPosition()])
+     chosenPosition = Object.keys(data)[0];
+
+    $('#positions').val(log.log(3, chosenPosition)).trigger('change').show();
     UI.tray(false);
   }
 
-  async onPositionChange(data) {
-    console.log('posChange');
-    console.dir(data);
-
+  async onPositionChange(position, data) {
+    console.dir(arguments);
     $('button#loadRunes, button#loadSummonerSpells').disableManualButton();
 
     /* Perks display */
@@ -148,6 +114,7 @@ class ChampionSelectHandler {
           captureException(err);
         }), true);
     }
+
     UI.status('ChampionSelect', 'runes-loaded', champion.name, this.value);
 
     /* Summoner Spells display */
@@ -203,5 +170,35 @@ class ChampionSelectHandler {
     clearInterval(this._checkTimer);
   }
 }
+
+
+/* Shortcuts handling
+ipcRenderer.on('runes-previous', () => {
+  log.log(2, '[Shortcuts] Selecting previous position..');
+
+  const keys = Object.keys(data);
+  let i = keys.length, positionIndex = keys.indexOf($('#positions').val());
+  let newIndex = positionIndex;
+
+  if (newIndex === 0) newIndex = i - 1;
+  else newIndex--;
+
+  /* Useless to change position if it's already the one chosen
+  if (newIndex !== positionIndex) $('#positions').val(keys[newIndex]).trigger('change');
+});
+
+ipcRenderer.on('runes-next', () => {
+  log.log(2, '[Shortcuts] Selecting next position..');
+
+  const keys = Object.keys(data);
+  let i = keys.length, positionIndex = keys.indexOf($('#positions').val());
+  let newIndex = positionIndex;
+
+  if (newIndex === i - 1) newIndex = 0;
+  else newIndex++;
+
+  /* Useless to change position if it's already the one chosen
+  if (newIndex !== positionIndex) $('#positions').val(keys[newIndex]).trigger('change');
+});*/
 
 module.exports = ChampionSelectHandler;

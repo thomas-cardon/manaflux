@@ -17,7 +17,6 @@ class ClassicGameMode {
   }
 
   getPosition() {
-    console.log(this.getPlayer().assignedPosition);
     switch(this.getPlayer().assignedPosition) {
       case 'UTILITY':
         return 'SUPPORT';
