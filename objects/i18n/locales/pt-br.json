@@ -50,7 +50,7 @@
   "runes-safeguard-level-error": "ManaFlux não permite baixar runas antes de você desbloquear elas. Desculpe!",
   "runes-empty-error": "Erro: Página de Runas baixada está vazia",
   "runes-loaded": "Runas carregadas para %s (%s)",
-  "runes-max": "Máximo de página de runas",
+  "runes-max": "Máximo de páginas de runas",
   "summoner-spells-priority": "Flash/Ghost no D ou F?",
   "summoner-spells-priority-flash-d": "Na tecla D",
   "summoner-spells-priority-flash-f": "Na tecla F",
