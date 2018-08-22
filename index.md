@@ -1,10 +1,12 @@
+![ManaFlux Main Page](bluid/icon.png "Manaflux Logo")
+
 # Manaflux
 
-A dead simple runes (and now summoner spells + itemsets!) downloader for League of Legends.
+A dead simple runes (and now summoner spells + itemsets !) downloader for League of Legends.
 
 ![ManaFlux Main Page](screenshots/1.png "Main page")
 
-> Support for Polish and Portuguese brazilian has been added! It's automatic: ManaFlux will use your system to know what language it's supposed to load.
+> Support for Polish and Portuguese brazilian has been added ! It's automatic: ManaFlux will use your system to know what language it's supposed to load.
 
 ## Key Features
 - Automatic Runes, Item Sets, and Summoner Spells downloading
@@ -14,17 +16,7 @@ A dead simple runes (and now summoner spells + itemsets!) downloader for League 
 - Instead of controlling your mouse to setup your runes, ManaFlux injects them directly in the client, so you don't have to do anything but pick your champion.
 - Optimized network requests!
 
-## Getting Started
-
-#### Windows
- > Download the last .exe file in the releases tab, and execute it. That's all!
- The software will be installed on your computer then launched.
-
-#### Mac OS X and Linux
- > You'll need to clone and build it by yourself: `npm install && electron .` Support is unofficial, but if you find an issue feel free to open a ticket.
-
-
-## Will I get banned if I use this?
+## Will I get banned if I use this ?
 > Nope. As stated by a Rioter named RiotSargonas [here](https://www.reddit.com/r/leagueoflegends/comments/80d4r0/runebook_the_ultimate_rune_pages_manager_that_you/duv2r22), things that interact with the desktop client (not the game) will never get you banned.
 
 ### Built with
