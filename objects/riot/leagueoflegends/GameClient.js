@@ -2,20 +2,19 @@ const rp = require('request-promise-native');
 
 class GameClient {
   constructor() {
-    const builds = this.getSystemBuilds();
-    const self = this;
-
-    this.getSystemBuilds().then(x => {
-      self.branch = x.branch;
-      self.fullVersion = x.version;
-    });
   }
 
-  async function getSystemBuilds() {
+  async load() {
+    const builds = await this.getSystemBuilds();
+    this.branch = builds.branch;
+    this.fullVersion = builds.version;
+  }
+
+  async getSystemBuilds() {
     return JSON.parse(await rp(Mana.base + 'system/v1/builds'));
   }
 
-  async function getSummonerSpells(d = {}) {
+  async getSummonerSpells(d = {}) {
     const summonerSpellData = JSON.parse(await rp(Mana.base + 'lol-game-data/assets/v1/summoner-spells.json'));
 
     for (let spell of summonerSpellData) {
@@ -34,7 +33,7 @@ class GameClient {
     return d;
   }
 
-  async function getChampionSummary(d = {}) {
+  async getChampionSummary(d = {}) {
     const championSummaryData = JSON.parse(await rp(Mana.base + 'lol-game-data/assets/v1/champion-summary.json'));
 
     for (let champion of championSummaryData)
@@ -44,4 +43,4 @@ class GameClient {
   }
 }
 
-module.exports = Client;
+module.exports = GameClient;

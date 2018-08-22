@@ -13,13 +13,6 @@ class ChampionSelect extends EventEmitter {
     this.on('firstTick', async () => log.log(2, '[ChampionSelect] Entering'));
     this.on('ended', () => log.log(2, '[ChampionSelect] Leaving'));
     this.on('change', async id => {
-      const champion = Mana.champions[id];
-      log.log(2, `[ChampionSelect] Changed champion to: #${id} (${champion.name})`);
-
-      Mana.user.runes = Mana.user.runes || await Mana.user.getRunes();
-      Mana.user._pageCount = Mana.user._pageCount || await Mana.user.getPageCount();
-
-      this.updateDisplay(champion);
     });
   }
 
@@ -47,7 +40,7 @@ class ChampionSelect extends EventEmitter {
   }
 
   getCurrentSummoner() {
-    return this.myTeam.find(x => x.summonerId === Mana.user.summoner.summonerId);
+    return this.myTeam.find(x => x.summonerId === Mana.user.getSummonerId());
   }
 
   getPosition() {
@@ -123,14 +116,14 @@ class ChampionSelect extends EventEmitter {
 
         if (Mana.store.get('loadRunesAutomatically')) {
           try {
-            await Mana.user.updateRunePages(data.runes);
+            await Mana.user.getPerksInventory().updatePerksPages(data.runes);
           }
           catch(err) {
             UI.error(err);
             captureException(err);
           }
         }
-        else $('button#loadRunes').enableManualButton(() => Mana.user.updateRunePages(data.runes).catch(err => { UI.error(err); captureException(err); }), true);
+        else $('button#loadRunes').enableManualButton(() => Mana.user.getPerksInventory().updatePerksPages(data.runes).catch(err => { UI.error(err); captureException(err); }), true);
         UI.status('ChampionSelect', 'runes-loaded', champion.name, this.value);
 
         /*
@@ -188,7 +181,7 @@ class ChampionSelect extends EventEmitter {
         if (newIndex === i - 1) newIndex = 0;
         else newIndex++;
 
-        // Useless to reload runes again if it's the same runes..
+        /* Useless to change position if it's already the one chosen */
         if (newIndex === positionIndex) return;
 
         $('#positions').val(keys[newIndex]).trigger('change');
@@ -229,7 +222,7 @@ class ChampionSelect extends EventEmitter {
     this.destroyDisplay();
 
     this.timer = this.myTeam = this.theirTeam = this.gameMode = null;
-    Mana.user._pageCount = Mana.user.runes = null;
+    Mana.user.getPerksInventory()._pageCount = Mana.user.getPerksInventory().runes = null;
 
     this.emit('ended');
 

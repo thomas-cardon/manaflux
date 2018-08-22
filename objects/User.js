@@ -1,6 +1,6 @@
 const rp = require('request-promise-native');
 const Summoner = require('./riot/leagueoflegends/Summoner');
-const PerksInventory = require('./riot/leagueoflegends/Summoner/inventories/Perks');
+const PerksInventory = require('./riot/leagueoflegends/inventories/Perks');
 
 class User extends Summoner {
   constructor(d) {
@@ -22,12 +22,18 @@ class User extends Summoner {
 
   async updateSummonerSpells(spells) {
     if (!spells || spells.length !== 2) throw Error(i18n.__('summoner-spells-empty-error'));
+    spells = this.sortSummonerSpells(spells);
+
     return await rp({
       method: 'PATCH',
       uri: Mana.base + 'lol-champ-select/v1/session/my-selection',
-      body: { spell1Id: spells[0], spell2Id: spells[1] },
+      body: log.dir(3, { spell1Id: spells[0], spell2Id: spells[1] }),
       json: true
     });
+  }
+
+  sortSummonerSpells(spells) {
+    return spells.sort((a, b) => a === 4 || a === 6 ? (Mana.store.get('summoner-spells-priority') === "f" ? 1 : -1) : -1);
   }
 }
 
