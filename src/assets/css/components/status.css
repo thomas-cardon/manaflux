@@ -1,0 +1,17 @@
+.status {
+  position: fixed;
+  bottom: 15px;
+  left: 15px;
+  cursor: default;
+  margin: 0px;
+  color: #a09b8c;
+  opacity: 0.5;
+  transition: opacity .1s ease-in-out;
+  text-decoration: none;
+}
+
+.status:hover {
+  opacity: 1;
+  color: #a09b8c;
+  text-decoration: none;
+}
