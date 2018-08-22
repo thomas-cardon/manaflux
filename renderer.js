@@ -6,11 +6,11 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 const request = require('request'), rp = require('request-promise-native');
 const Store = require('electron-store');
 
-const { dialog } = require('electron').remote;
+const { dialog, app } = require('electron').remote;
 
 const ItemSetHandler = require('./objects/handlers/ItemSetHandler');
 
-Mana.version = require('./package.json').version;
+Mana.version = app.getVersion();
 Mana.store = new Store();
 
 if (Mana.store.get('enableTrayIcon')) UI.tray();
@@ -42,6 +42,12 @@ $(document).ready(function() {
   if (!Mana.store.has('theme'))
     Mana.store.set('theme', 'themes/default-bg.jpg');
 
+  if (!Mana.store.has('runes-max'))
+    Mana.store.set('runes-max', 2);
+
+  if (!Mana.store.has('summoner-spells-priority'))
+    Mana.store.set('summoner-spells-priority', 'd');
+
   if (!Mana.store.has('riot-consent')) {
     dialog.showMessageBox({ title: i18n.__('info'), message: i18n.__('consent') });
     Mana.store.set('riot-consent', true);
@@ -69,11 +75,11 @@ ipcRenderer.on('lcu-connected', async (event, d) => {
 });
 
 ipcRenderer.once('lcu-connected', async (event, d) => {
-  Mana.user = new (require('./User'))(Mana.base);
+  Mana.user = new (require('./objects/User'))(Mana.base);
   Mana.client = require('./objects/Client');
   Mana.championselect = new (require('./objects/ChampionSelect'))();
 
-  UI.status('Status', 'loading-data');
+  UI.status('Status', 'loading-data-login');
 
   Mana.assetsProxy = new (require('./objects/RiotAssetsProxy'))();
   Mana.assetsProxy.load();

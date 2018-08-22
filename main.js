@@ -60,6 +60,13 @@ app.on('ready', () => {
   globalShortcut.register('CommandOrControl+Shift+I', () => win.webContents.openDevTools({ mode: 'detach' }));
 });
 
+ipcMain.on('restart', () => {
+  log.log(2, '[IPC] Restarting app...');
+
+  app.relaunch();
+  app.exit(0);
+});
+
 autoUpdater.on('update-downloaded', info => {
   ipcMain.on('update-install', (event, arg) => autoUpdater.quitAndInstall());
   win.webContents.send('update-ready', info);

@@ -3,7 +3,7 @@ class ProviderHandler {
     this.providers = {
       championgg: new (require('../providers/ChampionGG.js'))(),
       opgg: new (require('../providers/OPGG.js'))(),
-      ugg: new (require('../providers/UGG.js'))(),
+      //ugg: new (require('../providers/UGG.js'))(),
       lolflavor: new (require('../providers/LoLFlavor.js'))()
     };
   }
@@ -31,7 +31,7 @@ class ProviderHandler {
 
     let positions = {};
 
-    let providerOrder = Mana.store.get('providers-order', ['championgg', 'opgg', 'ugg', 'lolflavor']);
+    let providerOrder = Mana.store.get('providers-order', ['championgg', 'opgg', /*'ugg',*/ 'lolflavor']);
     providerOrder.splice(providerOrder.indexOf('lolflavor'), 1);
     providerOrder.push('lolflavor');
 

@@ -52,6 +52,14 @@ UI.tray = function(tray = true) {
 window.onbeforeunload = (e) => UI.tray(false);
 ipcRenderer.on('error', (event, data) => UI.error(data));
 
+/* Custom components */
+$('[data-custom-component]').each(function() {
+  const key = $(this).data('custom-component');
+  const ev = $(this).data('custom-component-event') || 'click';
+
+  $(this).on(ev, () => require(__dirname + '\\assets\\js\\custom-components\\' + key + '.js')($(this)));
+});
+
 /* Manual Button Handler */
 $.fn.enableManualButton = function(cb, off) {
 	if (off) $(this).off();
@@ -99,6 +107,8 @@ $(document).ready(function() {
 	});
 
 	$('.tablinks').click(function() {
+    navigationId = 0;
+    
 		$('.tabcontent').hide();
 		$(`.tabcontent[data-tabid=${$(this).data('tabid')}][data-tabn=0]`).show();
 
@@ -115,11 +125,18 @@ $(document).ready(function() {
 	$('button[data-tabid="home"]').click();
 });
 
-/*
-* Settings
-*/
+/* Settings */
 Mana.once('settings', store => {
 	$('body').css('background', "linear-gradient(to bottom, rgba(125, 185, 232, 0) -1%, rgba(50, 96, 122, 0) 65%, rgba(10, 49, 64, 0.8) 100%), url('./assets/img/" + Mana.store.get('theme') + "')");
+
+  /* input element support */
+  $('input[data-settings-key]').change(function() {
+    log.log(2, `[Settings] Changing value of ${$(this).data('settings-key')} to: ${this.value}`);
+    store.set($(this).data('settings-key'), this.value);
+  }).each(function() {
+    log.log(2, `[Settings] Loading value of ${$(this).data('settings-key')} to: ${store.get($(this).data('settings-key'))}`);
+    $(this).val(store.get($(this).data('settings-key')));
+  });
 
 	/* select element support */
 	$('select[data-settings-key]').change(function() {
@@ -144,7 +161,7 @@ Mana.once('settings', store => {
 
 	/* sortable lists support */
 	$(".sortable[data-settings-key]").each(function() {
-		$(this).sortable({
+    $(this).css('list-style', 'disc inside').sortable({
 			update: function(event, ui) {
 				let array = [];
 				$(this).children().each(function() {

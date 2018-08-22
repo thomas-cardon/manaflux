@@ -76,16 +76,33 @@
       <div class="option">
         <p class="suboption-name" data-i18n="taskbar"></p>
         <div class="options float-left checkboxContainer">
-          <input type="checkbox" data-settings-key="enableTrayIcon" onclick="UI.tray(this.checked)" />
+          <input type="checkbox" data-settings-key="enableTrayIcon" class="center-area" onclick="UI.tray(this.checked)" />
           <label data-i18n="champion-select-hide"></label>
         </div>
       </div>
       <div class="option">
         <p class="suboption-name" data-i18n="animations"></p>
         <div class="options float-left checkboxContainer">
-          <input type="checkbox" data-settings-key="enableAnimations" />
+          <input type="checkbox" data-settings-key="enableAnimations" class="center-area" />
           <label data-i18n="enable"></label>
         </div>
+      </div>
+    </div>
+    <div data-tabid="settings" data-tabn=1 class="tabcontent" style="display: none; margin-left: 12%;">
+      <div class="option">
+        <p class="suboption-name" data-i18n="runes-max"></p>
+        <input type="number" data-settings-key="runes-max" class="center-area" min="1" step="1" />
+      </div>
+      <div class="option">
+        <p class="suboption-name" data-i18n="summoner-spells-priority"></p>
+        <select data-settings-key="summoner-spells-priority" class="dropdown center-area">
+          <option data-i18n="summoner-spells-priority-flash-d" value=d></option>
+          <option data-i18n="summoner-spells-priority-flash-f" value=f></option>
+        </select>
+      </div>
+      <div class="option">
+        <p class="suboption-name" data-i18n="league-client-path"></p>
+        <input type="text" data-settings-key="leaguePath" class="center-area" disabled />
       </div>
       <div class="option">
         <p class="suboption-name" data-i18n="theme"></p>
@@ -101,17 +118,18 @@
         </select>
       </div>
     </div>
-    <div data-tabid="settings" data-tabn=1 class="tabcontent" style="display: none; margin-left: 12%;">
+    <div data-tabid="settings" data-tabn=2 class="tabcontent" style="display: none; margin-left: 12%;">
       <div class="option">
-        <p class="suboption-name" data-i18n="summoner-spells-priority"></p>
-        <select data-settings-key="summoner-spells-priority" class="dropdown center-area">
-          <option data-i18n="summoner-spells-priority-flash-d" value=d></option>
-          <option data-i18n="summoner-spells-priority-flash-f" value=f></option>
-        </select>
+        <p class="suboption-name" data-i18n="empty-cache-settings-option"></p>
+        <button data-custom-component="empty-cache" data-i18n="empty-cache-button"></button>
       </div>
       <div class="option">
-        <center><p class="suboption-name" data-i18n="providers-order"></p></center>
-        <ul class="sortable" data-settings-key="providers-order", data-settings-sortable-list-values="championgg,opgg,ugg,lolflavor" data-settings-merge-list-if-missing-value="true">
+        <p class="suboption-name" data-i18n="reset-settings-settings-option"></p>
+        <button data-custom-component="reset-settings" data-i18n="reset-settings-button"></button>
+      </div>
+      <div class="option">
+        <p class="suboption-name" data-i18n="providers-order"></p>
+        <ul class="sortable" data-settings-key="providers-order", data-settings-sortable-list-values="championgg,opgg,lolflavor" data-settings-merge-list-if-missing-value="true">
         </ul>
       </div>
     </div>
@@ -124,7 +142,7 @@
         <button type="button" id="update" style="margin-top: 10px;" data-i18n="menu-update"></button>
       </div>
     </div>
-    <p class="status" data-i18n="loading"></p>
+    <p class="status" data-i18n="loading-login"></p>
     <p class="version"></p>
   </div>
     <!-- END SECTIONS -->
@@ -145,7 +163,7 @@
   const EventEmitter = require('events');
 
   const log = new (require('../objects/handlers/LoggingHandler'))(3);
-  const i18n = new (require('../objects/i18n'));
+  global.i18n = new (require('../objects/i18n'));
 
   log.onMessage((type, message) => {
     if (type === 'dir' && typeof message === 'string') message = JSON.parse(message);
