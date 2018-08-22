@@ -1,5 +1,7 @@
 const rp = require('request-promise-native');
 const { captureException } = require('@sentry/electron');
+
+const ItemSetHandler = require('./ItemSetHandler');
 const ProviderHandler = new (require('./ProviderHandler'))();
 
 class ChampionSelectHandler {
@@ -76,9 +78,10 @@ class ChampionSelectHandler {
       else $('#positions').append(`<option value="${position}">${position === 'ADC' ? 'ADC' : position.charAt(0).toUpperCase() + position.slice(1) }</option>`)
     }
 
-    $('#positions').change(() => {
-      console.log(this.value);
-      this.onPositionChange(this.value, data[this.value]);
+    const onPositionChange = this.onPositionChange;
+
+    $('#positions').change(function() {
+      onPositionChange(this.value, data[this.value]);
     });
 
     let chosenPosition = this.gameModes[this.gameMode].getPosition();
@@ -115,7 +118,7 @@ class ChampionSelectHandler {
         }), true);
     }
 
-    UI.status('ChampionSelect', 'runes-loaded', champion.name, this.value);
+    UI.status('ChampionSelect', 'runes-loaded', champion.name, position);
 
     /* Summoner Spells display */
     if (Mana.store.get('enableSummonerSpells') && data.summonerspells.length > 0)
@@ -128,7 +131,7 @@ class ChampionSelectHandler {
         UI.status('ChampionSelect', 'itemsets-save-status', champion.name);
 
         for (let position in data)
-          for (const set of data[position].itemsets)
+          for (const set of data.itemsets)
             await set.save();
       }
       catch(err) {
