@@ -91,7 +91,7 @@ ipcRenderer.once('lcu-connected', async (event, d) => {
 
   $('.version').text($('.version').text() + ' - V' + Mana.gameClient.branch);
 
-  if (Mana.store.get('lastBranchSeen') !== ver) {
+  if (Mana.store.get('lastBranchSeen') !== Mana.gameClient.branch) {
     Mana.store.set('data', {});
     ItemSetHandler.getItemSets().then(x => ItemSetHandler.deleteItemSets(x)).catch(UI.error);
   }
