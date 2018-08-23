@@ -26,7 +26,7 @@ class GameAssetsProxy {
     this._server.listen(3681, 'localhost', (err) => {
       if (err) return captureException(err);
 
-      log.log(2, `[GameAssetsProxy] Listening on port 3681`);
+      log.log(2, `[RiotAssetsProxy] Listening on port 3681`);
     });
   }
 
@@ -35,4 +35,4 @@ class GameAssetsProxy {
   }
 }
 
-module.exports = GameAssetsProxy;
+module.exports = RiotAssetsProxy;

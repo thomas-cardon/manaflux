@@ -15,9 +15,12 @@ class ProviderHandler {
     if (Mana.store.has(`data.${champion.key}`)) {
       let d = Mana.store.get(`data.${champion.key}`);
 
-      for (let [position, data] of Object.entries(d))
+      for (let [position, data] of Object.entries(d)) {
         for (let i = 0; i < data.itemsets.length; i++)
           data.itemsets[i] = require('./ItemSetHandler').parse(champion.key, data.itemsets[i]._data, position);
+
+        data.summonerspells = this.sortSummonerSpells(data.summonerspells || []);
+      }
 
       return d;
     }
@@ -51,6 +54,7 @@ class ProviderHandler {
         const d = await provider[method](champion, preferredPosition, gameMode) || {};
 
         for (let [position, data] of Object.entries(d)) {
+          data.summonerspells = this.sortSummonerSpells(data.summonerspells || []);
           positions[position] = Object.assign(positions[position] || { runes: {}, itemsets: {}, summonerspells: {} }, data);
         }
 
@@ -68,6 +72,10 @@ class ProviderHandler {
     if (positions !== {}) Mana.store.set(`data.${champion.key}`, positions);
 
     return positions;
+  }
+
+  sortSummonerSpells(spells) {
+    return spells.sort((a, b) => a === 4 || a === 6 ? (Mana.store.get('summoner-spells-priority') === "f" ? 1 : -1) : -1);
   }
 }
 

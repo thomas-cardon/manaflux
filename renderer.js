@@ -79,7 +79,7 @@ ipcRenderer.once('lcu-connected', async (event, d) => {
   Mana.gameClient = new (require('./objects/riot/leagueoflegends/GameClient'))();
   Mana.assetsProxy = new (require('./objects/riot/leagueoflegends/GameAssetsProxy'))();
 
-  Mana.championSelectHandler = new (require('./objects/handlers/ChampionSelectHandler'))();
+  Mana.championselect = new (require('./objects/ChampionSelect'))();
 
   UI.status('Status', 'loading-data-login');
 
@@ -89,10 +89,9 @@ ipcRenderer.once('lcu-connected', async (event, d) => {
   Mana.champions = data[0];
   Mana.summonerspells = data[1];
 
-  await Mana.gameClient.load();
   $('.version').text($('.version').text() + ' - V' + Mana.gameClient.branch);
 
-  if (Mana.store.get('lastBranchSeen') !== Mana.gameClient.branch) {
+  if (Mana.store.get('lastBranchSeen') !== ver) {
     Mana.store.set('data', {});
     ItemSetHandler.getItemSets().then(x => ItemSetHandler.deleteItemSets(x)).catch(UI.error);
   }
@@ -104,7 +103,7 @@ ipcRenderer.on('lcu-logged-in', async (event, data) => {
   UI.status('League', 'league-client-connection');
 
   Mana.user._load(data);
-  Mana.championSelectHandler.load();
+  Mana.championselect.load();
 
   UI.status('Status', 'champion-select-waiting');
 
@@ -114,7 +113,7 @@ ipcRenderer.on('lcu-logged-in', async (event, data) => {
 ipcRenderer.on('lcu-disconnected', async () => {
   global._devChampionSelect = () => console.log(`[${i18n.__('error')}] ${i18n.__('developer-game-start-error')}\n${i18n.__('league-client-disconnected')}`);
 
-  Mana.championSelectHandler.stop();
+  if (Mana.championselect) Mana.championselect.end().destroy();
   UI.status('League', 'disconnected');
 });
 
