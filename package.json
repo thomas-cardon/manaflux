@@ -1,7 +1,7 @@
 {
   "name": "manaflux",
-  "version": "1.5.3",
-  "description": "League of Legends automatic runes downloader",
+  "version": "1.6.0",
+  "description": "Manaflux downloads automatically your runes, itemsets, and summonerspells and injects them to your League client seamlessly!",
   "main": "main.js",
   "scripts": {
     "build": "build --win",
@@ -12,10 +12,11 @@
     "League",
     "assistant",
     "masteries",
-    "runes"
+    "runes",
+    "perks"
   ],
-  "author": "Ryzzzen",
-  "license": "MIT",
+  "author": { "name": "Ryzzzen", "email": "ryzzzen@protonmail.me" },
+  "license": "CC0-1.0",
   "devDependencies": {
     "electron": "^2.0.0",
     "electron-builder": "^20.17.1"

@@ -75,35 +75,36 @@ ipcRenderer.on('lcu-connected', async (event, d) => {
 });
 
 ipcRenderer.once('lcu-connected', async (event, d) => {
-  Mana.user = new (require('./objects/User'))(Mana.base);
-  Mana.client = require('./objects/Client');
-  Mana.championselect = new (require('./objects/ChampionSelect'))();
+  Mana.user = new (require('./objects/User'))();
+  Mana.gameClient = new (require('./objects/riot/leagueoflegends/GameClient'))();
+  Mana.assetsProxy = new (require('./objects/riot/leagueoflegends/GameAssetsProxy'))();
+
+  Mana.championSelectHandler = new (require('./objects/handlers/ChampionSelectHandler'))();
 
   UI.status('Status', 'loading-data-login');
 
-  Mana.assetsProxy = new (require('./objects/RiotAssetsProxy'))();
   Mana.assetsProxy.load();
-
-  const data = await Promise.all([Mana.client.getChampionSummary(), Mana.client.getSummonerSpells()]);
+  const data = await Promise.all([Mana.gameClient.getChampionSummary(), Mana.gameClient.getSummonerSpells()]);
 
   Mana.champions = data[0];
   Mana.summonerspells = data[1];
 
-  const ver = await Mana.client.getVersion();
-  Mana.store.set('gameVersion', ver);
-  $('.version').text($('.version').text() + ' - V' + (Mana.gameVersion = ver));
+  await Mana.gameClient.load();
+  $('.version').text($('.version').text() + ' - V' + Mana.gameClient.branch);
 
-  if (Mana.store.get('gameVersion') !== ver) {
+  if (Mana.store.get('lastBranchSeen') !== Mana.gameClient.branch) {
     Mana.store.set('data', {});
     ItemSetHandler.getItemSets().then(x => ItemSetHandler.deleteItemSets(x)).catch(UI.error);
   }
+
+  Mana.store.set('lastBranchSeen', Mana.gameClient.branch);
 });
 
 ipcRenderer.on('lcu-logged-in', async (event, data) => {
   UI.status('League', 'league-client-connection');
 
-  await Mana.user.load(data);
-  Mana.championselect.load();
+  Mana.user._load(data);
+  Mana.championSelectHandler.load();
 
   UI.status('Status', 'champion-select-waiting');
 
@@ -113,7 +114,7 @@ ipcRenderer.on('lcu-logged-in', async (event, data) => {
 ipcRenderer.on('lcu-disconnected', async () => {
   global._devChampionSelect = () => console.log(`[${i18n.__('error')}] ${i18n.__('developer-game-start-error')}\n${i18n.__('league-client-disconnected')}`);
 
-  if (Mana.championselect) Mana.championselect.end().destroy();
+  Mana.championSelectHandler.stop();
   UI.status('League', 'disconnected');
 });
 

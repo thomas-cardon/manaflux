@@ -64,7 +64,7 @@ class CustomGame {
           "tournamentPassbackUrl": "string"
         },
         "gameId": 0,
-        "lobbyName": "ManaFlux Test Custom " + Mana.user.summoner.summonerId,
+        "lobbyName": "ManaFlux Test Custom " + Mana.user.getSummonerId(),
         "lobbyPassword": "",
         "practiceGameRewardsDisabledReasons": [
           "string"
