@@ -1,4 +1,5 @@
 theme: jekyll-theme-cayman
 title: Manaflux
-description: A dead simple runes (and now summoner spells + itemsets !) downloader for League of Legends.
-show_downloads: true
+description: A dead simple runes (and now summoner spells + itemsets!) downloader for League of Legends.
+download:
+  windows: https://github.com/Ryzzzen/manaflux/releases/download/v1.5.3/manaflux-setup-1.5.3.exe
