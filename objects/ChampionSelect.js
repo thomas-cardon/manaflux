@@ -17,7 +17,7 @@ class ChampionSelect extends EventEmitter {
       log.log(2, `[ChampionSelect] Changed champion to: #${id} (${champion.name})`);
 
       Mana.user.getPerksInventory()._perks = Mana.user.getPerksInventory()._perks || await Mana.user.getPerksInventory().getPerks();
-      Mana.user.getPerksInventory()._pageCount = Mana.user.getPerksInventory()._pageCount || await Mana.user.getPageCount();
+      Mana.user.getPerksInventory()._pageCount = Mana.user.getPerksInventory()._pageCount || await Mana.user.getPerksInventory().getCount();
 
       this.updateDisplay(champion);
     });
@@ -47,7 +47,7 @@ class ChampionSelect extends EventEmitter {
   }
 
   getCurrentSummoner() {
-    return this.myTeam.find(x => x.summonerId === Mana.user.summoner.summonerId);
+    return this.myTeam.find(x => x.summonerId === Mana.user.getSummonerId());
   }
 
   getPosition() {
@@ -123,14 +123,14 @@ class ChampionSelect extends EventEmitter {
 
         if (Mana.store.get('loadRunesAutomatically')) {
           try {
-            await Mana.user.updateRunePages(data.runes);
+            await Mana.user.getPerksInventory().updatePerksPages(data.runes);
           }
           catch(err) {
             UI.error(err);
             captureException(err);
           }
         }
-        else $('button#loadRunes').enableManualButton(() => Mana.user.updateRunePages(data.runes).catch(err => { UI.error(err); captureException(err); }), true);
+        else $('button#loadRunes').enableManualButton(() => Mana.user.getPerksInventory().updatePerksPages(data.runes).catch(err => { UI.error(err); captureException(err); }), true);
         UI.status('ChampionSelect', 'runes-loaded', champion.name, this.value);
 
         /*

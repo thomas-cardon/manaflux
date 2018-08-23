@@ -1,10 +1,12 @@
+const rp = require('request-promise-native');
 class PerksInventory {
   constructor(summoner) {
     this._summoner = summoner;
   }
 
   async getCount() {
-    return JSON.parse(await rp(Mana.base + 'lol-perks/v1/inventory')).ownedPageCount;
+    if (!this._pageCount) this._pageCount = JSON.parse(await rp(Mana.base + 'lol-perks/v1/inventory')).ownedPageCount;
+    return this._pageCount;
   }
 
   async setCurrentPage(id) {
@@ -17,36 +19,40 @@ class PerksInventory {
   }
 
   async updatePerksPages(pages) {
-    if (this.getSummonerLevel() < 8) return UI.error('runes-safeguard-level-error');
-    log.log(2, `[PerksInventory] ${i18n.__('loading')}`);
+    const perks = log.dir(3, await this.getPerks());
+    let count = await this.getCount();
 
-    this._perks = this._perks || await this.getPerks();
-    this._pageCount = this._pageCount || await this.getCount();
-
+    if (this._summoner.getSummonerLevel() < 8) return UI.error('runes-safeguard-level-error');
     if (!pages || pages.length === 0 || pages.find(x => x.selectedPerkIds.length === 0) !== undefined) return UI.error('runes-empty-error');
 
-    let count = this._pageCount > Mana.store.get('runes-max', 2) ? Mana.store.get('runes-max', 2) : this._pageCount;
+    log.log(2, `[PerksInventory] Loading`);
+
+    count = count > Mana.store.get('runes-max') ? Mana.store.get('runes-max') : count;
     count = count > pages.length ? pages.length : count;
 
     pages = pages.slice(0, count);
 
     for (let i = 0; i < count; i++) {
-      if (!this._perks[i]) await this._perks.push(this.createPerkPage(Object.assign(pages[i], { current: count < 1 })));
-      else if (this._perks[i].selectedPerkIds === pages[i].selectedPerkIds && this._perks[i].name === pages[i].name) continue;
+      if (perks[i] && Mana.store.get('runes-delete-method')) await this.deletePerkPage(perks[i]);
 
-      await this.updatePerkPage(this._perks[i].id, Object.assign(this._perks[i], pages[i], { current: count < 1, id: this._perks[i].id }));
+      if (!perks[i]) await perks.push(this.createPerkPage(Object.assign(pages[i], { current: count < 1 })));
+      else if (perks[i].selectedPerkIds === pages[i].selectedPerkIds && perks[i].name === pages[i].name) continue;
+
+      await this.updatePerkPage(Object.assign(perks[i], pages[i], { current: count < 1 }));
     }
   }
 
   async getPerks() {
-    return JSON.parse(await rp(Mana.base + 'lol-perks/v1/pages')).filter(page => page.isEditable);
+    if (!this._perks) this._perks = JSON.parse(await rp(Mana.base + 'lol-perks/v1/pages')).filter(page => page.isEditable);
+    return this._perks;
   }
 
-  async updatePerkPage(id, page) {
+  async updatePerkPage(x) {
+    console.dir(x);
     return await rp({
       method: 'PUT',
-      uri: Mana.base + `lol-perks/v1/pages/${id}`,
-      body: page,
+      uri: Mana.base + `lol-perks/v1/pages/${x.id}`,
+      body: log.dir(3, x),
       json: true
     });
   }
@@ -55,13 +61,15 @@ class PerksInventory {
     return await rp({
       method: 'POST',
       uri: Mana.base + 'lol-perks/v1/pages',
-      body: x,
+      body: log.dir(3, x),
       json: true
     });
   }
 
-  async deletePerkPage(id) {
-    return await rp.del(Mana.base + 'lol-perks/v1/pages/' + id);
+  async deletePerkPage(page, index = this._perks.indexOf(page)) {
+    let x = await rp.del(Mana.base + 'lol-perks/v1/pages/' + page.id);
+    this._perks.splice(index, 1);
+    return x;
   }
 
   async deletePerkPages() {
