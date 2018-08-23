@@ -8,9 +8,9 @@
   <link rel="stylesheet" href="assets/css/components/warning.css">
   <link rel="stylesheet" href="assets/css/components/status.css">
   <link rel="stylesheet" href="assets/css/components/version.css">
-  <link rel="stylesheet" href="assets/css/alertify.min.css"/>
-  <link rel="stylesheet" href="assets/css/alertify.rtl.min.css"/>
-  <link rel="stylesheet" href="assets/css/jquery-ui.min.css">
+  <link rel="stylesheet" href="vendor/alertify.min.css"/>
+  <link rel="stylesheet" href="vendor/alertify.rtl.min.css"/>
+  <link rel="stylesheet" href="vendor/jquery-ui.min.css">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
@@ -162,9 +162,9 @@
   <script>
   window.eval = global.eval = function () { throw new Error(i18n.__('eval')) };
   </script>
-  <script src="assets/js/jquery-3.3.1.min.js" onload="window.$ = window.jQuery = module.exports;"></script>
-  <script src="assets/js/jquery-ui.min.js"></script>
-  <script src="assets/js/alertify.min.js"></script>
+  <script src="vendor/jquery-3.3.1.min.js" onload="window.$ = window.jQuery = module.exports;"></script>
+  <script src="vendor/jquery-ui.min.js"></script>
+  <script src="vendor/alertify.min.js"></script>
   <script>
   require('../crash-reporting.js');
 
