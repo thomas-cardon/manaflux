@@ -41,7 +41,9 @@
       "**/*",
       "build/icon.*",
       "!screenshots/*",
-      "!*.md"
+      "!*.md",
+      "!_config.yml",
+      "!docs/*"
     ],
     "nsis": {
       "license": "LICENSE.md"
