@@ -82,7 +82,7 @@ class OPGGProvider extends Provider {
     const skillorder = this.scrapeSkillOrder($);
 
     /* ItemSets */
-    const itemsets = this.scrapeItemSets($, champion, position.charAt(0) + position.slice(1).toLowerCase(), skillorder)
+    this.scrapeItemSets($, champion, position.charAt(0) + position.slice(1).toLowerCase(), skillorder)
     .forEach(itemset => dl.emit('itemset', 'opgg', position, itemset));
 
     /* Perks */
