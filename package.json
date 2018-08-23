@@ -18,7 +18,7 @@
   "author": { "name": "Ryzzzen", "email": "ryzzzen@protonmail.me" },
   "license": "CC0-1.0",
   "devDependencies": {
-    "electron": "^2.0.0",
+    "electron": "^2.0.8",
     "electron-builder": "^20.17.1"
   },
   "dependencies": {
