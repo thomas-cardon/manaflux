@@ -2,13 +2,12 @@ const rp = require('request-promise-native');
 
 class GameClient {
   constructor() {
-    const builds = this.getSystemBuilds();
-    const self = this;
+  }
 
-    this.getSystemBuilds().then(x => {
-      self.branch = x.branch;
-      self.fullVersion = x.version;
-    });
+  async load() {
+    const builds = await this.getSystemBuilds();
+    this.branch = builds.branch;
+    this.fullVersion = builds.version;
   }
 
   async getSystemBuilds() {

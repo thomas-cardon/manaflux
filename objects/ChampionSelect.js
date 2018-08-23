@@ -16,8 +16,8 @@ class ChampionSelect extends EventEmitter {
       const champion = Mana.champions[id];
       log.log(2, `[ChampionSelect] Changed champion to: #${id} (${champion.name})`);
 
-      Mana.user.runes = Mana.user.runes || await Mana.user.getRunes();
-      Mana.user._pageCount = Mana.user._pageCount || await Mana.user.getPageCount();
+      Mana.user.getPerksInventory()._perks = Mana.user.getPerksInventory()._perks || await Mana.user.getPerksInventory().getPerks();
+      Mana.user.getPerksInventory()._pageCount = Mana.user.getPerksInventory()._pageCount || await Mana.user.getPageCount();
 
       this.updateDisplay(champion);
     });
@@ -229,7 +229,9 @@ class ChampionSelect extends EventEmitter {
     this.destroyDisplay();
 
     this.timer = this.myTeam = this.theirTeam = this.gameMode = null;
-    Mana.user._pageCount = Mana.user.runes = null;
+
+    Mana.user.getPerksInventory()._perks = null;
+    Mana.user.getPerksInventory()._pageCount = null;
 
     this.emit('ended');
 

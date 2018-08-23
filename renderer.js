@@ -89,8 +89,9 @@ ipcRenderer.once('lcu-connected', async (event, d) => {
   Mana.champions = data[0];
   Mana.summonerspells = data[1];
 
-  $('.version').text($('.version').text() + ' - V' + Mana.gameClient.branch);
+  await Mana.gameClient.load();
 
+  $('.version').text($('.version').text() + ' - V' + Mana.gameClient.branch);
   if (Mana.store.get('lastBranchSeen') !== Mana.gameClient.branch) {
     Mana.store.set('data', {});
     ItemSetHandler.getItemSets().then(x => ItemSetHandler.deleteItemSets(x)).catch(UI.error);
