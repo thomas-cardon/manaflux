@@ -3,7 +3,7 @@ const EventEmitter = require('events');
 class ProviderHandler {
   constructor() {
     this.providers = {
-      //championgg: new (require('../providers/ChampionGG.js'))(),
+      championgg: new (require('../providers/ChampionGG.js'))(),
       opgg: new (require('../providers/OPGG.js'))(),
       //ugg: new (require('../providers/UGG.js'))(),
       //lolflavor: new (require('../providers/LoLFlavor.js'))()
