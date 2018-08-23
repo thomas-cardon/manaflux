@@ -46,7 +46,7 @@ class ItemSet {
 
   save() {
     for (let i = 0; i < this._data.blocks.length; i++)
-      this._data.blocks[i] = log.dir(3, this._data.blocks[i].build());
+      this._data.blocks[i] = this._data.blocks[i].build();
 
     const p = this.path, data = JSON.stringify(this._data);
 

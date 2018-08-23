@@ -1,73 +1,61 @@
+const EventEmitter = require('events');
+
 class ProviderHandler {
   constructor() {
     this.providers = {
-      championgg: new (require('../providers/ChampionGG.js'))(),
+      //championgg: new (require('../providers/ChampionGG.js'))(),
       opgg: new (require('../providers/OPGG.js'))(),
       //ugg: new (require('../providers/UGG.js'))(),
-      lolflavor: new (require('../providers/LoLFlavor.js'))()
+      //lolflavor: new (require('../providers/LoLFlavor.js'))()
     };
   }
 
-  async getChampionData(champion, preferredPosition, gameMode) {
-    /*
-    * 1/3 Storage Checking
-    */
+  /*
+  * Supposed to support parallelism as much as it can
+  */
+  createDownloadEventEmitter(champion, gameMode, preferredPosition) {
+    const dl = new EventEmitter();
+    this.getChampionData(dl, champion, gameMode, preferredPosition);
+    return dl;
+  }
+
+  getChampionData(dl, champion, gameMode, preferredPosition) {
+    /* Fetches from cache if available */
     if (Mana.store.has(`data.${champion.key}`)) {
       let d = Mana.store.get(`data.${champion.key}`);
 
-      for (let [position, data] of Object.entries(d))
-        for (let i = 0; i < data.itemsets.length; i++)
-          data.itemsets[i] = require('./ItemSetHandler').parse(champion.key, data.itemsets[i]._data, position);
+      for (let [position, data] of Object.entries(d)) {
+        /* SummonerSpells */
+        if (data.summonerspells)
+          dl.emit('summonerspells', 'cache', position, data.summonerspells);
 
-      return d;
+        /* Perks */
+        if (data.perks)
+          for (let i = 0; i < data.perks.length; i++)
+            dl.emit('perksPage', 'cache', position, data.perks[i]);
+
+        /* ItemSets */
+        if (data.itemsets)
+          for (let i = 0; i < data.itemsets.length; i++)
+            dl.emit('itemset', 'cache', position, require('./ItemSetHandler').parse(champion.key, data.itemsets[i]._data, position));
+      }
+
+      return;
     }
 
-    /*
-     * 2/3 Downloading
-    */
+    /* Prepare caching */
+    dl.on('summonerspells', (provider, pos, data) => Mana.store.set(`data.${champion.key}.${pos}.summonerspells`, data));
+    dl.on('perksPage', (provider, pos, data) => Mana.store.set(`data.${champion.key}.${pos}.perks`, data));
+    dl.on('itemset', (provider, pos, data) => Mana.store.set(`data.${champion.key}.${pos}.itemsets`, data));
 
-    let positions = {};
-
-    let providerOrder = Mana.store.get('providers-order', ['championgg', 'opgg', /*'ugg',*/ 'lolflavor']);
+    /* Aggregating from the providers
+    let providerOrder = Mana.store.get('providers-order', ['championgg', 'opgg', /*'ugg',*-/ 'lolflavor']);
     providerOrder.splice(providerOrder.indexOf('lolflavor'), 1);
-    providerOrder.push('lolflavor');
+    providerOrder.push('lolflavor');*/
+    let providerOrder = ['opgg'];
 
-    for (let i = 0; i < providerOrder.length; i++) {
-      const provider = this.providers[providerOrder[i]];
-      log.log(2, `[ProviderHandler] Using ${provider.name}`);
-
-      try {
-        let method = 'getData';
-
-        if (positions[preferredPosition]) {
-          if (positions[preferredPosition].itemsets.length === 0 && Mana.store.get('enableItemSets'))
-            method = 'getItemSets';
-          else if (positions[preferredPosition].summonerspells.length === 0 && Mana.store.get('enableSummonerSpells'))
-            method = 'getSummonerSpells';
-          else if (positions[preferredPosition].runes.length === 0)
-            method = 'getRunes';
-        }
-
-        const d = await provider[method](champion, preferredPosition, gameMode) || {};
-
-        for (let [position, data] of Object.entries(d)) {
-          positions[position] = Object.assign(positions[position] || { runes: {}, itemsets: {}, summonerspells: {} }, data);
-        }
-
-        break;
-      }
-      catch(err) {
-        log.log(1, err);
-      }
-    }
-
-    /*
-    * 3/3 Saving
-    */
-
-    if (positions !== {}) Mana.store.set(`data.${champion.key}`, positions);
-
-    return positions;
+    for (let i = 0; i < providerOrder.length; i++)
+      this.providers[providerOrder[i]].getData(dl, champion, gameMode, preferredPosition);
   }
 }
 

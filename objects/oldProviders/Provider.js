@@ -19,20 +19,6 @@ class Provider {
   async getRunes(champion, position, gameMode) {
     throw Error(`[ProviderHandler] ${this.name} ${i18n.__('providers-skipped')}: #getRunes`);
   }
-
-  _sendEverything(dl, position, data) {
-    /* SummonerSpells */
-    if (data.summonerspells && data.summonerspells.length === 2)
-      dl.emit('summonerspells', position, data.summonerspells);
-
-    /* Perks */
-    for (let i = 0; i < data.runes.length; i++)
-      dl.emit('runes', position, data.runes[i]);
-
-    /* ItemSets */
-    for (let i = 0; i < data.itemsets.length; i++)
-      dl.emit('itemset', position, require('./ItemSetHandler').parse(champion.key, data.itemsets[i]._data, position));
-  }
 }
 
 module.exports = Provider;
