@@ -52,7 +52,7 @@ class ProviderHandler {
     let providerOrder = Mana.store.get('providers-order', ['championgg', 'opgg', /*'ugg',*-/ 'lolflavor']);
     providerOrder.splice(providerOrder.indexOf('lolflavor'), 1);
     providerOrder.push('lolflavor');*/
-    let providerOrder = ['opgg'];
+    let providerOrder = ['championgg', /*'opgg'*/];
 
     for (let i = 0; i < providerOrder.length; i++)
       this.providers[providerOrder[i]].getData(dl, champion, gameMode, preferredPosition);

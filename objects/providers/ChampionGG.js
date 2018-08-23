@@ -27,9 +27,9 @@ class ChampionGGProvider extends Provider {
     this.base = 'https://champion.gg/';
   }
 
-  async getData(champion, preferredPosition, gameMode) {
+  async getData(dl, champion, gameMode, preferredPosition) {
     const res = await rp(`${this.base}champion/${champion.key}`);
-    const data = this._scrape(res, champion, gameMode);
+    const positions = this._scrape(dl, res, champion, gameMode);
 
     let positions = {};
     positions[data.position] = data;
@@ -38,26 +38,25 @@ class ChampionGGProvider extends Provider {
       log.log(2, `[Champion.GG] Gathering data for ${position.name} position`);
       log.dir(3, position);
 
-      const d = await rp(position.link);
-      positions[position.name] = this._scrape(d, champion, gameMode);
+      rp(position.link).then(d => this._scrape(dl, d, champion, gameMode));
     }
 
     return positions;
   }
 
-  async getSummonerSpells(champion, position, gameMode) {
-    return await this.getData(champion, position, gameMode).summonerspells;
+  async getSummonerSpells(champion, gameMode, position) {
+    return await this.getData(champion, gameMode, position).summonerspells;
   }
 
-  async getItemSets(champion, position, gameMode) {
-    return await this.getData(champion, position, gameMode).itemsets;
+  async getItemSets(champion, gameMode, position) {
+    return await this.getData(champion, gameMode, position).itemsets;
   }
 
-  async getRunes(champion, position, gameMode) {
-    return await this.getData(champion, position, gameMode).runes;
+  async getRunes(champion, gameMode, position) {
+    return await this.getData(champion, gameMode, position).runes;
   }
 
-  _scrape(html, champion, gameMode) {
+  _scrape(dl, html, champion, gameMode) {
     const $ = cheerio.load(html);
 
     const position = $(`li[class^='selected-role'] > a[href^='/champion/']`).first().text().trim();
@@ -67,29 +66,38 @@ class ChampionGGProvider extends Provider {
       availablePositions.push({ name: $(this).first().text().trim().toUpperCase(), link: 'https://champion.gg' + $(this).attr('href') });
     });
 
+    /* SummonerSpells */
     const summonerspells = this.scrapeSummonerSpells($, gameMode);
+    if (summonerspells && summonerspells.length === 2)
+      dl.emit('summonerspells', 'opgg', position, summonerspells);
 
     const skillorder = this.scrapeSkillOrder($);
-    const itemsets = this.scrapeItemSets($, champion, position, skillorder);
 
-    let runes = this.scrapeRunes($, champion, position);
+    /* ItemSets */
+    this.scrapeItemSets($, champion, position, skillorder)
+    .forEach(itemset => dl.emit('itemset', 'opgg', position, itemset));
 
-    let i = runes.length;
+    /* Perks */
+    let runes = this.scrapeRunes($, champion, position), i = runes.length;
     while (i--) {
       const page = runes[i];
 
       if (page.selectedPerkIds[0] === undefined && page.selectedPerkIds[1] === undefined) {
         runes.splice(i, 1);
         UI.error(`[Champion.GG] ${i18n.__('providers-error-data')}`);
+        return;
       }
-      else if (page.selectedPerkIds[0] === page.selectedPerkIds[1]) {
+
+      if (page.selectedPerkIds[0] === page.selectedPerkIds[1]) {
         page.selectedPerkIds.splice(1, 1);
         page.selectedPerkIds.splice(3, 0, fixes[page.primaryStyleId]);
         UI.error(`[Champion.GG] ${i18n.__('providers-cgg-runes-fix')}`);
       }
+
+      dl.emit('perksPage', 'opgg', position, page);
     }
 
-    return { runes, summonerspells, itemsets, availablePositions, position: position.toUpperCase() };
+    return availablePositions;
   }
 
   /**
