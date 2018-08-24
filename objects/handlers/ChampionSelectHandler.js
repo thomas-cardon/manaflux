@@ -108,11 +108,7 @@ class ChampionSelectHandler {
       /* TODO: Change hextech animation according to active rune page change */
 
     if (Mana.store.get('loadRunesAutomatically')) {
-      Mana.user.getPerksInventory().updatePerksPages(perks)
-      .catch(err => {
-        UI.error(err);
-        captureException(err);
-      });
+      Mana.user.getPerksInventory().updatePerksPages(perks);
     }
     else {
       $('button#loadRunes').enableManualButton(() => Mana.user.getPerksInventory().updatePerksPages(perks)
