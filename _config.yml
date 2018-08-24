@@ -1,4 +1,4 @@
-theme: jekyll-theme-cayman
+theme: forest-bg.png
 title: Manaflux
 description: A dead simple runes (and now summoner spells + itemsets!) downloader for League of Legends.
 download:
