@@ -1,10 +1,10 @@
 # Manaflux
 
-A dead simple runes (and now summoner spells + itemsets!) downloader for League of Legends.
+A dead simple runes (and now summoner spells + itemsets !) downloader for League of Legends.
 
 ![ManaFlux Main Page](screenshots/1.png "Main page")
 
-> Support for Polish and Portuguese brazilian has been added! It's automatic: ManaFlux will use your system to know what language it's supposed to load.
+> Support for Polish and Portuguese brasilian has been added ! It's automatic: ManaFlux will use your system to know what language it's supposed to load.
 
 ## Key Features
 - Automatic Runes, Item Sets, and Summoner Spells downloading
@@ -17,25 +17,24 @@ A dead simple runes (and now summoner spells + itemsets!) downloader for League 
 ## Getting Started
 
 #### Windows
- > Download the last .exe file in the releases tab, and execute it. That's all!
+ > Download the last .exe file in the releases tab, and execute it. That's all !
  The software will be installed on your computer then launched.
 
 #### Mac OS X and Linux
  > You'll need to clone and build it by yourself: `npm install && electron .` Support is unofficial, but if you find an issue feel free to open a ticket.
 
+#### Will I get banned if I use this ?
+> Nope. As stated by Riot Git Gene [here](https://www.reddit.com/r/leagueoflegends/comments/97s4co/so_i_created_a_program_that_automatically_handles/e4bgdmy), Riot allows my app as long as it doesn't affect directly in-game play. (it doesn't.). If something changes, they'll contact me first to fix the problem or even shutdown the repo if it's really necessary. You won't have any problems.
 
-## Will I get banned if I use this?
-> Nope. As stated by a Rioter named RiotSargonas [here](https://www.reddit.com/r/leagueoflegends/comments/80d4r0/runebook_the_ultimate_rune_pages_manager_that_you/duv2r22), things that interact with the desktop client (not the game) will never get you banned.
 
-### Built with
+## Built with
 - [Electron](https://electronjs.org/)
 - [NodeJS](https://nodejs.org)
 - Web Technologies: HTML5, CSS3 and JavaScript for rendering
-- Theme inspired from League of Legends
-- [LeaguePlug](https://github.com/Ryzzzen/leagueplug), Simplifies the connection to League of Legends client
+- [LeaguePlug](https://github.com/Ryzzzen/manaflux/tree/master/objects/leagueplug), Simplifies the connection to League of Legends client
 
-#### Credits
+## Credits
 Thanks to my friends who gave me the idea of making this software, without them this would've not existed!
 
-#### Contact
+## Contact
 You can use [Discord](https://discordapp.com/invite/4KTJax9) to contact me, if you have issues with the app or if you want to talk about enhancements!
