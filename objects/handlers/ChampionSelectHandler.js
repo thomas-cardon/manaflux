@@ -8,7 +8,9 @@ class ChampionSelectHandler {
   constructor() {
     this.gameModes = {
       CLASSIC: new (require('../gameModes/CLASSIC'))(this, ProviderHandler)
-    }
+    };
+
+    this.cachedPerks = {};
   }
 
   load() {
@@ -63,19 +65,22 @@ class ChampionSelectHandler {
   updateDisplay(champion, dl) {
     UI.status('ChampionSelect', 'champion-updating-display', champion.name);
 
-    const onPerkPositionChange = this.onPerkPositionChange;
+    const onPerkPositionChange = this.onPerkPositionChange, perks = this.cachedPerks;
     let first = false;
 
+    $('#positions').change(function() {
+      onPerkPositionChange(champion, this.value, perks[this.value]);
+    });
+
     dl.on('summonerspells', (provider, pos, data) => {
-      console.dir(arguments);
       if (Mana.store.get('enableSummonerSpells'))
         $('button#loadSummonerSpells').enableManualButton(() => Mana.user.updateSummonerSpells(data).catch(err => { UI.error(err); captureException(err); }), true);
     }).on('perksPage', (provider, pos, data) => {
-      $('#positions')
-      .append(`<option value="${pos}">${pos === 'ADC' ? 'ADC' : pos.charAt(0).toUpperCase() + pos.slice(1)}</option>`)
-      .change(function() {
-        if (this.value === pos) onPerkPositionChange(champion, this.value, data);
-      });
+      if (!perks[pos]) {
+        perks[pos] = [data];
+        $('#positions').append(`<option value="${pos}">${pos === 'ADC' ? 'ADC' : pos.charAt(0).toUpperCase() + pos.slice(1)}</option>`);
+      }
+      else perks[pos].push(data);
 
       if (!first) {
         first = true;
@@ -89,7 +94,7 @@ class ChampionSelectHandler {
     UI.tray(false);
   }
 
-  async onPerkPositionChange(champion, position, perks) {
+  onPerkPositionChange(champion, position, perks) {
     console.dir(perks);
 
     /* Perks display */
@@ -98,14 +103,14 @@ class ChampionSelectHandler {
       /* TODO: Change hextech animation according to active rune page change */
 
     if (Mana.store.get('loadRunesAutomatically')) {
-      Mana.user.getPerksInventory().updatePerksPages(data.runes)
+      Mana.user.getPerksInventory().updatePerksPages(perks)
       .catch(err => {
         UI.error(err);
         captureException(err);
       });
     }
     else {
-      $('button#loadRunes').enableManualButton(() => Mana.user.getPerksInventory().updatePerksPages(data.runes)
+      $('button#loadRunes').enableManualButton(() => Mana.user.getPerksInventory().updatePerksPages(perks)
         .catch(err => {
           UI.error(err);
           captureException(err);
@@ -130,6 +135,7 @@ class ChampionSelectHandler {
 
   end() {
     this.inChampionSelect = false;
+    this.cachedPerks = {};
 
     ipcRenderer.send('champion-select-out');
     ipcRenderer.removeAllListeners('runes-previous');

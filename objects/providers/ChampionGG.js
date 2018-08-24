@@ -29,19 +29,14 @@ class ChampionGGProvider extends Provider {
 
   async getData(dl, champion, gameMode, preferredPosition) {
     const res = await rp(`${this.base}champion/${champion.key}`);
-    const positions = this._scrape(dl, res, champion, gameMode);
+    const data = this._scrape(dl, res, champion, gameMode);
 
-    let positions = {};
-    positions[data.position] = data;
-
-    for (const position of data.availablePositions) {
+    for (const position of data) {
       log.log(2, `[Champion.GG] Gathering data for ${position.name} position`);
       log.dir(3, position);
 
       rp(position.link).then(d => this._scrape(dl, d, champion, gameMode));
     }
-
-    return positions;
   }
 
   async getSummonerSpells(champion, gameMode, position) {
