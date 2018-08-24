@@ -21,9 +21,6 @@ $(document).ready(function() {
   if (!Mana.store.has('data'))
     Mana.store.set('data', {});
 
-  if (!Mana.store.has('summonerspells'))
-    Mana.store.set('summonerspells', {});
-
   if (!Mana.store.has('loadRunesAutomatically'))
     Mana.store.set('loadRunesAutomatically', true);
 
