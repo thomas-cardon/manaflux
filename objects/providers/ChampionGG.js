@@ -52,6 +52,7 @@ class ChampionGGProvider extends Provider {
   }
 
   _scrape(dl, html, champion, gameMode) {
+    console.dir(html);
     const $ = cheerio.load(html);
 
     const position = $(`li[class^='selected-role'] > a[href^='/champion/']`).first().text().trim();
@@ -60,6 +61,7 @@ class ChampionGGProvider extends Provider {
     $(`li[class!='selected-role'] > a[href^='/champion/']`).each(function(index) {
       availablePositions.push({ name: $(this).first().text().trim().toUpperCase(), link: 'https://champion.gg' + $(this).attr('href') });
     });
+    console.dir(availablePositions);
 
     /* SummonerSpells */
     const summonerspells = this.scrapeSummonerSpells($, gameMode);
