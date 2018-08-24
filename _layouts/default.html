@@ -7,18 +7,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#093f65">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="stylesheet" href="{{ site.github.repository_url }}/raw/master/_layouts/style.css">
+    <link rel="stylesheet" href="{{ baseurl }}/_layouts/style.css">
     <style type="text/css">
       .page-header {
-        background-image: url({{ site.github.repository_url }}/raw/master/src/assets/img/themes/{{ site.theme | default: "forest-bg.png" }});
+        background-image: url({{ baseurl }}/assets/themes/{{ site.theme | default: "forest-bg.png" }});
       }
     </style>
   </head>
   <body>
-    
+
     <header class="page-header" role="banner">
-      
-      <img src="{{ site.github.repository_url }}/raw/master/build/icon.png" alt="Manaflux" />
+
+      <img src="{{ baseurl }}/assets/img/icon.png" alt="Manaflux" />
 
       <h1 class="project-name">{{ site.title | default: site.github.repository_name }}</h1>
       <h2 class="project-tagline">{{ site.description | default: site.github.project_tagline }}</h2>
@@ -34,7 +34,7 @@
 
     <main id="content" class="main-content" role="main">
       {{ content }}
-      
+
       <footer class="site-footer">
         {% if site.github.is_project_page %}
           <span class="site-footer-owner"><a href="{{ site.github.repository_url }}">{{ site.github.repository_name }}</a> is maintained by <a href="{{ site.github.owner_url }}">{{ site.github.owner_name }}</a>.</span>
