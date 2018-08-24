@@ -16,9 +16,6 @@ class ChampionSelect extends EventEmitter {
       const champion = Mana.champions[id];
       log.log(2, `[ChampionSelect] Changed champion to: #${id} (${champion.name})`);
 
-      Mana.user.getPerksInventory()._perks = Mana.user.getPerksInventory()._perks || await Mana.user.getPerksInventory().getPerks();
-      Mana.user.getPerksInventory()._pageCount = Mana.user.getPerksInventory()._pageCount || await Mana.user.getPerksInventory().getCount();
-
       this.updateDisplay(champion);
     });
   }

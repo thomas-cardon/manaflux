@@ -33,12 +33,16 @@ class PerksInventory {
     pages = pages.slice(0, count);
 
     for (let i = 0; i < count; i++) {
-      if (perks[i] && Mana.store.get('runes-delete-method')) await this.deletePerkPage(perks[i]);
+      if (perks[i] && Mana.store.get('runes-delete-method') && (perks[i].selectedPerkIds !== pages[i].selectedPerkIds || perks[i].name !== pages[i].name))
+        perks[i] = await this.deletePerkPage(perks[i], i);
 
-      if (!perks[i]) await perks.push(this.createPerkPage(Object.assign(pages[i], { current: count < 1 })));
-      else if (perks[i].selectedPerkIds === pages[i].selectedPerkIds && perks[i].name === pages[i].name) continue;
-
-      await this.updatePerkPage(Object.assign(perks[i], pages[i], { current: count < 1 }));
+      if (!perks[i]) {
+        perks[i] = await this.createPerkPage(Object.assign(pages[i], { current: count < 1 }));
+      }
+      else if (perks[i].selectedPerkIds !== pages[i].selectedPerkIds || perks[i].name !== pages[i].name) {
+        const data = Object.assign(perks[i], pages[i], { current: count < 1 });
+        perks[i] = await this.updatePerkPage(data);
+      }
     }
   }
 
@@ -48,7 +52,6 @@ class PerksInventory {
   }
 
   async updatePerkPage(x) {
-    console.dir(x);
     return await rp({
       method: 'PUT',
       uri: Mana.base + `lol-perks/v1/pages/${x.id}`,
@@ -66,10 +69,9 @@ class PerksInventory {
     });
   }
 
-  async deletePerkPage(page, index = this._perks.indexOf(page)) {
-    let x = await rp.del(Mana.base + 'lol-perks/v1/pages/' + page.id);
-    this._perks.splice(index, 1);
-    return x;
+  async deletePerkPage(page) {
+    await rp.del(Mana.base + 'lol-perks/v1/pages/' + page.id);
+    return null;
   }
 
   async deletePerkPages() {
