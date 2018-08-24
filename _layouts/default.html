@@ -10,12 +10,13 @@
     <link rel="stylesheet" href="{{ baseurl | append: '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}">
     <style type="text/css">
       .page-header {
-        background-image: url({{ baseurl | append: '/assets/img/themes/' | append: site.theme | default: "forest-bg.png" }});
+        background-image: url({{ baseurl | append: '/assets/themes/' | append: site.theme | default: "forest-bg.png" }});
       }
     </style>
   </head>
   <body>
     <header class="page-header" role="banner">
+      <img src="{{ baseurl | append: '/assets/img/icon.png'}}" alt="Manaflux" />
       <h1 class="project-name">{{ site.title | default: site.github.repository_name }}</h1>
       <h2 class="project-tagline">{{ site.description | default: site.github.project_tagline }}</h2>
       {% if site.download.windows %}
