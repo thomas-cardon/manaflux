@@ -61,7 +61,6 @@ class ChampionGGProvider extends Provider {
     $(`li[class!='selected-role'] > a[href^='/champion/']`).each(function(index) {
       availablePositions.push({ name: $(this).first().text().trim().toUpperCase(), link: 'https://champion.gg' + $(this).attr('href') });
     });
-    console.dir(availablePositions);
 
     /* SummonerSpells */
     const summonerspells = this.scrapeSummonerSpells($, gameMode);
@@ -81,14 +80,14 @@ class ChampionGGProvider extends Provider {
 
       if (page.selectedPerkIds[0] === undefined && page.selectedPerkIds[1] === undefined) {
         runes.splice(i, 1);
-        UI.error(`[Champion.GG] ${i18n.__('providers-error-data')}`);
-        return;
+        UI.error('providers-error-data');
+        continue;
       }
 
       if (page.selectedPerkIds[0] === page.selectedPerkIds[1]) {
         page.selectedPerkIds.splice(1, 1);
         page.selectedPerkIds.splice(3, 0, fixes[page.primaryStyleId]);
-        UI.error(`[Champion.GG] ${i18n.__('providers-cgg-runes-fix')}`);
+        UI.error('providers-cgg-runes-fix');
       }
 
       dl.emit('perksPage', 'opgg', position, page);
