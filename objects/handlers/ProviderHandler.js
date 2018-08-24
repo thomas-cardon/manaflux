@@ -45,8 +45,8 @@ class ProviderHandler {
 
     /* Prepare caching */
     dl.on('summonerspells', (provider, pos, data) => Mana.store.set(`data.${champion.key}.${pos.toUpperCase()}.summonerspells`, data));
-    dl.on('perksPage', (provider, pos, data) => Mana.store.set(`data.${champion.key}.${pos.toUpperCase()}.perks`, data));
-    dl.on('itemset', (provider, pos, data) => Mana.store.set(`data.${champion.key}.${pos.toUpperCase()}.itemsets`, data));
+    dl.on('perksPage', (provider, pos, data) => Mana.store.set(`data.${champion.key}.${pos.toUpperCase()}.perks`, Mana.store.get(`data.${champion.key}.${pos.toUpperCase()}.perks`, []).concat([data])));
+    dl.on('itemset', (provider, pos, data) => Mana.store.set(`data.${champion.key}.${pos.toUpperCase()}.itemsets`, Mana.store.get(`data.${champion.key}.${pos.toUpperCase()}.itemsets`, []).concat([data])));
 
     /* Aggregating from the providers
     let providerOrder = Mana.store.get('providers-order', ['championgg', 'opgg', /*'ugg',*-/ 'lolflavor']);
