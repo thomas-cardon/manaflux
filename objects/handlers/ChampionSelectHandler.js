@@ -72,6 +72,11 @@ class ChampionSelectHandler {
       onPerkPositionChange(champion, this.value, perks[this.value]);
     });
 
+    dl.on('summonerspells', (provider, pos, data) => console.dir(data));
+    dl.on('perksPage', (provider, pos, data) => console.dir(data));
+    dl.on('itemset', (provider, pos, data) => console.dir(data));
+
+
     dl.on('summonerspells', (provider, pos, data) => {
       if (Mana.store.get('enableSummonerSpells'))
         $('button#loadSummonerSpells').enableManualButton(() => Mana.user.updateSummonerSpells(data).catch(err => { UI.error(err); captureException(err); }), true);
