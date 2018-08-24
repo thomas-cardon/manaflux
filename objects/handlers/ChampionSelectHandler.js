@@ -6,8 +6,9 @@ const ProviderHandler = new (require('./ProviderHandler'))();
 
 class ChampionSelectHandler {
   constructor() {
-    this.gameModes = {
-      CLASSIC: new (require('../gameModes/CLASSIC'))(this, ProviderHandler)
+    this.gameModeHandlers = {
+      CLASSIC: new (require('../gameModesHandlers/CLASSIC'))(this, ProviderHandler),
+      ARAM: new (require('../gameModesHandlers/ARAM'))(this, ProviderHandler)
     };
 
     this.cachedPerks = {};
@@ -40,18 +41,18 @@ class ChampionSelectHandler {
       this.inChampionSelect = true;
     }
 
-    this.gameModes[this.gameMode].onTickEvent(data);
+    this.gameModeHandler.onTickEvent(data);
 
-    if (this._lastChampionId === this.gameModes[this.gameMode].getPlayer().championId) return;
-    if ((this._lastChampionId = this.gameModes[this.gameMode].getPlayer().championId) === 0) return UI.status('ChampionSelect', 'champion-select-pick');
+    if (this._lastChampionId === this.gameModeHandler.getPlayer().championId) return;
+    if ((this._lastChampionId = this.gameModeHandler.getPlayer().championId) === 0) return UI.status('ChampionSelect', 'champion-select-pick');
 
-    const champion = Mana.champions[this.gameModes[this.gameMode].getPlayer().championId];
+    const champion = Mana.champions[this.gameModeHandler.getPlayer().championId];
 
     /* Delete ItemSets before downloading */
     await ItemSetHandler.deleteItemSets(await ItemSetHandler.getItemSetsByChampionKey(champion.key));
 
-    this.gameModes[this.gameMode].onChampionChangeEvent(champion);
-    this.updateDisplay(champion, ProviderHandler.createDownloadEventEmitter(champion, this.gameMode, this.gameModes[this.gameMode].getPosition()));
+    this.gameModeHandler.onChampionChangeEvent(champion);
+    this.updateDisplay(champion, ProviderHandler.createDownloadEventEmitter(champion, this.gameMode, this.gameModeHandler.getPosition()));
   }
 
   async onFirstTickEvent(data) {
@@ -59,7 +60,10 @@ class ChampionSelectHandler {
     log.dir(3, data);
 
     this.gameMode = await Mana.user.getGameMode();
-    this.gameModes[this.gameMode].onFirstTickEvent(data);
+
+    /* Try to fallback to classic mode when not available */
+    this.gameModeHandler = this.gameModeHandlers[this.gameMode] ? this.gameModeHandlers[this.gameMode] : this.gameModeHandlers.CLASSIC;
+    this.gameModeHandler.onFirstTickEvent(data);
   }
 
   updateDisplay(champion, dl) {
@@ -75,7 +79,6 @@ class ChampionSelectHandler {
     dl.on('summonerspells', (provider, pos, data) => console.dir(data));
     dl.on('perksPage', (provider, pos, data) => console.dir(data));
     dl.on('itemset', (provider, pos, data) => console.dir(data));
-
 
     dl.on('summonerspells', (provider, pos, data) => {
       if (Mana.store.get('enableSummonerSpells'))
@@ -105,11 +108,8 @@ class ChampionSelectHandler {
     /* Perks display */
     if (Mana.store.get('enableAnimations'))
       UI.enableHextechAnimation(champion, perks[0].primaryStyleId);
-      /* TODO: Change hextech animation according to active rune page change */
 
-    if (Mana.store.get('loadRunesAutomatically')) {
-      Mana.user.getPerksInventory().updatePerksPages(perks);
-    }
+    if (Mana.store.get('loadRunesAutomatically')) Mana.user.getPerksInventory().updatePerksPages(perks);
     else {
       $('button#loadRunes').enableManualButton(() => Mana.user.getPerksInventory().updatePerksPages(perks)
         .catch(err => {
@@ -142,7 +142,7 @@ class ChampionSelectHandler {
     ipcRenderer.removeAllListeners('runes-previous');
     ipcRenderer.removeAllListeners('runes-next');
 
-    this.gameModes[this.gameMode].end();
+    this.gameModeHandler.end();
 
     Mana.user.getPerksInventory()._pageCount = null;
     Mana.user.getPerksInventory()._perks = null;
