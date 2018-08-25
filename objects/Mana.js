@@ -3,7 +3,6 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 const EventEmitter = require('events');
 const { dialog, app } = require('electron').remote;
 
-const ManaSettings = require('./Mana/Settings');
 const ItemSetHandler = require('./handlers/ItemSetHandler');
 
 const Store = require('electron-store');
@@ -34,8 +33,6 @@ class Mana extends EventEmitter {
       dialog.showMessageBox({ title: i18n.__('info'), message: i18n.__('consent') });
       this.getStore().set('riot-consent', true);
     }
-
-    $(document).ready(() => this._settings.load());
 
     ipcRenderer.on('lcu-connected', (event, d) => this.updateAuthenticationTokens(d));
     ipcRenderer.on('lcu-logged-in', (event, d) => this.load());

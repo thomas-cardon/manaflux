@@ -1,16 +1,7 @@
 /* input element support */
-$('input[data-settings-key]').each(function() {
+$('input[data-settings-key], select[data-settings-key]').each(function() {
   log.log(2, `[Settings] Loading value of ${$(this).data('settings-key')} to: ${Mana.getStore().get($(this).data('settings-key'), $(this).data('settings-default'))}`);
-  $(this).val(Mana.getStore().get($(this).data('settings-key'), $(this).data('settings-default'))).trigger('settingsLoaded');
-}).change(function() {
-  log.log(2, `[Settings] Changing value of ${$(this).data('settings-key')} to: ${this.value}`);
-  Mana.getStore().set($(this).data('settings-key'), this.value);
-});
-
-/* select element support */
-$('select[data-settings-key]').each(function() {
-  log.log(2, `[Settings] Loading value of ${$(this).data('settings-key')} to: ${Mana.getStore().get($(this).data('settings-key'), $(this).data('settings-default'))}`);
-  $(this).val(Mana.getStore().get($(this).data('settings-key'), $(this).data('settings-default'))).trigger('settingsLoaded');
+  $(this).val(Mana.getStore().get($(this).data('settings-key'), $(this).data('settings-default')));
 }).change(function() {
   log.log(2, `[Settings] Changing value of ${$(this).data('settings-key')} to: ${this.value}`);
   Mana.getStore().set($(this).data('settings-key'), this.value);
@@ -24,11 +15,11 @@ $(':checkbox[data-settings-key]').each(function() {
   $(this).prop('id', $(this).data('settings-key'));
   $(this).siblings('label').prop('for', $(this).data('settings-key'));
 
-  $(this).trigger('settingsLoaded');
+  $(this);
 }).change(function() {
   log.log(2, `[Settings] Changing value of ${$(this).data('settings-key')} to: ${$(this).is(":checked")}`);
   Mana.getStore().set($(this).data('settings-key'), $(this).is(":checked"));
-})
+});
 
 /* sortable lists support */
 $(".sortable[data-settings-key]").each(function() {
@@ -64,6 +55,4 @@ $(".sortable[data-settings-key]").each(function() {
       log.log(2, `[Settings] Changing value of #${$(this).data('settings-key')} to: ${array}`);
     }
   });
-
-  $(this).trigger('settingsLoaded');
 });
