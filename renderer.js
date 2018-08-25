@@ -17,7 +17,6 @@ if (Mana.store.get('enableTrayIcon')) UI.tray();
 
 UI.status('Status', 'loading-storage');
 
-
 $(document).ready(function() {
   /*if (!Mana.store.has('riot-consent')) {
     dialog.showMessageBox({ title: i18n.__('info'), message: i18n.__('consent') });
@@ -89,9 +88,5 @@ ipcRenderer.on('lcu-disconnected', async () => {
   Mana.championSelectHandler.stop();
   UI.status('League', 'disconnected');
 });
-
-global.autoStart = function(checked) {
-  ipcRenderer.send(`auto-start-${checked ? 'en' : 'dis'}able`);
-}
 
 global._devChampionSelect = () => console.log(`[${i18n.__('error')}] ${i18n.__('developer-game-start-error')}\n${i18n.__('league-client-disconnected')}`);
