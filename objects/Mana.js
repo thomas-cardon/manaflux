@@ -1,8 +1,12 @@
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
-const ManaSettings = require('./Mana/Settings');
+const EventEmitter = require('events');
 const { dialog, app } = require('electron').remote;
-const ItemSetHandler = require('./objects/handlers/ItemSetHandler');
+
+const ManaSettings = require('./Mana/Settings');
+const ItemSetHandler = require('./handlers/ItemSetHandler');
+
+const Store = require('electron-store');
 
 class Mana extends EventEmitter {
   constructor() {
@@ -10,12 +14,26 @@ class Mana extends EventEmitter {
     this.version = app.getVersion();
 
     UI.status('Status', 'loading-storage');
-    this._settings = new ManaSettings();
+    this._store = new Store();
 
-    /*if (!Mana.store.has('riot-consent')) {
+    this.getStore().set('lastVersion', this.version);
+    if (!this.getStore().has('league-client-path')) {
+      UI.status('Status', 'league-client-start-required');
+
+      ipcRenderer.once('league-client-path', (event, path) => {
+        UI.status('League', 'path-found');
+
+        this.getStore().set('league-client-path', path);
+        ipcRenderer.send('lcu-connection', path);
+      }).send('league-client-path');
+    }
+    else ipcRenderer.send('lcu-connection', this.getStore().get('league-client-path'));
+    //this.emit('settings', this.getStore());
+
+    if (!this.getStore().has('riot-consent')) {
       dialog.showMessageBox({ title: i18n.__('info'), message: i18n.__('consent') });
-      Mana.store.set('riot-consent', true);
-    }*/
+      this.getStore().set('riot-consent', true);
+    }
 
     $(document).ready(() => this._settings.load());
 
@@ -76,12 +94,8 @@ class Mana extends EventEmitter {
     Mana.riot = data;
   }
 
-  getSettings() {
-    return this._settings;
-  }
-
   getStore() {
-    return this._settings._store;
+    return this._store;
   }
 }
 

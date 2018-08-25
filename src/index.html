@@ -163,13 +163,15 @@
   <script src="vendor/jquery-ui.min.js"></script>
   <script src="vendor/alertify.min.js"></script>
   <script>
+    const { ipcRenderer } = require('electron');
+  </script>
+  <script src="assets/js/ui.js"></script>
+  <script>
   window.eval = global.eval = function () { throw new Error(i18n.__('eval')) };
   require('../crash-reporting.js');
 
   process.on('unhandledRejection', (reason, p) => log.log(3, `Unhandled rejection at: ${p}, reason: ${reason}`));
   process.on('uncaughtException', console.error);
-
-  const { ipcRenderer } = require('electron');
 
   const log = new (require('../objects/handlers/LoggingHandler'))(3);
   global.i18n = new (require('../objects/i18n'));
@@ -179,9 +181,8 @@
     console[type].call(this, message);
   });
 
-  global.Mana = new (require('../objects/Mana'))();
+  global.Mana = new (require('../objects/Mana'))(ipcRenderer);
   </script>
-  <script src="assets/js/ui.js"></script>
   <script src="assets/js/ui/custom-components.js"></script>
   <script src="assets/js/ui/tab-handler.js"></script>
   <script src="assets/js/ui/navigation-menus.js"></script>
