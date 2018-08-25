@@ -1,5 +1,4 @@
 {
-  "process-unhandled-rejection": "Rejeição não tratada em %s, razão: %s",
   "eval": "Eval não é suportado por razões de segurança.",
   "info": "Info",
   "error": "Erro",

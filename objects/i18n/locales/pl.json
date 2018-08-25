@@ -1,5 +1,4 @@
 {
-  "process-unhandled-rejection": "Nieobsługiwane odrzucenie w %s, powód: %s",
   "eval": "Eval nie jest obsługiwany ze względów bezpieczeństwa.",
   "info": "Info",
   "error": "Błąd",

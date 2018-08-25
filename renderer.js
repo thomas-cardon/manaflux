@@ -17,6 +17,7 @@ if (Mana.store.get('enableTrayIcon')) UI.tray();
 
 UI.status('Status', 'loading-storage');
 
+/*
 $(document).ready(function() {
   if (!Mana.store.has('data'))
     Mana.store.set('data', {});
@@ -67,7 +68,7 @@ $(document).ready(function() {
   }
   else ipcRenderer.send('lcu-connection', Mana.store.get('leaguePath'));
   Mana.emit('settings', Mana.store);
-});
+});*/
 
 ipcRenderer.on('lcu-connected', async (event, d) => {
   Mana.base = d.baseUri;
