@@ -19,9 +19,9 @@
   <div class="tab-container">
     <img src="assets/img/selected.png" id="selected" class="selected" draggable="false">
     <div class="tab">
-      <button data-i18n="menu-home" class="tablinks active" data-tabid="home"></button>
-      <button data-i18n="menu-settings" class="tablinks" data-tabid="settings"></button>
-      <button data-i18n="menu-update" class="tablinks flash" data-tabid="update" style="display: none;"></button>
+      <button data-i18n="ui-menu-home" class="tablinks active" data-tabid="home"></button>
+      <button data-i18n="ui-menu-settings" class="tablinks" data-tabid="settings"></button>
+      <button data-i18n="ui-menu-update" class="tablinks flash" data-tabid="update" style="display: none;"></button>
     </div>
     <div class="controls">
       <button onclick="ipcRenderer.send('win-minimize');"><i class="material-icons icon">remove</i></button>
@@ -50,11 +50,23 @@
       </div>
     </div>
     <div data-tabid="settings" data-tabn=0 class="tabcontent" style="display: none; margin-left: 12%;">
+      <p class="option-name"data-i18n="runes"></p>
       <div class="option">
-        <p class="suboption-name" data-i18n="runes"></p>
+        <p class="suboption-name" data-i18n="runes-max"></p>
+        <input type="number" data-settings-key="runes-max" data-settings-default="2" class="center-area" min="1" step="1" />
+      </div>
+      <!--div class="option">
+        <p class="suboption-name" data-i18n="runes-delete-method"></p>
+        <div class="options float-left checkboxContainer">
+          <input type="checkbox" data-settings-key="runes-delete-method" data-settings-default="false" class="center-area" />
+          <label data-i18n="runes-delete-enable"></label>
+        </div>
+      </div-->
+      <div class="option">
+        <p class="suboption-name" data-i18n="load-automatically"></p>
         <div class="options float-left checkboxContainer">
           <input type="checkbox" data-settings-key="runes-automatic-load" data-setting-default="true" />
-          <label data-i18n="load-automatically"></label>
+          <label data-i18n="enable"></label>
         </div>
       </div>
       <div class="option">
@@ -85,25 +97,36 @@
           <label data-i18n="champion-select-hide"></label>
         </div>
       </div>
+    </div>
+    <div data-tabid="settings" data-tabn=1 class="tabcontent" style="display: none; margin-left: 12%;">
+      <p class="option-name"data-i18n="ui"></p>
       <div class="option">
-        <p class="suboption-name" data-i18n="animations"></p>
+        <p class="suboption-name" data-i18n="ui-animations"></p>
         <div class="options float-left checkboxContainer">
           <input type="checkbox" data-settings-key="ui-animations-enable" data-settings-default="false" class="center-area" />
           <label data-i18n="enable"></label>
         </div>
       </div>
       <div class="option">
-        <p class="suboption-name" data-i18n="runes-delete-method"></p>
+        <p class="suboption-name" data-i18n="ui-gradient"></p>
         <div class="options float-left checkboxContainer">
-          <input type="checkbox" data-settings-key="runes-delete-method" data-settings-default="false" class="center-area" />
-          <label data-i18n="runes-delete-enable"></label>
+          <input type="checkbox" data-settings-key="ui-gradient" data-settings-default="true" class="center-area" />
+          <label data-i18n="enable"></label>
         </div>
       </div>
-    </div>
-    <div data-tabid="settings" data-tabn=1 class="tabcontent" style="display: none; margin-left: 12%;">
       <div class="option">
-        <p class="suboption-name" data-i18n="runes-max"></p>
-        <input type="number" data-settings-key="runes-max" data-settings-default="2" class="center-area" min="1" step="1" />
+        <p class="suboption-name" data-i18n="ui-background"></p>
+        <select data-settings-key="ui-background" data-settings-default="themes/default-bg.jpg" data-custom-component="ui-background" class="dropdown center-area">
+          <option data-i18n="disabled" value="null"></option>
+          <option data-i18n="ui-background-default" value="themes/default-bg.jpg"></option>
+          <option data-i18n="ui-background-forest" value="themes/forest-bg.png"></option>
+          <option data-i18n="ui-background-shurima-desert" value="themes/shurima-desert-bg.jpg"></option>
+          <option data-i18n="ui-background-red_dark" value="themes/red_dark-bg.jpg"></option>
+          <option data-i18n="ui-background-red" value="themes/red-bg.jpg"></option>
+          <option data-i18n="ui-background-green" value="themes/green-bg.jpg"></option>
+          <option data-i18n="ui-background-purple" value="themes/purple-bg.jpg"></option>
+          <option data-i18n="ui-background-gray" value="themes/gray-bg.jpg"></option>
+        </select>
       </div>
       <div class="option">
         <p class="suboption-name" data-i18n="summoner-spells-priority"></p>
@@ -112,25 +135,9 @@
           <option data-i18n="summoner-spells-priority-flash-f" value=f></option>
         </select>
       </div>
-      <div class="option">
-        <p class="suboption-name" data-i18n="league-client-path"></p>
-        <input type="text" data-settings-key="league-client-path" class="center-area" disabled />
-      </div>
-      <div class="option">
-        <p class="suboption-name" data-i18n="theme"></p>
-        <select data-settings-key="theme" data-settings-default="themes/default-bg.jpg" data-custom-component="theme" class="dropdown center-area">
-          <option data-i18n="theme-default" value="themes/default-bg.jpg"></option>
-          <option data-i18n="theme-forest" value="themes/forest-bg.png"></option>
-          <option data-i18n="theme-shurima-desert" value="themes/shurima-desert-bg.jpg"></option>
-          <option data-i18n="color-red_dark" value="themes/red_dark-bg.jpg"></option>
-          <option data-i18n="color-red" value="themes/red-bg.jpg"></option>
-          <option data-i18n="color-green" value="themes/green-bg.jpg"></option>
-          <option data-i18n="color-purple" value="themes/purple-bg.jpg"></option>
-          <option data-i18n="color-gray" value="themes/gray-bg.jpg"></option>
-        </select>
-      </div>
     </div>
     <div data-tabid="settings" data-tabn=2 class="tabcontent" style="display: none; margin-left: 12%;">
+      <p class="option-name">Advanced</p>
       <div class="option">
         <p class="suboption-name" data-i18n="empty-cache-settings-option"></p>
         <button data-custom-component="empty-cache" data-i18n="empty-cache-button"></button>
@@ -144,6 +151,10 @@
         <ul class="sortable" data-settings-key="providers-order" data-settings-default="championgg,opgg,lolflavor" data-settings-merge-list-if-missing-value="true">
         </ul>
       </div>
+      <div class="option">
+        <p class="suboption-name" data-i18n="league-client-path"></p>
+        <input type="text" data-settings-key="league-client-path" class="center-area" disabled />
+      </div>
     </div>
     <div data-tabid="update" data-tabn=0 class="tabcontent" style="display: none; margin-left: 12%;">
       <div class="option">
@@ -151,7 +162,7 @@
         <p class="suboption-name" id="version"></p>
         <p class="suboption-name" id="size" style="margin-top: 5px;"></p>
         <!--div class="textcontainer" id="releasenotes" style="width: 45%;"></div-->
-        <button type="button" id="update" style="margin-top: 10px;" data-i18n="menu-update"></button>
+        <button type="button" id="update" style="margin-top: 10px;" data-i18n="ui-menu-update"></button>
       </div>
     </div>
     <p class="status" data-i18n="loading-login"></p>
@@ -183,9 +194,10 @@
 
   global.Mana = new (require('../objects/Mana'))(ipcRenderer);
   </script>
+  <script src="assets/js/ui/settings.js"></script>
   <script src="assets/js/ui/custom-components.js"></script>
-  <script src="assets/js/ui/tab-handler.js"></script>
   <script src="assets/js/ui/navigation-menus.js"></script>
   <script src="assets/js/ui/update.js"></script>
+  <script src="assets/js/ui/tab-handler.js"></script>
 </body>
 </html>

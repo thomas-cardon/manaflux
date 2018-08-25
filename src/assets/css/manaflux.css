@@ -584,8 +584,8 @@ textarea:disabled {
 }
 
 .option {
-  margin-bottom: 25px;
-  width: 50%;
+  margin: 0 0 25px 0;
+  width: 45%;
   float: left;
 }
 

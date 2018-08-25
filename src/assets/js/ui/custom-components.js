@@ -1,10 +1,10 @@
 /* Custom components */
-$('[data-custom-component]').each(function() {
-  const key = $(this).data('custom-component');
-  const ev = $(this).data('custom-component-event') || 'click';
+$(document).ready(function() {
+  $('[data-custom-component]').each(function() {
+    const key = $(this).data('custom-component');
+    const ev = $(this).data('custom-component-event') || 'click';
 
-  $(this).one('settings:loaded', function() {
-    console.log('Loaded settings');
+    log.log(2, `[UI] [Custom Components] Loading ${key}`);
 
     const d = require(__dirname + '\\assets\\js\\custom-components\\' + key + '.js');
 
