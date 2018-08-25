@@ -17,58 +17,28 @@ if (Mana.store.get('enableTrayIcon')) UI.tray();
 
 UI.status('Status', 'loading-storage');
 
-/*
+
 $(document).ready(function() {
-  if (!Mana.store.has('data'))
-    Mana.store.set('data', {});
-
-  if (!Mana.store.has('loadRunesAutomatically'))
-    Mana.store.set('loadRunesAutomatically', true);
-
-  if (!Mana.store.has('enableSummonerSpells'))
-    Mana.store.set('enableSummonerSpellButton', false);
-
-  if (!Mana.store.has('enableItemSets'))
-    Mana.store.set('enableItemSets', false);
-
-  if (!Mana.store.has('auto-start'))
-    Mana.store.set('auto-start', false);
-
-  if (!Mana.store.has('enableTrayIcon'))
-    Mana.store.set('enableTrayIcon', false);
-
-  if (!Mana.store.has('theme'))
-    Mana.store.set('theme', 'themes/default-bg.jpg');
-
-  if (!Mana.store.has('runes-max'))
-    Mana.store.set('runes-max', 2);
-
-  if (!Mana.store.has('runes-updating-method'))
-    Mana.store.set('runes-updating-method', false);
-
-  if (!Mana.store.has('summoner-spells-priority'))
-    Mana.store.set('summoner-spells-priority', 'd');
-
-  if (!Mana.store.has('riot-consent')) {
+  /*if (!Mana.store.has('riot-consent')) {
     dialog.showMessageBox({ title: i18n.__('info'), message: i18n.__('consent') });
     Mana.store.set('riot-consent', true);
-  }
+  }*/
 
-  Mana.store.set('lastVersion', Mana.version);
+  Mana.store.set('league-client-path', Mana.version);
 
-  if (!Mana.store.has('leaguePath')) {
+  if (!Mana.store.has('league-client-path')) {
     UI.status('Status', 'league-client-start-required');
 
-    ipcRenderer.once('lcu-league-path', (event, path) => {
+    ipcRenderer.once('league-client-path', (event, path) => {
       UI.status('League', 'path-found');
 
-      Mana.store.set('leaguePath', path);
+      Mana.store.set('league-client-path', path);
       ipcRenderer.send('lcu-connection', path);
-    }).send('lcu-league-path');
+    }).send('league-client-path');
   }
-  else ipcRenderer.send('lcu-connection', Mana.store.get('leaguePath'));
+  else ipcRenderer.send('lcu-connection', Mana.store.get('league-client-path'));
   Mana.emit('settings', Mana.store);
-});*/
+});
 
 ipcRenderer.on('lcu-connected', async (event, d) => {
   Mana.base = d.baseUri;

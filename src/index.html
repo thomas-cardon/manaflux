@@ -53,49 +53,49 @@
       <div class="option">
         <p class="suboption-name" data-i18n="runes"></p>
         <div class="options float-left checkboxContainer">
-          <input type="checkbox" data-settings-key="loadRunesAutomatically" />
+          <input type="checkbox" data-settings-key="runes-automatic-load" data-setting-default="true" />
           <label data-i18n="load-automatically"></label>
         </div>
       </div>
       <div class="option">
         <p class="suboption-name" data-i18n="summonerspells"></p>
         <div class="options float-left checkboxContainer">
-          <input type="checkbox" data-settings-key="enableSummonerSpells" />
+          <input type="checkbox" data-settings-key="summonerspells-button" data-setting-default="true" />
           <label data-i18n="enable"></label>
         </div>
       </div>
       <div class="option">
         <p class="suboption-name" data-i18n="itemsets"></p>
         <div class="options float-left checkboxContainer">
-          <input type="checkbox" data-settings-key="enableItemSets" />
+          <input type="checkbox" data-settings-key="itemsets-enable" data-setting-default="false" />
           <label data-i18n="enable"></label>
         </div>
       </div>
       <div class="option">
         <p class="suboption-name" data-i18n="startup"></p>
         <div class="options float-left checkboxContainer">
-          <input type="checkbox" data-settings-key="auto-start" onclick="autoStart(this.checked)" />
+          <input type="checkbox" data-settings-key="auto-start-enable" data-settings-default="false" onclick="autoStart(this.checked)" />
           <label data-i18n="startup-windows"></label>
         </div>
       </div>
       <div class="option">
         <p class="suboption-name" data-i18n="taskbar"></p>
         <div class="options float-left checkboxContainer">
-          <input type="checkbox" data-settings-key="enableTrayIcon" class="center-area" onclick="UI.tray(this.checked)" />
+          <input type="checkbox" data-settings-key="tray-enable" data-settings-default="false" class="center-area" onclick="UI.tray(this.checked)" />
           <label data-i18n="champion-select-hide"></label>
         </div>
       </div>
       <div class="option">
         <p class="suboption-name" data-i18n="animations"></p>
         <div class="options float-left checkboxContainer">
-          <input type="checkbox" data-settings-key="enableAnimations" class="center-area" />
+          <input type="checkbox" data-settings-key="ui-animations-enable" data-settings-default="false" class="center-area" />
           <label data-i18n="enable"></label>
         </div>
       </div>
       <div class="option">
         <p class="suboption-name" data-i18n="runes-delete-method"></p>
         <div class="options float-left checkboxContainer">
-          <input type="checkbox" data-settings-key="runes-delete-method" class="center-area" />
+          <input type="checkbox" data-settings-key="runes-delete-method" data-settings-default="false" class="center-area" />
           <label data-i18n="runes-delete-enable"></label>
         </div>
       </div>
@@ -103,22 +103,22 @@
     <div data-tabid="settings" data-tabn=1 class="tabcontent" style="display: none; margin-left: 12%;">
       <div class="option">
         <p class="suboption-name" data-i18n="runes-max"></p>
-        <input type="number" data-settings-key="runes-max" class="center-area" min="1" step="1" />
+        <input type="number" data-settings-key="runes-max" data-settings-default="2" class="center-area" min="1" step="1" />
       </div>
       <div class="option">
         <p class="suboption-name" data-i18n="summoner-spells-priority"></p>
-        <select data-settings-key="summoner-spells-priority" class="dropdown center-area">
+        <select data-settings-key="summoner-spells-priority" data-settings-default="d" class="dropdown center-area">
           <option data-i18n="summoner-spells-priority-flash-d" value=d></option>
           <option data-i18n="summoner-spells-priority-flash-f" value=f></option>
         </select>
       </div>
       <div class="option">
         <p class="suboption-name" data-i18n="league-client-path"></p>
-        <input type="text" data-settings-key="leaguePath" class="center-area" disabled />
+        <input type="text" data-settings-key="league-client-path" class="center-area" disabled />
       </div>
       <div class="option">
         <p class="suboption-name" data-i18n="theme"></p>
-        <select data-settings-key="theme" data-settings-default-value="themes/default-bg.jpg" data-custom-component="theme" class="dropdown center-area">
+        <select data-settings-key="theme" data-settings-default="themes/default-bg.jpg" data-custom-component="theme" class="dropdown center-area">
           <option data-i18n="theme-default" value="themes/default-bg.jpg"></option>
           <option data-i18n="theme-forest" value="themes/forest-bg.png"></option>
           <option data-i18n="theme-shurima-desert" value="themes/shurima-desert-bg.jpg"></option>
@@ -141,7 +141,7 @@
       </div>
       <div class="option">
         <p class="suboption-name" data-i18n="providers-order"></p>
-        <ul class="sortable" data-settings-key="providers-order" data-settings-default-value="championgg,opgg,lolflavor" data-settings-merge-list-if-missing-value="true">
+        <ul class="sortable" data-settings-key="providers-order" data-settings-default="championgg,opgg,lolflavor" data-settings-merge-list-if-missing-value="true">
         </ul>
       </div>
     </div>

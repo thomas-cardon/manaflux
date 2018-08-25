@@ -108,11 +108,11 @@ ipcMain.on('auto-start', (event, enable) => {
   .catch(err => event.sender.send('error', { type: 'AUTO-START', error: err }));
 });
 
-ipcMain.on('lcu-league-path', event => {
+ipcMain.on('league-client-path', event => {
   log.log(2, '[IPC] Asked for League\'s path');
   const id = setInterval(() => {
     connector.getPathHandler().findLeaguePath().then(path => {
-      event.sender.send('lcu-league-path', path);
+      event.sender.send('league-client-path', path);
       clearInterval(id);
     });
   }, 500);

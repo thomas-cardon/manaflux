@@ -8,8 +8,8 @@ class ManaSettings {
   load(store = this._store) {
     /* input element support */
     $('input[data-settings-key]').each(function() {
-      log.log(2, `[Settings] Loading value of ${$(this).data('settings-key')} to: ${store.get($(this).data('settings-key'), $(this).data('settings-default-value'))}`);
-      $(this).val(store.get($(this).data('settings-key'), $(this).data('settings-default-value'))).trigger('settingsLoaded');
+      log.log(2, `[Settings] Loading value of ${$(this).data('settings-key')} to: ${store.get($(this).data('settings-key'), $(this).data('settings-default'))}`);
+      $(this).val(store.get($(this).data('settings-key'), $(this).data('settings-default'))).trigger('settingsLoaded');
     }).change(function() {
       log.log(2, `[Settings] Changing value of ${$(this).data('settings-key')} to: ${this.value}`);
       store.set($(this).data('settings-key'), this.value);
@@ -17,8 +17,8 @@ class ManaSettings {
 
   	/* select element support */
   	$('select[data-settings-key]').each(function() {
-  		log.log(2, `[Settings] Loading value of ${$(this).data('settings-key')} to: ${store.get($(this).data('settings-key'), $(this).data('settings-default-value'))}`);
-  		$(this).val(store.get($(this).data('settings-key'), $(this).data('settings-default-value'))).trigger('settingsLoaded');
+  		log.log(2, `[Settings] Loading value of ${$(this).data('settings-key')} to: ${store.get($(this).data('settings-key'), $(this).data('settings-default'))}`);
+  		$(this).val(store.get($(this).data('settings-key'), $(this).data('settings-default'))).trigger('settingsLoaded');
   	}).change(function() {
   		log.log(2, `[Settings] Changing value of ${$(this).data('settings-key')} to: ${this.value}`);
   		store.set($(this).data('settings-key'), this.value);
@@ -26,8 +26,8 @@ class ManaSettings {
 
   	/* checkbox element support */
   	$(':checkbox[data-settings-key]').each(function() {
-  		log.log(2, `[Settings] Loading value of ${$(this).data('settings-key')} to: ${store.get($(this).data('settings-key'), $(this).data('settings-default-value'))}`);
-  		$(this).prop('checked', store.get($(this).data('settings-key'), $(this).data('settings-default-value')));
+  		log.log(2, `[Settings] Loading value of ${$(this).data('settings-key')} to: ${store.get($(this).data('settings-key'), $(this).data('settings-default'))}`);
+  		$(this).prop('checked', store.get($(this).data('settings-key'), $(this).data('settings-default')));
 
   		$(this).prop('id', $(this).data('settings-key'));
   		$(this).siblings('label').prop('for', $(this).data('settings-key'));
@@ -42,7 +42,7 @@ class ManaSettings {
   	$(".sortable[data-settings-key]").each(function() {
       const mergeIfMissing = $(this).data('settings-merge-list-if-missing-value') || false;
 
-      const defaultValues = $(this).data('settings-default-value').split(',');
+      const defaultValues = $(this).data('settings-default').split(',');
   		const values = store.get($(this).data('settings-key'), defaultValues);
 
       if (mergeIfMissing) {
