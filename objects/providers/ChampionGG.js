@@ -11,7 +11,7 @@ let styles = {
 };
 
 /*
-* There's been a glitch on Champion.GG where it shows two times the same rune...
+* There's been a glitch on Champion.GG where it shows two times the same perk...
 */
 let fixes = {
   8000: 9103,
@@ -27,32 +27,37 @@ class ChampionGGProvider extends Provider {
     this.base = 'https://champion.gg/';
   }
 
-  async getData(dl, champion, gameMode, preferredPosition) {
+  async getData(champion, preferredPosition, gameMode) {
     const res = await rp(`${this.base}champion/${champion.key}`);
-    const data = this._scrape(dl, res, champion, gameMode);
+    const data = this._scrape(res, champion, gameMode);
 
-    for (const position of data) {
+    let positions = {};
+    positions[data.position] = data;
+
+    for (const position of data.availablePositions) {
       log.log(2, `[Champion.GG] Gathering data for ${position.name} position`);
       log.dir(3, position);
 
-      rp(position.link).then(d => this._scrape(dl, d, champion, gameMode));
+      const d = await rp(position.link);
+      positions[position.name] = this._scrape(d, champion, gameMode);
     }
+
+    return positions;
   }
 
-  async getSummonerSpells(champion, gameMode, position) {
-    return await this.getData(champion, gameMode, position).summonerspells;
+  async getSummonerSpells(champion, position, gameMode) {
+    return await this.getData(champion, position, gameMode).summonerspells;
   }
 
-  async getItemSets(champion, gameMode, position) {
-    return await this.getData(champion, gameMode, position).itemsets;
+  async getItemSets(champion, position, gameMode) {
+    return await this.getData(champion, position, gameMode).itemsets;
   }
 
-  async getRunes(champion, gameMode, position) {
-    return await this.getData(champion, gameMode, position).runes;
+  async getPerks(champion, position, gameMode) {
+    return await this.getData(champion, position, gameMode).perks;
   }
 
-  _scrape(dl, html, champion, gameMode) {
-    console.dir(html);
+  _scrape(html, champion, gameMode) {
     const $ = cheerio.load(html);
 
     const position = $(`li[class^='selected-role'] > a[href^='/champion/']`).first().text().trim();
@@ -62,24 +67,19 @@ class ChampionGGProvider extends Provider {
       availablePositions.push({ name: $(this).first().text().trim().toUpperCase(), link: 'https://champion.gg' + $(this).attr('href') });
     });
 
-    /* SummonerSpells */
     const summonerspells = this.scrapeSummonerSpells($, gameMode);
-    if (summonerspells && summonerspells.length === 2)
-      dl.emit('summonerspells', 'opgg', position, summonerspells);
 
     const skillorder = this.scrapeSkillOrder($);
+    const itemsets = this.scrapeItemSets($, champion, position, skillorder);
 
-    /* ItemSets */
-    this.scrapeItemSets($, champion, position, skillorder)
-    .forEach(itemset => dl.emit('itemset', 'opgg', position, itemset));
+    let perks = this.scrapePerks($, champion, position);
 
-    /* Perks */
-    let runes = this.scrapeRunes($, champion, position), i = runes.length;
+    let i = perks.length;
     while (i--) {
-      const page = runes[i];
+      const page = perks[i];
 
       if (page.selectedPerkIds[0] === undefined && page.selectedPerkIds[1] === undefined) {
-        runes.splice(i, 1);
+        perks.splice(i, 1);
         UI.error('providers-error-data');
         continue;
       }
@@ -87,13 +87,11 @@ class ChampionGGProvider extends Provider {
       if (page.selectedPerkIds[0] === page.selectedPerkIds[1]) {
         page.selectedPerkIds.splice(1, 1);
         page.selectedPerkIds.splice(3, 0, fixes[page.primaryStyleId]);
-        UI.error('providers-cgg-runes-fix');
+        UI.error('providers-cgg-perks-fix');
       }
-
-      dl.emit('perksPage', 'opgg', position, page);
     }
 
-    return availablePositions;
+    return { perks, summonerspells, itemsets, availablePositions, position: position.toUpperCase() };
   }
 
   /**
@@ -102,19 +100,19 @@ class ChampionGGProvider extends Provider {
    * @param {object} champion - A champion object, from Mana.champions
    * @param {string} position - Limited to: TOP, JUNGLE, MIDDLE, ADC, SUPPORT
    */
-  scrapeRunes($, champion, position) {
+  scrapePerks($, champion, position) {
     let pages = [{ selectedPerkIds: [] }, { selectedPerkIds: [] }];
     let slots = $("div[class^=Slot__LeftSide]");
 
     $("img[src^='https://s3.amazonaws.com/solomid-cdn/league/runes_reforged/']", slots).each(function(index) {
-      let page = Math.trunc(index / 8), rune = $(this).attr("src").substring(59);
+      let page = Math.trunc(index / 8), perk = $(this).attr("src").substring(59);
       if (index % 8 === 0) {
         pages[page].name = `CGG${page + 1} ${champion.name} ${position} (${page === 0 ? 'HW%' : 'MF'})`;
-        pages[page].primaryStyleId = styles[rune.substring(5, 6)];
+        pages[page].primaryStyleId = styles[perk.substring(5, 6)];
       }
       else if (index % 8 === 5)
-      pages[page].subStyleId = styles[rune.substring(5, 6)];
-      else pages[page].selectedPerkIds.push(parseInt(rune.substring(0, 4)));
+      pages[page].subStyleId = styles[perk.substring(5, 6)];
+      else pages[page].selectedPerkIds.push(parseInt(perk.substring(0, 4)));
     });
 
     return pages;

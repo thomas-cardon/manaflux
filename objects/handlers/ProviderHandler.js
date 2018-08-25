@@ -1,61 +1,71 @@
-const EventEmitter = require('events');
-
 class ProviderHandler {
   constructor() {
     this.providers = {
       championgg: new (require('../providers/ChampionGG.js'))(),
       opgg: new (require('../providers/OPGG.js'))(),
       //ugg: new (require('../providers/UGG.js'))(),
-      //lolflavor: new (require('../providers/LoLFlavor.js'))()
+      lolflavor: new (require('../providers/LoLFlavor.js'))()
     };
   }
 
-  /*
-  * Supposed to support parallelism as much as it can
-  */
-  createDownloadEventEmitter(champion, gameMode, preferredPosition) {
-    const dl = new EventEmitter();
-    this.getChampionData(dl, champion, gameMode, preferredPosition);
-    return dl;
-  }
-
-  getChampionData(dl, champion, gameMode, preferredPosition) {
-    /* Fetches from cache if available */
+  async getChampionData(champion, preferredPosition, gameMode) {
+    /*
+    * 1/3 Storage Checking
+    */
     if (Mana.store.has(`data.${champion.key}`)) {
       let d = Mana.store.get(`data.${champion.key}`);
 
-      for (let [position, data] of Object.entries(d)) {
-        /* SummonerSpells */
-        if (data.summonerspells)
-          dl.emit('summonerspells', 'cache', position, data.summonerspells);
+      for (let [position, data] of Object.entries(d))
+        for (let i = 0; i < data.itemsets.length; i++)
+          data.itemsets[i] = require('./ItemSetHandler').parse(champion.key, data.itemsets[i]._data, position);
 
-        /* Perks */
-        if (data.perks)
-          for (let i = 0; i < data.perks.length; i++)
-            dl.emit('perksPage', 'cache', position, data.perks[i]);
-
-        /* ItemSets */
-        if (data.itemsets)
-          for (let i = 0; i < data.itemsets.length; i++)
-            dl.emit('itemset', 'cache', position, require('./ItemSetHandler').parse(champion.key, data.itemsets[i]._data, position));
-      }
-
-      return;
+      return d;
     }
 
-    /* Prepare caching */
-    dl.on('summonerspells', (provider, pos, data) => Mana.store.set(`data.${champion.key}.${pos.toUpperCase()}.summonerspells`, data));
-    dl.on('perksPage', (provider, pos, data) => Mana.store.set(`data.${champion.key}.${pos.toUpperCase()}.perks`, Mana.store.get(`data.${champion.key}.${pos.toUpperCase()}.perks`, []).concat([data])));
-    dl.on('itemset', (provider, pos, data) => Mana.store.set(`data.${champion.key}.${pos.toUpperCase()}.itemsets`, Mana.store.get(`data.${champion.key}.${pos.toUpperCase()}.itemsets`, []).concat([data])));
+    /*
+     * 2/3 Downloading
+    */
 
-    /* Aggregating from the providers
-    let providerOrder = Mana.store.get('providers-order', ['championgg', 'opgg', /*'ugg',*-/ 'lolflavor']);
+    let positions = {};
+
+    let providerOrder = Mana.store.get('providers-order', ['championgg', 'opgg', /*'ugg',*/ 'lolflavor']);
     providerOrder.splice(providerOrder.indexOf('lolflavor'), 1);
-    providerOrder.push('lolflavor');*/
-    let providerOrder = ['opgg'];
+    providerOrder.push('lolflavor');
 
-    for (let i = 0; i < providerOrder.length; i++)
-      this.providers[providerOrder[i]].getData(dl, champion, gameMode, preferredPosition);
+    for (let i = 0; i < providerOrder.length; i++) {
+      const provider = this.providers[providerOrder[i]];
+      log.log(2, `[ProviderHandler] Using ${provider.name}`);
+
+      try {
+        let method = 'getData';
+
+        if (positions[preferredPosition]) {
+          if (positions[preferredPosition].itemsets.length === 0 && Mana.store.get('enableItemSets'))
+            method = 'getItemSets';
+          else if (positions[preferredPosition].summonerspells.length === 0 && Mana.store.get('enableSummonerSpells'))
+            method = 'getSummonerSpells';
+          else if (positions[preferredPosition].perks.length === 0)
+            method = 'getPerks';
+        }
+
+        const d = await provider[method](champion, preferredPosition, gameMode) || {};
+
+        for (let [position, data] of Object.entries(d))
+          positions[position] = Object.assign(positions[position] || { perks: {}, itemsets: {}, summonerspells: {} }, data);
+
+        break;
+      }
+      catch(err) {
+        log.log(1, err);
+      }
+    }
+
+    /*
+    * 3/3 Saving
+    */
+
+    if (positions !== {}) Mana.store.set(`data.${champion.key}`, positions);
+    return positions;
   }
 }
 

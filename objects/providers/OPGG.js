@@ -9,7 +9,6 @@ class OPGGProvider extends Provider {
   }
 
   getOPGGPosition(pos) {
-    if (!pos) return null;
     switch(pos.toLowerCase()) {
       case 'middle':
         return 'mid';
@@ -31,35 +30,39 @@ class OPGGProvider extends Provider {
     }
   }
 
-  /*
-  * Supposed to support parallelism and asynchronous as much as it can
-  */
-  async getData(dl, champion, gameMode, preferredPosition) {
+  async getData(champion, preferredPosition, gameMode) {
     const res = await rp(`${this.base}/champion/${champion.key}/statistics${preferredPosition ? '/' + this.convertOPGGPosition(preferredPosition) : ''}`);
-    const positions = this._scrape(dl, res, champion, gameMode, this.getOPGGPosition(preferredPosition));
+    const data = this._scrape(res, champion, gameMode, this.getOPGGPosition(preferredPosition));
 
-    for (const position of positions) {
+    let positions = {};
+    positions[data.position] = data;
+
+    for (const position of data.availablePositions) {
       log.log(2, `[ProviderHandler] [OP.GG] Gathering data for ${position.name} position`);
-      rp(position.link).then(d => this._scrape(dl, d, champion, gameMode, position.name));
+
+      const d = await rp(position.link);
+      positions[position.name] = this._scrape(d, champion, position.name, gameMode);
     }
+
+    return log.dir(3, positions);
   }
 
-  async getSummonerSpells(champion, gameMode, position) {
-    const { summonerspells } = await this.getData(champion, gameMode, position);
+  async getSummonerSpells(champion, position, gameMode) {
+    const { summonerspells } = await this.getData(champion, position, gameMode);
     return summonerspells;
   }
 
-  async getItemSets(champion, gameMode, position) {
-    const { itemsets } = await this.getData(champion, gameMode, position);
+  async getItemSets(champion, position, gameMode) {
+    const { itemsets } = await this.getData(champion, position, gameMode);
     return itemsets;
   }
 
-  async getPerks(champion, gameMode, position) {
-    const { perks } = await this.getData(champion, gameMode, position);
-    return perks;
+  async getRunes(champion, position, gameMode) {
+    const { runes } = await this.getData(champion, position, gameMode);
+    return runes;
   }
 
-  _scrape(dl, html, champion, gameMode, position) {
+  _scrape(html, champion, position, gameMode) {
     let $ = cheerio.load(html);
 
     const version = $('.champion-stats-header-version').text().trim().slice(-4);
@@ -74,22 +77,14 @@ class OPGGProvider extends Provider {
       availablePositions.push({ name: convertOPGGPosition($(this).parent().data('position')).toUpperCase(), link: 'https://op.gg' + $(this).attr('href') });
     });
 
-    /* SummonerSpells */
     const summonerspells = this.scrapeSummonerSpells($);
-    if (summonerspells && summonerspells.length === 2)
-      dl.emit('summonerspells', 'opgg', position, summonerspells);
 
     const skillorder = this.scrapeSkillOrder($);
+    const itemsets = this.scrapeItemSets($, champion, position.charAt(0) + position.slice(1).toLowerCase(), skillorder);
 
-    /* ItemSets */
-    this.scrapeItemSets($, champion, position.charAt(0) + position.slice(1).toLowerCase(), skillorder)
-    .forEach(itemset => dl.emit('itemset', 'opgg', position, itemset));
+    const runes = this.scrapeRunes($, champion, position);
 
-    /* Perks */
-    log.dir(3, this.scrapePerks($, champion, position))
-    .forEach(page => dl.emit('perksPage', 'opgg', position, page));
-
-    return availablePositions;
+    return { runes, summonerspells, itemsets, availablePositions, position };
   }
 
   /**
@@ -98,7 +93,7 @@ class OPGGProvider extends Provider {
    * @param {object} champion - A champion object, from Mana.champions
    * @param {string} position - Limited to: TOP, JUNGLE, MIDDLE, ADC, SUPPORT
    */
-  scrapePerks($, champion, position) {
+  scrapeRunes($, champion, position) {
     let pages = [{ selectedPerkIds: [] }, { selectedPerkIds: [] }];
 
     $('.perk-page').find('img.perk-page__image.tip').slice(0, 4).each(function(index) {
