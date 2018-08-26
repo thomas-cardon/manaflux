@@ -5,6 +5,7 @@
   "enable": "Enable",
   "disable": "Disable",
   "disabled": "Disabled",
+  "misc": "Misc",
   "loading": "Loading",
   "loading-data": "Loading data",
   "loading-login": "Loading (login if it is not done already)",
