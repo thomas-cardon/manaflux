@@ -1,0 +1,16 @@
+hr {
+  width: 95%;
+  margin: 0 20px 0 0;
+  border: 1px solid #937341;
+  animation: hranimation 0.3s alternate infinite;
+}
+
+@keyframes hranimation {
+  0% {
+    border: 1px solid #937341; // #c3b687
+  }
+
+  100% {
+    border: 1px solid #c3b687;
+  }
+}

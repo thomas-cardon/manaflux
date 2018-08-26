@@ -119,36 +119,6 @@ body {
   animation: hextechRotation 1s ease-in-out alternate infinite;
 }
 
-.checkboxContainer {
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-align-items: flex-start;
-  -ms-flex-align: start;
-  align-items: flex-start;
-  margin-bottom: 16px;
-  position: relative;
-}
-
-label {
-  color: #c4b998;
-  font-family: "beaufort-bold", sans-serif;
-}
-
-.option-name {
-  color: #f0e6d2;
-  font-size: 25px;
-  margin-bottom: -3px;
-  letter-spacing: 0.025rem;
-}
-
-.suboption-name {
-  font-size: 16px;
-  color: #cdbe91;
-  margin-bottom: 5px;
-  margin-left: 2px;
-}
-
 .title {
   text-align: center;
 }
@@ -158,23 +128,6 @@ h1 {
   font-weight: 100;
   font-size: 59px;
   margin-bottom: 5px;
-}
-
-hr {
-  width: 95%;
-  margin: 0 20px 0 0;
-  border: 1px solid #937341;
-  animation: hranimation 0.3s alternate infinite;
-}
-
-@keyframes hranimation {
-  0% {
-    border: 1px solid #937341; // #c3b687
-  }
-
-  100% {
-    border: 1px solid #c3b687;
-  }
 }
 
 .tier {
@@ -591,12 +544,6 @@ textarea:disabled {
 .float-left {
   float: left;
   margin-right: 5px;
-}
-
-.option {
-  margin: 0 0 25px 0;
-  width: 45%;
-  float: left;
 }
 
 .summonericon {

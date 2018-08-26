@@ -4,6 +4,8 @@
   <meta charset="utf-8">
   <meta name="author" content="Ryzzzen">
   <link rel="stylesheet" href="assets/css/manaflux.css">
+  <link rel="stylesheet" href="assets/css/components/hr.css">
+  <link rel="stylesheet" href="assets/css/components/settings.css">
   <link rel="stylesheet" href="assets/css/components/loading.css">
   <link rel="stylesheet" href="assets/css/components/warning.css">
   <link rel="stylesheet" href="assets/css/components/status.css">
@@ -85,6 +87,16 @@
           <label data-i18n="enable"></label>
         </div>
       </div>
+    </div>
+    <div data-tabid="settings" data-tabn=1 class="tabcontent" style="display: none; margin-left: 12%;">
+      <p class="option-name"data-i18n="misc"></p>
+      <div class="option">
+        <p class="suboption-name" data-i18n="summoner-spells-priority"></p>
+        <select data-settings-key="summoner-spells-priority" data-settings-default="d" class="dropdown center-area">
+          <option data-i18n="summoner-spells-priority-flash-d" value=d></option>
+          <option data-i18n="summoner-spells-priority-flash-f" value=f></option>
+        </select>
+      </div>
       <div class="option">
         <p class="suboption-name" data-i18n="startup"></p>
         <div class="options float-left checkboxContainer">
@@ -99,26 +111,16 @@
           <label data-i18n="champion-select-hide"></label>
         </div>
       </div>
-    </div>
-    <div data-tabid="settings" data-tabn=1 class="tabcontent" style="display: none; margin-left: 12%;">
-      <p class="option-name"data-i18n="misc"></p>
-      <div class="option">
-        <p class="suboption-name" data-i18n="summoner-spells-priority"></p>
-        <select data-settings-key="summoner-spells-priority" data-settings-default="d" class="dropdown center-area">
-          <option data-i18n="summoner-spells-priority-flash-d" value=d></option>
-          <option data-i18n="summoner-spells-priority-flash-f" value=f></option>
-        </select>
-      </div>
       <hr />
       <p class="option-name"data-i18n="ui"></p>
-      <div class="option">
+      <div class="option" style="width: 20%;">
         <p class="suboption-name" data-i18n="ui-animations"></p>
         <div class="options float-left checkboxContainer">
           <input type="checkbox" data-settings-key="ui-animations-enable" data-settings-default="false" class="center-area" />
           <label data-i18n="enable"></label>
         </div>
       </div>
-      <div class="option">
+      <div class="option" style="width: 20%;">
         <p class="suboption-name" data-i18n="ui-gradient"></p>
         <div class="options float-left checkboxContainer">
           <input type="checkbox" data-settings-key="ui-gradient" data-settings-default="true" class="center-area" />
