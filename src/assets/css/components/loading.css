@@ -1,6 +1,7 @@
 #loading {
-  position: absolute;
-  margin-top: 90%;
-  margin-left: 2.35%;
+  position: fixed;
   width: 4%;
+  bottom: 36px;
+  left: 15px;
+  z-index: 5;
 }
