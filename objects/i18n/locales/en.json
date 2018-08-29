@@ -6,6 +6,7 @@
   "disable": "Disable",
   "disabled": "Disabled",
   "misc": "Misc",
+  "advanced": "Advanced",
   "loading": "Loading",
   "loading-data": "Loading data",
   "loading-login": "Loading (login if it is not done already)",
