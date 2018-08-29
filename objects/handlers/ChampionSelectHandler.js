@@ -44,7 +44,7 @@ class ChampionSelectHandler {
     this.gameModeHandler.onTickEvent(data);
 
     if (this._lastChampionId === this.gameModeHandler.getPlayer().championId) return;
-    if ((this._lastChampionId = this.gameModeHandler.getPlayer().championId) === 0) return UI.status('ChampionSelect', 'champion-select-pick');
+    if ((this._lastChampionId = this.gameModeHandler.getPlayer().championId) === 0) return UI.status('ChampionSelect', 'champion-select-pick-a-champion');
 
     const champion = Mana.champions[this.gameModeHandler.getPlayer().championId];
 
@@ -52,7 +52,10 @@ class ChampionSelectHandler {
     await ItemSetHandler.deleteItemSets(await ItemSetHandler.getItemSetsByChampionKey(champion.key));
 
     this.gameModeHandler.onChampionChangeEvent(champion);
-    this.updateDisplay(champion, ProviderHandler.createDownloadEventEmitter(champion, this.gameMode, this.gameModeHandler.getPosition()));
+
+    UI.status('ChampionSelect', 'loading');
+    const res = await ProviderHandler.getChampionData(champion, this.gameModeHandler.getPosition(), this.gameMode);
+    this.updateDisplay(champion, res);
   }
 
   async onFirstTickEvent(data) {
@@ -61,45 +64,128 @@ class ChampionSelectHandler {
 
     this.gameMode = await Mana.user.getGameMode();
 
-    /* Try to fallback to classic mode when not available */
+    /* Fallback to classic mode when not available */
     this.gameModeHandler = this.gameModeHandlers[this.gameMode] ? this.gameModeHandlers[this.gameMode] : this.gameModeHandlers.CLASSIC;
     this.gameModeHandler.onFirstTickEvent(data);
   }
 
-  updateDisplay(champion, dl) {
+  updateDisplay(champion, data) {
     UI.status('ChampionSelect', 'champion-updating-display', champion.name);
 
-    const onPerkPositionChange = this.onPerkPositionChange, perks = this.cachedPerks;
-    let first = false;
+    try {
+      UI.status('ChampionSelect', 'champion-updating-display', champion.name);
+      const res = await ProviderHandler.getChampionData(champion, this.getPosition(), this.gameMode);
 
-    $('#positions').change(function() {
-      onPerkPositionChange(champion, this.value, perks[this.value]);
-    });
+      $('#positions').unbind().empty().hide();
 
-    dl.on('summonerspells', (provider, pos, data) => console.dir(data));
-    dl.on('perksPage', (provider, pos, data) => console.dir(data));
-    dl.on('itemset', (provider, pos, data) => console.dir(data));
+      ipcRenderer.removeAllListeners('runes-previous');
+      ipcRenderer.removeAllListeners('runes-next');
 
-    dl.on('summonerspells', (provider, pos, data) => {
-      if (Mana.getStore().get('summonerspells-button'))
-        $('button#loadSummonerSpells').enableManualButton(() => Mana.user.updateSummonerSpells(data).catch(err => { UI.error(err); captureException(err); }), true);
-    }).on('perksPage', (provider, pos, data) => {
-      if (!perks[pos]) {
-        perks[pos] = [data];
-        $('#positions').append(`<option value="${pos}">${pos === 'ADC' ? 'ADC' : pos.charAt(0).toUpperCase() + pos.slice(1)}</option>`);
+      if (Object.keys(res).length === 0) return log.error(1, i18n.__('providers-error-data'));
+      console.dir(res);
+
+      for (let position in res) {
+        if (res[position].runes.length === 0) {
+          UI.error('providers-error-runes', champion.name, position);
+          delete res[position];
+        }
+        else $('#positions').append(`<option value="${position}">${position === 'ADC' ? 'ADC' : position.charAt(0).toUpperCase() + position.slice(1) }</option>`)
       }
-      else perks[pos].push(data);
 
-      if (!first) {
-        first = true;
-        $('#positions').val(log.log(3, pos)).trigger('change').show();
+      $('#positions').change(async function() {
+        let data = res[this.value];
+
+        $('button#loadRunes, button#loadSummonerSpells').disableManualButton();
+
+        /*
+        * Runes display
+        */
+
+        if (Mana.store.get('enableAnimations'))
+          UI.enableHextechAnimation(champion, data.runes[0].primaryStyleId);
+
+        // TODO: Change hextech animation according to active rune page change
+
+        if (Mana.store.get('loadRunesAutomatically')) {
+          try {
+            await Mana.user.getPerksInventory().updatePerksPages(data.runes);
+          }
+          catch(err) {
+            UI.error(err);
+            captureException(err);
+          }
+        }
+        else $('button#loadRunes').enableManualButton(() => Mana.user.getPerksInventory().updatePerksPages(data.runes).catch(err => { UI.error(err); captureException(err); }), true);
+        UI.status('ChampionSelect', 'runes-loaded', champion.name, this.value);
+
+        /*
+        * Summoner Spells display
+        */
+
+        if (Mana.store.get('enableSummonerSpells') && data.summonerspells.length > 0)
+          $('button#loadSummonerSpells').enableManualButton(() => Mana.user.updateSummonerSpells(data.summonerspells).catch(err => { UI.error(err); captureException(err); }), true);
+      });
+
+      /*
+      * Item Sets display
+      */
+      if (Mana.store.get('enableItemSets')) {
+        try {
+          let old = await ItemSetHandler.deleteItemSets(await ItemSetHandler.getItemSetsByChampionKey(champion.key));
+          UI.status('ChampionSelect', 'itemsets-save-status', champion.name);
+
+          for (let position in res)
+            for (const set of res[position].itemsets)
+              await set.save();
+        }
+        catch(err) {
+          UI.error(err);
+          captureException(err);
+        }
       }
-    }).on('itemset', (provider, pos, itemset) => {
-      if (!Mana.getStore().get('itemsets-enable')) return;
-      itemset.save().catch(err => UI.error(err));
-    });
 
-    UI.tray(false);
+      /*
+      * Shortcuts handling
+      */
+      ipcRenderer.on('runes-previous', () => {
+        console.log('[Shortcuts] Selecting previous position..');
+
+        const keys = Object.keys(res);
+        let i = keys.length, positionIndex = keys.indexOf($('#positions').val());
+        let newIndex = positionIndex;
+
+        if (newIndex === 0) newIndex = i - 1;
+        else newIndex--;
+
+        // Useless to reload runes again if it's the same runes..
+        if (newIndex === positionIndex) return;
+
+        $('#positions').val(keys[newIndex]).trigger('change');
+      });
+
+      ipcRenderer.on('runes-next', () => {
+        console.log('[Shortcuts] Selecting next position..');
+
+        const keys = Object.keys(res);
+        let i = keys.length, positionIndex = keys.indexOf($('#positions').val());
+        let newIndex = positionIndex;
+
+        if (newIndex === i - 1) newIndex = 0;
+        else newIndex++;
+
+        // Useless to reload runes again if it's the same runes..
+        if (newIndex === positionIndex) return;
+
+        $('#positions').val(keys[newIndex]).trigger('change');
+      });
+
+      $('#positions').val(res[this.getPosition()] ? this.getPosition() : Object.keys(res)[0]).trigger('change').show();
+      UI.tray(false);
+    }
+    catch(err) {
+      UI.error(err);
+      captureException(err);
+    }
   }
 
   onPerkPositionChange(champion, position, perks) {
