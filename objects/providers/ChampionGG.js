@@ -2,14 +2,6 @@ const rp = require('request-promise-native'), cheerio = require('cheerio');
 const { ItemSet, Block } = require('../ItemSet');
 const Provider = require('./Provider');
 
-let styles = {
-  p: 8000,
-  d: 8100,
-  s: 8200,
-  r: 8400,
-  i: 8300
-};
-
 /*
 * There's been a glitch on Champion.GG where it shows two times the same rune...
 */
@@ -77,6 +69,7 @@ class ChampionGGProvider extends Provider {
     let i = runes.length;
     while (i--) {
       const page = runes[i];
+      console.dir(page);
 
       if (page.selectedPerkIds[0] === undefined && page.selectedPerkIds[1] === undefined) {
         runes.splice(i, 1);
@@ -99,18 +92,13 @@ class ChampionGGProvider extends Provider {
    * @param {string} position - Limited to: TOP, JUNGLE, MIDDLE, ADC, SUPPORT
    */
   scrapeRunes($, champion, position) {
-    let pages = [{ selectedPerkIds: [] }, { selectedPerkIds: [] }];
-    let slots = $("div[class^=Slot__LeftSide]");
+    let pages = [{ name: `CGG1 ${champion.name} ${position} (HW%)`, selectedPerkIds: [] }, { name: `CGG2 ${champion.name} ${position} (MF)`, selectedPerkIds: [] }];
 
-    $("img[src^='https://s3.amazonaws.com/solomid-cdn/league/runes_reforged/']", slots).each(function(index) {
-      let page = Math.trunc(index / 8), rune = $(this).attr("src").substring(59);
-      if (index % 8 === 0) {
-        pages[page].name = `CGG${page + 1} ${champion.name} ${position} (${page === 0 ? 'HW%' : 'MF'})`;
-        pages[page].primaryStyleId = styles[rune.substring(5, 6)];
-      }
-      else if (index % 8 === 5)
-      pages[page].subStyleId = styles[rune.substring(5, 6)];
-      else pages[page].selectedPerkIds.push(parseInt(rune.substring(0, 4)));
+    $("img[src*='perk-images']", $("div[class^=Slot__LeftSide]")).each(function(index) {
+      let page = Math.trunc(index / 8), rune = $(this).attr("src").slice(38);
+      if (index % 8 === 0) pages[page].primaryStyleId = Mana.gameClient.perks.find(x => x.icon === rune).id;
+      else if (index % 8 === 5) pages[page].subStyleId = Mana.gameClient.perks.find(x => x.icon === rune).id;
+      else pages[page].selectedPerkIds.push(Mana.gameClient.findPerkByImage(rune).id);
     });
 
     return pages;

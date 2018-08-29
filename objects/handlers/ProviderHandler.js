@@ -9,10 +9,12 @@ class ProviderHandler {
   }
 
   async getChampionData(champion, preferredPosition, gameMode) {
-    /*
-    * 1/3 Storage Checking
-    */
+    log.log(2, `[ProviderHandler] Aggregating data for ${champion.name}`);
+
+    /* 1/3 Storage Checking */
     if (Mana.store.has(`data.${champion.key}`)) {
+      log.log(2, `[ProviderHandler] Using cache`);
+
       let d = Mana.store.get(`data.${champion.key}`);
 
       for (let [position, data] of Object.entries(d)) {
@@ -25,15 +27,14 @@ class ProviderHandler {
       return d;
     }
 
-    /*
-     * 2/3 Downloading
-    */
-
+    /* 2/3 Downloading */
     let positions = {};
 
     let providerOrder = Mana.store.get('providers-order', ['championgg', 'opgg', /*'ugg',*/ 'lolflavor']);
     providerOrder.splice(providerOrder.indexOf('lolflavor'), 1);
     providerOrder.push('lolflavor');
+
+    log.log(3, `[ProviderHandler] Order is ${providerOrder.join(', ')}`);
 
     for (let i = 0; i < providerOrder.length; i++) {
       const provider = this.providers[providerOrder[i]];
@@ -54,7 +55,7 @@ class ProviderHandler {
         const d = await provider[method](champion, preferredPosition, gameMode) || {};
 
         for (let [position, data] of Object.entries(d)) {
-          data.summonerspells = this.sortSummonerSpells(data.summonerspells || []);
+          data.summonerspells = this.sortSummonerSpells(data.summonerspells);
           positions[position] = Object.assign(positions[position] || { runes: {}, itemsets: {}, summonerspells: {} }, data);
         }
 
@@ -74,7 +75,7 @@ class ProviderHandler {
     return positions;
   }
 
-  sortSummonerSpells(spells) {
+  sortSummonerSpells(spells = []) {
     return spells.sort((a, b) => a === 4 || a === 6 ? (Mana.store.get('summoner-spells-priority') === "f" ? 1 : -1) : -1);
   }
 }

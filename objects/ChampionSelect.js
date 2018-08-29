@@ -106,6 +106,7 @@ class ChampionSelect extends EventEmitter {
 
       $('#positions').change(async function() {
         let data = res[this.value];
+        console.dir(data);
 
         $('button#loadRunes, button#loadSummonerSpells').disableManualButton();
 
