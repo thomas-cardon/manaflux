@@ -57,9 +57,9 @@ class OPGGProvider extends Provider {
     return itemsets;
   }
 
-  async getRunes(champion, position, gameMode) {
-    const { runes } = await this.getData(champion, position, gameMode);
-    return runes;
+  async getPerks(champion, position, gameMode) {
+    const { perks } = await this.getData(champion, position, gameMode);
+    return perks;
   }
 
   _scrape(html, champion, position, gameMode) {
@@ -82,9 +82,9 @@ class OPGGProvider extends Provider {
     const skillorder = this.scrapeSkillOrder($);
     const itemsets = this.scrapeItemSets($, champion, position.charAt(0) + position.slice(1).toLowerCase(), skillorder);
 
-    const runes = this.scrapeRunes($, champion, position);
+    const perks = this.scrapePerks($, champion, position);
 
-    return { runes, summonerspells, itemsets, availablePositions, position };
+    return { perks, summonerspells, itemsets, availablePositions, position };
   }
 
   /**
@@ -93,7 +93,7 @@ class OPGGProvider extends Provider {
    * @param {object} champion - A champion object, from Mana.champions
    * @param {string} position - Limited to: TOP, JUNGLE, MIDDLE, ADC, SUPPORT
    */
-  scrapeRunes($, champion, position) {
+  scrapePerks($, champion, position) {
     let pages = [{ selectedPerkIds: [] }, { selectedPerkIds: [] }];
 
     $('.perk-page').find('img.perk-page__image.tip').slice(0, 4).each(function(index) {

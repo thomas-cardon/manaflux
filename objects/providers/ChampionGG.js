@@ -2,14 +2,6 @@ const rp = require('request-promise-native'), cheerio = require('cheerio');
 const { ItemSet, Block } = require('../ItemSet');
 const Provider = require('./Provider');
 
-let styles = {
-  p: 8000,
-  d: 8100,
-  s: 8200,
-  r: 8400,
-  i: 8300
-};
-
 /*
 * There's been a glitch on Champion.GG where it shows two times the same perk...
 */
@@ -53,7 +45,7 @@ class ChampionGGProvider extends Provider {
     return await this.getData(champion, position, gameMode).itemsets;
   }
 
-  async getPerks(champion, position, gameMode) {
+  async getRunes(champion, position, gameMode) {
     return await this.getData(champion, position, gameMode).perks;
   }
 
@@ -72,22 +64,21 @@ class ChampionGGProvider extends Provider {
     const skillorder = this.scrapeSkillOrder($);
     const itemsets = this.scrapeItemSets($, champion, position, skillorder);
 
-    let perks = this.scrapePerks($, champion, position);
+    let perks = this.scrapeRunes($, champion, position);
 
     let i = perks.length;
     while (i--) {
       const page = perks[i];
+      console.dir(page);
 
       if (page.selectedPerkIds[0] === undefined && page.selectedPerkIds[1] === undefined) {
         perks.splice(i, 1);
-        UI.error('providers-error-data');
-        continue;
+        UI.error(`[Champion.GG] ${i18n.__('providers-error-data')}`);
       }
-
-      if (page.selectedPerkIds[0] === page.selectedPerkIds[1]) {
+      else if (page.selectedPerkIds[0] === page.selectedPerkIds[1]) {
         page.selectedPerkIds.splice(1, 1);
         page.selectedPerkIds.splice(3, 0, fixes[page.primaryStyleId]);
-        UI.error('providers-cgg-perks-fix');
+        UI.error(`[Champion.GG] ${i18n.__('providers-cgg-perks-fix')}`);
       }
     }
 
@@ -100,19 +91,14 @@ class ChampionGGProvider extends Provider {
    * @param {object} champion - A champion object, from Mana.champions
    * @param {string} position - Limited to: TOP, JUNGLE, MIDDLE, ADC, SUPPORT
    */
-  scrapePerks($, champion, position) {
-    let pages = [{ selectedPerkIds: [] }, { selectedPerkIds: [] }];
-    let slots = $("div[class^=Slot__LeftSide]");
+  scrapeRunes($, champion, position) {
+    let pages = [{ name: `CGG1 ${champion.name} ${position} (HW%)`, selectedPerkIds: [] }, { name: `CGG2 ${champion.name} ${position} (MF)`, selectedPerkIds: [] }];
 
-    $("img[src^='https://s3.amazonaws.com/solomid-cdn/league/runes_reforged/']", slots).each(function(index) {
-      let page = Math.trunc(index / 8), perk = $(this).attr("src").substring(59);
-      if (index % 8 === 0) {
-        pages[page].name = `CGG${page + 1} ${champion.name} ${position} (${page === 0 ? 'HW%' : 'MF'})`;
-        pages[page].primaryStyleId = styles[perk.substring(5, 6)];
-      }
-      else if (index % 8 === 5)
-      pages[page].subStyleId = styles[perk.substring(5, 6)];
-      else pages[page].selectedPerkIds.push(parseInt(perk.substring(0, 4)));
+    $("img[src*='perk-images']", $("div[class^=Slot__LeftSide]")).each(function(index) {
+      let page = Math.trunc(index / 8), perk = $(this).attr("src").slice(38);
+      if (index % 8 === 0) pages[page].primaryStyleId = Mana.gameClient.perks.find(x => x.icon === perk).id;
+      else if (index % 8 === 5) pages[page].subStyleId = Mana.gameClient.perks.find(x => x.icon === perk).id;
+      else pages[page].selectedPerkIds.push(Mana.gameClient.findPerkByImage(perk).id);
     });
 
     return pages;
