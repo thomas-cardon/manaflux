@@ -27,7 +27,7 @@ class PerksInventory {
 
     if (!pages || pages.length === 0 || pages.find(x => x.selectedPerkIds.length === 0) !== undefined) throw Error(i18n.__('runes-empty-error'));
 
-    count = count > Mana.store.get('runes-max', 2) ? Mana.store.get('runes-max', 2) : count;
+    count = count > Mana.getStore().get('runes-max', 2) ? Mana.getStore().get('runes-max', 2) : count;
     count = count > pages.length ? pages.length : count;
     pages = pages.slice(0, count);
     console.log(count);

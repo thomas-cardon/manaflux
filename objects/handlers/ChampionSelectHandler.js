@@ -81,7 +81,7 @@ class ChampionSelectHandler {
     dl.on('itemset', (provider, pos, data) => console.dir(data));
 
     dl.on('summonerspells', (provider, pos, data) => {
-      if (Mana.store.get('enableSummonerSpells'))
+      if (Mana.getStore().get('summonerspells-button'))
         $('button#loadSummonerSpells').enableManualButton(() => Mana.user.updateSummonerSpells(data).catch(err => { UI.error(err); captureException(err); }), true);
     }).on('perksPage', (provider, pos, data) => {
       if (!perks[pos]) {
@@ -95,7 +95,7 @@ class ChampionSelectHandler {
         $('#positions').val(log.log(3, pos)).trigger('change').show();
       }
     }).on('itemset', (provider, pos, itemset) => {
-      if (!Mana.store.get('enableItemSets')) return;
+      if (!Mana.getStore().get('itemsets-enable')) return;
       itemset.save().catch(err => UI.error(err));
     });
 
@@ -106,10 +106,10 @@ class ChampionSelectHandler {
     console.dir(perks);
 
     /* Perks display */
-    if (Mana.store.get('enableAnimations'))
+    if (Mana.getStore().get('ui-animations-enable'))
       UI.enableHextechAnimation(champion, perks[0].primaryStyleId);
 
-    if (Mana.store.get('loadRunesAutomatically')) Mana.user.getPerksInventory().updatePerksPages(perks);
+    if (Mana.getStore().get('runes-automatic-load')) Mana.user.getPerksInventory().updatePerksPages(perks);
     else {
       $('button#loadRunes').enableManualButton(() => Mana.user.getPerksInventory().updatePerksPages(perks)
         .catch(err => {
@@ -131,7 +131,7 @@ class ChampionSelectHandler {
     ipcRenderer.removeAllListeners('runes-previous');
     ipcRenderer.removeAllListeners('runes-next');
 
-    if (Mana.store.get('enableTrayIcon')) UI.tray();
+    if (Mana.getStore().get('enableTrayIcon')) UI.tray();
   }
 
   end() {

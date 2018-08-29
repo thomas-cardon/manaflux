@@ -5,7 +5,7 @@ class ItemSet {
     this.championKey = key.toLowerCase();
 
     this.file = (file && file.startsWith('MFLUX_')) ? file : `MFLUX_${this.championKey}${file ? ('_' + file.toLowerCase() + '_') : '_'}${Mana.gameClient.branch}_${Mana.version}.json`;
-    this.path = path.resolve(Mana.store.get('leaguePath') + `\\Config\\Champions\\${this.championKey}\\Recommended\\${this.file}`);
+    this.path = path.resolve(Mana.getStore().get('leaguePath') + `\\Config\\Champions\\${this.championKey}\\Recommended\\${this.file}`);
 
     this._data = {
       title: i18n.__('itemsets-unknown'),
@@ -51,8 +51,8 @@ class ItemSet {
     const p = this.path, data = JSON.stringify(this._data);
 
     // Creates the required folders if needed
-    require('./handlers/ItemSetHandler')._ensureDir(path.resolve(Mana.store.get('leaguePath') + `\\Config\\Champions\\${this.championKey}`));
-    require('./handlers/ItemSetHandler')._ensureDir(path.resolve(Mana.store.get('leaguePath') + `\\Config\\Champions\\${this.championKey}\\Recommended`));
+    require('./handlers/ItemSetHandler')._ensureDir(path.resolve(Mana.getStore().get('leaguePath') + `\\Config\\Champions\\${this.championKey}`));
+    require('./handlers/ItemSetHandler')._ensureDir(path.resolve(Mana.getStore().get('leaguePath') + `\\Config\\Champions\\${this.championKey}\\Recommended`));
 
     return new Promise((resolve, reject) => {
       fs.writeFile(p, data, 'utf8', err => {

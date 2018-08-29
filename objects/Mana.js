@@ -77,7 +77,7 @@ class Mana extends EventEmitter {
     UI.status('Status', 'champion-select-waiting');
     $('#loading').hide();
 
-    global._devChampionSelect = () => new (require('./CustomGame'))().create().then(game => game.start());
+    global._devChampionSelect = () => new (require('../CustomGame'))().create().then(game => game.start());
   }
 
   disconnect() {

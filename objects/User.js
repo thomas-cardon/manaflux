@@ -33,7 +33,7 @@ class User extends Summoner {
   }
 
   sortSummonerSpells(spells) {
-    return spells.sort((a, b) => a === 4 || a === 6 ? (Mana.store.get('summoner-spells-priority') === "f" ? 1 : -1) : -1);
+    return spells.sort((a, b) => a === 4 || a === 6 ? (Mana.getStore().get('summoner-spells-priority') === "f" ? 1 : -1) : -1);
   }
 }
 

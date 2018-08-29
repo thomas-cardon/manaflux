@@ -109,12 +109,12 @@ class ChampionSelect extends EventEmitter {
         * Runes display
         */
 
-        if (Mana.store.get('enableAnimations'))
+        if (Mana.getStore().get('enableAnimations'))
           UI.enableHextechAnimation(champion, data.runes[0].primaryStyleId);
 
         // TODO: Change hextech animation according to active rune page change
 
-        if (Mana.store.get('loadRunesAutomatically')) {
+        if (Mana.getStore().get('loadRunesAutomatically')) {
           try {
             await Mana.user.getPerksInventory().updatePerksPages(data.runes);
           }
@@ -130,14 +130,14 @@ class ChampionSelect extends EventEmitter {
         * Summoner Spells display
         */
 
-        if (Mana.store.get('enableSummonerSpells') && data.summonerspells.length > 0)
+        if (Mana.getStore().get('enableSummonerSpells') && data.summonerspells.length > 0)
           $('button#loadSummonerSpells').enableManualButton(() => Mana.user.updateSummonerSpells(data.summonerspells).catch(err => { UI.error(err); captureException(err); }), true);
       });
 
       /*
       * Item Sets display
       */
-      if (Mana.store.get('enableItemSets')) {
+      if (Mana.getStore().get('enableItemSets')) {
         try {
           let old = await ItemSetHandler.deleteItemSets(await ItemSetHandler.getItemSetsByChampionKey(champion.key));
           UI.status('ChampionSelect', 'itemsets-save-status', champion.name);
@@ -205,7 +205,7 @@ class ChampionSelect extends EventEmitter {
 
     $('#positions').unbind().empty().hide();
 
-    if (Mana.store.get('enableTrayIcon')) UI.tray();
+    if (Mana.getStore().get('enableTrayIcon')) UI.tray();
   }
 
   destroyTimer() {

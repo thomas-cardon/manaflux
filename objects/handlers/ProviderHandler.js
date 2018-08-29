@@ -12,8 +12,8 @@ class ProviderHandler {
     /*
     * 1/3 Storage Checking
     */
-    if (Mana.store.has(`data.${champion.key}`)) {
-      let d = Mana.store.get(`data.${champion.key}`);
+    if (Mana.getStore().has(`data.${champion.key}`)) {
+      let d = Mana.getStore().get(`data.${champion.key}`);
 
       for (let [position, data] of Object.entries(d))
         for (let i = 0; i < data.itemsets.length; i++)
@@ -28,7 +28,7 @@ class ProviderHandler {
 
     let positions = {};
 
-    let providerOrder = Mana.store.get('providers-order', ['championgg', 'opgg', /*'ugg',*/ 'lolflavor']);
+    let providerOrder = Mana.getStore().get('providers-order', ['championgg', 'opgg', /*'ugg',*/ 'lolflavor']);
     providerOrder.splice(providerOrder.indexOf('lolflavor'), 1);
     providerOrder.push('lolflavor');
 
@@ -40,9 +40,9 @@ class ProviderHandler {
         let method = 'getData';
 
         if (positions[preferredPosition]) {
-          if (positions[preferredPosition].itemsets.length === 0 && Mana.store.get('enableItemSets'))
+          if (positions[preferredPosition].itemsets.length === 0 && Mana.getStore().get('enableItemSets'))
             method = 'getItemSets';
-          else if (positions[preferredPosition].summonerspells.length === 0 && Mana.store.get('enableSummonerSpells'))
+          else if (positions[preferredPosition].summonerspells.length === 0 && Mana.getStore().get('enableSummonerSpells'))
             method = 'getSummonerSpells';
           else if (positions[preferredPosition].perks.length === 0)
             method = 'getPerks';
@@ -64,7 +64,7 @@ class ProviderHandler {
     * 3/3 Saving
     */
 
-    if (positions !== {}) Mana.store.set(`data.${champion.key}`, positions);
+    if (positions !== {}) Mana.getStore().set(`data.${champion.key}`, positions);
     return positions;
   }
 }
