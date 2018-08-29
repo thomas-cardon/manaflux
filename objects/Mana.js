@@ -35,7 +35,7 @@ class Mana extends EventEmitter {
     }
 
     ipcRenderer.on('lcu-connected', (event, d) => this.updateAuthenticationTokens(d));
-    ipcRenderer.on('lcu-logged-in', (event, d) => this.load());
+    ipcRenderer.on('lcu-logged-in', (event, d) => this.load(d));
     ipcRenderer.on('lcu-disconnected', () => this.disconnect());
     ipcRenderer.once('lcu-connected', (event, d) => this.preload());
   }
@@ -43,35 +43,36 @@ class Mana extends EventEmitter {
   async preload() {
     UI.status('Status', 'loading');
 
-    this.user = new (require('./objects/User'))();
-    this.gameClient = new (require('./objects/riot/leagueoflegends/GameClient'))();
-    this.assetsProxy = new (require('./objects/riot/leagueoflegends/GameAssetsProxy'))();
+    this.user = new (require('./User'))();
+    this.gameClient = new (require('./riot/leagueoflegends/GameClient'))();
+    this.assetsProxy = new (require('./riot/leagueoflegends/GameAssetsProxy'))();
 
-    this.championSelectHandler = new (require('./objects/handlers/ChampionSelectHandler'))();
+    this.championSelectHandler = new (require('./handlers/ChampionSelectHandler'))();
 
     UI.status('Status', 'loading-data-login');
 
     this.assetsProxy.load();
-    const data = await Promise.all([Mana.gameClient.getChampionSummary(), Mana.gameClient.getSummonerSpells(), Mana.gameClient.load()]);
 
-    Mana.champions = data[0];
-    Mana.summonerspells = data[1];
+    const data = await Promise.all([this.gameClient.getChampionSummary(), this.gameClient.getSummonerSpells(), this.gameClient.load()]);
 
-    $('.version').text($('.version').text() + ' - V' + Mana.gameClient.branch);
+    this.champions = data[0];
+    this.summonerspells = data[1];
 
-    if (this.getStore().get('lastBranchSeen') !== Mana.gameClient.branch) {
+    $('.version').text($('.version').text() + ' - V' + this.gameClient.branch);
+
+    if (this.getStore().get('lastBranchSeen') !== this.gameClient.branch) {
       this.getStore().set('data', {});
       ItemSetHandler.getItemSets().then(x => ItemSetHandler.deleteItemSets(x)).catch(UI.error);
     }
 
-    Mana.store.set('lastBranchSeen', Mana.gameClient.branch);
+    this._store.set('lastBranchSeen', this.gameClient.branch);
   }
 
-  async load() {
+  async load(data) {
     UI.status('League', 'league-client-connection');
 
-    Mana.user._load(data);
-    Mana.championSelectHandler.load();
+    this.user._load(data);
+    this.championSelectHandler.load();
 
     UI.status('Status', 'champion-select-waiting');
     $('#loading').hide();
@@ -82,13 +83,13 @@ class Mana extends EventEmitter {
   disconnect() {
     global._devChampionSelect = () => console.log(`[${i18n.__('error')}] ${i18n.__('developer-game-start-error')}\n${i18n.__('league-client-disconnected')}`);
 
-    Mana.championSelectHandler.stop();
+    this.championSelectHandler.stop();
     UI.status('League', 'disconnected');
   }
 
   updateAuthenticationTokens(data) {
-    Mana.base = data.baseUri;
-    Mana.riot = data;
+    this.base = data.baseUri;
+    this.riot = data;
   }
 
   getStore() {
