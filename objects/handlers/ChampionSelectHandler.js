@@ -69,132 +69,53 @@ class ChampionSelectHandler {
     this.gameModeHandler.onFirstTickEvent(data);
   }
 
-  updateDisplay(champion, data) {
+  updateDisplay(champion, res) {
     UI.status('ChampionSelect', 'champion-updating-display', champion.name);
 
-    try {
-      UI.status('ChampionSelect', 'champion-updating-display', champion.name);
-      const res = await ProviderHandler.getChampionData(champion, this.getPosition(), this.gameMode);
+    $('#positions').unbind().empty().hide();
 
-      $('#positions').unbind().empty().hide();
+    ipcRenderer.removeAllListeners('runes-previous');
+    ipcRenderer.removeAllListeners('runes-next');
 
-      ipcRenderer.removeAllListeners('runes-previous');
-      ipcRenderer.removeAllListeners('runes-next');
+    if (Object.keys(res).length === 0) return log.error(1, i18n.__('providers-error-data'));
+    console.dir(res);
 
-      if (Object.keys(res).length === 0) return log.error(1, i18n.__('providers-error-data'));
-      console.dir(res);
-
-      for (let position in res) {
-        if (res[position].runes.length === 0) {
-          UI.error('providers-error-runes', champion.name, position);
-          delete res[position];
-        }
-        else $('#positions').append(`<option value="${position}">${position === 'ADC' ? 'ADC' : position.charAt(0).toUpperCase() + position.slice(1) }</option>`)
+    for (let position in res) {
+      if (res[position].runes.length === 0) {
+        UI.error('providers-error-runes', champion.name, position);
+        delete res[position];
       }
-
-      $('#positions').change(async function() {
-        let data = res[this.value];
-
-        $('button#loadRunes, button#loadSummonerSpells').disableManualButton();
-
-        /*
-        * Runes display
-        */
-
-        if (Mana.store.get('enableAnimations'))
-          UI.enableHextechAnimation(champion, data.runes[0].primaryStyleId);
-
-        // TODO: Change hextech animation according to active rune page change
-
-        if (Mana.store.get('loadRunesAutomatically')) {
-          try {
-            await Mana.user.getPerksInventory().updatePerksPages(data.runes);
-          }
-          catch(err) {
-            UI.error(err);
-            captureException(err);
-          }
-        }
-        else $('button#loadRunes').enableManualButton(() => Mana.user.getPerksInventory().updatePerksPages(data.runes).catch(err => { UI.error(err); captureException(err); }), true);
-        UI.status('ChampionSelect', 'runes-loaded', champion.name, this.value);
-
-        /*
-        * Summoner Spells display
-        */
-
-        if (Mana.store.get('enableSummonerSpells') && data.summonerspells.length > 0)
-          $('button#loadSummonerSpells').enableManualButton(() => Mana.user.updateSummonerSpells(data.summonerspells).catch(err => { UI.error(err); captureException(err); }), true);
-      });
-
-      /*
-      * Item Sets display
-      */
-      if (Mana.store.get('enableItemSets')) {
-        try {
-          let old = await ItemSetHandler.deleteItemSets(await ItemSetHandler.getItemSetsByChampionKey(champion.key));
-          UI.status('ChampionSelect', 'itemsets-save-status', champion.name);
-
-          for (let position in res)
-            for (const set of res[position].itemsets)
-              await set.save();
-        }
-        catch(err) {
-          UI.error(err);
-          captureException(err);
-        }
-      }
-
-      /*
-      * Shortcuts handling
-      */
-      ipcRenderer.on('runes-previous', () => {
-        console.log('[Shortcuts] Selecting previous position..');
-
-        const keys = Object.keys(res);
-        let i = keys.length, positionIndex = keys.indexOf($('#positions').val());
-        let newIndex = positionIndex;
-
-        if (newIndex === 0) newIndex = i - 1;
-        else newIndex--;
-
-        // Useless to reload runes again if it's the same runes..
-        if (newIndex === positionIndex) return;
-
-        $('#positions').val(keys[newIndex]).trigger('change');
-      });
-
-      ipcRenderer.on('runes-next', () => {
-        console.log('[Shortcuts] Selecting next position..');
-
-        const keys = Object.keys(res);
-        let i = keys.length, positionIndex = keys.indexOf($('#positions').val());
-        let newIndex = positionIndex;
-
-        if (newIndex === i - 1) newIndex = 0;
-        else newIndex++;
-
-        // Useless to reload runes again if it's the same runes..
-        if (newIndex === positionIndex) return;
-
-        $('#positions').val(keys[newIndex]).trigger('change');
-      });
-
-      $('#positions').val(res[this.getPosition()] ? this.getPosition() : Object.keys(res)[0]).trigger('change').show();
-      UI.tray(false);
+      else $('#positions').append(`<option value="${position}">${position === 'ADC' ? 'ADC' : position.charAt(0).toUpperCase() + position.slice(1) }</option>`)
     }
-    catch(err) {
-      UI.error(err);
-      captureException(err);
+
+    const onPerkPositionChange = this.onPerkPositionChange;
+
+    $('#positions').change(function() {
+      onPerkPositionChange(champion, this.value.toUpperCase(), res[this.value.toUpperCase()].runes);
+    });
+
+    if (Mana.getStore().get('itemsets-enable')) {
+      ItemSetHandler.getItemSetsByChampionKey(champion.key).then(sets => ItemSetHandler.deleteItemSets(sets).then(() => {
+        UI.status('ChampionSelect', 'itemsets-save-status', champion.name);
+
+        for (let position in res)
+          for (const set of res[position].itemsets)
+            set.save();
+      }));
     }
+
+    $('#positions').val(res[this.gameModeHandler.getPosition()] ? this.gameModeHandler.getPosition() : Object.keys(res)[0]).trigger('change').show();
+    UI.tray(false);
   }
 
   onPerkPositionChange(champion, position, perks) {
-    console.dir(perks);
+    $('button#loadRunes, button#loadSummonerSpells').disableManualButton();
 
-    /* Perks display */
+    /* Hextech Animation */
     if (Mana.getStore().get('ui-animations-enable'))
       UI.enableHextechAnimation(champion, perks[0].primaryStyleId);
 
+    /* Perks display */
     if (Mana.getStore().get('runes-automatic-load')) Mana.user.getPerksInventory().updatePerksPages(perks);
     else {
       $('button#loadRunes').enableManualButton(() => Mana.user.getPerksInventory().updatePerksPages(perks)
@@ -203,6 +124,10 @@ class ChampionSelectHandler {
           captureException(err);
         }), true);
     }
+
+    /* Summoner Spells display */
+    if (Mana.getStore().get('summoner-spells-button') && data.summonerspells.length > 0)
+      $('button#loadSummonerSpells').enableManualButton(() => Mana.user.updateSummonerSpells(data.summonerspells).catch(err => { UI.error(err); captureException(err); }), true);
 
     UI.status('ChampionSelect', 'runes-loaded', champion.name, position);
   }
