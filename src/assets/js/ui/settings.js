@@ -1,24 +1,21 @@
 /* input element support */
-$('input[data-settings-key], select[data-settings-key]').each(function() {
-  log.log(2, `[Settings] Loading value of ${$(this).data('settings-key')} to: ${Mana.getStore().get($(this).data('settings-key'), $(this).data('settings-default'))}`);
-  $(this).val(Mana.getStore().get($(this).data('settings-key'), $(this).data('settings-default')));
+$('input[type!="checkbox"][data-settings-key], select[data-settings-key]').each(function() {
+  log.log(2, `[Settings] Loading value of ${this.id = $(this).data('settings-key')} to: ${Mana.getStore().get($(this).data('settings-key'), $(this).data('settings-default'))}`);
+  this.value = Mana.getStore().get($(this).data('settings-key'), $(this).data('settings-default'));
 }).change(function() {
   log.log(2, `[Settings] Changing value of ${$(this).data('settings-key')} to: ${this.value}`);
   Mana.getStore().set($(this).data('settings-key'), this.value);
 });
 
 /* checkbox element support */
-$(':checkbox[data-settings-key]').each(function() {
-  log.log(2, `[Settings] Loading value of ${$(this).data('settings-key')} to: ${Mana.getStore().get($(this).data('settings-key'), $(this).data('settings-default'))}`);
-  $(this).prop('checked', Mana.getStore().get($(this).data('settings-key'), $(this).data('settings-default')));
+$('input[type="checkbox"]').each(function() {
+  log.log(2, `[Settings] Loading value of ${this.id = $(this).data('settings-key')} to: ${Mana.getStore().get($(this).data('settings-key'), $(this).data('settings-default'))}`);
 
-  $(this).prop('id', $(this).data('settings-key'));
+  this.checked = Mana.getStore().get($(this).data('settings-key'), $(this).data('settings-default'));
   $(this).siblings('label').prop('for', $(this).data('settings-key'));
-
-  $(this);
 }).change(function() {
   log.log(2, `[Settings] Changing value of ${$(this).data('settings-key')} to: ${$(this).is(":checked")}`);
-  Mana.getStore().set($(this).data('settings-key'), $(this).is(":checked"));
+  Mana.getStore().set($(this).data('settings-key'), this.checked);
 });
 
 /* sortable lists support */
