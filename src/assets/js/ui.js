@@ -87,5 +87,3 @@ function getReadableFileSizeString(fileSizeInBytes) {
 
     return Math.max(fileSizeInBytes, 0.1).toFixed(1) + byteUnits[i];
 };
-
-$(document).ready(() => $('.version').text('v' + Mana.version));

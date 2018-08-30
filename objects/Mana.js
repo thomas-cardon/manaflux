@@ -10,7 +10,7 @@ const Store = require('electron-store');
 class Mana extends EventEmitter {
   constructor() {
     super();
-    this.version = app.getVersion();
+    $('.version').text(`V${this.version = app.getVersion()}`);
 
     UI.status('Status', 'loading-storage');
     this._store = new Store();
@@ -27,7 +27,6 @@ class Mana extends EventEmitter {
       }).send('league-client-path');
     }
     else ipcRenderer.send('lcu-connection', this.getStore().get('league-client-path'));
-    //this.emit('settings', this.getStore());
 
     if (!this.getStore().has('riot-consent')) {
       dialog.showMessageBox({ title: i18n.__('info'), message: i18n.__('consent') });
@@ -58,7 +57,7 @@ class Mana extends EventEmitter {
     this.champions = data[0];
     this.summonerspells = data[1];
 
-    $('.version').text($('.version').text() + ' - V' + this.gameClient.branch);
+    $('.version').text(`V${this.version} - V${this.gameClient.branch}`);
 
     if (this.getStore().get('lastBranchSeen') !== this.gameClient.branch) {
       this.getStore().set('data', {});
