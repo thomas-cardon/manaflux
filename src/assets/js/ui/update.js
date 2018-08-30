@@ -10,13 +10,15 @@ ipcRenderer.on('update-ready', async (event, data) => {
 	$('.tablinks[data-tabid="update"]').show();
 
 	$('#version').text(`Version ${data.version}`);
-	$('#size').text(getReadableFileSizeString(data.files[0].size));
+	$('#updateSize').text(getReadableFileSizeString(data.files[0].size));
+
+	$('#release-notes').text(markdown.toHTML(data.releaseNotes));
 
 	$('#update').one("click", () => ipcRenderer.send('update-download'));
 });
 
 ipcRenderer.on('update-downloaded', async (event, data) => {
-	UI.i18n($('#update'), 'ui-menu-update');
+	UI.i18n($('button#update'), 'ui-menu-update');
 });
 
 ipcRenderer.on('update-progress', async (event, data) => log.dir(3, data));

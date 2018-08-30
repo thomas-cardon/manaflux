@@ -169,11 +169,12 @@
       <p data-i18n="update-available" id="updateAvailableText"></p>
       <div id="updateStatus">
         <p id="channel" data-i18n="update-channel-stable-long"></p>
-        <p id="version">VX.X.X-ALPHA</p>
+        <span id="version">VX.X.X-ALPHA</span>
+        <span id="updateRollout">You're part of the 100% of users who received the update</span>
       </div>
-      <div class="textcontainer" id="releasenotes" style="width: 45%;"></div>
-      <button type="button" id="update" style="margin-top: 10px;" data-i18n="update-button-download"></button>
-      <p id="updateSize">XXX.XXMB</p>
+      <div class="textcontainer" id="release-notes"></div>
+      <button type="button" id="update" data-i18n="update-button-download"></button>
+      <span id="updateSize">XXX.XXMB</span>
     </div>
     <p class="status" data-i18n="status-loading-login"></p>
     <p class="version"></p>
@@ -182,6 +183,7 @@
   </div>
   <script src="vendor/jquery-3.3.1.min.js" onload="window.$ = window.jQuery = module.exports;"></script>
   <script src="vendor/jquery-ui.min.js"></script>
+  <script src="vendor/markdown.min.js"></script>
   <script src="vendor/alertify.min.js"></script>
   <script>
     const { ipcRenderer } = require('electron');
