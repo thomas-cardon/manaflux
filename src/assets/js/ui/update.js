@@ -10,6 +10,7 @@ ipcRenderer.on('update-ready', async (event, data) => {
 	$('.tablinks[data-tabid="update"]').show();
 
 	$('#version').text(`Version ${data.version}`);
+	$('#updateRollout').text(i18n.__('update-staged-rollout', data.stagingPercentage + '%'));
 	$('#updateSize').text(getReadableFileSizeString(data.files[0].size));
 
 	$('#release-notes').text(markdown.toHTML(data.releaseNotes));
