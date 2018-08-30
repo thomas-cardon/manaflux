@@ -2,7 +2,6 @@
 $(document).ready(function() {
   $('[data-custom-component]').each(function() {
     const key = $(this).data('custom-component');
-    const ev = $(this).data('custom-component-event') || 'click';
 
     log.log(2, `[UI] [Custom Components] Loading ${key}`);
 
@@ -11,6 +10,6 @@ $(document).ready(function() {
     if (typeof d === 'object')
       for (const [event, f] of Object.entries(d))
         $(this).on(event, f);
-    else $(this).on('ev', d);
+    else $(this).on($(this).data('custom-component-event') || 'click', d);
   });
 });
