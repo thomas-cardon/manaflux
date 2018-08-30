@@ -4,7 +4,6 @@ global.log = new (require('./objects/handlers/LoggingHandler'))(3);
 const i18n = new (require('./objects/i18n'));
 
 const { autoUpdater } = require('electron-updater');
-const platform = process.platform;
 
 const LeaguePlug = require('./objects/leagueplug');
 const AutoLaunch = require('auto-launch');
@@ -28,7 +27,7 @@ if (shouldQuit) return app.quit();
 let launcher = new AutoLaunch({ name: 'Manaflux', isHidden: true });
 
 function createWindow () {
-  win = new BrowserWindow({ width: 600, height: 600, frame: false, icon: __dirname + '/build/icon.' + (platform === 'win32' ? 'ico' : 'png'), backgroundColor: '#000A13', maximizable: false, disableblinkfeatures: 'BlockCredentialedSubresources', show: false });
+  win = new BrowserWindow({ width: 600, height: 600, frame: false, icon: __dirname + '/build/icon.' + (process.platform === 'win32' ? 'ico' : 'png'), backgroundColor: '#000A13', maximizable: false, disableblinkfeatures: 'BlockCredentialedSubresources', show: false });
 
   win.loadURL(`file://${__dirname}/src/index.html`);
   win.setMenu(null);
@@ -94,7 +93,7 @@ ipcMain.on('tray', (event, show) => {
     return tray.destroy();
   }
 
-  tray = new Tray(__dirname + '/build/icon.' + (platform === 'win32' ? 'ico' : 'png'));
+  tray = new Tray(__dirname + '/build/icon.' + (process.platform === 'win32' ? 'ico' : 'png'));
   tray.setToolTip(i18n.__('tray-show'));
 
   tray.on('click', () => win.isVisible() ? win.hide() : win.showInactive());
@@ -109,13 +108,7 @@ ipcMain.on('auto-start', (event, enable) => {
 });
 
 ipcMain.on('league-client-path', event => {
-  log.log(2, '[IPC] Asked for League\'s path');
-  const id = setInterval(() => {
-    connector.getPathHandler().findLeaguePath().then(path => {
-      event.sender.send('league-client-path', path);
-      clearInterval(id);
-    });
-  }, 500);
+  connector.getPathHandler().findLeaguePath().then(path => event.sender.send('league-client-path', path));
 });
 
 ipcMain.on('lcu-connection', (event, path) => {
@@ -145,7 +138,7 @@ ipcMain.on('win-close', () => win.close());
 ipcMain.on('win-minimize', () => win.minimize());
 
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') app.quit();
+  if (process.process.platform !== 'darwin') app.quit();
 })
 
 app.on('will-quit', () => globalShortcut.unregisterAll());

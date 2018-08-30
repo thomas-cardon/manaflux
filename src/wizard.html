@@ -1,0 +1,61 @@
+<html>
+<head>
+  <title>Manaflux Wizard</title>
+  <meta charset="utf-8">
+  <meta name="author" content="Ryzzzen">
+  <link rel="stylesheet" href="assets/css/manaflux.css">
+  <link rel="stylesheet" href="assets/css/components/settings.css">
+  <link rel="stylesheet" href="assets/css/components/loading.css">
+  <link rel="stylesheet" href="assets/css/components/warning.css">
+  <link rel="stylesheet" href="assets/css/components/status.css">
+  <link rel="stylesheet" href="assets/css/components/version.css">
+  <link rel="stylesheet" href="assets/css/components/input.css">
+  <link rel="stylesheet" href="assets/css/wizard.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+  <div class="tab-container">
+    <img src="assets/img/selected.png" id="selected" class="selected" draggable="false">
+    <div class="tab">
+      <button data-i18n="ui-wizard-step-1" class="tablinks active" data-tabid="step-1"></button>
+      <button data-i18n="ui-wizard-step-2" class="tablinks flash" data-tabid="step-2"></button>
+    </div>
+    <div class="controls">
+      <button onclick="ipcRenderer.send('win-minimize');"><i class="material-icons icon">remove</i></button>
+      <button onclick="ipcRenderer.send('win-close');"><i class="material-icons icon">clear</i></button>
+    </div>
+  </div>
+  <div class="content">
+    <div data-tabid="step-1" data-tabn=0 class="tabcontent" style="display: none; margin-left: 12%;">
+      <div class="option button-group">
+        <p class="suboption-name" data-i18n="league-client-path"></p>
+        <input type="text" class="center-area" disabled />
+        <button data-i18n="common-try">Essayer</button>
+      </div>
+    </div>
+  </div>
+  <script src="vendor/jquery-3.3.1.min.js" onload="window.$ = window.jQuery = module.exports;"></script>
+  <script>
+    const { ipcRenderer } = require('electron');
+  </script>
+  <script src="assets/js/wizard.js"></script>
+  <script>
+  window.eval = global.eval = function () { throw new Error(i18n.__('eval')) };
+  require('../crash-reporting.js');
+
+  process.on('unhandledRejection', (reason, p) => log.log(3, `Unhandled rejection at: ${p}, reason: ${reason}`));
+  process.on('uncaughtException', console.error);
+
+  const log = new (require('../objects/handlers/LoggingHandler'))(3);
+  global.i18n = new (require('../objects/i18n'));
+
+  log.onMessage((type, message) => {
+    if (type === 'dir' && typeof message === 'string') message = JSON.parse(message);
+    console[type].call(this, message);
+  });
+  </script>
+  <script src="assets/js/ui.js"></script>
+  <script src="assets/js/ui/i18n.js"></script>
+  <script src="assets/js/ui/tab-handler.js"></script>
+</body>
+</html>
