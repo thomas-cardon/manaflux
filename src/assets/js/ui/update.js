@@ -12,7 +12,11 @@ ipcRenderer.on('update-ready', async (event, data) => {
 	$('#version').text(`Version ${data.version}`);
 	$('#size').text(getReadableFileSizeString(data.files[0].size));
 
-	$('#update').one("click", () => ipcRenderer.send('update-install'));
+	$('#update').one("click", () => ipcRenderer.send('update-download'));
+});
+
+ipcRenderer.on('update-downloaded', async (event, data) => {
+	UI.i18n($('#update'), 'ui-menu-update');
 });
 
 ipcRenderer.on('update-progress', async (event, data) => log.dir(3, data));

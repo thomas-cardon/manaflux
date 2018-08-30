@@ -1,0 +1,31 @@
+#updateAvailableText {
+  color: #f0e6d2;
+  font-size: 25px;
+  margin-top: 30px;
+  margin-bottom: -20px;
+  letter-spacing: 0.025rem;
+}
+
+#updateStatus {
+  margin-top: 30px;
+}
+
+#updateStatus > p#version {
+  color: #c03546;
+}
+
+#updateStatus > p#channel {
+  color: #ffa88b;
+  font-size: 20px;
+}
+
+#updateSize {
+  color: #ffeaa7;
+  font-size: 20px;
+  letter-spacing: 0.025rem;
+}
+
+button#update {
+  margin: 12px 14px 0 0;
+  float: left;
+}

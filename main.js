@@ -71,11 +71,14 @@ ipcMain.on('restart', () => {
   app.exit(0);
 });
 
+ipcMain.on('update-channel-change', (event, channel) => {
+  if (channel) appUpdater.channel = channel;
+  event.sender.send('update-channel-change', appUpdater.channel);
+});
+
 autoUpdater.on('update-available', info => {
   win.webContents.send('update-available', info);
-  ipcMain.once('update-download', () => autoUpdater.downloadUpdate().then(cancelToken => {
-    ipcMain.once('update-cancel', () => cancelToken.cancel());
-  }));
+  ipcMain.once('update-download', () => autoUpdater.downloadUpdate().then(cancelToken => ipcMain.once('update-cancel', () => cancelToken.cancel())));
 });
 
 autoUpdater.on('update-not-available', info => win.webContents.send('update-not-available', info));

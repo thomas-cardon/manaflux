@@ -4,13 +4,14 @@
   <meta charset="utf-8">
   <meta name="author" content="Ryzzzen">
   <link rel="stylesheet" href="assets/css/manaflux.css">
+  <link rel="stylesheet" href="assets/css/components/input.css">
+  <link rel="stylesheet" href="assets/css/components/hr.css">
   <link rel="stylesheet" href="assets/css/components/settings.css">
+  <link rel="stylesheet" href="assets/css/components/update.css">
   <link rel="stylesheet" href="assets/css/components/loading.css">
   <link rel="stylesheet" href="assets/css/components/warning.css">
   <link rel="stylesheet" href="assets/css/components/status.css">
   <link rel="stylesheet" href="assets/css/components/version.css">
-  <link rel="stylesheet" href="assets/css/components/input.css">
-  <link rel="stylesheet" href="assets/css/components/hr.css">
   <link rel="stylesheet" href="vendor/alertify.min.css"/>
   <link rel="stylesheet" href="vendor/alertify.rtl.min.css"/>
   <link rel="stylesheet" href="vendor/jquery-ui.min.css">
@@ -155,15 +156,24 @@
         <p class="suboption-name" data-i18n="league-client-path"></p>
         <input type="text" data-settings-key="league-client-path" class="center-area" disabled />
       </div>
+      <div class="option">
+        <p class="suboption-name" data-i18n="update-channel"></p>
+          <select data-settings-key="update-channel" data-settings-default="latest" data-custom-component="ui-background" class="dropdown center-area">
+          <option data-i18n="update-channel-latest" value="latest"></option>
+          <option data-i18n="update-channel-beta" value="beta"></option>
+          <option data-i18n="update-channel-alpha" value="alpha"></option>
+        </select>
+      </div>
     </div>
     <div data-tabid="update" data-tabn=0 class="tabcontent" style="display: none; margin-left: 12%;">
-      <div class="option">
-        <p class="option-name" data-i18n="update-available"></p>
-        <p class="suboption-name" id="version"></p>
-        <p class="suboption-name" id="size" style="margin-top: 5px;"></p>
-        <!--div class="textcontainer" id="releasenotes" style="width: 45%;"></div-->
-        <button type="button" id="update" style="margin-top: 10px;" data-i18n="ui-menu-update"></button>
+      <p data-i18n="update-available" id="updateAvailableText"></p>
+      <div id="updateStatus">
+        <p id="channel" data-i18n="update-channel-stable-long"></p>
+        <p id="version">VX.X.X-ALPHA</p>
       </div>
+      <div class="textcontainer" id="releasenotes" style="width: 45%;"></div>
+      <button type="button" id="update" style="margin-top: 10px;" data-i18n="update-button-download"></button>
+      <p id="updateSize">XXX.XXMB</p>
     </div>
     <p class="status" data-i18n="status-loading-login"></p>
     <p class="version"></p>

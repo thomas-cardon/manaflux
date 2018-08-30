@@ -367,7 +367,7 @@ textarea:disabled {
   display: inline-block;
   position: relative;
   cursor: pointer;
-  width: 200px;
+  width: 72%;
   font-family: 'beaufort-bold', sans-serif;
   color: rgb(62.7%, 60.8%, 54.9%);
   letter-spacing: 0.025rem;

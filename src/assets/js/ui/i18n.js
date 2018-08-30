@@ -4,3 +4,7 @@ $(document).ready(() => {
     $(this).text(i18n.__($(this).data('i18n')));
   });
 });
+
+UI.i18n = function(el, q) {
+  el.text(i18n.__(q));
+}
