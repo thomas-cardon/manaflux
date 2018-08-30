@@ -1,10 +1,5 @@
 /* Tab Handler */
 $(document).ready(function() {
-	$('[data-i18n]').each(function() {
-		log.log(2, `[Localization] Loading value: ${$(this).data('i18n')}`);
-		$(this).text(i18n.__($(this).data('i18n')));
-	});
-
 	$('.tablinks').click(function() {
     navigationId = 0;
 
@@ -21,5 +16,5 @@ $(document).ready(function() {
 		document.getElementById("selected").style.marginLeft = ($(this).offset().left + ($(this).width() / 2)) + 'px';
 	});
 
-	$('button[data-tabid="home"]').click();
+	$('button[data-tabid]').eq(0).click();
 });
