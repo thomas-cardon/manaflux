@@ -43,8 +43,8 @@
         <img src="assets/img/underline.png" draggable="false">
       </div>
       <div class="buttons">
-        <button type="button" data-i18n="button-load-summoner-spells" id="loadSummonerSpells" style="display: none;"></button>
-        <button type="button" data-i18n="button-load-runes" id="loadRunes" style="display: none; margin: 10px;"></button>
+        <button type="button" data-i18n="summoner-spells-load-button" id="loadSummonerSpells" style="display: none;"></button>
+        <button type="button" data-i18n="runes-load-button" id="loadRunes" style="display: none; margin: 10px;"></button>
         <select style="display: none; margin: 10px;" id="positions" class="dropdown center-area"></select>
       </div>
       <div class="championPortrait" style="display: none;">
@@ -59,7 +59,7 @@
         <input type="number" data-settings-key="runes-max" data-settings-default="2" class="center-area" min="1" step="1" />
       </div>
       <div class="option">
-        <p class="suboption-name" data-i18n="load-automatically"></p>
+        <p class="suboption-name" data-i18n="runes-load-automatically"></p>
         <div class="options float-left checkboxContainer">
           <input type="checkbox" data-settings-key="runes-automatic-load" data-setting-default="true" />
           <label data-i18n="enable"></label>
@@ -70,21 +70,21 @@
       <div class="option">
         <p class="suboption-name" data-i18n="summoner-spells"></p>
         <div class="options float-left checkboxContainer">
-          <input type="checkbox" data-settings-key="summoner-spells-button" data-setting-default="true" />
+          <input type="checkbox" data-settings-key="summoner-spells" data-setting-default="true" />
           <label data-i18n="enable"></label>
         </div>
       </div>
       <div class="option">
-        <p class="suboption-name" data-i18n="itemsets"></p>
+        <p class="suboption-name" data-i18n="item-sets"></p>
         <div class="options float-left checkboxContainer">
-          <input type="checkbox" data-settings-key="itemsets-enable" data-setting-default="false" />
+          <input type="checkbox" data-settings-key="item-sets" data-setting-default="false" />
           <label data-i18n="enable"></label>
         </div>
       </div>
       <div class="option">
         <p class="suboption-name" data-i18n="startup"></p>
         <div class="options float-left checkboxContainer">
-          <input type="checkbox" data-settings-key="auto-start-enable" data-settings-default="false" data-custom-component="auto-start" />
+          <input type="checkbox" data-settings-key="launch-at-startup" data-settings-default="false" data-custom-component="launch-at-startup" />
           <label data-i18n="startup-windows"></label>
         </div>
       </div>
@@ -165,7 +165,7 @@
         <button type="button" id="update" style="margin-top: 10px;" data-i18n="ui-menu-update"></button>
       </div>
     </div>
-    <p class="status" data-i18n="loading-login"></p>
+    <p class="status" data-i18n="status-loading-login"></p>
     <p class="version"></p>
   </div>
     <!-- END SECTIONS -->
