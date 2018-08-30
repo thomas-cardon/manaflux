@@ -20,7 +20,7 @@ i18n.prototype.__d = function(...args) {
 }
 
 i18n.prototype.__ = function(...args) {
-  args[0] = (this._language ? this._language[args[0]] : this._default[args[0]]) || args[0];
+  args[0] = (this._language && this._language[args[0]] ? this._language[args[0]] : this._default[args[0]]) || args[0];
   return args[0].includes("%s") ? require('util').format.call(this, ...args) : args[0];
 }
 
