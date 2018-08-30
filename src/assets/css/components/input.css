@@ -1,0 +1,29 @@
+/* Number inputs */
+input[type="number"]:disabled, input[type="text"]:disabled {
+  cursor: auto;
+}
+
+input[type="number"], input[type="text"] {
+  display: inline-block;
+  position: relative;
+  cursor: pointer;
+  width: 72%;
+  font-family: 'beaufort-bold', sans-serif;
+  color: rgb(62.7%, 60.8%, 54.9%);
+  letter-spacing: 0.025rem;
+  padding: 10px 14px;
+  background-color: rgba(30, 35, 40, 0.5);
+  border: 1px solid transparent;
+  border-image: linear-gradient(to top, #695625 0%, #A9852D 23%, #B88D35 93%, #C8AA6E 100%) 1;
+  outline: none;
+  box-sizing: border-box;
+  -webkit-appearance: none;
+}
+
+input.big {
+  width: 95%;
+}
+
+.button-group > button {
+  margin-left: -80px;
+}
