@@ -4,12 +4,13 @@
   <meta charset="utf-8">
   <meta name="author" content="Ryzzzen">
   <link rel="stylesheet" href="assets/css/manaflux.css">
-  <link rel="stylesheet" href="assets/css/components/hr.css">
   <link rel="stylesheet" href="assets/css/components/settings.css">
   <link rel="stylesheet" href="assets/css/components/loading.css">
   <link rel="stylesheet" href="assets/css/components/warning.css">
   <link rel="stylesheet" href="assets/css/components/status.css">
   <link rel="stylesheet" href="assets/css/components/version.css">
+  <link rel="stylesheet" href="assets/css/components/input.css">
+  <link rel="stylesheet" href="assets/css/components/hr.css">
   <link rel="stylesheet" href="vendor/alertify.min.css"/>
   <link rel="stylesheet" href="vendor/alertify.rtl.min.css"/>
   <link rel="stylesheet" href="vendor/jquery-ui.min.css">
@@ -58,13 +59,6 @@
         <input type="number" data-settings-key="runes-max" data-settings-default="2" class="center-area" min="1" step="1" />
       </div>
       <div class="option">
-        <p class="suboption-name" data-i18n="runes-delete-method"></p>
-        <div class="options float-left checkboxContainer">
-          <input type="checkbox" data-settings-key="runes-delete-method" data-settings-default="false" class="center-area" />
-          <label data-i18n="runes-delete-enable"></label>
-        </div>
-      </div>
-      <div class="option">
         <p class="suboption-name" data-i18n="load-automatically"></p>
         <div class="options float-left checkboxContainer">
           <input type="checkbox" data-settings-key="runes-automatic-load" data-setting-default="true" />
@@ -87,16 +81,6 @@
           <label data-i18n="enable"></label>
         </div>
       </div>
-    </div>
-    <div data-tabid="settings" data-tabn=1 class="tabcontent" style="display: none; margin-left: 12%;">
-      <p class="option-name"data-i18n="misc"></p>
-      <div class="option">
-        <p class="suboption-name" data-i18n="summoner-spells-priority"></p>
-        <select data-settings-key="summoner-spells-priority" data-settings-default="d" class="dropdown center-area">
-          <option data-i18n="summoner-spells-priority-flash-d" value=d></option>
-          <option data-i18n="summoner-spells-priority-flash-f" value=f></option>
-        </select>
-      </div>
       <div class="option">
         <p class="suboption-name" data-i18n="startup"></p>
         <div class="options float-left checkboxContainer">
@@ -110,6 +94,16 @@
           <input type="checkbox" data-settings-key="tray-enable" data-settings-default="false" class="center-area" data-custom-component="tray" />
           <label data-i18n="champion-select-hide"></label>
         </div>
+      </div>
+    </div>
+    <div data-tabid="settings" data-tabn=1 class="tabcontent" style="display: none; margin-left: 12%;">
+      <p class="option-name"data-i18n="misc"></p>
+      <div class="option">
+        <p class="suboption-name" data-i18n="summoner-spells-priority"></p>
+        <select data-settings-key="summoner-spells-priority" data-settings-default="d" class="dropdown center-area">
+          <option data-i18n="summoner-spells-priority-flash-d" value=d></option>
+          <option data-i18n="summoner-spells-priority-flash-f" value=f></option>
+        </select>
       </div>
       <hr />
       <p class="option-name"data-i18n="ui"></p>
@@ -200,6 +194,7 @@
 
   global.Mana = new (require('../objects/Mana'))(ipcRenderer);
   </script>
+  <script src="assets/js/ui/i18n.js"></script>
   <script src="assets/js/ui/settings.js"></script>
   <script src="assets/js/ui/custom-components.js"></script>
   <script src="assets/js/ui/navigation-menus.js"></script>
