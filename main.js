@@ -3,7 +3,7 @@ const { app, BrowserWindow, ipcMain, globalShortcut, Menu, Tray } = require('ele
 global.log = new (require('./objects/handlers/LoggingHandler'))(3);
 const i18n = new (require('./objects/i18n'));
 
-const { autoUpdater } = require('electron-updater');
+const { autoUpdater } = require('electron-updater')({ fullChangelog: true, autoDownload: true, autoInstallOnAppQuit: true });
 
 const LeaguePlug = require('./objects/leagueplug');
 const AutoLaunch = require('auto-launch');
@@ -71,8 +71,18 @@ ipcMain.on('restart', () => {
   app.exit(0);
 });
 
+autoUpdater.on('update-available', info => {
+  win.webContents.send('update-available', info);
+  ipcMain.once('update-download', () => autoUpdater.downloadUpdate().then(cancelToken => {
+    ipcMain.once('update-cancel', () => cancelToken.cancel());
+  }));
+});
+
+autoUpdater.on('update-not-available', info => win.webContents.send('update-not-available', info));
+autoUpdater.on('download-progress', info => win.webContents.send('update-progress', info));
+
 autoUpdater.on('update-downloaded', info => {
-  ipcMain.on('update-install', (event, arg) => autoUpdater.quitAndInstall());
+  ipcMain.once('update-install', (event, arg) => autoUpdater.quitAndInstall());
   win.webContents.send('update-ready', info);
 });
 
