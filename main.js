@@ -3,7 +3,7 @@ const { app, BrowserWindow, ipcMain, globalShortcut, Menu, Tray } = require('ele
 global.log = new (require('./objects/handlers/LoggingHandler'))(3);
 const i18n = new (require('./objects/i18n'));
 
-const { autoUpdater } = require('electron-updater')({ fullChangelog: true, autoDownload: true, autoInstallOnAppQuit: true });
+const { autoUpdater } = require('electron-updater');
 
 const LeaguePlug = require('./objects/leagueplug');
 const AutoLaunch = require('auto-launch');
@@ -13,13 +13,17 @@ require('./crash-reporting.js');
 let connector = new LeaguePlug();
 let win, tray;
 
-const shouldQuit = app.makeSingleInstance(function(commandLine, workingDirectory) {
-  if (win) {
-    if (win.isMinimized()) win.restore();
-    else if (!win.isVisible()) win.show();
+autoUpdater.fullChangelog = true;
+autoUpdater.autoDownload = false;
+autoUpdater.autoInstallOnAppQuit = false;
 
-    win.focus();
-  }
+const shouldQuit = app.makeSingleInstance((commandLine, workingDirectory) => {
+  if (!win) return;
+
+  if (win.isMinimized()) win.restore();
+  else if (!win.isVisible()) win.show();
+
+  win.focus();
 });
 
 if (shouldQuit) return app.quit();

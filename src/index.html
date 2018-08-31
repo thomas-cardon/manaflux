@@ -158,7 +158,7 @@
       </div>
       <div class="option">
         <p class="suboption-name" data-i18n="update-channel"></p>
-          <select data-settings-key="update-channel" data-settings-default="latest" data-custom-component="ui-background" class="dropdown center-area">
+          <select data-settings-key="update-channel" data-settings-default="latest" data-custom-component="update-channel" class="dropdown center-area">
           <option data-i18n="update-channel-latest" value="latest"></option>
           <option data-i18n="update-channel-beta" value="beta"></option>
           <option data-i18n="update-channel-alpha" value="alpha"></option>
@@ -172,7 +172,20 @@
         <span id="version">VX.X.X-ALPHA</span>
         <span id="updateRollout">You're part of the 100% of users who received the update</span>
       </div>
-      <div class="textcontainer" id="release-notes"></div>
+      <div class="textcontainer" id="release-notes">
+        <h2>Fixes</h2>
+        <ul>
+          <li>ChampionGG should be fixed, they made changes that prevented Manaflux to aggregate the required data</li>
+          <li>Fixed (again) how runes are injected into League</li>
+        </ul>
+        <h2>Changes</h2>
+        <ul>
+          <li>Removed runes update method (#13 )</li>
+        </ul>
+        <blockquote>
+          <p>You should reset the cache in the settings.</p>
+        </blockquote>
+      </div>
       <button type="button" id="update" data-i18n="update-button-download"></button>
       <span id="updateSize">XXX.XXMB</span>
     </div>
