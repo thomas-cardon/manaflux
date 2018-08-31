@@ -1,6 +1,6 @@
 {
   "name": "manaflux",
-  "version": "1.6.0-ALPHA",
+  "version": "1.6.1-ALPHA",
   "description": "Manaflux downloads automatically your runes, itemsets, and summonerspells and injects them to your League client seamlessly!",
   "main": "main.js",
   "scripts": {
