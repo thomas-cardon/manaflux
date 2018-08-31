@@ -1,6 +1,6 @@
 #release-notes {
   min-width: 50%;
-  max-width: 65%;
+  max-width: 90%;
   max-height: 410px;
   font-size: 11px;
   overflow-y: scroll;
@@ -20,13 +20,13 @@
   margin-top: 30px;
 }
 
-#updateStatus > span#version {
+#updateStatus > p#version {
   color: #c03546;
 }
 
 #updateStatus > span#updateRollout {
   float: left;
-  margin: 1% 0 3% 0;
+  margin: -3% 0 3% 0;
   color: #ffc952;
   font-size: 15px;
 }
@@ -38,14 +38,13 @@
 
 #updateSize {
   float: left;
-  margin: 10px 20px;
+  margin: 70px -104px;
   color: #ffeaa7;
   font-size: 20px;
   letter-spacing: 0.025rem;
-  }
+}
 
 button#update {
   float: left;
-  margin-left: 20px;
-  margin-top: 1px;
+  margin-top: 20px;
 }
