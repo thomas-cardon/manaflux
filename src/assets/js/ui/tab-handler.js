@@ -1,12 +1,12 @@
 /* Tab Handler */
 $(document).ready(function() {
-	$('.tablinks').click(function() {
+	$('.btn.tab').click(function() {
     navigationId = 0;
 
 		$('.tabcontent').hide();
 		$(`.tabcontent[data-tabid=${$(this).data('tabid')}][data-tabn=0]`).show();
 
-		$('.tablinks').removeClass('active');
+		$('.tab').removeClass('active');
 		$(this).addClass('active');
 
 		/* Navigation Menus */

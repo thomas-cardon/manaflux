@@ -22,10 +22,6 @@ body {
   user-select: none;
 }
 
-.buttons {
-  margin: 10px;
-}
-
 .sortable {
   list-style: disc inside;
   width: 88%;
@@ -168,41 +164,6 @@ h1 {
   font-size: 20px !important;
 }
 
-/* Style the buttons that are used to open the tab content */
-
-.controls button {
-  background-color: transparent;
-  float: left;
-  border: none;
-  outline: none;
-  cursor: pointer;
-  padding: 4px 4px;
-  transition: 0.3s;
-  -webkit-box-shadow: none;
-  -moz-box-shadow: none;
-  box-shadow: none;
-  font-size: 8px;
-  margin-left: 10px;
-}
-
-/* Change background color of buttons on hover */
-
-.controls button:hover {
-  color: #f0e6d2;
-  border: none;
-  outline: none;
-  cursor: pointer;
-  -webkit-box-shadow: none;
-  -moz-box-shadow: none;
-  box-shadow: none;
-}
-
-/* Create an active/current tablink class */
-
-.controls button.active {
-  color: #f0e6d2;
-}
-
 /*
     SCROLL BAR
 */
@@ -249,54 +210,6 @@ h1 {
 
 .flash {
   animation: flash 0.3s alternate infinite;
-}
-
-button {
-  display: inline-block;
-  position: relative;
-  font-family: 'beaufort-bold', cursive;
-  text-transform: uppercase;
-  color: #CDBE91;
-  font-weight: 100;
-  letter-spacing: 1px;
-  white-space: nowrap;
-  padding: 9px 21px;
-  cursor: pointer;
-  box-shadow: 0 0 1px 1px #010A13, inset 0 0 1px 1px #010A13;
-  background: #1E2328;
-  border: 2px solid transparent;
-  border-image: linear-gradient(to top, #785B28 0%, #C89C3C 55%, #C8A355 71%, #C8AA6E 100%);
-  border-image-slice: 1;
-  transition: opacity 300ms linear;
-  margin-top: 5px;
-  transition: color 100ms linear;
-}
-
-button:hover {
-  color: #F0E6D2;
-  border: 2px solid transparent;
-  border-image: linear-gradient(to top, rgb(78.4%, 61.2%, 23.5%) 0%, rgb(86.3%, 75.7%, 53.3%) 50%, rgb(88.2%, 78.8%, 59.6%) 71%, rgb(94.1%, 90.2%, 84.7%) 100%);
-  border-image-slice: 1;
-  box-shadow: 0px 0px 13px 0px rgba(205, 190, 145, 0.39);
-  transition: color 100ms linear;
-  /* filter: blur(4px); */
-}
-
-button:active {
-  color: #E4E1D8;
-  border-image: linear-gradient(to top, #FFFFFF 0%, #FFFFFF 33%, #FFFFFF 66%, #FFFFFF 100%);
-  border-image-slice: 1;
-  color: #5C5B57;
-  transition: color 100ms linear;
-  animation: none;
-}
-
-button:focus {
-  outline: 0;
-}
-
-button:after {
-  transition: all 0.8s
 }
 
 /*
@@ -448,49 +361,6 @@ textarea:disabled {
   position: absolute;
   width: 5%;
   height: auto;
-}
-
-/* Style the buttons that are used to open the tab content */
-
-.tab button {
-  background-color: transparent;
-  float: left;
-  border: none;
-  outline: none;
-  cursor: pointer;
-  padding: 14px 16px;
-  transition: 0.3s;
-  -webkit-box-shadow: none;
-  -moz-box-shadow: none;
-  box-shadow: none;
-  font-size: 25px;
-  margin-left: 28px;
-  -webkit-app-region: no-drag;
-}
-
-.tab button::before {
-  top: -2px;
-  height: 16px;
-  background: url(assets/img/selected.png) no-repeat center;
-}
-
-.tab button::after {
-  bottom: -1px !important;
-  height: 1px !important;
-  width: 100% !important;
-  background: rgba(242,233,218,0.5) !important;
-}
-
-/* Change background color of buttons on hover */
-
-.tab button:hover {
-  color: #f0e6d2;
-}
-
-/* Create an active/current tablink class */
-
-.tab button.active {
-  color: #f0e6d2;
 }
 
 /* Style the tab content */

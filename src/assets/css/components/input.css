@@ -24,6 +24,6 @@ input.big {
   width: 95%;
 }
 
-.button-group > button {
+.button-group > .btn.normal {
   margin-left: -80px;
 }

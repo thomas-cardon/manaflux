@@ -1,7 +1,7 @@
 /* Navigation menus */
 let navigationId = 0;
 UI.nav = n => {
-	const tabcontent = $(`.tabcontent[data-tabid=${$('.tablinks.active').data('tabid')}][data-tabn=${navigationId + n}]`);
+	const tabcontent = $(`.tabcontent[data-tabid=${$('.tab.active').data('tabid')}][data-tabn=${navigationId + n}]`);
 	if (tabcontent.length > 0) {
 		navigationId += n;
 
@@ -9,5 +9,5 @@ UI.nav = n => {
 		$('.tabcontent').hide();
 		tabcontent.show();
 	}
-	else log.log(2, `[Navigation] Can't navigate to tab #${$('.tablinks.active').data('tabid')}, n:${navigationId + n}`);
+	else log.log(2, `[Navigation] Can't navigate to tab #${$('.tab.active').data('tabid')}, n:${navigationId + n}`);
 }

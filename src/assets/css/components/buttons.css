@@ -1,0 +1,154 @@
+.btn {
+  display: inline-block;
+  position: relative;
+  font-family: 'beaufort-bold', cursive;
+  text-transform: uppercase;
+  color: #CDBE91;
+  font-weight: 100;
+  letter-spacing: 1px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+/* Normal buttons */
+.btn.normal {
+  padding: 9px 21px;
+  box-shadow: 0 0 1px 1px #010A13, inset 0 0 1px 1px #010A13;
+  background: #1E2328;
+  border: 2px solid transparent;
+  border-image: linear-gradient(to top, #785B28 0%, #C89C3C 55%, #C8A355 71%, #C8AA6E 100%);
+  border-image-slice: 1;
+  transition: opacity 300ms linear;
+  margin-top: 5px;
+  transition: color 100ms linear;
+}
+
+.btn.normal:hover {
+  color: #F0E6D2;
+  border: 2px solid transparent;
+  border-image: linear-gradient(to top, rgb(78.4%, 61.2%, 23.5%) 0%, rgb(86.3%, 75.7%, 53.3%) 50%, rgb(88.2%, 78.8%, 59.6%) 71%, rgb(94.1%, 90.2%, 84.7%) 100%);
+  border-image-slice: 1;
+  box-shadow: 0px 0px 13px 0px rgba(205, 190, 145, 0.39);
+  transition: color 100ms linear;
+  /* filter: blur(4px); */
+}
+
+.btn.normal:active {
+  color: #E4E1D8;
+  border-image: linear-gradient(to top, #FFFFFF 0%, #FFFFFF 33%, #FFFFFF 66%, #FFFFFF 100%);
+  border-image-slice: 1;
+  color: #5C5B57;
+  transition: color 100ms linear;
+  animation: none;
+}
+
+.btn.normal:focus {
+  outline: 0;
+}
+
+.btn.normal:after {
+  transition: all 0.8s
+}
+
+/* Search buttons */
+.btn.search {
+  width: 60px;
+  height: 60px;
+  border: none;
+  outline: none;
+  background: url(../../img/components/search-button.png);
+  background-size: 100% auto;
+  background-position-y: 0px;
+  filter: brightness(0.8);
+}
+
+.btn.search:hover {
+  filter: brightness(1);
+}
+
+.btn.search:active, .btn.search:focus {
+  filter: brightness(1);
+  background-position-y: 120px;
+}
+
+.btn.search.disabled {
+  filter: brightness(1);
+  background-position-y: 240px;
+}
+
+/* Tabs */
+.btn.tab {
+  background-color: transparent;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  transition: 0.3s;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+  font-size: 25px;
+  margin-left: 28px;
+  -webkit-app-region: no-drag;
+}
+
+.btn.tab::before {
+  top: -2px;
+  height: 16px;
+  background: url(assets/img/selected.png) no-repeat center;
+}
+
+.btn.tab::after {
+  bottom: -1px !important;
+  height: 1px !important;
+  width: 100% !important;
+  background: rgba(242,233,218,0.5) !important;
+}
+
+/* Change background color of buttons on hover */
+
+.btn.tab:hover {
+  color: #f0e6d2;
+}
+
+/* Create an active/current tablink class */
+
+.btn.tab.active {
+  color: #f0e6d2;
+}
+
+/* Close/Minimize buttons */
+
+.btn.control {
+  background-color: transparent;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 4px 4px;
+  transition: 0.3s;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+  font-size: 8px;
+  margin-left: 10px;
+}
+
+/* Change background color of buttons on hover */
+
+.btn.control:hover {
+  color: #f0e6d2;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+}
+
+/* Create an active/current tablink class */
+
+.btn.control.active {
+  color: #f0e6d2;
+}

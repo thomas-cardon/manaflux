@@ -7,7 +7,7 @@ ipcRenderer.on('update-ready', async (event, data) => {
 	log.log(2, '[Update] Available! version: ' + data.version);
 	log.dir(3, data);
 
-	$('.tablinks[data-tabid="update"]').show();
+	$('.btn.tab[data-tabid="update"]').show();
 
 	$('#version').text(`Version ${data.version}`);
 	$('#updateRollout').text(i18n.__('update-staged-rollout', data.stagingPercentage + '%'));

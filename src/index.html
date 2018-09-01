@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="author" content="Ryzzzen">
   <link rel="stylesheet" href="assets/css/manaflux.css">
+  <link rel="stylesheet" href="assets/css/components/buttons.css">
   <link rel="stylesheet" href="assets/css/components/input.css">
   <link rel="stylesheet" href="assets/css/components/hr.css">
   <link rel="stylesheet" href="assets/css/components/settings.css">
@@ -23,13 +24,13 @@
   <div class="tab-container">
     <img src="assets/img/selected.png" id="selected" draggable="false">
     <div class="tab">
-      <button data-i18n="ui-menu-home" class="tablinks active" data-tabid="home"></button>
-      <button data-i18n="ui-menu-settings" class="tablinks" data-tabid="settings"></button>
-      <button data-i18n="ui-menu-update" class="tablinks flash" data-tabid="update" style="display: none;"></button>
+      <button type="button" class="btn tab active" data-i18n="ui-menu-home" data-tabid="home"></button>
+      <button type="button" class="btn tab" data-i18n="ui-menu-settings" data-tabid="settings"></button>
+      <button type="button" class="btn tab flash" data-i18n="ui-menu-update" data-tabid="update" style="display: none;"></button>
     </div>
     <div class="controls">
-      <button onclick="ipcRenderer.send('win-minimize');"><i class="material-icons icon">remove</i></button>
-      <button onclick="ipcRenderer.send('win-close');"><i class="material-icons icon">clear</i></button>
+      <button type="button" class="btn control" onclick="ipcRenderer.send('win-minimize');"><i class="material-icons icon">remove</i></button>
+      <button type="button" class="btn control" onclick="ipcRenderer.send('win-close');"><i class="material-icons icon">clear</i></button>
     </div>
     <div id="nav-menu" style="display: none;">
       <a onclick="UI.nav(-1)"><i class="tab-arrow arrow-left"></i></a>
@@ -43,9 +44,9 @@
         <h1>MANAFLUX</h1>
         <img src="assets/img/underline.png" draggable="false">
       </div>
-      <div class="buttons">
-        <button type="button" data-i18n="summoner-spells-load-button" id="loadSummonerSpells" style="display: none;"></button>
-        <button type="button" data-i18n="runes-load-button" id="loadRunes" style="display: none; margin: 10px;"></button>
+      <div style="margin: 10px;">
+        <button type="button" class="btn normal" data-i18n="summoner-spells-load-button" id="loadSummonerSpells" style="display: none;"></button>
+        <button type="button" class="btn normal" data-i18n="runes-load-button" id="loadRunes" style="display: none; margin: 10px;"></button>
         <select style="display: none; margin: 10px;" id="positions" class="dropdown center-area"></select>
       </div>
       <div class="championPortrait" style="display: none;">
@@ -147,11 +148,11 @@
       <p class="option-name" data-i18n="advanced"></p>
       <div class="option">
         <p class="suboption-name" data-i18n="empty-cache-settings-option"></p>
-        <button data-custom-component="empty-cache" data-i18n="empty-cache-button"></button>
+        <button class="btn normal" data-custom-component="empty-cache" data-i18n="empty-cache-button"></button>
       </div>
       <div class="option">
         <p class="suboption-name" data-i18n="reset-settings-settings-option"></p>
-        <button data-custom-component="reset-settings" data-i18n="reset-settings-button"></button>
+        <button class="btn normal" data-custom-component="reset-settings" data-i18n="reset-settings-button"></button>
       </div>
       <div class="option">
         <p class="suboption-name" data-i18n="providers-order"></p>
@@ -183,7 +184,7 @@
           <p>You should reset the cache in the settings.</p>
         </blockquote>
       </div>
-      <button type="button" id="update" data-i18n="update-button-download"></button>
+      <button class="btn normal" type="button" id="update" data-i18n="update-button-download"></button>
       <span id="updateSize">XXX.XXMB</span>
     </div>
     <p class="status" data-i18n="status-loading-login"></p>
