@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="author" content="Ryzzzen">
   <link rel="stylesheet" href="assets/css/manaflux.css">
+  <link rel="stylesheet" href="assets/css/components/buttons.css">
   <link rel="stylesheet" href="assets/css/components/settings.css">
   <link rel="stylesheet" href="assets/css/components/loading.css">
   <link rel="stylesheet" href="assets/css/components/warning.css">
@@ -17,20 +18,20 @@
   <div class="tab-container">
     <img src="assets/img/selected.png" id="selected" class="selected" draggable="false">
     <div class="tab">
-      <button data-i18n="ui-wizard-step-1" class="tablinks active" data-tabid="step-1"></button>
-      <button data-i18n="ui-wizard-step-2" class="tablinks flash" data-tabid="step-2"></button>
+      <button type="button" class="btn tab active" data-i18n="ui-menu-wizard-step-1" data-tabid="step-1"></button>
+      <button type="button" class="btn tab flash" data-i18n="ui-menu-wizard-step-2"></button>
     </div>
     <div class="controls">
-      <button onclick="ipcRenderer.send('win-minimize');"><i class="material-icons icon">remove</i></button>
-      <button onclick="ipcRenderer.send('win-close');"><i class="material-icons icon">clear</i></button>
+      <button type="button" class="btn control" onclick="ipcRenderer.send('win-minimize');"><i class="material-icons icon">remove</i></button>
+      <button type="button" class="btn control" onclick="ipcRenderer.send('win-close');"><i class="material-icons icon">clear</i></button>
     </div>
   </div>
   <div class="content">
     <div data-tabid="step-1" data-tabn=0 class="tabcontent" style="display: none; margin-left: 12%;">
-      <div class="option button-group">
+      <div class="option">
         <p class="suboption-name" data-i18n="league-client-path"></p>
         <input type="text" class="center-area" disabled />
-        <button data-i18n="common-try">Essayer</button>
+        <button type="button" class="btn search"></button>
       </div>
     </div>
   </div>
