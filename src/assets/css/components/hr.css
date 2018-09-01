@@ -11,14 +11,14 @@ hr.break {
 }
 
 hr.break:hover {
-  animation: brightness;
+  animation: brightness 0.3s linear 0s 1 forwards;
 }
 
 @keyframes brightness {
   0% {
     filter: brightness(1);
   }
-  
+
   100% {
     filter: brightness(1.8);
   }

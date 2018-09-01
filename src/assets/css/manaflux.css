@@ -14,9 +14,6 @@
 }
 
 body {
-  background-position: center;
-  background-size: cover;
-  background-attachment: fixed;
   font-family: "beaufort-bold";
   text-transform: uppercase;
   margin: 0 auto;
