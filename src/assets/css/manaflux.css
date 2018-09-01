@@ -447,9 +447,8 @@ textarea:disabled {
   overflow: hidden;
 }
 
-.selected {
+#selected {
   position: absolute;
-  left: -10px;
   width: 5%;
   height: auto;
 }
