@@ -2,7 +2,7 @@
 
 A dead simple runes (and now summoner spells + itemsets !) downloader for League of Legends.
 
-![ManaFlux Main Page](screenshots/1.png "Main page")
+![ManaFlux Main Page](assets/img/1.png "Main page")
 
 > Support for Polish and Portuguese brasilian has been added ! It's automatic: ManaFlux will use your system to know what language it's supposed to load.
 
