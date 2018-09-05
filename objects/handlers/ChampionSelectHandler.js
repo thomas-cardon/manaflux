@@ -53,7 +53,7 @@ class ChampionSelectHandler {
 
     this.gameModeHandler.onChampionChangeEvent(champion);
 
-    UI.status('ChampionSelect', 'loading');
+    UI.status('ChampionSelect', 'common-loading');
     const res = await ProviderHandler.getChampionData(champion, this.gameModeHandler.getPosition(), this.gameMode);
     this.updateDisplay(champion, res);
   }
