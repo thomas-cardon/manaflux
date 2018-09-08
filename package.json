@@ -39,16 +39,16 @@
   "repository": "https://github.com/Ryzzzen/manaflux",
   "build": {
     "appId": "com.github.ryzzzen.manaflux",
-    "productName": "ManaFlux",
+    "productName": "Manaflux",
     "copyright": "Copyright © 2018 Ryzzzen",
-    "generateUpdatesFilesForAllChannels": true,
     "files": [
       "**/*",
       "build/icon.*",
       "!screenshots/*",
       "!*.md",
       "!_config.yml",
-      "!docs/*"
+      "!docs/*",
+      "!src/assets/img/themes/unused/*"
     ],
     "nsis": {
       "license": "LICENSE.md"
