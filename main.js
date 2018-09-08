@@ -60,12 +60,16 @@ app.on('ready', () => {
 
   if (process.argv[2] !== '--dev') autoUpdater.checkForUpdates();
 
-  globalShortcut.register('CommandOrControl+Shift+I', () => {
-    if (!win.isFocused() && !win.isDevToolsFocused()) return;
+  const { Menu, MenuItem } = require('electron');
+  const menu = new Menu();
 
-    if (win.webContents.isDevToolsOpened()) win.webContents.closeDevTools();
-    else win.webContents.openDevTools({ mode: 'detach' });
-  });
+  menu.append(new MenuItem({
+    label: 'Dev Tools',
+    accelerator: 'CommandOrControl+Shift+I',
+    click: () => BrowserWindow.getFocusedWindow().toggleDevTools()
+  }));
+
+  Menu.setApplicationMenu(menu);
 });
 
 ipcMain.on('restart', () => {
