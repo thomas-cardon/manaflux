@@ -9,21 +9,6 @@ class UGGProvider extends Provider {
   }
 
   async getData(champion, preferredPosition, gameMode) {
-    if (!this._perks) {
-      const d = JSON.parse(await rp(Mana.base + 'lol-perks/v1/perks'));
-      this._perks = {};
-
-      for (let rune of d) {
-        let iconPath = rune.iconPath.slice(44, -4);
-
-        /* Skip traits */
-        if (iconPath === 'RunesIcon') return;
-        this._perks[iconPath] = rune.id;
-      }
-
-      log.dir(3, this._perks);
-    }
-
     let positions = ['jungle', 'middle', 'top', 'adc', 'support'];
     for (let i = 0; i < positions.length; i++) {
       try {
@@ -81,12 +66,7 @@ class UGGProvider extends Provider {
     let pages = [{ name: `UGG ${champion.name} ${position}`, selectedPerkIds: [] }];
 
     $('.perk-active > img').each(function(index) {
-      const src = $(this).attr('src');
-      let key = src.slice(70, -4);
-  	  key = key.slice(key.indexOf('/') + 1, key.lastIndexOf('/'));
-
-      if (this._perks[key]) pages[0].selectedPerkIds.push(this._perks[key]);
-      else log.log(2, `[U.GG] Skipping key ${key} because it's missing`);
+      pages[page].selectedPerkIds.push(Mana.gameClient.findPerkByImage($(this).attr('src').slice(53)).id);
     });
 
     $('.path-main > img').each(function(index) {
