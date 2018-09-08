@@ -23,7 +23,3 @@ input[type="number"], input[type="text"] {
 input.big {
   width: 95%;
 }
-
-.button-group > .btn.normal {
-  margin-left: -80px;
-}

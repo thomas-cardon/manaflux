@@ -152,3 +152,7 @@
 .btn.control.active {
   color: #f0e6d2;
 }
+
+.button-group > .btn.normal {
+  margin-left: -80px;
+}
