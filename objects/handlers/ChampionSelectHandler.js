@@ -81,7 +81,7 @@ class ChampionSelectHandler {
     console.dir(res);
 
     for (let position in res) {
-      if (res[position].runes.length === 0) {
+      if (res[position].perks.length === 0) {
         UI.error('providers-error-runes', champion.name, position);
         delete res[position];
       }
@@ -91,7 +91,7 @@ class ChampionSelectHandler {
     const onPerkPositionChange = this.onPerkPositionChange;
 
     $('#positions').change(function() {
-      onPerkPositionChange(champion, this.value.toUpperCase(), res[this.value.toUpperCase()].runes);
+      onPerkPositionChange(champion, this.value.toUpperCase(), res[this.value.toUpperCase()].perks);
     });
 
     if (Mana.getStore().get('itemsets-enable')) {
