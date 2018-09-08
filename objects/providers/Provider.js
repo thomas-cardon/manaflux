@@ -1,7 +1,8 @@
 class Provider {
-  constructor(id, name) {
+  constructor(id, name, canAggregateEverything = true) {
     this.id = id;
     this.name = name;
+    this.canAggregateEverything = canAggregateEverything;
   }
 
   async getData(champion, preferredPosition, gameMode) {
@@ -19,6 +20,8 @@ class Provider {
   async getRunes(champion, position, gameMode) {
     throw Error(`[ProviderHandler] ${this.name} ${i18n.__('providers-skipped')}: #getRunes`);
   }
+
+
 }
 
 module.exports = Provider;
