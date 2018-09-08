@@ -48,10 +48,10 @@ class UGGProvider extends Provider {
 
     const runes = this.scrapeRunes($, champion, position.toUpperCase());
 
-    log.log(3, summonerspells);
-    log.log(3, skillorder);
-    log.log(3, itemsets);
-    log.log(3, runes);
+    log.dir(3, summonerspells);
+    log.dir(3, skillorder);
+    log.dir(3, itemsets);
+    log.dir(3, runes);
 
     return { runes, summonerspells, itemsets, position };
   }
@@ -63,17 +63,17 @@ class UGGProvider extends Provider {
    * @param {string} position - Limited to: TOP, JUNGLE, MIDDLE, ADC, SUPPORT
    */
   scrapeRunes($, champion, position) {
-    let pages = [{ name: `UGG ${champion.name} ${position}`, selectedPerkIds: [] }];
+    const page = { name: `UGG ${champion.name} ${position}`, selectedPerkIds: [] };
 
     $('.perk-active > img').each(function(index) {
-      pages[page].selectedPerkIds.push(Mana.gameClient.findPerkByImage($(this).attr('src').slice(53)).id);
+      page.selectedPerkIds.push(Mana.gameClient.findPerkByImage($(this).attr('src').slice(53)).id);
     });
 
     $('.path-main > img').each(function(index) {
-      pages[0][index === 0 ? 'primaryStyleId' : 'subStyleId'] = parseInt($(this).attr('src').slice(-8, -4));
+      page[index === 0 ? 'primaryStyleId' : 'subStyleId'] = parseInt($(this).attr('src').slice(-8, -4));
     });
 
-    return pages;
+    return [page];
   }
 
   /**
