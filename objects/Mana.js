@@ -22,7 +22,7 @@ class Mana extends EventEmitter {
       ipcRenderer.once('league-client-path', (event, path) => {
         UI.status('League', 'path-found');
 
-        this.getStore().set('league-client-path', path);
+        this.getStore().set('league-client-path-found', path);
         ipcRenderer.send('lcu-connection', path);
       }).send('league-client-path');
     }
