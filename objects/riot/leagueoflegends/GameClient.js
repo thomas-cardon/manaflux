@@ -4,13 +4,8 @@ class GameClient {
   constructor() {
   }
 
-  async load() {
-    const builds = await this.getSystemBuilds();
-    this.branch = builds.branch;
-    this.fullVersion = builds.version;
-  }
-
   async getSystemBuilds() {
+    console.log(Mana.base + 'system/v1/builds');
     return JSON.parse(await rp(Mana.base + 'system/v1/builds'));
   }
 
@@ -41,6 +36,39 @@ class GameClient {
 
     return d;
   }
-}
+
+  async getRegionAndLocale() {
+    return await rp(Mana.base + 'riotclient/get_region_locale');
+  }
+
+  async downloadDDragonRealm() {
+    return this.realm = JSON.parse(await rp(`https://ddragon.leagueoflegends.com/realms/${this.region}.json`));
+  }
+
+  async getPerks() {
+    return await rp(`http://ddragon.leagueoflegends.com/cdn/${this.realm.v}/data/${this.locale || this.realm.l}/runesReforged.json`);
+  }
+
+  findPerkByImage(img) {
+    for (const style of this.perks)
+      for (const slot of style.slots)
+        for (const perk of slot.runes)
+          if (perk.icon === img) return perk;
+  }
+
+  async load() {
+    let r = JSON.parse(await this.getRegionAndLocale());
+
+    this.region = r.region.toLowerCase();
+    this.locale = r.locale;
+
+    await this.downloadDDragonRealm();
+    let x = await this.getSystemBuilds();
+
+    this.branch = x.branch;
+    this.fullVersion = x.version;
+    this.perks = JSON.parse(await this.getPerks());
+  }
+ }
 
 module.exports = GameClient;
