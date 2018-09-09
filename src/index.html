@@ -127,7 +127,7 @@
       <div class="option">
         <p class="suboption-name" data-i18n="ui-background"></p>
         <select data-settings-key="ui-background" data-settings-default="themes/default-bg.jpg" data-custom-component="ui-background" class="dropdown">
-          <option data-i18n="ui-background-disabled" value="null"></option>
+          <option data-i18n="common-disabled" value="null"></option>
           <option data-i18n="ui-background-default" value="themes/default-bg.jpg"></option>
           <option data-i18n="ui-background-forest" value="themes/forest-bg.png"></option>
           <option data-i18n="ui-background-shurima-desert" value="themes/shurima-desert-bg.jpg"></option>
@@ -202,7 +202,7 @@
   </script>
   <script src="assets/js/ui.js"></script>
   <script>
-  window.eval = global.eval = function () { throw new Error(i18n.__('eval')) };
+  window.eval = global.eval = () => console.warn(i18n.__('security-eval'));
   require('../crash-reporting.js');
 
   process.on('unhandledRejection', (reason, p) => log.log(3, `Unhandled rejection at: ${p}, reason: ${reason}`));
