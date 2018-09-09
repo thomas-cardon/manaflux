@@ -33,7 +33,7 @@ class UGGProvider extends Provider {
     return await this.getData(champion, position, gameMode);
   }
 
-  async getRunes(champion, position, gameMode) {
+  async getPerks(champion, position, gameMode) {
     return await this.getData(champion, position, gameMode);
   }
 
@@ -46,14 +46,14 @@ class UGGProvider extends Provider {
     const skillorder = this.scrapeSkillOrder($);
     const itemsets = this.scrapeItemSets($, champion, position.charAt(0).toUpperCase() + position.slice(1), skillorder);
 
-    const runes = this.scrapeRunes($, champion, position.toUpperCase());
+    const perks = this.scrapePerks($, champion, position.toUpperCase());
 
     log.dir(3, summonerspells);
     log.dir(3, skillorder);
     log.dir(3, itemsets);
-    log.dir(3, runes);
+    log.dir(3, perks);
 
-    return { runes, summonerspells, itemsets, position };
+    return { perks, summonerspells, itemsets, position };
   }
 
   /**
@@ -62,7 +62,7 @@ class UGGProvider extends Provider {
    * @param {object} champion - A champion object, from Mana.champions
    * @param {string} position - Limited to: TOP, JUNGLE, MIDDLE, ADC, SUPPORT
    */
-  scrapeRunes($, champion, position) {
+  scrapePerks($, champion, position) {
     const page = { name: `UGG ${champion.name} ${position}`, selectedPerkIds: [] };
 
     $('.perk-active > img').each(function(index) {
