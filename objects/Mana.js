@@ -12,7 +12,7 @@ class Mana extends EventEmitter {
     super();
     $('.version').text(`V${this.version = app.getVersion()}`);
 
-    UI.status('Status', 'loading-storage');
+    UI.status('Status', 'status-loading-storage');
     this._store = new Store();
 
     this.getStore().set('lastVersion', this.version);
@@ -20,9 +20,7 @@ class Mana extends EventEmitter {
       UI.status('Status', 'league-client-start-required');
 
       ipcRenderer.once('league-client-path', (event, path) => {
-        UI.status('League', 'path-found');
-
-        this.getStore().set('league-client-path-found', path);
+        $('#league-client-path').val(this.getStore().set('league-client-path', path));
         ipcRenderer.send('lcu-connection', path);
       }).send('league-client-path');
     }
@@ -40,7 +38,7 @@ class Mana extends EventEmitter {
   }
 
   async preload() {
-    UI.status('Status', 'loading');
+    UI.status('Status', 'common-loading');
 
     this.user = new (require('./User'))();
     this.gameClient = new (require('./riot/leagueoflegends/GameClient'))();
@@ -48,7 +46,7 @@ class Mana extends EventEmitter {
 
     this.championSelectHandler = new (require('./handlers/ChampionSelectHandler'))();
 
-    UI.status('Status', 'loading-data-login');
+    UI.status('Status', 'status-loading-data-login');
 
     this.assetsProxy.load();
 
