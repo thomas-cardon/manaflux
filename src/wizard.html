@@ -34,6 +34,7 @@
         <button type="button" class="btn normal" id="findAutomatically" onclick="ipcRenderer.emit('league-client-path')" data-i18n="league-client-find-automatically"></button>
         <button type="button" class="btn search" id="searchPath" style="margin: -8px 0 0 10px; position: fixed; left: 15px;"></button>
       </div>
+      <p style="color: #1dd1a1; margin-left: 3px;">If you don't know what it is, just press %s</p>
     </div>
   </div>
   <script src="vendor/jquery-3.3.1.min.js" onload="window.$ = window.jQuery = module.exports;"></script>
@@ -55,12 +56,7 @@
     console[type].call(this, message);
   });
 
-  ipcRenderer.on('league-client-path', function (event, path) {
-    console.dir(arguments);
-
-    console.dir(path);
-    if (!path) return document.getElementById('leaguePath').value = i18n.__('league-client-nothing-found');
-  });
+  ipcRenderer.once('league-client-path', (event, path) => document.getElementById('leaguePath').value = path || i18n.__('league-client-nothing-found').send('league-client-path'));
   </script>
   <script src="assets/js/ui.js"></script>
   <script src="assets/js/ui/i18n.js"></script>
