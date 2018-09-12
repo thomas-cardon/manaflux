@@ -19,8 +19,9 @@ function LoggingHandler(level) {
   this.isRenderer = !process || typeof process === 'undefined' || !process.type || process.type === 'renderer';
   this.ipc = this.isRenderer ? ipcRenderer : null;
 
-  if (!this.isRenderer)
-    this.stream = fs.createWriteStream(path.resolve(require('electron').app.getPath('logs'), new Date().toDateString() + '.txt'));
+  // TODO: fix LoggingHandler's stream / getPath('logs')
+  //if (!this.isRenderer)
+    //this.stream = fs.createWriteStream(path.resolve(require('electron').app.getPath('logs') || , new Date().toDateString() + '.txt'));
 }
 
 LoggingHandler.prototype.log = function(level, ...args) {
@@ -51,7 +52,7 @@ LoggingHandler.prototype.send = function(level, type, message) {
   message = type === 'dir' ? JSON.stringify(message) : `[${this._getTimestamp()}] [${this.isRenderer ? 'Renderer' : 'Main'}] ${message}`;
 
   if (this.ipc) this.ipc.send('logging-' + type, { level, message });
-  if (!this.isRenderer) this.stream.write(message + '\n');
+  //if (!this.isRenderer) this.stream.write(message + '\n');
 }
 
 LoggingHandler.prototype.onMessage = function(cb) {
