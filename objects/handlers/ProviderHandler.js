@@ -8,11 +8,11 @@ class ProviderHandler {
     };
   }
 
-  async getChampionData(champion, preferredPosition, gameMode) {
+  async getChampionData(champion, preferredPosition, gameMode, cache = true) {
     /*
     * 1/3 Storage Checking
     */
-    if (Mana.getStore().has(`data.${champion.key}`)) {
+    if (Mana.getStore().has(`data.${champion.key}`) && cache) {
       let d = Mana.getStore().get(`data.${champion.key}`);
 
       for (let [position, data] of Object.entries(d))
@@ -63,7 +63,7 @@ class ProviderHandler {
     * 3/3 Saving
     */
 
-    if (positions !== {}) Mana.getStore().set(`data.${champion.key}`, positions);
+    if (positions !== {} && cache) Mana.getStore().set(`data.${champion.key}`, positions);
     return positions;
   }
 }

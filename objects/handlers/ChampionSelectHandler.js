@@ -14,6 +14,10 @@ class ChampionSelectHandler {
     this.cachedPerks = {};
   }
 
+  async _devDownloadProviderData(champion, pos, mode = 'CLASSIC') {
+    return await ProviderHandler.getChampionData(champion, pos, mode, false);
+  }
+
   load() {
     const self = this;
     this._checkTimer = setInterval(function() {
