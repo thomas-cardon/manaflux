@@ -5,36 +5,49 @@ const Provider = require('./Provider');
 class LeagueofGraphsProvider extends Provider {
   constructor() {
     super('leagueofgraphs', 'League of Graphs');
-    this.base = 'https://www.leagueofgraphs.com/champions/';
+    this.base = 'https://www.leagueofgraphs.com/champions';
   }
 
   async getData(champion, gameMode, preferredPosition) {
-    return await this._scrape(res, champion, gameMode, preferredPosition);
+    let positions = {};
+
+    let x = ['JUNGLE', 'MIDDLE', 'TOP', 'ADC', 'SUPPORT'];
+    for (let i = 0; i < x.length; i++) {
+      log.log(2, `[ProviderHandler] [LOG] Gathering data for ${x[i]}`);
+
+      try {
+        positions[x[i]] = await this._scrape(champion, gameMode, x[i]);
+      }
+      catch(err) {
+        console.error(err);
+      }
+    }
+
+    return log.dir(3, positions);
   }
 
   async getItemSets(champion, gameMode, position) {
     return await this.getData(champion, position, gameMode).itemsets;
   }
 
-  async _scrape(html, champion, gameMode, position) {
-    const data = await Promise.all([
-      await rp(`${this.base}/runes/${champion.key.toLowerCase()}`),
-      await rp(`${this.base}/items/${champion.key.toLowerCase()}`),
-      await rp(`${this.base}/spells/${champion.key.toLowerCase()}`),
-      await rp(`${this.base}/stats/${champion.key.toLowerCase()}`)
-    ]);
+  async _scrape(champion, gameMode, position) {
+    let promises = [rp(`${this.base}/runes/${champion.key.toLowerCase()}${position ? '/' + position : ''}`)];
+
+    promises.push(Mana.getStore().get('item-sets') ? rp(`${this.base}/items/${champion.key.toLowerCase()}${position ? '/' + position : ''}`) : Promise.resolve());
+    promises.push(Mana.getStore().get('summoner-spells') ? rp(`${this.base}/spells/${champion.key.toLowerCase()}${position ? '/' + position : ''}`) : Promise.resolve());
+    promises.push(Mana.getStore().get('statistics') ? rp(`${this.base}/stats/${champion.key.toLowerCase()}${position ? '/' + position : ''}`) : null);
+
+    const data = await Promise.all(promises);
+    console.dir(data);
 
     const $perks = cheerio.load(data[0]);
-    const $items = cheerio.load(data[1]);
-    const $spells = cheerio.load(data[2]);
-    const $stats = cheerio.load(data[3]);
+    const perks = this.scrapePerks($perks, champion, position);
 
-    const perks = scrapePerks($perks, champion);
-    const itemsets = scrapePerks($items, champion, position);
-    const summonerspells = scrapePerks($spells, champion);
-    const statistics = scrapePerks($stats);
+    const itemsets = Mana.getStore().get('item-sets') ? this.scrapeItemSets(cheerio.load(data[1]), champion, position) : {};
+    const summonerspells = Mana.getStore().get('summoner-spells') ? this.scrapeSummonerSpells(cheerio.load(data[2]), champion) : {};
+    const statistics = Mana.getStore().get('statistics') ? {} : {};
 
-    return { perks, itemsets, summonerspells, statistics };
+    return { perks, itemsets, summonerspells, availablePositions: {}, statistics };
   }
 
   /**
@@ -45,20 +58,23 @@ class LeagueofGraphsProvider extends Provider {
    */
   scrapePerks($, champion, position) {
     let pages = [{ selectedPerkIds: [], name: `LOG1 ${champion.name} ${position}` }, { selectedPerkIds: [], name: `LOG1 ${champion.name} ${position}` }];
-    const page1 = $('table').eq(0).find("img[src^='//cdn.leagueofgraphs.com/img/perks/']:not([style*='opacity: 0.3'])");
-    const page2 = $('table').eq(1).find("img[src^='//cdn.leagueofgraphs.com/img/perks/']:not([style*='opacity: 0.3'])");
 
-    function treatPage(page, data) {
+    for (let page in pages) {
+      const d = $('table').eq(page).find("img[src^='//cdn.leagueofgraphs.com/img/perks/']:not([style*='opacity: 0.3'])");
       /* Perks styles */
-      data.splice(0, 2).each(function(index) {
-        page[index === 0 ? 'primaryStyleId' : 'subStyleId'] = $(this).attr('src').slice(-8, -4);
+      d.slice(0, 2).each(function(index) {
+        pages[page][index === 0 ? 'primaryStyleId' : 'subStyleId'] = $(this).attr('src').slice(-8, -4);
       });
 
-      return page;
+      pages[page].selectedPerkIds = [
+        d.eq(4).attr('src').slice(-8, -4),
+        d.eq(5).attr('src').slice(-8, -4),
+        d.eq(6).attr('src').slice(-8, -4),
+        d.eq(8).attr('src').slice(-8, -4),
+        d.eq(9).attr('src').slice(-8, -4),
+        d.eq(10).attr('src').slice(-8, -4)
+      ];
     }
-
-    pages[0] = treatPage(pages[0], page1);
-    pages[1] = treatPage(pages[1], page1);
 
     return pages;
   }
