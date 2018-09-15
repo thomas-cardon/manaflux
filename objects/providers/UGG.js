@@ -15,6 +15,7 @@ class UGGProvider extends Provider {
         log.log(`[U.GG] Gathering data for ${positions[i]} position`);
 
         const d = await rp(`${this.base}lol/champions/${champion.key.toLowerCase()}/build/?role=${positions[i]}`);
+        console.dir(d);
         positions[i] = this._scrape(d, champion, positions[i], gameMode);
       }
       catch(err) {
@@ -39,7 +40,6 @@ class UGGProvider extends Provider {
 
   _scrape(html, champion, position, gameMode) {
     const $ = cheerio.load(html);
-    log.dir(3, $);
 
     const summonerspells = this.scrapeSummonerSpells($);
 
@@ -47,12 +47,6 @@ class UGGProvider extends Provider {
     const itemsets = this.scrapeItemSets($, champion, position.charAt(0).toUpperCase() + position.slice(1), skillorder);
 
     const perks = this.scrapePerks($, champion, position.toUpperCase());
-
-    log.dir(3, summonerspells);
-    log.dir(3, skillorder);
-    log.dir(3, itemsets);
-    log.dir(3, perks);
-
     return { perks, summonerspells, itemsets, position };
   }
 
@@ -66,6 +60,9 @@ class UGGProvider extends Provider {
     const page = { name: `UGG ${champion.name} ${position}`, selectedPerkIds: [] };
 
     $('.perk-active > img').each(function(index) {
+      console.log($(this).attr('src').slice(53));
+      console.dir(Mana.gameClient.findPerkByImage($(this).attr('src').slice(53)).id);
+
       page.selectedPerkIds.push(Mana.gameClient.findPerkByImage($(this).attr('src').slice(53)).id);
     });
 
@@ -73,7 +70,7 @@ class UGGProvider extends Provider {
       page[index === 0 ? 'primaryStyleId' : 'subStyleId'] = parseInt($(this).attr('src').slice(-8, -4));
     });
 
-    return [page];
+    return log.dir(3, [page]);
   }
 
   /**
