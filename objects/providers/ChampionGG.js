@@ -45,7 +45,7 @@ class ChampionGGProvider extends Provider {
     return await this.getData(champion, position, gameMode).itemsets;
   }
 
-  async getRunes(champion, position, gameMode) {
+  async getPerks(champion, position, gameMode) {
     return await this.getData(champion, position, gameMode).perks;
   }
 
@@ -64,7 +64,7 @@ class ChampionGGProvider extends Provider {
     const skillorder = this.scrapeSkillOrder($);
     const itemsets = this.scrapeItemSets($, champion, position, skillorder);
 
-    let perks = this.scrapeRunes($, champion, position);
+    let perks = this.scrapePerks($, champion, position);
 
     let i = perks.length;
     while (i--) {
@@ -91,7 +91,7 @@ class ChampionGGProvider extends Provider {
    * @param {object} champion - A champion object, from Mana.champions
    * @param {string} position - Limited to: TOP, JUNGLE, MIDDLE, ADC, SUPPORT
    */
-  scrapeRunes($, champion, position) {
+  scrapePerks($, champion, position) {
     let pages = [{ name: `CGG1 ${champion.name} ${position} (HW%)`, selectedPerkIds: [] }, { name: `CGG2 ${champion.name} ${position} (MF)`, selectedPerkIds: [] }];
 
     $("img[src*='perk-images']", $("div[class^=Slot__LeftSide]")).each(function(index) {
