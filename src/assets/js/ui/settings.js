@@ -20,7 +20,7 @@ $('input[type="checkbox"]').each(function() {
 
 /* sortable lists support */
 $(".sortable[data-settings-key]").each(function() {
-  const mergeIfMissing = $(this).data('settings-merge-list-if-missing-value') || false;
+  const mergeIfMissing = $(this).data('settings-merge-list-if-missing-value') || false, removeIfMissing = $(this).data('settings-remove-if-missing-value') || false;
 
   const defaultValues = $(this).data('settings-default').split(',');
   const values = Mana.getStore().get($(this).data('settings-key'), defaultValues);
@@ -34,8 +34,19 @@ $(".sortable[data-settings-key]").each(function() {
       }
     }
 
-    if (saveNeeded)
-      Mana.getStore().set($(this).data('settings-key'), values);
+    if (saveNeeded) Mana.getStore().set($(this).data('settings-key'), values);
+  }
+
+  if (removeIfMissing) {
+    let saveNeeded;
+    for (let i = 0; i < values.length; i++) {
+      if (defaultValues.indexOf(values[i]) === -1) {
+        values.splice(i, 1);
+        saveNeeded = true;
+      }
+    }
+
+    if (saveNeeded) Mana.getStore().set($(this).data('settings-key'), values);
   }
 
   for (let i = 0; i < values.length; i++)
