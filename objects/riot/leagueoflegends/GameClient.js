@@ -57,7 +57,7 @@ class GameClient {
   }
 
   findSummonerSpellByName(name) {
-    for (const spell of Mana.summonerspells)
+    for (const spell of Object.values(Mana.summonerspells))
       if (spell.name == name) return spell;
   }
 
