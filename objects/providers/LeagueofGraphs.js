@@ -5,7 +5,7 @@ const Provider = require('./Provider');
 class LeagueofGraphsProvider extends Provider {
   constructor() {
     super('leagueofgraphs', 'League of Graphs');
-    this.base = 'https://www.leagueofgraphs.com/champions';
+    this.base = 'https://www.leagueofgraphs.com/en/champions';
   }
 
   async getData(champion, gameMode, preferredPosition) {
@@ -85,8 +85,7 @@ class LeagueofGraphsProvider extends Provider {
    * @param {string} gameMode - A gamemode, from League Client, such as CLASSIC, ARAM, etc.
    */
   scrapeSummonerSpells($, gameMode) {
-    let summonerspells = [];
-    return summonerspells;
+    return $('td.medium-text-left.small-text-center > span:eq(0) > img').map(function(x) { return Mana.gameclient.findSummonerSpellByName($(this).attr('alt')); });;
   }
 
   /**
@@ -94,7 +93,15 @@ class LeagueofGraphsProvider extends Provider {
    * @param {cheerio} $ - The cheerio object
    */
   scrapeSkillOrder($) {
-    return skillorder;
+    let x = [[0, 0, 0, 'Q'], [0, 0, 0, 'W'], [0, 0, 0, 'E']], keys = ['Q', 'W', 'E', 'R'];
+    $('.skillCell').each(function(index) {
+      if ($(this).hasClass('active')) x[Math.floor(index / 18)][Math.floor(index % 18 / 6)]++;
+
+      /* 18 * 3 = Total number of skills */
+      if (index === 54) return false;
+    });
+
+    return x.map((x, index) => i18n.__('key-' + keys[index])).sort((a, b) => a[0] - b[0] || a[1] - b[1]).join(' => ');
   }
 
   /**

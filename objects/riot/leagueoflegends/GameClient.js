@@ -56,6 +56,11 @@ class GameClient {
           if (perk.icon === img) return perk;
   }
 
+  findSummonerSpellByName(name) {
+    for (const spell of Mana.summonerspells)
+      if (spell.name == name) return spell;
+  }
+
   async load() {
     let r = JSON.parse(await this.getRegionAndLocale());
 
