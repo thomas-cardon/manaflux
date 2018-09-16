@@ -5,7 +5,7 @@ const Provider = require('./Provider');
 class LeagueofGraphsProvider extends Provider {
   constructor() {
     super('leagueofgraphs', 'League of Graphs');
-    this.base = 'https://www.leagueofgraphs.com/en/champions';
+    this.base = 'https://www.leagueofgraphs.com/champions';
   }
 
   async getData(champion, gameMode, preferredPosition) {
@@ -43,8 +43,8 @@ class LeagueofGraphsProvider extends Provider {
     const $perks = cheerio.load(data[0]);
     const perks = this.scrapePerks($perks, champion, position);
 
-    const itemsets = Mana.getStore().get('item-sets') ? this.scrapeItemSets(cheerio.load(data[1]), champion, position, '') : {};
-    const summonerspells = Mana.getStore().get('summoner-spells') ? this.scrapeSummonerSpells(cheerio.load(data[2]), champion) : {};
+    const itemsets = Mana.getStore().get('item-sets') ? this.scrapeItemSets(cheerio.load(data[1]), champion, position, '') : [];
+    const summonerspells = Mana.getStore().get('summoner-spells') ? this.scrapeSummonerSpells(cheerio.load(data[2]), champion) : [];
     const statistics = Mana.getStore().get('statistics') ? {} : {};
 
     return { perks, itemsets, summonerspells, availablePositions: {}, statistics };
@@ -66,14 +66,7 @@ class LeagueofGraphsProvider extends Provider {
         pages[page][index === 0 ? 'primaryStyleId' : 'subStyleId'] = $(this).attr('src').slice(-8, -4);
       });
 
-      pages[page].selectedPerkIds = [
-        d.eq(4).attr('src').slice(-8, -4),
-        d.eq(5).attr('src').slice(-8, -4),
-        d.eq(6).attr('src').slice(-8, -4),
-        d.eq(8).attr('src').slice(-8, -4),
-        d.eq(9).attr('src').slice(-8, -4),
-        d.eq(10).attr('src').slice(-8, -4)
-      ];
+      pages[page].selectedPerkIds = [4, 5, 6, 8, 9, 10].map(x => d.eq(x).attr('src').slice(-8, -4));
     }
 
     return pages;
@@ -85,7 +78,7 @@ class LeagueofGraphsProvider extends Provider {
    * @param {string} gameMode - A gamemode, from League Client, such as CLASSIC, ARAM, etc.
    */
   scrapeSummonerSpells($, gameMode) {
-    return $('td.medium-text-left.small-text-center > span:eq(0) > img').map(function(x) { return Mana.gameclient.findSummonerSpellByName($(this).attr('alt')); });;
+    return $('td.medium-text-left.small-text-center > span > img').slice(0, 2).toArray().map(function(x) { return Mana.gameClient.findSummonerSpellByName(x.attribs.alt).id; });
   }
 
   /**
@@ -113,32 +106,26 @@ class LeagueofGraphsProvider extends Provider {
    */
   scrapeItemSets($, champion, position, skillorder) {
     let itemset = new ItemSet(champion.key, position).setTitle(`LOG ${champion.name} - ${position}`);
+    let blocks = [
+        new Block().setName(i18n.__('item-sets-block-starter', skillorder)),
+        new Block().setName(i18n.__('item-sets-block-core-build')),
+        new Block().setName(i18n.__('item-sets-block-endgame')),
+        new Block().setName(i18n.__('item-sets-block-boots'))
+    ];
+
     $('#mainContent > div > div > div > table').each(function(index) {
-      let block;
+      if (!blocks[index]) return;
 
-      switch(index) {
-        case 0:
-          block = new Block().setName(i18n.__('item-sets-block-starter', skillorder));
-          break;
-        case 1:
-          block = new Block().setName(i18n.__('item-sets-block-core-build'));
-          break;
-        case 2:
-          block = new Block().setName(i18n.__('item-sets-block-endgame'));
-          break;
-        case 3:
-          block = new Block().setName(i18n.__('item-sets-block-boots'));
-          break;
-      }
-
-      $(this).find('tr:not(".see_more_hidden")').children('td.text-center').children('img').each(function() {
-        block.addItem($(this).attr('class').slice(20, -4));
+      $(this).find('img').each(function() {
+        console.log($(this).attr('class'), $(this).attr('class').slice(20, -4));
+        blocks[index].addItem($(this).attr('class').slice(20, -4), false);
       });
-
-      itemset.addBlock(block);
     });
 
+    itemset.setBlocks(blocks);
     itemset.addBlock(new Block().setName(i18n.__('itemsets-block-consumables')).addItem(2003).addItem(2138).addItem(2139).addItem(2140));
+
+    return [itemset];
   }
 }
 
