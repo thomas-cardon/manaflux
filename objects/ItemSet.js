@@ -32,6 +32,11 @@ class ItemSet {
     return this;
   }
 
+  setBlocks(block) {
+    this._data.blocks = block;
+    return this;
+  }
+
   addBlock(block) {
     this._data.blocks.push(block);
     return this;
