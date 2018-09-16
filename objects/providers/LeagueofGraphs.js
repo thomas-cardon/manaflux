@@ -43,7 +43,7 @@ class LeagueofGraphsProvider extends Provider {
     const $perks = cheerio.load(data[0]);
     const perks = this.scrapePerks($perks, champion, position);
 
-    const itemsets = Mana.getStore().get('item-sets') ? this.scrapeItemSets(cheerio.load(data[1]), champion, position) : {};
+    const itemsets = Mana.getStore().get('item-sets') ? this.scrapeItemSets(cheerio.load(data[1]), champion, position, '') : {};
     const summonerspells = Mana.getStore().get('summoner-spells') ? this.scrapeSummonerSpells(cheerio.load(data[2]), champion) : {};
     const statistics = Mana.getStore().get('statistics') ? {} : {};
 
@@ -112,7 +112,17 @@ class LeagueofGraphsProvider extends Provider {
    * @param {object} skillorder
    */
   scrapeItemSets($, champion, position, skillorder) {
+    let itemset = new ItemSet(champion.key, position).setTitle(`LOG ${champion.name} - ${position}`);
+    let starter = new Block().setName(i18n.__('item-sets-block-starter'));
+    let core = new Block().setName(i18n.__('item-sets-block-core-build'));
+    let end = new Block().setName(i18n.__('itemsets-block-boots'));
+    let boots = new Block().setName(i18n.__('itemsets-block-boots'));
 
+    $('#mainContent > div > div > div > table').each(function(index) {
+      let id = $(this).find('tr:not(".see_more_hidden")').children('td.text-center').children('img').attr('class').slice(20, -4);
+    });
+
+    itemset.addBlock(new Block().setName(i18n.__('itemsets-block-consumables')).addItem(2003).addItem(2138).addItem(2139).addItem(2140));
   }
 }
 
