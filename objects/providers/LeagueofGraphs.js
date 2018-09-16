@@ -113,13 +113,29 @@ class LeagueofGraphsProvider extends Provider {
    */
   scrapeItemSets($, champion, position, skillorder) {
     let itemset = new ItemSet(champion.key, position).setTitle(`LOG ${champion.name} - ${position}`);
-    let starter = new Block().setName(i18n.__('item-sets-block-starter'));
-    let core = new Block().setName(i18n.__('item-sets-block-core-build'));
-    let end = new Block().setName(i18n.__('itemsets-block-boots'));
-    let boots = new Block().setName(i18n.__('itemsets-block-boots'));
-
     $('#mainContent > div > div > div > table').each(function(index) {
-      let id = $(this).find('tr:not(".see_more_hidden")').children('td.text-center').children('img').attr('class').slice(20, -4);
+      let block;
+
+      switch(index) {
+        case 0:
+          block = new Block().setName(i18n.__('item-sets-block-starter', skillorder));
+          break;
+        case 1:
+          block = new Block().setName(i18n.__('item-sets-block-core-build'));
+          break;
+        case 2:
+          block = new Block().setName(i18n.__('item-sets-block-endgame'));
+          break;
+        case 3:
+          block = new Block().setName(i18n.__('item-sets-block-boots'));
+          break;
+      }
+
+      $(this).find('tr:not(".see_more_hidden")').children('td.text-center').children('img').each(function() {
+        block.addItem($(this).attr('class').slice(20, -4));
+      });
+
+      itemset.addBlock(block);
     });
 
     itemset.addBlock(new Block().setName(i18n.__('itemsets-block-consumables')).addItem(2003).addItem(2138).addItem(2139).addItem(2140));

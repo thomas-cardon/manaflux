@@ -95,6 +95,8 @@
   "item-sets-block-recommanded": "Recommanded Items",
   "item-sets-block-core-build": "Core build",
   "item-sets-block-core-build-wr": "Core build | WR: %s - %s games",
+  "item-sets-block-most-popular": "Most popular items",
+  "item-sets-block-endgame": "Endgame items",
   "item-sets-block-options": "Item options",
   "item-sets-block-boots": "Boots (choose one)",
   "item-sets-block-consumables": "Consumables",
