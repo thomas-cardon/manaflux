@@ -22,7 +22,9 @@ class Mana extends EventEmitter {
       ipcRenderer.once('league-client-path', (event, path) => {
         $('#league-client-path').val(this.getStore().set('league-client-path', path));
         ipcRenderer.send('lcu-connection', path);
-      }).send('league-client-path');
+      });
+
+      require('../objects/Wizard')(true);
     }
     else ipcRenderer.send('lcu-connection', this.getStore().get('league-client-path'));
 

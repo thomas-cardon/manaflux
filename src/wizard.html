@@ -14,12 +14,12 @@
   <link rel="stylesheet" href="assets/css/wizard.css">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
-<body>
+<body style="background: linear-gradient(rgba(125, 185, 232, 0) -1%, rgba(50, 96, 122, 0) 65%, rgba(10, 49, 64, 0.8) 100%), url(./assets/img/themes/default-bg.jpg) no-repeat;">
   <div class="tab-container">
     <img src="assets/img/selected.png" id="selected" class="selected" draggable="false">
     <div class="tab">
       <button type="button" class="btn tab active" data-i18n="ui-menu-wizard-step-1" data-tabid="step-1"></button>
-      <button type="button" class="btn tab flash" data-i18n="ui-menu-wizard-step-2"></button>
+      <button type="button" class="btn tab flash" data-i18n="ui-menu-wizard-step-2" onclick="ipcRenderer.send('wiz-close');"></button>
     </div>
     <div class="controls">
       <button type="button" class="btn control" onclick="ipcRenderer.send('wiz-minimize');"><i class="material-icons icon">remove</i></button>
@@ -28,13 +28,12 @@
   </div>
   <div class="content">
     <div data-tabid="step-1" data-tabn=0 class="tabcontent" style="display: none; margin-left: 12%;">
-      <div class="option button-group">
+      <div class="option">
         <p class="suboption-name" data-i18n="league-client-path"></p>
         <input id="leaguePath" type="text" class="center-area" disabled />
-        <button type="button" class="btn normal" id="findAutomatically" onclick="ipcRenderer.emit('league-client-path')" data-i18n="league-client-find-automatically"></button>
-        <button type="button" class="btn search" id="searchPath" style="margin: -8px 0 0 10px; position: fixed; left: 15px;"></button>
+        <button type="button" class="btn search" id="searchPath" style="margin: -8px 0 0 0px;position: fixed;left: 15px;"></button>
       </div>
-      <p style="color: #1dd1a1; margin-left: 3px;">If you don't know what it is, just press %s</p>
+      <p style="color: #fdcb6e;margin-left: 3px;font-size: 12px;">If you don't know what it is, just press %s, or click <a style="color: #d63031" onclick="ipcRenderer.send('league-client-path')">HERE</a> to find the folder automatically</p>
     </div>
   </div>
   <script src="vendor/jquery-3.3.1.min.js" onload="window.$ = window.jQuery = module.exports;"></script>
@@ -56,7 +55,7 @@
     console[type].call(this, message);
   });
 
-  ipcRenderer.once('league-client-path', (event, path) => document.getElementById('leaguePath').value = path || i18n.__('league-client-nothing-found').send('league-client-path'));
+  ipcRenderer.on('league-client-path', (event, path) => document.getElementById('leaguePath').value = path || i18n.__('league-client-nothing-found')).send('league-client-path');
   </script>
   <script src="assets/js/ui.js"></script>
   <script src="assets/js/ui/i18n.js"></script>

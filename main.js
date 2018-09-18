@@ -128,8 +128,6 @@ ipcMain.on('auto-start', (event, enable) => {
   .catch(err => event.sender.send('error', { type: 'AUTO-START', error: err }));
 });
 
-ipcMain.on('league-client-path', event => connector.getPathHandler().findLeaguePath().then(path => event.sender.send('league-client-path', path)));
-
 ipcMain.on('lcu-connection', (event, path) => {
   if (connector.getConnectionHandler().hasStarted()) {
     connector.getConnectionHandler().removeAllListeners();
