@@ -38,7 +38,6 @@ class LeagueofGraphsProvider extends Provider {
     promises.push(Mana.getStore().get('statistics') ? rp(`${this.base}/stats/${champion.key.toLowerCase()}${position ? '/' + position : ''}`) : null);
 
     const data = await Promise.all(promises);
-    console.dir(data);
 
     const $perks = cheerio.load(data[0]);
     const perks = this.scrapePerks($perks, champion, position);
@@ -66,7 +65,7 @@ class LeagueofGraphsProvider extends Provider {
         pages[page][index === 0 ? 'primaryStyleId' : 'subStyleId'] = $(this).attr('src').slice(-8, -4);
       });
 
-      pages[page].selectedPerkIds = [4, 5, 6, 8, 9, 10].map(x => d.eq(x).attr('src').slice(-8, -4));
+      pages[page].selectedPerkIds = [4, 5, 6, 8, 9].map(x => d.eq(x).attr('src').slice(-8, -4));
     }
 
     return pages;
