@@ -102,6 +102,8 @@
   "update-button-download": "Zaktualizuj",
   "update-channel": "Kanał aktualizacji",
   "update-staged-rollout": "Jesteś częścią %s użytkowników, którzy otrzymali aktualizację",
+  "wizard-help-one": "If you don't know what it is, just press %s, or click",
+  "wizard-help-two": "to find the folder automatically",
   "key-Q": "Q",
   "key-W": "W",
   "key-E": "E",

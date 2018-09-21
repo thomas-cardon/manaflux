@@ -28,7 +28,9 @@ i18n.prototype.__d = function(...args) {
 i18n.prototype.__ = function(...args) {
   if (process && process.type === 'renderer' && this._unused && this._unused.includes(args[0])) this._unused.splice(this._unused.indexOf(args[0]), 1);
 
-  args[0] = (this._language && this._language[args[0]] ? this._language[args[0]] : this._default[args[0]]) || args[0];
+  for (let i = 0; i < args.length; i++)
+    args[i] = (this._language && this._language[args[i]] ? this._language[args[i]] : this._default[args[i]]) || args[i];
+
   return args[0].includes("%s") ? require('util').format.call(this, ...args) : args[0];
 }
 
