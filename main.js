@@ -143,7 +143,7 @@ ipcMain.on('lcu-connection', (event, path) => {
 });
 
 ipcMain.on('lcu-get-path', (event, path) => event.sender.send(connector.getPathHandler().getLeaguePath()));
-ipcMain.on('lcu-set-path', (event, path) => connector.getPathHandler().setLeaguePath(path));
+ipcMain.on('lcu-set-path', (event, path) => connector.getPathHandler().setLeaguePath(log.log(3, path)));
 ipcMain.on('lcu-find-path', (event, path) => connector.getPathHandler().findLeaguePath().then(x => event.sender.send('lcu-find-path', x)));
 
 ipcMain.on('lcu-is-connected', event => event.sender.send('lcu-is-connected', connector.isConnected()));
