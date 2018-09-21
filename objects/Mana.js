@@ -19,14 +19,14 @@ class Mana extends EventEmitter {
     if (!this.getStore().has('league-client-path')) {
       UI.status('Status', 'league-client-start-required');
 
-      ipcRenderer.once('league-client-path', (event, path) => {
-        $('#league-client-path').val(this.getStore().set('league-client-path', path));
-        ipcRenderer.send('lcu-connection', path);
+      require('../objects/Wizard')(true).on('closed', () => {
+        ipcRenderer.on('lcu-get-path', (event, path) => {
+          $('#league-client-path').val(this.getStore().set('league-client-path', path));
+          ipcRenderer.send('lcu-connection');
+        }).send('lcu-get-path');
       });
-
-      require('../objects/Wizard')(true);
     }
-    else ipcRenderer.send('lcu-connection', this.getStore().get('league-client-path'));
+    else ipcRenderer.send('lcu-set-path', this.getStore().get('league-client-path')).send('lcu-connection');
 
     if (!this.getStore().has('riot-consent')) {
       dialog.showMessageBox({ title: i18n.__('info'), message: i18n.__('consent') });

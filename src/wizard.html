@@ -19,11 +19,7 @@
     <img src="assets/img/selected.png" id="selected" class="selected" draggable="false">
     <div class="tab">
       <button type="button" class="btn tab active" data-i18n="ui-menu-wizard-step-1" data-tabid="step-1"></button>
-      <button type="button" class="btn tab flash" data-i18n="ui-menu-wizard-step-2" onclick="ipcRenderer.send('wiz-close');"></button>
-    </div>
-    <div class="controls">
-      <button type="button" class="btn control" onclick="ipcRenderer.send('wiz-minimize');"><i class="material-icons icon">remove</i></button>
-      <button type="button" class="btn control" onclick="ipcRenderer.send('wiz-close');"><i class="material-icons icon">clear</i></button>
+      <button type="button" class="btn tab flash" data-i18n="ui-menu-wizard-step-2" onclick="close();"></button>
     </div>
   </div>
   <div class="content">
@@ -33,16 +29,15 @@
         <input id="leaguePath" type="text" class="center-area" disabled />
         <button type="button" class="btn search" id="searchPath" style="margin: -8px 0 0 0px;position: fixed;left: 15px;"></button>
       </div>
-      <p style="color: #fdcb6e;margin-left: 3px;font-size: 12px;">If you don't know what it is, just press %s, or click <a style="color: #d63031" onclick="ipcRenderer.send('league-client-path')">HERE</a> to find the folder automatically</p>
+      <p style="color: #fdcb6e;margin-left: 3px;font-size: 12px;">If you don't know what it is, just press %s, or click <a style="color: #d63031" onclick="ipcRenderer.send('lcu-find-path');">HERE</a> to find the folder automatically</p>
     </div>
   </div>
   <script src="vendor/jquery-3.3.1.min.js" onload="window.$ = window.jQuery = module.exports;"></script>
   <script>
-    const { ipcRenderer } = require('electron');
-  </script>
-  <script>
   window.eval = global.eval = function () { throw new Error(i18n.__('eval')) };
   require('../crash-reporting.js');
+
+  const { ipcRenderer, remote } = require('electron');
 
   process.on('unhandledRejection', (reason, p) => log.log(3, `Unhandled rejection at: ${p}, reason: ${reason}`));
   process.on('uncaughtException', console.error);
@@ -55,7 +50,12 @@
     console[type].call(this, message);
   });
 
-  ipcRenderer.on('league-client-path', (event, path) => document.getElementById('leaguePath').value = path || i18n.__('league-client-nothing-found')).send('league-client-path');
+  ipcRenderer.on('lcu-find-path', (event, path) => document.getElementById('leaguePath').value = path || i18n.__('league-client-nothing-found')).send('lcu-find-path');
+
+  function close() {
+    ipcRenderer.send('lcu-set-path', document.getElementById('leaguePath').value);
+    remote.getCurrentWindow().close();
+  }
   </script>
   <script src="assets/js/ui.js"></script>
   <script src="assets/js/ui/i18n.js"></script>
