@@ -17,7 +17,7 @@ ipcRenderer.on('update-available', async (event, data) => {
 
 	for (const note of data.releaseNotes) {
 		if (!changelogs[note.version]) changelogs[note.version] = '';
-		changelogs[note.version] += note.note.replace('h2', 'h4').replace('h1', 'h3') + '<br>';
+		changelogs[note.version] += note.note.replace(new RegExp('h1', 'g'), 'h3').replace(new RegExp('h2', 'g'), 'h4') + '<br>';
 	}
 
 	for (const [version, notes] of Object.entries(changelogs)) {

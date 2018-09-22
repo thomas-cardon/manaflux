@@ -1,11 +1,10 @@
 #release-notes {
   min-width: 50%;
   max-width: 90%;
-  max-height: 410px;
+  max-height: 280px;
   font-size: 11px;
   overflow-y: scroll;
   overflow-x: hidden;
-  float: left;
 }
 
 #updateAvailableText {
@@ -39,7 +38,7 @@
 
 #updateSize {
   float: left;
-  margin: 70px -104px;
+  margin: 27px;
   color: #ffeaa7;
   font-size: 20px;
   letter-spacing: 0.025rem;
