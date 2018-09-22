@@ -129,6 +129,7 @@ ipcMain.on('lcu-connection', (event, path) => {
     connector.getConnectionHandler().end();
   }
 
+  if (path) connector.getPathHandler().setLeaguePath(log.log(3, path));
   connector.start();
 
   connector.getConnectionHandler().on('connected', d => event.sender.send('lcu-connected', d));
