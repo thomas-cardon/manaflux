@@ -79,11 +79,6 @@ ipcMain.on('restart', () => {
   app.exit(0);
 });
 
-ipcMain.on('update-channel-change', (event, channel) => {
-  if (channel) appUpdater.channel = channel;
-  event.sender.send('update-channel-change', appUpdater.channel);
-});
-
 autoUpdater.on('update-available', info => {
   win.webContents.send('update-available', info);
   ipcMain.once('update-download', () => autoUpdater.downloadUpdate().then(cancelToken => ipcMain.once('update-cancel', () => cancelToken.cancel())));
@@ -142,12 +137,13 @@ ipcMain.on('lcu-connection', (event, path) => {
   connector.getConnectionHandler().on('disconnected', () => event.sender.send('lcu-disconnected'));
 });
 
-ipcMain.on('lcu-get-path', (event, path) => event.sender.send(connector.getPathHandler().getLeaguePath()));
-ipcMain.on('lcu-set-path', (event, path) => connector.getPathHandler().setLeaguePath(log.log(3, path)));
-ipcMain.on('lcu-find-path', (event, path) => connector.getPathHandler().findLeaguePath().then(x => event.sender.send('lcu-find-path', x)));
+ipcMain.on('lcu-get-path', event => event.sender.send('lcu-get-path', connector.getPathHandler().getLeaguePath()));
+ipcMain.on('lcu-find-path', event => connector.getPathHandler().findLeaguePath().then(x => event.sender.send('lcu-find-path', x)));
 
-ipcMain.on('lcu-is-connected', event => event.sender.send('lcu-is-connected', connector.isConnected()));
-ipcMain.on('lcu-is-logged-in', event => event.sender.send('lcu-is-logged-in', connector.isLoggedIn()));
+ipcMain.on('lcu-set-path', (event, path) => connector.getPathHandler().setLeaguePath(log.log(3, path)));
+
+ipcMain.on('lcu-is-connected', event => event.returnValue = connector.isConnected());
+ipcMain.on('lcu-is-logged-in', event => event.returnValue = connector.isLoggedIn());
 
 ipcMain.on('win-show', (event, inactive) => {
   if (!win.isVisible()) win[inactive ? 'showInactive' : 'show']();
