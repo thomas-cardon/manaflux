@@ -27,6 +27,7 @@
 #updateStatus > span#updateRollout {
   float: left;
   margin: -3% 0 3% 0;
+  max-width: 95%;
   color: #ffc952;
   font-size: 15px;
 }
