@@ -155,8 +155,8 @@ ipcMain.on('win-close', () => win.close());
 ipcMain.on('win-minimize', () => win.minimize());
 
 app.on('window-all-closed', () => {
-  if (process.process.platform !== 'darwin') app.quit();
-})
+  app.quit();
+});
 
 app.on('will-quit', () => globalShortcut.unregisterAll());
 
