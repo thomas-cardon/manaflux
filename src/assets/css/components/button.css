@@ -132,7 +132,8 @@
   animation: flash 0.3s alternate infinite;
 }
 
-.tab:disabled {
+.btn.tab:disabled {
+  cursor: default;
   color: #a09b8c !important;
   animation: none !important;
 }
