@@ -21,9 +21,11 @@ class ItemSetHandler {
   }
 
   static async getItemSets() {
-    const CHAMPIONS_PATH = path.resolve(Mana.getStore().get('leaguePath') + `\\Config\\Champions\\`);
+    const CHAMPIONS_PATH = path.resolve(Mana.getStore().get('league-client-path') + `\\Config\\Champions\\`);
 
+    await this._ensureDir(path.resolve(Mana.getStore().get('league-client-path') + `\\Config\\`));
     await this._ensureDir(CHAMPIONS_PATH);
+    
     const dir = await this._readdir(CHAMPIONS_PATH);
 
     if (dir.length === 0) return [];
@@ -38,16 +40,17 @@ class ItemSetHandler {
   }
 
   static async getItemSetsByChampionKey(key) {
-    await this._ensureDir(path.resolve(Mana.getStore().get('leaguePath') + `\\Config\\Champions`));
-    await this._ensureDir(path.resolve(Mana.getStore().get('leaguePath') + `\\Config\\Champions\\${key}`));
-    await this._ensureDir(path.resolve(Mana.getStore().get('leaguePath') + `\\Config\\Champions\\${key}\\Recommended`));
+    const CHAMPION_PATH = path.resolve(Mana.getStore().get('league-client-path') + `\\Config\\Champions\\${key}\\Recommended`)
 
-    const dir = await this._readdir(path.resolve(Mana.getStore().get('leaguePath') + `\\Config\\Champions\\${key}\\Recommended`));
+    await this._ensureDir(path.resolve(Mana.getStore().get('league-client-path') + `\\Config\\Champions\\${key}`));
+    await this._ensureDir(CHAMPION_PATH);
+
+    const dir = await this._readdir(CHAMPION_PATH);
     if (dir.length === 0) return [];
 
     let arr = [];
     for (let file of dir)
-      if (file.startsWith('MFLUX_')) arr.push(path.resolve(Mana.getStore().get('leaguePath') + `\\Config\\Champions\\${key}\\Recommended\\${file}`));
+      if (file.startsWith('MFLUX_')) arr.push(path.join(CHAMPION_PATH, file));
 
     return arr;
   }
