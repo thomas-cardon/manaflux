@@ -3,8 +3,6 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 const EventEmitter = require('events');
 const { dialog, app } = require('electron').remote;
 
-const ItemSetHandler = require('./handlers/ItemSetHandler');
-
 const Store = require('electron-store');
 
 class Mana extends EventEmitter {
@@ -17,11 +15,13 @@ class Mana extends EventEmitter {
 
     this.getStore().set('lastVersion', this.version);
     if (!this.getStore().has('league-client-path'))
-      require('../objects/Wizard')(true).on('closed', () => ipcRenderer.send('lcu-get-path'));
+      require('../objects/Wizard')(true).on('closed', () => {
+        console.log('[UI] Wizard has been closed');
+        ipcRenderer.send('lcu-get-path');
+        ipcRenderer.send('lcu-connection');
+      });
 
-    else ipcRenderer.send('lcu-set-path', this.getStore().get('league-client-path'));
-
-    ipcRenderer.send('lcu-connection');
+    else ipcRenderer.send('lcu-connection', this.getStore().get('league-client-path'));
 
     if (!this.getStore().has('riot-consent')) {
       dialog.showMessageBox({ title: i18n.__('info'), message: i18n.__('consent') });
@@ -56,7 +56,7 @@ class Mana extends EventEmitter {
 
     if (this.getStore().get('lastBranchSeen') !== this.gameClient.branch) {
       this.getStore().set('data', {});
-      ItemSetHandler.getItemSets().then(x => ItemSetHandler.deleteItemSets(x)).catch(UI.error);
+      require('./handlers/ItemSetHandler').getItemSets().then(x => require('./handlers/ItemSetHandler').deleteItemSets(x)).catch(UI.error);
     }
 
     this._store.set('lastBranchSeen', this.gameClient.branch);

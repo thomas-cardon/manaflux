@@ -1,15 +1,11 @@
 /* Custom components */
-$(document).ready(function() {
-  $('[data-custom-component]').each(function() {
-    const key = $(this).data('custom-component');
+for (const el of document.querySelectorAll('[data-custom-component]')) {
+  log.log(2, `[UI] [Custom Components] Loading ${el.dataset.customComponent}`);
 
-    log.log(2, `[UI] [Custom Components] Loading ${key}`);
+  const d = require(__dirname + '\\assets\\js\\custom-components\\' + el.dataset.customComponent + '.js');
 
-    const d = require(__dirname + '\\assets\\js\\custom-components\\' + key + '.js');
-
-    if (typeof d === 'object')
-      for (const [event, f] of Object.entries(d))
-        $(this).on(event, f);
-    else $(this).on($(this).data('custom-component-event') || 'click', d);
-  });
-});
+  if (typeof d === 'object')
+    for (const [event, f] of Object.entries(d))
+      el.addEventListener(event, f);
+  else d.apply(el);
+}
