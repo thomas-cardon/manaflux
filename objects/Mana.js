@@ -78,7 +78,7 @@ class Mana extends EventEmitter {
     global._devChampionSelect = () => console.log(`[${i18n.__('error')}] ${i18n.__('developer-game-start-error')}\n${i18n.__('league-client-disconnected')}`);
 
     this.championSelectHandler.stop();
-    UI.status('League', 'disconnected');
+    UI.status('League', 'status-disconnected');
   }
 
   updateAuthenticationTokens(data) {
