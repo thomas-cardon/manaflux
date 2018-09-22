@@ -26,7 +26,7 @@
     <div data-tabid="step-1" data-tabn=0 class="tabcontent" style="display: none; margin-left: 12%;">
       <div class="option">
         <p class="suboption-name" data-i18n="league-client-path" id="league-client-path"></p>
-        <input id="leaguePath" type="text" class="center-area" disabled />
+        <input id="leaguePath" type="text" class="center-area big" disabled />
         <button type="button" class="btn search" id="searchPath" style="margin: -8px 0 0 0px;position: fixed;left: 15px;"></button>
       </div>
       <p style="color: #fdcb6e;margin-left: 3px;font-size: 12px;"><span data-i18n="wizard-help-one" data-i18n-args="ui-menu-wizard-step-2"></span>&nbsp;<a style="color: #d63031; text-transform: uppercase;" onclick="ipcRenderer.send('lcu-find-path');" data-i18n="common-here"></a>&nbsp;<span data-i18n="wizard-help-two"></span></p>
@@ -38,6 +38,8 @@
   require('../crash-reporting.js');
 
   const { ipcRenderer, remote } = require('electron');
+  const fs = require('fs'), path = require('path');
+  const { dialog } = remote;
 
   process.on('unhandledRejection', (reason, p) => log.log(3, `Unhandled rejection at: ${p}, reason: ${reason}`));
   process.on('uncaughtException', console.error);
@@ -54,17 +56,36 @@
     if (path) ipcRenderer.send('lcu-set-path', path);
 
     document.getElementById('leaguePath').value = path || i18n.__('league-client-nothing-found');
-    document.getElementById('league-client-path').style.color = path ? '#cdbe91' : '#b33939';
-    document.getElementById('go').disabled = path !== null;
+    document.getElementById('go').disabled = path === null;
   }).send('lcu-find-path');
 
-  (function() {
-    document.getElementById('go').addEventListener('click', () => {
-      if (document.getElementById('leaguePath').value === i18n.__('league-client-nothing-found'))
-        document.getElementById('league-client-path').style.color = '#cdbe91';
-      else remote.getCurrentWindow().close();
+  (async function() {
+      document.getElementById('go').addEventListener('click', () => remote.getCurrentWindow().close());
+      document.getElementById('searchPath').addEventListener('click', () => {
+        let leaguePath = log.dir(3, dialog.showOpenDialog({ properties: ['openDirectory', 'showHiddenFiles'], message: i18n.__('league-client-path-asked'), title: i18n.__('league-client-path-asked') }));
+
+        if (!leaguePath || leaguePath.length === 0) return;
+        leaguePath = leaguePath[0];
+
+        _exists(path.resolve(leaguePath + '\\LeagueClient.' + (process.platform === 'win32' ? 'exe' : 'app')))
+        .then(exists => {
+          document.getElementById('leaguePath').value = exists ? leaguePath : i18n.__('league-client-path-wrong');
+          document.getElementById('league-client-path').style.color = exists ? '#cdbe91' : '#b33939';
+          document.getElementById('go').disabled = !exists;
+        });
+      });
+    })();
+
+  function _exists(path) {
+    return new Promise((resolve, reject) => {
+      console.log(path);
+      fs.access(path, fs.constants.F_OK, err => {
+        if (err && err.code === 'ENOENT') resolve(false);
+        else if (err) reject(err);
+        else resolve(true);
+      });
     });
-  })();
+  }
   </script>
   <script src="assets/js/ui.js"></script>
   <script src="assets/js/ui/i18n.js"></script>

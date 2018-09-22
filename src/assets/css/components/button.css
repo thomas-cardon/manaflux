@@ -66,7 +66,7 @@
   filter: brightness(1);
 }
 
-.btn.search:active, .btn.search:focus {
+.btn.search:active {
   filter: brightness(1);
   background-position-y: 120px;
 }
