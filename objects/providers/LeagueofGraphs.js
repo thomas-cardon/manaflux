@@ -56,16 +56,23 @@ class LeagueofGraphsProvider extends Provider {
    * @param {string} position - Limited to: TOP, JUNGLE, MIDDLE, ADC, SUPPORT
    */
   scrapePerks($, champion, position) {
-    let pages = [{ selectedPerkIds: [], name: `LOG1 ${champion.name} ${position}` }, { selectedPerkIds: [], name: `LOG1 ${champion.name} ${position}` }];
+    let pages = [{ selectedPerkIds: [], name: `LOG1 ${champion.name} ${position}` }, { selectedPerkIds: [], name: `LOG2 ${champion.name} ${position}` }];
 
     for (let page in pages) {
-      const d = $('table').eq(page).find("img[src^='//cdn.leagueofgraphs.com/img/perks/']:not([style*='opacity: 0.3'])");
-      /* Perks styles */
-      d.slice(0, 2).each(function(index) {
-        pages[page][index === 0 ? 'primaryStyleId' : 'subStyleId'] = $(this).attr('src').slice(-8, -4);
+      $('table').eq(page).find('tr').each(function(index) {
+        /* Perks styles */
+        if (index === 0) {
+          $(this).find("img[src^='//cdn.leagueofgraphs.com/img/perks/']").each(function(index) {
+            pages[page][index === 0 ? 'primaryStyleId' : 'subStyleId'] = parseInt($(this).attr('src').slice(-8, -4));
+          });
+          return;
+        }
+
+        const perks = $(this).find("img[src^='//cdn.leagueofgraphs.com/img/perks/']").toArray().sort((a, b) => parseFloat($(a).css('opacity')) - parseFloat($(b).css('opacity')));
+        pages[page].selectedPerkIds.push(parseInt(perks[perks.length - 1].attribs.src.slice(-8, -4)));
       });
 
-      pages[page].selectedPerkIds = [4, 5, 6, 8, 9].map(x => d.eq(x).attr('src').slice(-8, -4));
+      pages[page].selectedPerkIds.pop();
     }
 
     return pages;
@@ -116,7 +123,6 @@ class LeagueofGraphsProvider extends Provider {
       if (!blocks[index]) return;
 
       $(this).find('img').each(function() {
-        console.log($(this).attr('class'), $(this).attr('class').slice(20, -4));
         blocks[index].addItem($(this).attr('class').slice(20, -4), false);
       });
     });
