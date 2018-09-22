@@ -195,24 +195,6 @@ h1 {
 }
 
 /*
-    BUTTONS
-*/
-
-@keyframes flash {
-  0% {
-    color: #CDBE91;
-  }
-
-  100% {
-    color: #F0E6D2;
-  }
-}
-
-.flash {
-  animation: flash 0.3s alternate infinite;
-}
-
-/*
 * TEXT CONTAINER
 */
 
