@@ -1,6 +1,6 @@
 /*
 * LoggingHandler
-* This class allows ManaFlux to:
+* This class allows Manaflux to:
 * - Log in both process
 * - Save logs into files
 * - Have different levels of logging, and return the sent value for easier logging
@@ -17,58 +17,73 @@ const fs = require('fs'), path = require('path');
 function LoggingHandler(level) {
   this.level = level;
   this.isRenderer = !process || typeof process === 'undefined' || !process.type || process.type === 'renderer';
-  this.ipc = this.isRenderer ? ipcRenderer : null;
+  this.ipc = this.isRenderer ? ipcRenderer : require('electron').ipcMain;
 
-  // TODO: fix LoggingHandler's stream / getPath('logs')
-  //if (!this.isRenderer)
-    //this.stream = fs.createWriteStream(path.resolve(require('electron').app.getPath('logs') || , new Date().toDateString() + '.txt'));
+  if (!this.isRenderer)
+    this.stream = fs.createWriteStream(path.resolve(require('electron').app.getPath('logs'), new Date().toString().slice(0, 24).replace(/:/g, '-') + '.txt'));
+}
+
+LoggingHandler.prototype.end = function() {
+  return this.stream.end();
 }
 
 LoggingHandler.prototype.log = function(level, ...args) {
+  if (this.level < level) return x[0];
   const x = args.join(' ');
-  if (this.level < level) return x;
 
-  console.log.call(this, `[${this._getTimestamp()}] [${this.isRenderer ? 'Renderer' : 'Main'}] ${x}`);
+  console.log.call(this, `[${this.isRenderer ? 'Renderer' : 'Main'}]`, `[${this._getTimestamp()}]`, ...args);
   this.send(level, 'log', x);
-  return x;
+
+  return x[0];
 }
 
 LoggingHandler.prototype.dir = function(level, x) {
   if (this.level < level) return x;
+  console.log(this, `[${this.isRenderer ? 'Renderer' : 'Main'}] [${this._getTimestamp()}]`);
   console.dir(x);
-  this.send(level, 'dir', JSON.stringify(x));
-  return x;
+
+  this.send(level, 'dir', x);
+  return x[0];
 }
 
 LoggingHandler.prototype.error = function(level, error) {
   if (this.level < level) return;
-  console.log.call(this, `[${this._getTimestamp()}] [${this.isRenderer ? 'Renderer' : 'Main'}] Error`);
+  console.log(`[${this.isRenderer ? 'Renderer' : 'Main'}] [${this._getTimestamp()}]`);
   console.error(error);
 
   this.send(level, 'error', error);
 }
 
-LoggingHandler.prototype.send = function(level, type, message) {
-  message = type === 'dir' ? JSON.stringify(message) : `[${this._getTimestamp()}] [${this.isRenderer ? 'Renderer' : 'Main'}] ${message}`;
-
-  if (this.ipc) this.ipc.send('logging-' + type, { level, message });
-  //if (!this.isRenderer) this.stream.write(message + '\n');
+LoggingHandler.prototype.send = function(level, type, ...message) {
+  this[this.isRenderer ? 'ipc' : 'webContents'].send('logging-' + type, { level, timestamp: this._getTimestamp(), msg: message.map(x => type === 'dir' ? JSON.stringify(x) : x) });
+  if (!this.isRenderer) this.stream.write(message + '\n');
 }
 
 LoggingHandler.prototype.onMessage = function(cb) {
-  if (!this.ipc) return;
+  let x = (x, y) => {
+    cb(x, y);
 
-  this.ipc.on('logging-log', (event, arg) => cb('log', arg.message));
-  this.ipc.on('logging-dir', (event, arg) => cb('dir', arg.message));
-  this.ipc.on('logging-error', (event, arg) => cb('error', arg.message));
+    if (!this.isRenderer) {
+      if (x === 'log') this.stream.write(`[Renderer] [${this._getTimestamp()}]` + y.msg.join(' ') + '\n');
+      else {
+        console.log(`[Renderer] [${this._getTimestamp()}]`);
+        console[x](args[0]);
+      }
+    }
+  };
+
+  this.ipc.on('logging-log', (event, arg) => x('log', arg));
+  this.ipc.on('logging-dir', (event, arg) => x('dir', arg));
+  this.ipc.on('logging-error', (event, arg) => x('error', arg));
+
 }
 
 LoggingHandler.prototype.setBrowserWindow = function(win) {
-  this.ipc = win.webContents;
+  this.webContents = win.webContents;
 }
 
 LoggingHandler.prototype._getTimestamp = function() {
-  return new Date().toISOString().slice(11,-5);
+  return new Date().toISOString().slice(11, -5);
 }
 
 LoggingHandler.prototype._ensureDir = function(path) {

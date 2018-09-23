@@ -8,7 +8,7 @@ const { autoUpdater } = require('electron-updater');
 const LeaguePlug = require('./objects/leagueplug');
 const AutoLaunch = require('auto-launch');
 
-require('./crash-reporting.js');
+//require('./crash-reporting.js');
 
 let connector = new LeaguePlug();
 let win, tray;
@@ -39,8 +39,9 @@ function createWindow () {
   win.once('ready-to-show', () => !tray ? win.show() : null);
 
   log.setBrowserWindow(win);
-  log.onMessage((type, message) => {
-    console[type].call(this, message)
+  log.onMessage((type, o) => {
+    if (!o.msg || o.msg.length === 0) return;
+    console[type].call(this, '[Renderer]', `[${o.timestamp}]`, ...o.msg.map(x => type === 'dir' ? JSON.parse(x) : x));
   });
 
   if (process.argv[2] === '--dev')
@@ -58,11 +59,10 @@ function createWindow () {
 app.on('ready', () => {
   createWindow();
 
-  if (process.argv[2] !== '--dev') autoUpdater.checkForUpdates();
-
   const { Menu, MenuItem } = require('electron');
   const menu = new Menu();
 
+  if (process.argv[2] !== '--dev') return autoUpdater.checkForUpdates();
   menu.append(new MenuItem({
     label: 'Dev Tools',
     accelerator: 'CommandOrControl+Shift+I',
@@ -154,11 +154,18 @@ ipcMain.on('win-hide', () => win.hide());
 ipcMain.on('win-close', () => win.close());
 ipcMain.on('win-minimize', () => win.minimize());
 
-app.on('window-all-closed', () => {
-  app.quit();
+app.on('window-all-closed', () => app.quit());
+
+process.on('SIGTERM', function () {
+  log.end();
+  globalShortcut.unregisterAll();
+  process.exit(0);
 });
 
-app.on('will-quit', () => globalShortcut.unregisterAll());
+app.on('will-quit', () => {
+  log.end();
+  globalShortcut.unregisterAll();
+});
 
 app.on('activate', () => {
   if (win === null) createWindow();

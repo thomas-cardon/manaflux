@@ -42,7 +42,7 @@
     <!-- BEGIN SECTIONS -->
     <div data-tabid="home" data-tabn=0 class="tabcontent center" style="display: block;">
       <div class="title">
-        <h1>MANAFLUX</h1>
+        <h1 id="dev">MANAFLUX</h1>
         <img src="assets/img/underline.png" draggable="false">
       </div>
       <div style="margin: 10px;">
@@ -186,7 +186,7 @@
   <script src="vendor/markdown.min.js"></script>
   <script src="vendor/alertify.min.js"></script>
   <script>
-    const { ipcRenderer } = require('electron');
+    const { ipcRenderer, remote } = require('electron');
   </script>
   <script src="assets/js/ui.js"></script>
   <script>
@@ -199,9 +199,13 @@
   const log = new (require('../objects/handlers/LoggingHandler'))(3);
   global.i18n = new (require('../objects/i18n'));
 
-  log.onMessage((type, message) => {
-    if (type === 'dir' && typeof message === 'string') message = JSON.parse(message);
-    console[type].call(this, message);
+  log.onMessage((type, o) => {
+    if (!o.msg || o.msg.length === 0) return;
+    console[type].call(this, '[Main]', `[${o.timestamp}]`, ...o.msg.map(x => type === 'dir' ? JSON.parse(x) : x));
+  });
+
+  document.getElementById('dev').addEventListener('click', e => {
+    if (e.detail === 3) remote.getCurrentWindow().toggleDevTools();
   });
 
   global.Mana = new (require('../objects/Mana'))(ipcRenderer);
