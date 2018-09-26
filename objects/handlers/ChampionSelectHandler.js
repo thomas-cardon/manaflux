@@ -78,8 +78,8 @@ class ChampionSelectHandler {
 
     $('#positions').unbind().empty().hide();
 
-    ipcRenderer.removeAllListeners('runes-previous');
-    ipcRenderer.removeAllListeners('runes-next');
+    ipcRenderer.removeAllListeners('perks-previous');
+    ipcRenderer.removeAllListeners('perks-next');
 
     if (Object.keys(res).length === 0) return log.error(1, i18n.__('providers-error-data'));
     console.dir(res);
@@ -143,9 +143,6 @@ class ChampionSelectHandler {
     $('#positions').unbind().empty().hide();
     $('button#loadRunes, button#loadSummonerSpells').disableManualButton();
 
-    ipcRenderer.removeAllListeners('runes-previous');
-    ipcRenderer.removeAllListeners('runes-next');
-
     if (Mana.getStore().get('enableTrayIcon')) UI.tray();
   }
 
@@ -154,8 +151,8 @@ class ChampionSelectHandler {
     this.cachedPerks = {};
 
     ipcRenderer.send('champion-select-out');
-    ipcRenderer.removeAllListeners('runes-previous');
-    ipcRenderer.removeAllListeners('runes-next');
+    ipcRenderer.removeAllListeners('perks-previous');
+    ipcRenderer.removeAllListeners('perks-next');
 
     this.gameModeHandler.end();
 
@@ -163,7 +160,6 @@ class ChampionSelectHandler {
     Mana.user.getPerksInventory()._perks = null;
 
     this.destroyDisplay();
-    return this;
   }
 
   stop() {

@@ -8,7 +8,7 @@ const { autoUpdater } = require('electron-updater');
 const LeaguePlug = require('./objects/leagueplug');
 const AutoLaunch = require('auto-launch');
 
-//require('./crash-reporting.js');
+require('./crash-reporting.js');
 
 let connector = new LeaguePlug();
 let win, tray;
@@ -93,8 +93,8 @@ autoUpdater.on('update-downloaded', info => {
 });
 
 ipcMain.on('champion-select-in', (event, arg) => {
-  globalShortcut.register('Alt+Left', () => event.sender.send('runes-previous'));
-  globalShortcut.register('Alt+Right', () => event.sender.send('runes-next'));
+  globalShortcut.register('Alt+Left', () => event.sender.send('perks-previous'));
+  globalShortcut.register('Alt+Right', () => event.sender.send('perks-next'));
 });
 
 ipcMain.on('champion-select-out', () => {

@@ -91,5 +91,5 @@
   "startup": "Inicialização",
   "startup-windows": "Iniciar com o Windows",
   "update-available": "Uma atualização está disponível",
-  "consent": "O ManaFlux não é endossado pela Riot Games e não reflete as visões ou opiniões da Riot Games ou de qualquer pessoa oficialmente envolvida na produção ou gerenciamento de League of Legends. League of Legends e Riot Games são marcas comerciais ou marcas registradas da Riot Games, Inc.\nLeague of Legends © Riot Games, Inc."
+  "riot-consent": "O ManaFlux não é endossado pela Riot Games e não reflete as visões ou opiniões da Riot Games ou de qualquer pessoa oficialmente envolvida na produção ou gerenciamento de League of Legends. League of Legends e Riot Games são marcas comerciais ou marcas registradas da Riot Games, Inc.\nLeague of Legends © Riot Games, Inc."
 }

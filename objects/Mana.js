@@ -14,17 +14,17 @@ class Mana extends EventEmitter {
     this._store = new Store();
 
     this.getStore().set('lastVersion', this.version);
+
     if (!this.getStore().has('league-client-path'))
       require('../objects/Wizard')(true).on('closed', () => {
         console.log('[UI] Wizard has been closed');
         ipcRenderer.send('lcu-get-path');
         ipcRenderer.send('lcu-connection');
       });
-
     else ipcRenderer.send('lcu-connection', this.getStore().get('league-client-path'));
 
     if (!this.getStore().has('riot-consent')) {
-      dialog.showMessageBox({ title: i18n.__('info'), message: i18n.__('consent') });
+      dialog.showMessageBox({ title: i18n.__('common-info'), message: i18n.__('riot-consent') });
       this.getStore().set('riot-consent', true);
     }
 
@@ -54,7 +54,7 @@ class Mana extends EventEmitter {
 
     $('.version').text(`V${this.version} - V${this.gameClient.branch}`);
 
-    if (this.getStore().get('lastBranchSeen') !== this.gameClient.branch) {
+    if (this.getStore().get('lastBranchSeen') !== this.gameClient.branch || this.getStore().get('lastVersion') !== this.version) {
       this.getStore().set('data', {});
       require('./handlers/ItemSetHandler').getItemSets().then(x => require('./handlers/ItemSetHandler').deleteItemSets(x)).catch(UI.error);
     }

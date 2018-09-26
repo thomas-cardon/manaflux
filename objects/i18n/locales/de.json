@@ -106,5 +106,5 @@
   "startup": "Systemstart",
   "startup-windows": "Mit Windows starten",
   "update-available": "Eine neue Version ist verfügbar",
-  "consent": "ManaFlux wird nicht offiziell von Riot Games unterstützt und spiegelt in keinster Weise die Meinungen und Ansichten von Riot Games oder von irgendjemanden wieder, der offiziell mit Riot Games, der Herstellung oder der Instandhaltung von League of Legends in Verbindung steht. League of Legends und Riot Games sind Warenzeichen oder eingetragene Warenzeichen von Riot Games, Inc.\nLeague of Legends © Riot Games, Inc."
+  "riot-consent": "ManaFlux wird nicht offiziell von Riot Games unterstützt und spiegelt in keinster Weise die Meinungen und Ansichten von Riot Games oder von irgendjemanden wieder, der offiziell mit Riot Games, der Herstellung oder der Instandhaltung von League of Legends in Verbindung steht. League of Legends und Riot Games sind Warenzeichen oder eingetragene Warenzeichen von Riot Games, Inc.\nLeague of Legends © Riot Games, Inc."
 }
