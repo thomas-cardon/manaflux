@@ -6,7 +6,7 @@ ipcRenderer.on('update-not-available', async (event, data) => {
 ipcRenderer.on('update-available', async (event, data) => {
 	log.dir(3, data);
 
-	log.log(2, '[Update] Available! version: ' + data.version);
+	console.log(2, '[Update] Available! version: ' + data.version);
 	$('.btn.tab[data-tabid="update"]').show();
 
 	$('#version').text(`Version ${data.version}`);

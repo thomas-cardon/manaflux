@@ -13,7 +13,7 @@ class LeagueofGraphsProvider extends Provider {
 
     let x = ['JUNGLE', 'MIDDLE', 'TOP', 'ADC', 'SUPPORT'];
     for (let i = 0; i < x.length; i++) {
-      log.log(2, `[ProviderHandler] [LOG] Gathering data for ${x[i]}`);
+      console.log(2, `[ProviderHandler] [LOG] Gathering data for ${x[i]}`);
 
       try {
         positions[x[i]] = await this._scrape(champion, gameMode, x[i]);
@@ -23,7 +23,7 @@ class LeagueofGraphsProvider extends Provider {
       }
     }
 
-    return log.dir(3, positions);
+    return console.dir(3, positions);
   }
 
   async getItemSets(champion, gameMode, position) {

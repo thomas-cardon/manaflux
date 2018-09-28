@@ -41,7 +41,7 @@
   const fs = require('fs'), path = require('path');
   const { dialog } = remote;
 
-  process.on('unhandledRejection', (reason, p) => log.log(3, `Unhandled rejection at: ${p}, reason: ${reason}`));
+  process.on('unhandledRejection', (reason, p) => console.log(3, `Unhandled rejection at: ${p}, reason: ${reason}`));
   process.on('uncaughtException', console.error);
 
   const log = new (require('../objects/handlers/LoggingHandler'))(3);

@@ -34,7 +34,7 @@ class ProviderHandler {
 
     for (let i = 0; i < providerOrder.length; i++) {
       const provider = this.providers[providerOrder[i]];
-      log.log(2, `[ProviderHandler] Using ${provider.name}`);
+      console.log(2, `[ProviderHandler] Using ${provider.name}`);
 
       try {
         let method = 'getData';
@@ -56,7 +56,7 @@ class ProviderHandler {
         break;
       }
       catch(err) {
-        log.log(1, err);
+        console.log(1, err);
       }
     }
 

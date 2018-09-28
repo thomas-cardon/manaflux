@@ -64,7 +64,7 @@ class ChampionSelectHandler {
 
   async onFirstTickEvent(data) {
     ipcRenderer.send('champion-select-in');
-    log.dir(3, data);
+    console.dir(3, data);
 
     this.gameMode = await Mana.user.getGameMode();
 
@@ -81,7 +81,7 @@ class ChampionSelectHandler {
     ipcRenderer.removeAllListeners('perks-previous');
     ipcRenderer.removeAllListeners('perks-next');
 
-    if (Object.keys(res).length === 0) return log.error(1, i18n.__('providers-error-data'));
+    if (Object.keys(res).length === 0) return console.error(1, i18n.__('providers-error-data'));
     console.dir(res);
 
     for (let position in res) {
@@ -170,7 +170,7 @@ class ChampionSelectHandler {
 
 /* Shortcuts handling
 ipcRenderer.on('runes-previous', () => {
-  log.log(2, '[Shortcuts] Selecting previous position..');
+  console.log(2, '[Shortcuts] Selecting previous position..');
 
   const keys = Object.keys(data);
   let i = keys.length, positionIndex = keys.indexOf($('#positions').val());
@@ -184,7 +184,7 @@ ipcRenderer.on('runes-previous', () => {
 });
 
 ipcRenderer.on('runes-next', () => {
-  log.log(2, '[Shortcuts] Selecting next position..');
+  console.log(2, '[Shortcuts] Selecting next position..');
 
   const keys = Object.keys(data);
   let i = keys.length, positionIndex = keys.indexOf($('#positions').val());

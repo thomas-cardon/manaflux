@@ -14,77 +14,103 @@
 */
 
 const fs = require('fs'), path = require('path');
+const c = { log: console.log, dir: console.dir, warn: console.warn, error: console.error };
+
 function LoggingHandler(level) {
   this.level = level;
   this.isRenderer = !process || typeof process === 'undefined' || !process.type || process.type === 'renderer';
   this.ipc = this.isRenderer ? ipcRenderer : require('electron').ipcMain;
 
-  if (!this.isRenderer)
-    this.stream = fs.createWriteStream(path.resolve(require('electron').app.getPath('logs'), new Date().toString().slice(0, 24).replace(/:/g, '-') + '.txt'));
+  if (!this.isRenderer) this.stream = fs.createWriteStream(path.resolve(require('electron').app.getPath('logs'), new Date().toString().slice(0, 24).replace(/:/g, '-') + '.txt'));
+
+  const self = this;
+  console.log = function(level = 0, ...args) {
+    const x = args || [];
+    if (isNaN(level)) {
+      x.unshift(level);
+      level = 0;
+    }
+    else if (this.level < level) return x[0];
+
+    c.log.call(console, `[${this.isRenderer ? 'Renderer' : 'Main'}]`, `[${self._getTimestamp()}]`, ...x);
+    self.send.call(self, level, 'log', x.join(' '));
+
+    return x[0];
+  }
+
+  console.warn = function(level = 0, ...args) {
+    const x = args || [];
+    if (isNaN(level)) {
+      c.log.call(console, level);
+
+      x.unshift(level);
+      level = 0;
+    }
+    else if (this.level < level) return x[0];
+
+    c.warn.call(console, `[${this.isRenderer ? 'Renderer' : 'Main'}]`, `[${self._getTimestamp()}]`, ...x);
+    self.send.call(self, level, 'log', x);
+
+    return x[0];
+  }
+
+  console.dir = function(level = 0, x) {
+    if (isNaN(level)) {
+      x = level;
+      level = 0;
+    }
+    else if (this.level < level) return x;
+
+    c.log.call(console, `[${this.isRenderer ? 'Renderer' : 'Main'}] [${self._getTimestamp()}]`);
+    c.dir.call(console, x);
+
+    self.send.call(self, level, 'dir', x);
+    return x[0];
+  }
+
+  /*
+  console.error = function(x) {
+    c.log.call(console, `[${this.isRenderer ? 'Renderer' : 'Main'}] [${self._getTimestamp()}] Error`);
+    c.error.apply(console, arguments);
+
+    self.send.call(self, level, 'error', x);
+  }*/
+
+  let x = (t, arg) => {
+    if (x === 'log' || x === 'warn') c[type].call(console, `[${this.isRenderer ? 'Renderer' : 'Main'}] [${self._getTimestamp()}] ${arg.msg.join(' ')}\n`);
+    else {
+      c.log.call(console, `[${this.isRenderer ? 'Main' : 'Renderer'}] [${self._getTimestamp()}]${t === 'error' ? ' Error' : ''}\n`);
+      c[t].call(console, `${arg.msg.join(' ')}\n`);
+    }
+
+    if (this.stream) this.write(t, arg, 'Renderer');
+  };
+
+  this.ipc.on('logging-log', (event, arg) => x('log', arg));
+  this.ipc.on('logging-dir', (event, arg) => x('dir', arg));
+  this.ipc.on('logging-warn', (event, arg) => x('warn', arg));
+  this.ipc.on('logging-error', (event, arg) => x('error', arg));
 }
 
 LoggingHandler.prototype.end = function() {
   return this.stream.end();
 }
 
-LoggingHandler.prototype.log = function(level, ...args) {
-  if (this.level < level) return x[0];
-  const x = args.join(' ');
-
-  console.log.call(this, `[${this.isRenderer ? 'Renderer' : 'Main'}]`, `[${this._getTimestamp()}]`, ...args);
-  this.send(level, 'log', x);
-
-  return x[0];
-}
-
-LoggingHandler.prototype.dir = function(level, x) {
-  if (this.level < level) return x;
-  console.log(this, `[${this.isRenderer ? 'Renderer' : 'Main'}] [${this._getTimestamp()}]`);
-  console.dir(x);
-
-  this.send(level, 'dir', x);
-  return x[0];
-}
-
-LoggingHandler.prototype.error = function(level, error) {
-  if (this.level < level) return;
-  console.log(`[${this.isRenderer ? 'Renderer' : 'Main'}] [${this._getTimestamp()}]`);
-  console.error(error);
-
-  this.send(level, 'error', error);
-}
-
 LoggingHandler.prototype.send = function(level, type, ...message) {
-  this[this.isRenderer ? 'ipc' : 'webContents'].send('logging-' + type, { level, timestamp: this._getTimestamp(), msg: message.map(x => type === 'dir' ? JSON.stringify(x) : x) });
-  if (!this.isRenderer) this.stream.write(message + '\n');
+  if (this[this.isRenderer ? 'ipc' : 'webContents']) this[this.isRenderer ? 'ipc' : 'webContents'].send('logging-' + type, { level, timestamp: this._getTimestamp(), msg: message.map(x => type === 'dir' ? JSON.stringify(x) : x) });
+  if (this.stream) this.write(type, message, 'Main');
 }
 
-LoggingHandler.prototype.onMessage = function(cb) {
-  let x = (x, y) => {
-    cb(x, y);
+LoggingHandler.prototype.write = function(t, arg, proc) {
+  if (!arg.msg || arg.msg.length === 0) return;
 
-    if (!this.isRenderer) {
-      if (x === 'log') this.stream.write(`[Renderer] [${this._getTimestamp()}]` + y.msg.join(' ') + '\n');
-      else {
-        console.log(`[Renderer] [${this._getTimestamp()}]`);
-        console[x](args[0]);
-      }
-    }
-  };
-
-  this.ipc.on('logging-log', (event, arg) => x('log', arg));
-  this.ipc.on('logging-dir', (event, arg) => x('dir', arg));
-  this.ipc.on('logging-error', (event, arg) => x('error', arg));
-
+  if (t === 'log' || t === 'warn') this.stream.write(`[${proc}] [${t}] [${this._getTimestamp()}] ${arg.msg.join(' ')}\n`);
+  else this.stream.write(`[${proc}] [${t}] [${this._getTimestamp()}] ${arg.msg.join(' ')}\n${arg.msg.join(' ')}\n`);
 }
 
-LoggingHandler.prototype.setBrowserWindow = function(win) {
-  this.webContents = win.webContents;
-}
+LoggingHandler.prototype.setBrowserWindow = win => this.webContents = win.webContents;
 
-LoggingHandler.prototype._getTimestamp = function() {
-  return new Date().toISOString().slice(11, -5);
-}
+LoggingHandler.prototype._getTimestamp = () => new Date().toISOString().slice(11, -5);
 
 LoggingHandler.prototype._ensureDir = function(path) {
   return new Promise((resolve, reject) => {

@@ -38,13 +38,13 @@ class OPGGProvider extends Provider {
     positions[data.position] = data;
 
     for (const position of data.availablePositions) {
-      log.log(2, `[ProviderHandler] [OP.GG] Gathering data for ${position.name} position`);
+      console.log(2, `[ProviderHandler] [OP.GG] Gathering data for ${position.name} position`);
 
       const d = await rp(position.link);
       positions[position.name] = this._scrape(d, champion, position.name, gameMode);
     }
 
-    return log.dir(3, positions);
+    return console.dir(3, positions);
   }
 
   async getSummonerSpells(champion, position, gameMode) {

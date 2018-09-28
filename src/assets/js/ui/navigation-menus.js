@@ -5,9 +5,9 @@ UI.nav = n => {
 	if (tabcontent.length > 0) {
 		navigationId += n;
 
-		log.log(2, `[Navigation] Heading to tab #${tabcontent.data('tabid')}, n:${navigationId}`);
+		console.log(2, `[Navigation] Heading to tab #${tabcontent.data('tabid')}, n:${navigationId}`);
 		$('.tabcontent').hide();
 		tabcontent.show();
 	}
-	else log.log(2, `[Navigation] Can't navigate to tab #${$('.tab.active').data('tabid')}, n:${navigationId + n}`);
+	else console.log(2, `[Navigation] Can't navigate to tab #${$('.tab.active').data('tabid')}, n:${navigationId + n}`);
 }

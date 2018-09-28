@@ -21,7 +21,7 @@ class PathHandler {
   }
 
   async findLeaguePath() {
-    log.log(2, '[PathHandler] Trying to find path.');
+    console.log(2, '[PathHandler] Trying to find path.');
 
     for (const x of ['C:\\Riot Games\\League of Legends\\', '/Applications/League of Legends.app/Contents/LoL/', ]) {
       if (await this._exists(path.resolve(x + '\\LeagueClient.' + (process.platform === 'win32' ? 'exe' : 'app'))))
@@ -29,7 +29,7 @@ class PathHandler {
     }
 
     let leaguePath = await this.getLeaguePathByCommandLine();
-    log.log(2, `[PathHandler] Path found: ${leaguePath}`);
+    console.log(2, `[PathHandler] Path found: ${leaguePath}`);
 
     return leaguePath;
   }
@@ -40,13 +40,13 @@ class PathHandler {
 
     return new Promise((resolve, reject) => {
       exec(command, process.platform === 'win32' ? { shell: 'C:\\WINDOWS\\system32\\cmd.exe', cwd: 'C:\\Windows\\System32\\wbem\\' } : {}, function(error, stdout, stderr) {
-        if (error) return reject(log.error(3, error));
+        if (error) return reject(console.error(3, error));
 
-        log.dir(3, stdout);
+        console.dir(3, stdout);
         const matches = stdout.match(/[^"]+?(?=RADS)/gm);
 
         if (!matches || matches.length === 0) resolve(false);
-        else resolve(log.log(3, matches[0]));
+        else resolve(console.log(3, matches[0]));
       });
     });
   }

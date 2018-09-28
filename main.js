@@ -8,7 +8,7 @@ const { autoUpdater } = require('electron-updater');
 const LeaguePlug = require('./objects/leagueplug');
 const AutoLaunch = require('auto-launch');
 
-require('./crash-reporting.js');
+//require('./crash-reporting.js');
 
 let connector = new LeaguePlug();
 let win, tray;
@@ -39,10 +39,6 @@ function createWindow () {
   win.once('ready-to-show', () => !tray ? win.show() : null);
 
   log.setBrowserWindow(win);
-  log.onMessage((type, o) => {
-    if (!o.msg || o.msg.length === 0) return;
-    console[type].call(this, '[Renderer]', `[${o.timestamp}]`, ...o.msg.map(x => type === 'dir' ? JSON.parse(x) : x));
-  });
 
   if (process.argv[2] === '--dev')
     win.webContents.openDevTools({ mode: 'detach' });
@@ -73,7 +69,7 @@ app.on('ready', () => {
 });
 
 ipcMain.on('restart', () => {
-  log.log(2, '[IPC] Restarting app...');
+  console.log(2, '[IPC] Restarting app...');
 
   app.relaunch();
   app.exit(0);
@@ -129,7 +125,7 @@ ipcMain.on('lcu-connection', (event, path) => {
     connector.getConnectionHandler().end();
   }
 
-  if (path) connector.getPathHandler().setLeaguePath(log.log(3, path));
+  if (path) connector.getPathHandler().setLeaguePath(console.log(3, path));
   connector.start();
 
   connector.getConnectionHandler().on('connected', d => event.sender.send('lcu-connected', d));
@@ -141,7 +137,7 @@ ipcMain.on('lcu-connection', (event, path) => {
 ipcMain.on('lcu-get-path', event => event.sender.send('lcu-get-path', connector.getPathHandler().getLeaguePath()));
 ipcMain.on('lcu-find-path', event => connector.getPathHandler().findLeaguePath().then(x => event.sender.send('lcu-find-path', x)));
 
-ipcMain.on('lcu-set-path', (event, path) => connector.getPathHandler().setLeaguePath(log.log(3, path)));
+ipcMain.on('lcu-set-path', (event, path) => connector.getPathHandler().setLeaguePath(console.log(3, path)));
 
 ipcMain.on('lcu-is-connected', event => event.returnValue = connector.isConnected());
 ipcMain.on('lcu-is-logged-in', event => event.returnValue = connector.isLoggedIn());

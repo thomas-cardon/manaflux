@@ -7,23 +7,23 @@ class UGGProvider extends Provider {
     super('ugg', 'U.GG');
     this.base = 'https://u.gg/';
   }
-
+  // TODO: replace cheerio by JSDOM to execute JavaScript correctly
   async getData(champion, preferredPosition, gameMode) {
     let positions = ['jungle', 'middle', 'top', 'adc', 'support'];
     for (let i = 0; i < positions.length; i++) {
       try {
-        log.log(`[U.GG] Gathering data for ${positions[i]} position`);
+        console.log(`[U.GG] Gathering data for ${positions[i]} position`);
 
         const d = await rp(`${this.base}lol/champions/${champion.key.toLowerCase()}/build/?role=${positions[i]}`);
         console.dir(d);
         positions[i] = this._scrape(d, champion, positions[i], gameMode);
       }
       catch(err) {
-        log.error(1, err);
+        console.error(1, err);
       }
     }
 
-    return log.dir(3, positions);
+    return console.dir(3, positions);
   }
 
   async getSummonerSpells(champion, position, gameMode) {
@@ -70,7 +70,7 @@ class UGGProvider extends Provider {
       page[index === 0 ? 'primaryStyleId' : 'subStyleId'] = parseInt($(this).attr('src').slice(-8, -4));
     });
 
-    return log.dir(3, [page]);
+    return console.dir(3, [page]);
   }
 
   /**
@@ -82,7 +82,7 @@ class UGGProvider extends Provider {
     let summonerspells = [];
 
     $("img[alt='SummonerSpell']").each(function(index) {
-      const summoner = Mana.summonerspells[log.log(3, $(this).attr('src').slice($(this).attr('src').lastIndexOf('/'), -4))];
+      const summoner = Mana.summonerspells[console.log(3, $(this).attr('src').slice($(this).attr('src').lastIndexOf('/'), -4))];
 
       if (!summoner) return;
       if (summoner.gameModes.includes(gameMode)) summonerspells.push(summoner.id);

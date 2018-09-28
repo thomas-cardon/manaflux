@@ -20,9 +20,9 @@ class PerksInventory {
 
   async updatePerksPages(pages) {
     if (Mana.user.getSummonerLevel() < 8) return UI.error('runes-error-safeguard-level');
-    log.log(2, `[Perks] ${i18n.__('loading')}`);
+    console.log(2, `[Perks] ${i18n.__('loading')}`);
 
-    const perks = log.dir(3, await this.getPerks());
+    const perks = console.dir(3, await this.getPerks());
     let count = await this.getCount();
 
     if (!pages || pages.length === 0 || pages.find(x => x.selectedPerkIds.length === 0) !== undefined) throw Error(i18n.__d('runes-error-empty'));
@@ -49,7 +49,7 @@ class PerksInventory {
     return await rp({
       method: 'PUT',
       uri: Mana.base + `lol-perks/v1/pages/${x.id}`,
-      body: log.dir(3, x),
+      body: console.dir(3, x),
       json: true
     });
   }
@@ -58,7 +58,7 @@ class PerksInventory {
     return await rp({
       method: 'POST',
       uri: Mana.base + 'lol-perks/v1/pages',
-      body: log.dir(3, x),
+      body: console.dir(3, x),
       json: true
     });
   }

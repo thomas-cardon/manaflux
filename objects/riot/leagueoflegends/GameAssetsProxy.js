@@ -9,7 +9,7 @@ const { captureException } = require('@sentry/electron');
 class GameAssetsProxy {
   onRequest(req, res) {
     if (req.url === '/favicon.ico') return;
-    log.log(3, `[GameAssetsProxy] ${Mana.base}${req.url.slice(1)}`);
+    console.log(3, `[GameAssetsProxy] ${Mana.base}${req.url.slice(1)}`);
 
     try {
       request.get(Mana.base + req.url.slice(1)).pipe(res);
@@ -26,7 +26,7 @@ class GameAssetsProxy {
     this._server.listen(3681, 'localhost', (err) => {
       if (err) return captureException(err);
 
-      log.log(2, `[GameAssetsProxy] Listening on port 3681`);
+      console.log(2, `[GameAssetsProxy] Listening on port 3681`);
     });
   }
 

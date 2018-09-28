@@ -11,7 +11,7 @@ UI.status = (prefix, ...args) => {
   let y = i18n.__d.call(i18n, ...args);
 
   $('.status').text(x + '...');
-  log.log(2, `[${prefix}] ${y}...`);
+  console.log(2, `[${prefix}] ${y}...`);
 };
 
 /**

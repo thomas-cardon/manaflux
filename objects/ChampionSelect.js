@@ -10,8 +10,8 @@ class ChampionSelect extends EventEmitter {
     super();
     this.inChampionSelect = false;
 
-    this.on('firstTick', async () => log.log(2, '[ChampionSelect] Entering'));
-    this.on('ended', () => log.log(2, '[ChampionSelect] Leaving'));
+    this.on('firstTick', async () => console.log(2, '[ChampionSelect] Entering'));
+    this.on('ended', () => console.log(2, '[ChampionSelect] Leaving'));
     this.on('change', async id => {
     });
   }
@@ -89,7 +89,7 @@ class ChampionSelect extends EventEmitter {
       ipcRenderer.removeAllListeners('runes-previous');
       ipcRenderer.removeAllListeners('runes-next');
 
-      if (Object.keys(res).length === 0) return log.error(1, i18n.__('providers-error-data'));
+      if (Object.keys(res).length === 0) return console.error(1, i18n.__('providers-error-data'));
       console.dir(res);
 
       for (let position in res) {

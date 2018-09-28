@@ -161,6 +161,10 @@
         </ul>
       </div>
       <div class="option">
+        <p class="suboption-name" data-i18n="settings-logs-open-folder"></p>
+        <button class="btn normal" data-custom-component="settings-logs" data-i18n="common-open"></button>
+      </div>
+      <div class="option">
         <p class="suboption-name" data-i18n="league-client-path"></p>
         <input type="text" data-settings-key="league-client-path" class="center-area" data-custom-component="league-client-path" disabled />
       </div>
@@ -193,16 +197,11 @@
   window.eval = global.eval = () => console.warn(i18n.__('security-eval'));
   require('../crash-reporting.js');
 
-  process.on('unhandledRejection', (reason, p) => log.log(3, `Unhandled rejection at: ${p}, reason: ${reason}`));
+  process.on('unhandledRejection', (reason, p) => console.log(3, `Unhandled rejection at: ${p}, reason: ${reason}`));
   process.on('uncaughtException', console.error);
 
   const log = new (require('../objects/handlers/LoggingHandler'))(3);
   global.i18n = new (require('../objects/i18n'));
-
-  log.onMessage((type, o) => {
-    if (!o.msg || o.msg.length === 0) return;
-    console[type].call(this, '[Main]', `[${o.timestamp}]`, ...o.msg.map(x => type === 'dir' ? JSON.parse(x) : x));
-  });
 
   document.getElementById('dev').addEventListener('click', e => {
     if (e.detail === 3) remote.getCurrentWindow().toggleDevTools();
