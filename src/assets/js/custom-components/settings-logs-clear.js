@@ -1,4 +1,4 @@
-const { shell, remote } = require('electron');
+const { shell } = require('electron');
 const fs = require('fs'), path = require('path');
 
 module.exports = {
@@ -12,8 +12,8 @@ module.exports = {
           if (err) throw err;
         });
       }
-      
-      UI.temporaryStatus(i18n.__('settings-logs-cleared-files', files.length));
+
+      UI.temporaryStatus('Logs', 'settings-logs-cleared-files', files.length);
     });
   }
 };

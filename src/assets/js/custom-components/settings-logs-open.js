@@ -1,4 +1,4 @@
-const { shell, remote } = require('electron');
+const { shell } = require('electron');
 
 module.exports = {
   click: function() {

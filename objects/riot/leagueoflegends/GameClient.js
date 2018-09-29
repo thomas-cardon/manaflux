@@ -5,7 +5,6 @@ class GameClient {
   }
 
   async getSystemBuilds() {
-    console.log(Mana.base + 'system/v1/builds');
     return JSON.parse(await rp(Mana.base + 'system/v1/builds'));
   }
 

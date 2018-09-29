@@ -195,16 +195,16 @@
   <script src="vendor/alertify.min.js"></script>
   <script>
     const { ipcRenderer, remote } = require('electron');
+    const LoggingHandler = new (require('../objects/handlers/LoggingHandler'))(3);
   </script>
   <script src="assets/js/ui.js"></script>
   <script>
   window.eval = global.eval = () => console.warn(i18n.__('security-eval'));
   require('../crash-reporting.js');
 
-  process.on('unhandledRejection', (reason, p) => console.log(3, `Unhandled rejection at: ${p}, reason: ${reason}`));
+  process.on('unhandledRejection', (reason, p) => console.log(0, `Unhandled rejection at: ${p}, reason: ${reason}`));
   process.on('uncaughtException', console.error);
 
-  const log = new (require('../objects/handlers/LoggingHandler'))(3);
   global.i18n = new (require('../objects/i18n'));
 
   document.getElementById('dev').addEventListener('click', e => {
