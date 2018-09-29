@@ -3,7 +3,7 @@ var UI = {};
 /**
 * Shows a status on the UI and logs it into LoggingHandler
 * @param {prefix} string - What will be written before the message in the logs
-* @param {translationString} string - Allows ManaFlux to show a translated message on the UI and in english in the logs
+* @param {translationString} string - Allows Manaflux to show a translated message on the UI and in english in the logs
 * @param {parameters} string... - Translation parameters
 */
 UI.status = (prefix, ...args) => {
@@ -14,9 +14,22 @@ UI.status = (prefix, ...args) => {
   console.log(2, `[${prefix}] ${y}...`);
 };
 
+let s, id;
+UI.temporaryStatus = (prefix, ...args) => {
+  if (id) clearTimeout(id);
+  else s = $('.status').text();
+  
+  UI.status.call(UI, prefix, ...args);
+
+  id = setTimeout(() => {
+    $('.status').text(s);
+    id = null;
+  }, 3000);
+}
+
 /**
 * Shows an error on the UI and logs it into LoggingHandler
-* @param {translationString} string - Allows ManaFlux to show a translated message on the UI and in english in the logs
+* @param {translationString} string - Allows Manaflux to show a translated message on the UI and in english in the logs
 * @param {parameters} string... - Translation parameters
 */
 UI.error = function(...args) {
