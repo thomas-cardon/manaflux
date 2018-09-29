@@ -1,9 +1,9 @@
 var UI = {};
 
 /**
-* Shows a status on the UI and logs it into LoggingHandler
-* @param {prefix} string - What will be written before the message in the logs
-* @param {translationString} string - Allows Manaflux to show a translated message on the UI and in english in the logs
+* Shows a status on the UI and consoles it into LoggingHandler
+* @param {prefix} string - What will be written before the message in the consoles
+* @param {translationString} string - Allows Manaflux to show a translated message on the UI and in english in the consoles
 * @param {parameters} string... - Translation parameters
 */
 UI.status = (prefix, ...args) => {
@@ -11,14 +11,14 @@ UI.status = (prefix, ...args) => {
   let y = i18n.__d.call(i18n, ...args);
 
   $('.status').text(x + '...');
-  console.log(2, `[${prefix}] ${y}...`);
+  console.log(2, `[${prefix}]`, y, '...');
 };
 
 let s, id;
 UI.temporaryStatus = (prefix, ...args) => {
   if (id) clearTimeout(id);
   else s = $('.status').text();
-  
+
   UI.status.call(UI, prefix, ...args);
 
   id = setTimeout(() => {
@@ -28,8 +28,8 @@ UI.temporaryStatus = (prefix, ...args) => {
 }
 
 /**
-* Shows an error on the UI and logs it into LoggingHandler
-* @param {translationString} string - Allows Manaflux to show a translated message on the UI and in english in the logs
+* Shows an error on the UI and consoles it into LoggingHandler
+* @param {translationString} string - Allows Manaflux to show a translated message on the UI and in english in the consoles
 * @param {parameters} string... - Translation parameters
 */
 UI.error = function(...args) {
@@ -37,7 +37,7 @@ UI.error = function(...args) {
 
   if (args[0] instanceof Error) {
     alertify.notify(args[0].toString(), 'error', 10, () => $('#warning').hide());
-    return log.error(1, args[0]);
+    return console.error(1, args[0]);
   }
 
 	let x = i18n.__.call(i18n, ...args);
@@ -45,7 +45,7 @@ UI.error = function(...args) {
 
 	$('#warning').show();
 	alertify.notify(args[0] instanceof Error ? args[0].toString() : x, 'error', 10, () => $('#warning').hide());
-	return log.error(2, y);
+	return console.error(2, y);
 }
 
 UI.success = msg => alertify.notify(msg, 'success', 10);

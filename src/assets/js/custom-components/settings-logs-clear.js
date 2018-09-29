@@ -7,12 +7,13 @@ module.exports = {
     fs.readdir(remote.app.getPath('logs'), (err, files) => {
       if (err) throw err;
 
+      LoggingHandler.end();
       for (const file of files) {
         fs.unlink(path.join(remote.app.getPath('logs'), file), err => {
           if (err) throw err;
         });
       }
-
+      LoggingHandler.start();
       UI.temporaryStatus('Logs', 'settings-logs-cleared-files', files.length);
     });
   }

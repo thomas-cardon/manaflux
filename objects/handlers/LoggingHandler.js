@@ -82,6 +82,11 @@ function LoggingHandler(level) {
   this.ipc.on('logging-dir', (event, arg) => this.onMessageCallback('dir', arg));
   this.ipc.on('logging-warn', (event, arg) => this.onMessageCallback('warn', arg));
   this.ipc.on('logging-error', (event, arg) => this.onMessageCallback('error', arg));
+
+  if (!this.isRenderer) {
+    this.ipc.on('logging-start', e => e.returnValue = self.start());
+    this.ipc.on('logging-end', e => e.returnValue = self.end());
+  }
 }
 
 LoggingHandler.prototype.onMessageCallback = function(t, arg) {
@@ -123,6 +128,21 @@ LoggingHandler.prototype._ensureDir = function(path) {
   })
 };
 
-LoggingHandler.prototype.end = () => this.stream.end;
+LoggingHandler.prototype.start = function() {
+  if (this.isRenderer) return this.ipc.sendSync('logging-start');
+  else this.stream = fs.createWriteStream(path.resolve(require('electron').app.getPath('logs'), new Date().toString().slice(0, 24).replace(/:/g, '-') + '.txt'));
+
+  return true;
+};
+
+LoggingHandler.prototype.end = function() {
+  if (this.stream) {
+    this.stream.end();
+    this.stream = null;
+    return true;
+  }
+
+  return this.ipc.sendSync('logging-end');
+};
 
 module.exports = LoggingHandler;
