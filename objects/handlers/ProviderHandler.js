@@ -5,7 +5,8 @@ class ProviderHandler {
       opgg: new (require('../providers/OPGG'))(),
       /*ugg: new (require('../providers/UGG'))(),*/
       leagueofgraphs: new (require('../providers/LeagueofGraphs'))(),
-      lolflavor: new (require('../providers/LoLFlavor'))()
+      lolflavor: new (require('../providers/LoLFlavor'))(),
+      manaflux: new (require('../providers/Manaflux'))()
     };
   }
 
