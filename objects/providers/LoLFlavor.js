@@ -4,7 +4,7 @@ const Provider = require('./Provider');
 
 class LoLFlavorProvider extends Provider {
   constructor() {
-    super('lolflavor', 'LoLFlavor', false);
+    super('lolflavor', 'LoLFlavor');
     this.base = 'http://lolflavor.com/champions/';
   }
 

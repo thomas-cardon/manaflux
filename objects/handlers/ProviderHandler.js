@@ -1,3 +1,4 @@
+const rp = require('request-promise-native');
 class ProviderHandler {
   constructor() {
     this.providers = {
@@ -11,9 +12,7 @@ class ProviderHandler {
   }
 
   async getChampionData(champion, preferredPosition, gameMode, cache = true) {
-    /*
-    * 1/3 Storage Checking
-    */
+    /* 1/4 - Storage Checking */
     if (Mana.getStore().has(`data.${champion.key}`) && cache) {
       let d = Mana.getStore().get(`data.${champion.key}`);
 
@@ -24,48 +23,49 @@ class ProviderHandler {
       return d;
     }
 
-    /*
-     * 2/3 Downloading
-    */
+    /* 2/4 - Downloading */
 
     let positions = {};
 
-    let providerOrder = Mana.getStore().get('providers-order', Object.keys(this.providers)).sort((a, b) => b.canAggregateEverything - a.canAggregateEverything);
-    console.dir(providerOrder);
+    const providers = Mana.getStore().get('providers-order', Object.keys(this.providers));
+    providers.unshift(...providers.splice(providers.indexOf('manaflux'), 1), ...providers.splice(providers.indexOf('lolflavor'), 1));
 
-    for (let i = 0; i < providerOrder.length; i++) {
-      const provider = this.providers[providerOrder[i]];
+    for (let provider of providers) {
+      provider = this.providers[providers[i]];
       console.log(2, `[ProviderHandler] Using ${provider.name}`);
 
       try {
-        let method = 'getData';
+        positions = Object.assign({ gameMode, role: preferredPosition, championId: champion.id, providerId: provider.id }, await provider.getData(champion, preferredPosition, gameMode) || {});
 
-        if (positions[preferredPosition]) {
-          if (positions[preferredPosition].itemsets.length === 0 && Mana.getStore().get('enableItemSets'))
-            method = 'getItemSets';
-          else if (positions[preferredPosition].summonerspells.length === 0 && Mana.getStore().get('enableSummonerSpells'))
-            method = 'getSummonerSpells';
-          else if (positions[preferredPosition].perks.length === 0)
-            method = 'getPerks';
-        }
+        if (!positions[preferredPosition]) positions[preferredPosition] = { perks: [], itemsets: [], summonerspells: [] };
 
-        const d = await provider[method](champion, preferredPosition, gameMode) || {};
+        if (positions[preferredPosition].perks.length === 0)
+            positions[preferredPosition] = Object.assign(positions[preferredPosition], await provider.getPerks(champion, preferredPosition, gameMode) || {});
+        else if (positions[preferredPosition].itemsets.length === 0 && Mana.getStore().get('enableItemSets'))
+            positions[preferredPosition] = Object.assign(positions[preferredPosition], await provider.getItemSets(champion, preferredPosition, gameMode) || {});
+        else if (positions[preferredPosition].summonerspells.length === 0 && Mana.getStore().get('enableSummonerSpells'))
+            positions[preferredPosition] = Object.assign(positions[preferredPosition], await provider.getSummonerSpells(champion, preferredPosition, gameMode) || {});
 
-        for (let [position, data] of Object.entries(d))
-          positions[position] = Object.assign(positions[position] || { perks: {}, itemsets: {}, summonerspells: {} }, data);
+        for (let [position, data] of Object.entries(positions))
+          positions[position] = Object.assign(positions[position], data);
 
         break;
       }
       catch(err) {
-        console.log(1, err);
+        console.error(err);
+        return;
       }
     }
 
-    /*
-    * 3/3 Saving
-    */
+    console.dir(3, positions);
 
-    if (positions !== {} && cache) Mana.getStore().set(`data.${champion.key}`, positions);
+    /* 3/4 - Saving to offline cache */
+    /* 4/4 - Uploading to online cache */
+    if (cache) {
+      Mana.getStore().set(`data.${champion.key}`, positions);
+      this.providers.manaflux.upload(positions);
+    }
+
     return positions;
   }
 }

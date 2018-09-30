@@ -14,7 +14,7 @@ class ProBuildsProvider extends Provider {
   }
 
   async getItemSets(champion, position, gameMode) {
-    return await this.getData(champion, position, gameMode).itemsets;
+    return await this.getData(champion, position, gameMode)[position].itemsets;
   }
 
   _scrape(html, champion, gameMode) {

@@ -27,7 +27,7 @@ class LeagueofGraphsProvider extends Provider {
   }
 
   async getItemSets(champion, gameMode, position) {
-    return await this.getData(champion, position, gameMode).itemsets;
+    return await this.getData(champion, position, gameMode)[position].itemsets;
   }
 
   async _scrape(champion, gameMode, position) {

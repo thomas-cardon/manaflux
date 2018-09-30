@@ -27,15 +27,15 @@ class UGGProvider extends Provider {
   }
 
   async getSummonerSpells(champion, position, gameMode) {
-    return await this.getData(champion, position, gameMode);
+    return await this.getData(champion, position, gameMode)[position].summonerspells;
   }
 
   async getItemSets(champion, position, gameMode) {
-    return await this.getData(champion, position, gameMode);
+    return await this.getData(champion, position, gameMode)[position].itemsets;
   }
 
   async getPerks(champion, position, gameMode) {
-    return await this.getData(champion, position, gameMode);
+    return await this.getData(champion, position, gameMode)[position].perks;
   }
 
   _scrape(html, champion, position, gameMode) {

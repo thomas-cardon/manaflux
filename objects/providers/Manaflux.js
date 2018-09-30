@@ -9,7 +9,7 @@ class ManafluxProvider extends Provider {
 
   async getData(champion, preferredPosition, gameMode) {
     console.log(2, '[Manaflux] Fetching data from the cache server');
-    return log.dir(3, await rp(`${this.base}v1/data/${champion.id}`));
+    return console.dir(3, JSON.parse(await rp(`${this.base}v1/data/${champion.id}`)));
   }
 
   async getSummonerSpells(champion, position, gameMode) {
@@ -22,6 +22,21 @@ class ManafluxProvider extends Provider {
 
   async getPerks(champion, position, gameMode) {
     return await this.getData(champion, position, gameMode).perks;
+  }
+
+  async upload(data) {
+    for (const pos in data) {
+      /* Let's not upload incomplete data */
+      if (data[pos].summonerspells.length === 0 || data[pos].itemsets.length === 0 || data[pos].perks.length === 0) return;
+      data[pos].itemsets = data[pos].itemsets.map(x => x._data);
+    }
+
+    await rp({
+      method: 'POST',
+      uri: `${this.base}v1/data`,
+      body: data,
+      json: true
+    });
   }
 }
 

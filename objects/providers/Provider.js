@@ -1,8 +1,7 @@
 class Provider {
-  constructor(id, name, canAggregateEverything = true) {
+  constructor(id, name) {
     this.id = id;
     this.name = name;
-    this.canAggregateEverything = canAggregateEverything;
   }
 
   async getData(champion, preferredPosition, gameMode) {

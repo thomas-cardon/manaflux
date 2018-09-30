@@ -28,25 +28,24 @@ class ChampionGGProvider extends Provider {
 
     for (const position of data.availablePositions) {
       console.log(2, `[Champion.GG] Gathering data for ${position.name} position`);
-      console.dir(3, position);
 
       const d = await rp(position.link);
       positions[position.name] = this._scrape(d, champion, gameMode);
     }
 
-    return positions;
+    return console.dir(3, positions);
   }
 
   async getSummonerSpells(champion, position, gameMode) {
-    return await this.getData(champion, position, gameMode).summonerspells;
+    return await this.getData(champion, position, gameMode)[position].summonerspells;
   }
 
   async getItemSets(champion, position, gameMode) {
-    return await this.getData(champion, position, gameMode).itemsets;
+    return await this.getData(champion, position, gameMode)[position].itemsets;
   }
 
   async getPerks(champion, position, gameMode) {
-    return await this.getData(champion, position, gameMode).perks;
+    return await this.getData(champion, position, gameMode)[position].perks;
   }
 
   _scrape(html, champion, gameMode) {

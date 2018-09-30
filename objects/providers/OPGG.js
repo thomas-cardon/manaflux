@@ -48,17 +48,17 @@ class OPGGProvider extends Provider {
   }
 
   async getSummonerSpells(champion, position, gameMode) {
-    const { summonerspells } = await this.getData(champion, position, gameMode);
+    const { summonerspells } = await this.getData(champion, position, gameMode)[position];
     return summonerspells;
   }
 
   async getItemSets(champion, position, gameMode) {
-    const { itemsets } = await this.getData(champion, position, gameMode);
+    const { itemsets } = await this.getData(champion, position, gameMode)[position];
     return itemsets;
   }
 
   async getPerks(champion, position, gameMode) {
-    const { perks } = await this.getData(champion, position, gameMode);
+    const { perks } = await this.getData(champion, position, gameMode)[position];
     return perks;
   }
 
