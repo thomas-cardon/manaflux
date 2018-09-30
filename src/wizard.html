@@ -47,11 +47,6 @@
   const log = new (require('../objects/handlers/LoggingHandler'))(3);
   global.i18n = new (require('../objects/i18n'));
 
-  log.onMessage((type, message) => {
-    if (type === 'dir' && typeof message === 'string') message = JSON.parse(message);
-    console[type].call(this, message);
-  });
-
   ipcRenderer.on('lcu-find-path', (event, path) => {
     if (path) ipcRenderer.send('lcu-set-path', path);
 
@@ -62,7 +57,7 @@
   (async function() {
       document.getElementById('go').addEventListener('click', () => remote.getCurrentWindow().close());
       document.getElementById('searchPath').addEventListener('click', () => {
-        let leaguePath = log.dir(3, dialog.showOpenDialog({ properties: ['openDirectory', 'showHiddenFiles'], message: i18n.__('league-client-path-asked'), title: i18n.__('league-client-path-asked') }));
+        let leaguePath = console.dir(3, dialog.showOpenDialog({ properties: ['openDirectory', 'showHiddenFiles'], message: i18n.__('league-client-path-asked'), title: i18n.__('league-client-path-asked') }));
 
         if (!leaguePath || leaguePath.length === 0) return;
         leaguePath = leaguePath[0];
