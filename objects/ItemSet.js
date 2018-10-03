@@ -49,18 +49,24 @@ class ItemSet {
     return this;
   }
 
-  save() {
-    for (let i = 0; i < this._data.blocks.length; i++)
-      this._data.blocks[i] = this._data.blocks[i].build();
+  build() {
+    const x = Object.assign({}, this._data);
 
-    const p = this.path, data = JSON.stringify(this._data);
+    for (const block of this._data.blocks)
+      x.blocks[i] = this._data.blocks[i].build();
+
+    return JSON.stringify(x);
+  }
+
+  save() {
+    const self = this;
 
     // Creates the required folders if needed
     require('./handlers/ItemSetHandler')._ensureDir(path.resolve(Mana.getStore().get('leaguePath') + `\\Config\\Champions\\${this.championKey}`));
     require('./handlers/ItemSetHandler')._ensureDir(path.resolve(Mana.getStore().get('leaguePath') + `\\Config\\Champions\\${this.championKey}\\Recommended`));
 
     return new Promise((resolve, reject) => {
-      fs.writeFile(p, data, 'utf8', err => {
+      fs.writeFile(self.path, self.build(), 'utf8', err => {
         if (err) return reject(err);
         resolve();
       });

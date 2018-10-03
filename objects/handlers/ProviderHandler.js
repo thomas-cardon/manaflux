@@ -11,14 +11,14 @@ class ProviderHandler {
     };
   }
 
-  async getChampionData(champion, preferredPosition, gameMode, cache = true) {
+  async getChampionData(champion, preferredPosition, gameMode = 'CLASSIC', cache) {
     /* 1/4 - Storage Checking */
     if (Mana.getStore().has(`data.${champion.key}`) && cache) {
       let d = Mana.getStore().get(`data.${champion.key}`);
 
       for (let [position, data] of Object.entries(d))
-        for (let i = 0; i < data.itemsets.length; i++)
-          data.itemsets[i] = require('./ItemSetHandler').parse(champion.key, data.itemsets[i]._data, position);
+        for (let set in data.itemsets)
+          data.itemsets[set] = require('./ItemSetHandler').parse(champion.key, data.itemsets[set]._data, position);
 
       return d;
     }
@@ -28,10 +28,11 @@ class ProviderHandler {
     let positions = {};
 
     const providers = Mana.getStore().get('providers-order', Object.keys(this.providers));
-    providers.unshift(...providers.splice(providers.indexOf('manaflux'), 1), ...providers.splice(providers.indexOf('lolflavor'), 1));
+    //providers.unshift(...providers.splice(providers.indexOf('manaflux'), 1), ...providers.splice(providers.indexOf('lolflavor'), 1));
 
     for (let provider of providers) {
-      provider = this.providers[providers[i]];
+      provider = this.providers[provider];
+
       console.log(2, `[ProviderHandler] Using ${provider.name}`);
 
       try {
@@ -46,9 +47,7 @@ class ProviderHandler {
         else if (positions[preferredPosition].summonerspells.length === 0 && Mana.getStore().get('enableSummonerSpells'))
             positions[preferredPosition] = Object.assign(positions[preferredPosition], await provider.getSummonerSpells(champion, preferredPosition, gameMode) || {});
 
-        for (let [position, data] of Object.entries(positions))
-          positions[position] = Object.assign(positions[position], data);
-
+        debug.dir(positions);
         break;
       }
       catch(err) {
@@ -57,12 +56,14 @@ class ProviderHandler {
       }
     }
 
-    console.dir(3, positions);
-
-    /* 3/4 - Saving to offline cache */
-    /* 4/4 - Uploading to online cache */
+    /* 3/4 - Saving to offline cache
+       4/4 - Uploading to online cache */
     if (cache) {
       Mana.getStore().set(`data.${champion.key}`, positions);
+
+      /* Prevents the client from sending data the server already has */
+      if (positions._id) return;
+      console.log(2, '[ProviderHandler] Uploading to Manaflux cache server');
       this.providers.manaflux.upload(positions);
     }
 

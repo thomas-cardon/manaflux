@@ -14,7 +14,7 @@
 */
 
 const fs = require('fs'), path = require('path');
-const c = { log: console.log, dir: console.dir, warn: console.warn, error: console.error };
+const c = global.debug = { log: console.log, dir: console.dir, warn: console.warn, error: console.error };
 
 function LoggingHandler(level) {
   this.level = level;

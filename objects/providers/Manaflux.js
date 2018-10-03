@@ -9,7 +9,12 @@ class ManafluxProvider extends Provider {
 
   async getData(champion, preferredPosition, gameMode) {
     console.log(2, '[Manaflux] Fetching data from the cache server');
-    return console.dir(3, JSON.parse(await rp(`${this.base}v1/data/${champion.id}`)));
+
+    let data = JSON.parse(await rp(`${this.base}v1/data/${champion.id}`));
+
+    if (data[0]) return data[0];
+    else if (data.message) throw Error(`Manaflux cache server error: ${data.statusCode} - ${data.message} (${data.error})`);
+    else throw Error('Unexpected error');
   }
 
   async getSummonerSpells(champion, position, gameMode) {
@@ -24,17 +29,19 @@ class ManafluxProvider extends Provider {
     return await this.getData(champion, position, gameMode).perks;
   }
 
-  async upload(data) {
-    for (const pos in data) {
+  async upload(d) {
+    for (const pos in d) {
+      if (typeof d[pos] !== 'object') return;
+
       /* Let's not upload incomplete data */
-      if (data[pos].summonerspells.length === 0 || data[pos].itemsets.length === 0 || data[pos].perks.length === 0) return;
-      data[pos].itemsets = data[pos].itemsets.map(x => x._data);
+      if (d[pos].summonerspells.length === 0 || d[pos].itemsets.length === 0 || d[pos].perks.length === 0) return;
+      d[pos].itemsets = d[pos].itemsets.map(x => x.build());
     }
 
     await rp({
       method: 'POST',
       uri: `${this.base}v1/data`,
-      body: data,
+      body: console.dir(3, JSON.stringify(data)),
       json: true
     });
   }

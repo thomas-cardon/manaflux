@@ -14,8 +14,8 @@ class ChampionSelectHandler {
     this.cachedPerks = {};
   }
 
-  async _devDownloadProviderData(champion, pos, mode = 'CLASSIC') {
-    return await ProviderHandler.getChampionData(champion, pos, mode, false);
+  async _devDownloadProviderData(champion, pos, mode = 'CLASSIC', cache) {
+    return await ProviderHandler.getChampionData(champion, pos, mode, cache);
   }
 
   load() {

@@ -8,7 +8,7 @@ const { autoUpdater } = require('electron-updater');
 const LeaguePlug = require('./objects/leagueplug');
 const AutoLaunch = require('auto-launch');
 
-//require('./crash-reporting.js');
+require('./crash-reporting.js');
 
 let connector = new LeaguePlug();
 let win, tray;
@@ -125,8 +125,7 @@ ipcMain.on('lcu-connection', (event, path) => {
     connector.getConnectionHandler().end();
   }
 
-  if (path) connector.getPathHandler().setLeaguePath(console.log(3, path));
-  connector.start();
+  connector.start(path);
 
   connector.getConnectionHandler().on('connected', d => event.sender.send('lcu-connected', d));
   connector.getConnectionHandler().on('logged-in', d => event.sender.send('lcu-logged-in', d));
