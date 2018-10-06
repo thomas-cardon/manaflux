@@ -32,37 +32,22 @@ class OPGGProvider extends Provider {
 
   async getData(champion, preferredPosition, gameMode) {
     const res = await rp(`${this.base}/champion/${champion.key}/statistics${preferredPosition ? '/' + this.convertOPGGPosition(preferredPosition) : ''}`);
-    const data = this._scrape(res, champion, gameMode, this.getOPGGPosition(preferredPosition));
+    const d = this._scrape(res, champion, gameMode, true);
 
-    let positions = {};
-    positions[data.position] = data;
+    let data = { roles: { [d.position]: d } };
 
-    for (const position of data.availablePositions) {
-      console.log(2, `[ProviderHandler] [OP.GG] Gathering data for ${position.name} position`);
+    for (const position of d.availablePositions) {
+      console.log(2, `[ProviderHandler] [OP.GG] Gathering data (${position.name})`);
 
-      const d = await rp(position.link);
-      positions[position.name] = this._scrape(d, champion, position.name, gameMode);
+      data.roles[position.name.toUpperCase()] = this._scrape(await rp(position.link), champion, gameMode);
+      delete data.roles[position.name.toUpperCase()].position;
     }
 
-    return console.dir(3, positions);
+    delete data.roles[d.position].availablePositions;
+    return data;
   }
 
-  async getSummonerSpells(champion, position, gameMode) {
-    const { summonerspells } = await this.getData(champion, position, gameMode)[position];
-    return summonerspells;
-  }
-
-  async getItemSets(champion, position, gameMode) {
-    const { itemsets } = await this.getData(champion, position, gameMode)[position];
-    return itemsets;
-  }
-
-  async getPerks(champion, position, gameMode) {
-    const { perks } = await this.getData(champion, position, gameMode)[position];
-    return perks;
-  }
-
-  _scrape(html, champion, position, gameMode) {
+  _scrape(html, champion, gameMode, firstScrape) {
     let $ = cheerio.load(html);
 
     const version = $('.champion-stats-header-version').text().trim().slice(-4);
@@ -70,12 +55,14 @@ class OPGGProvider extends Provider {
 
     if (version != Mana.gameClient.branch) UI.error('OP.GG: ' + i18n.__('providers-error-outdated'));
 
-    position = this.convertOPGGPosition($('li.champion-stats-header__position.champion-stats-header__position--active').data('position')).toUpperCase();
-    let availablePositions = [];
+    let position = this.convertOPGGPosition($('li.champion-stats-header__position.champion-stats-header__position--active').data('position')).toUpperCase();
+    const availablePositions = [];
 
-    $('[data-position] > a').each(function(index) {
-      availablePositions.push({ name: convertOPGGPosition($(this).parent().data('position')).toUpperCase(), link: 'https://op.gg' + $(this).attr('href') });
-    });
+    if (firstScrape) {
+      $('[data-position] > a').each(function(index) {
+        availablePositions.push({ name: convertOPGGPosition($(this).parent().data('position')).toUpperCase(), link: 'https://op.gg' + $(this).attr('href') });
+      });
+    }
 
     const summonerspells = this.scrapeSummonerSpells($);
 

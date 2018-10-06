@@ -9,17 +9,19 @@ class Provider {
   }
 
   async getSummonerSpells(champion, position, gameMode) {
-    throw Error(`[ProviderHandler] ${this.name} ${i18n.__('providers-skipped')}: #getSummonerSpells`);
+    const x = await this.getData(champion, position, gameMode);
+    return x[position] && x[position].summonerspells ? x[position].summonerspells : {};
   }
 
   async getItemSets(champion, position, gameMode) {
-    throw Error(`[ProviderHandler] ${this.name} ${i18n.__('providers-skipped')}: #getItemSets`);
+    const x = await this.getData(champion, position, gameMode);
+    return x[position] && x[position].itemsets ? x[position].itemsets : {};
   }
 
-  async getRunes(champion, position, gameMode) {
-    throw Error(`[ProviderHandler] ${this.name} ${i18n.__('providers-skipped')}: #getRunes`);
+  async getPerks(champion, position, gameMode) {
+    const x = await this.getData(champion, position, gameMode);
+    return x[position] && x[position].perks ? x[position].perks : {};
   }
-
 
 }
 

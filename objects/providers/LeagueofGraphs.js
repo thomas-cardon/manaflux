@@ -9,21 +9,20 @@ class LeagueofGraphsProvider extends Provider {
   }
 
   async getData(champion, gameMode, preferredPosition) {
-    let positions = {};
+    let data = { roles: {} };
 
-    let x = ['JUNGLE', 'MIDDLE', 'TOP', 'ADC', 'SUPPORT'];
-    for (let i = 0; i < x.length; i++) {
-      console.log(2, `[ProviderHandler] [LOG] Gathering data for ${x[i]}`);
+    ['JUNGLE', 'MIDDLE', 'TOP', 'ADC', 'SUPPORT'].forEach(x => {
+      console.log(2, `[ProviderHandler] [LOG] Gathering data (${x})`);
 
       try {
-        positions[x[i]] = await this._scrape(champion, gameMode, x[i]);
+        this._scrape(champion, gameMode, x).then(d => data.roles[x] = d);
       }
       catch(err) {
         console.error(err);
       }
-    }
+    });
 
-    return console.dir(3, positions);
+    return data;
   }
 
   async getItemSets(champion, gameMode, position) {

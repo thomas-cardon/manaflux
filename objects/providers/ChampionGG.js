@@ -21,42 +21,32 @@ class ChampionGGProvider extends Provider {
 
   async getData(champion, preferredPosition, gameMode) {
     const res = await rp(`${this.base}champion/${champion.key}`);
-    const data = this._scrape(res, champion, gameMode);
+    const d = this._scrape(res, champion, gameMode, true);
 
-    let positions = {};
-    positions[data.position] = data;
+    let data = { roles: { [d.position]: d } };
 
-    for (const position of data.availablePositions) {
-      console.log(2, `[Champion.GG] Gathering data for ${position.name} position`);
+    for (const position of d.availablePositions) {
+      console.log(2, `[Champion.GG] Gathering data (${position.name})`);
 
-      const d = await rp(position.link);
-      positions[position.name] = this._scrape(d, champion, gameMode);
+      data.roles[position.name.toUpperCase()] = this._scrape(await rp(position.link), champion, gameMode);
+      delete data.roles[position.name.toUpperCase()].position;
     }
 
-    return console.dir(3, positions);
+    delete data.roles[d.position].availablePositions;
+    return data;
   }
 
-  async getSummonerSpells(champion, position, gameMode) {
-    return await this.getData(champion, position, gameMode)[position].summonerspells;
-  }
-
-  async getItemSets(champion, position, gameMode) {
-    return await this.getData(champion, position, gameMode)[position].itemsets;
-  }
-
-  async getPerks(champion, position, gameMode) {
-    return await this.getData(champion, position, gameMode)[position].perks;
-  }
-
-  _scrape(html, champion, gameMode) {
+  _scrape(html, champion, gameMode, firstScrape) {
     const $ = cheerio.load(html);
 
     const position = $(`li[class^='selected-role'] > a[href^='/champion/']`).first().text().trim();
-    let availablePositions = [];
+    const availablePositions = [];
 
-    $(`li[class!='selected-role'] > a[href^='/champion/']`).each(function(index) {
-      availablePositions.push({ name: $(this).first().text().trim().toUpperCase(), link: 'https://champion.gg' + $(this).attr('href') });
-    });
+    if (firstScrape) {
+      $(`li[class!='selected-role'] > a[href^='/champion/']`).each(function(index) {
+        availablePositions.push({ name: $(this).first().text().trim().toUpperCase(), link: 'https://champion.gg' + $(this).attr('href') });
+      });
+    }
 
     const summonerspells = this.scrapeSummonerSpells($, gameMode);
 
@@ -65,6 +55,7 @@ class ChampionGGProvider extends Provider {
 
     let perks = this.scrapePerks($, champion, position);
 
+    /* Validation - TODO: replace by a global validator in Manaflux client/server */
     let i = perks.length;
     while (i--) {
       const page = perks[i];
@@ -81,7 +72,7 @@ class ChampionGGProvider extends Provider {
       }
     }
 
-    return { perks, summonerspells, itemsets, availablePositions, position: position.toUpperCase() };
+    return { perks, summonerspells, itemsets, availablePositions, position };
   }
 
   /**

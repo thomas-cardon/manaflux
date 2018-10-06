@@ -12,7 +12,8 @@ class ManafluxProvider extends Provider {
 
     let data = JSON.parse(await rp(`${this.base}v1/data/${champion.id}`));
 
-    if (data[0]) return data[0];
+    if (data && data[0]) return data[0];
+    else if (data) return data;
     else if (data.message) throw Error(`Manaflux cache server error: ${data.statusCode} - ${data.message} (${data.error})`);
     else throw Error('Unexpected error');
   }
@@ -30,10 +31,11 @@ class ManafluxProvider extends Provider {
   }
 
   async upload(d) {
-    for (const pos in d) {
-      if (typeof d[pos] !== 'object') return;
+    console.log(2, '[ProviderHandler] Uploading to Manaflux cache server');
 
+    for (const pos in d) {
       /* Let's not upload incomplete data */
+      console.dir(d[pos]);
       if (d[pos].summonerspells.length === 0 || d[pos].itemsets.length === 0 || d[pos].perks.length === 0) return;
       d[pos].itemsets = d[pos].itemsets.map(x => x.build());
     }
