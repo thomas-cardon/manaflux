@@ -89,8 +89,8 @@ autoUpdater.on('update-downloaded', info => {
 });
 
 ipcMain.on('champion-select-in', (event, arg) => {
-  globalShortcut.register('Alt+Left', () => event.sender.send('perks-previous'));
-  globalShortcut.register('Alt+Right', () => event.sender.send('perks-next'));
+  globalShortcut.register('Alt+Left', () => event.sender.send('perks-shortcut', true));
+  globalShortcut.register('Alt+Right', () => event.sender.send('perks-shortcut', false));
 });
 
 ipcMain.on('champion-select-out', () => {
