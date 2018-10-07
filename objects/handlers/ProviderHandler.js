@@ -14,13 +14,12 @@ class ProviderHandler {
   async getChampionData(champion, preferredPosition, gameMode = 'CLASSIC', cache) {
     /* 1/4 - Storage Checking */
     if (Mana.getStore().has(`data.${champion.key}`) && cache) {
-      let d = Mana.getStore().get(`data.${champion.key}`);
+      const data = Mana.getStore().get(`data.${champion.key}`);
 
-      for (let [position, data] of Object.entries(d))
-        for (let set in data.itemsets)
-          data.itemsets[set] = require('./ItemSetHandler').parse(champion.key, data.itemsets[set]._data, position);
+      for (const [role, d] of Object.entries(data.roles))
+        d.itemsets = d.itemsets.map(x => require('./ItemSetHandler').parse(champion.key, x._data, role));
 
-      return d;
+      return data;
     }
 
     /* 2/4 - Downloading */
@@ -62,10 +61,11 @@ class ProviderHandler {
       console.dir(data);
 
       /* If a provider can't get any data on that role/position, let's use another provider */
-      if (!data || preferredPosition && !data.roles[preferredPosition] || Object.keys(data.roles).length >= Mana.getStore().get('minimumRoles', 2)) {
-        console.log(`Missing data for the asked role. (${preferredPosition})`);
+      if (!data || (!preferredPosition && Object.keys(data.roles).length <= Mana.getStore().get('minimumRoles', 2)) || preferredPosition && !data.roles[preferredPosition]) {
+        console.log(`Missing data for the asked role. (${preferredPosition}) - or because there's not enough data`);
         continue;
       }
+      else if (!preferredPosition) preferredPosition = Object.keys(data.roles)[0];
 
       /* Else we need to check the provider provided the required data */
       if (data.roles[preferredPosition].perks.length === 0)
@@ -80,13 +80,13 @@ class ProviderHandler {
 
     /* 3/4 - Saving to offline cache
        4/4 - Uploading to online cache */
-    if (!cache) return data;
+    if (!cache) return console.dir(data);
     this.saveToCache(champion, data);
 
     /* Prevents the client from sending data the server already has */
     //if (!data._id) this.providers.manaflux.upload(data);
 
-    return data;
+    return console.dir(data);
   }
 
   /**

@@ -58,7 +58,7 @@ class ChampionSelectHandler {
     this.gameModeHandler.onChampionChangeEvent(champion);
 
     UI.status('ChampionSelect', 'common-loading');
-    const res = await ProviderHandler.getChampionData(champion, this.gameModeHandler.getPosition(), this.gameMode);
+    const res = await UI.loading(ProviderHandler.getChampionData(champion, this.gameModeHandler.getPosition(), this.gameMode, true));
     this.updateDisplay(champion, res);
   }
 
@@ -75,37 +75,30 @@ class ChampionSelectHandler {
     UI.status('ChampionSelect', 'champion-updating-display', champion.name);
 
     $('#positions').unbind().empty().hide();
+    
+    if (Object.keys(res.roles).length === 0) return console.error(1, i18n.__('providers-error-data'));
 
-    ipcRenderer.removeAllListeners('perks-previous');
-    ipcRenderer.removeAllListeners('perks-next');
-
-    if (Object.keys(res).length === 0) return console.error(1, i18n.__('providers-error-data'));
-
-    for (let position in res) {
-      if (res.roles[position].perks.length === 0) {
-        UI.error('providers-error-runes', champion.name, position);
-        delete res.roles[position];
+    Object.keys(res.roles).forEach(r => {
+      if (res.roles[r].perks.length === 0) {
+        UI.error('providers-error-runes', champion.name, r);
+        delete res.roles[r];
       }
-      else $('#positions').append(`<option value="${position}">${position === 'ADC' ? 'ADC' : position.charAt(0).toUpperCase() + position.slice(1) }</option>`)
-    }
+      else $('#positions').append(`<option value="${r}">${UI.stylizeRole(r)}</option>`);
+    });
 
     const onPerkPositionChange = this.onPerkPositionChange;
 
     $('#positions').change(function() {
-      onPerkPositionChange(champion, this.value.toUpperCase(), res.roles[this.value.toUpperCase()].perks);
-    });
+      if (this.value !== '') onPerkPositionChange(champion, this.value.toUpperCase(), res.roles[this.value.toUpperCase()].perks);
+    }).val(res.roles[this.gameModeHandler.getPosition()] ? this.gameModeHandler.getPosition() : Object.keys(res)[0]).trigger('change').show();
 
     if (Mana.getStore().get('itemsets-enable')) {
       ItemSetHandler.getItemSetsByChampionKey(champion.key).then(sets => ItemSetHandler.deleteItemSets(sets).then(() => {
-        UI.status('ChampionSelect', 'itemsets-save-status', champion.name);
-
-        for (let position in res.roles)
-          for (const set of res.roles[position].itemsets)
-            set.save();
+        UI.temporaryStatus('ChampionSelect', 'itemsets-save-status', champion.name);
+        res.roles.forEach(r => r.itemsets.forEach(x => x.save()));
       }));
     }
 
-    $('#positions').val(res.roles[this.gameModeHandler.getPosition()] ? this.gameModeHandler.getPosition() : Object.keys(res)[0]).trigger('change').show();
     UI.tray(false);
   }
 
@@ -117,9 +110,9 @@ class ChampionSelectHandler {
       UI.enableHextechAnimation(champion, perks[0].primaryStyleId);
 
     /* Perks display */
-    if (Mana.getStore().get('runes-automatic-load')) Mana.user.getPerksInventory().updatePerksPages(perks);
+    if (Mana.getStore().get('runes-automatic-load')) UI.loading(Mana.user.getPerksInventory().updatePerksPages(perks));
     else {
-      $('button#loadRunes').enableManualButton(() => Mana.user.getPerksInventory().updatePerksPages(perks)
+      $('button#loadRunes').enableManualButton(() => UI.loading(Mana.user.getPerksInventory().updatePerksPages(perks))
         .catch(err => {
           UI.error(err);
           captureException(err);
@@ -128,7 +121,7 @@ class ChampionSelectHandler {
 
     /* Summoner Spells display */
     if (Mana.getStore().get('summoner-spells-button') && data.summonerspells.length > 0)
-      $('button#loadSummonerSpells').enableManualButton(() => Mana.user.updateSummonerSpells(data.summonerspells).catch(err => { UI.error(err); captureException(err); }), true);
+      $('button#loadSummonerSpells').enableManualButton(() => UI.loading(Mana.user.updateSummonerSpells(data.summonerspells)).catch(err => { UI.error(err); captureException(err); }), true);
 
     UI.status('ChampionSelect', 'runes-loaded', champion.name, position);
   }
@@ -148,8 +141,6 @@ class ChampionSelectHandler {
     this.cachedPerks = {};
 
     ipcRenderer.send('champion-select-out');
-    ipcRenderer.removeAllListeners('perks-previous');
-    ipcRenderer.removeAllListeners('perks-next');
 
     this.gameModeHandler.end();
 
@@ -163,35 +154,5 @@ class ChampionSelectHandler {
     clearInterval(this._checkTimer);
   }
 }
-
-
-/* Shortcuts handling
-ipcRenderer.on('runes-previous', () => {
-  console.log(2, '[Shortcuts] Selecting previous position..');
-
-  const keys = Object.keys(data);
-  let i = keys.length, positionIndex = keys.indexOf($('#positions').val());
-  let newIndex = positionIndex;
-
-  if (newIndex === 0) newIndex = i - 1;
-  else newIndex--;
-
-  /* Useless to change position if it's already the one chosen
-  if (newIndex !== positionIndex) $('#positions').val(keys[newIndex]).trigger('change');
-});
-
-ipcRenderer.on('runes-next', () => {
-  console.log(2, '[Shortcuts] Selecting next position..');
-
-  const keys = Object.keys(data);
-  let i = keys.length, positionIndex = keys.indexOf($('#positions').val());
-  let newIndex = positionIndex;
-
-  if (newIndex === i - 1) newIndex = 0;
-  else newIndex++;
-
-  /* Useless to change position if it's already the one chosen
-  if (newIndex !== positionIndex) $('#positions').val(keys[newIndex]).trigger('change');
-});*/
 
 module.exports = ChampionSelectHandler;
