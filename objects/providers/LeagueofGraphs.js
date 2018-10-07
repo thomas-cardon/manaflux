@@ -110,7 +110,7 @@ class LeagueofGraphsProvider extends Provider {
    * @param {object} skillorder
    */
   scrapeItemSets($, champion, position, skillorder) {
-    let itemset = new ItemSet(champion.key, position).setTitle(`LOG ${champion.name} - ${position}`);
+    let itemset = new ItemSet(champion.key, position, this.id).setTitle(`LOG ${champion.name} - ${position}`);
     let blocks = [
         new Block().setName(i18n.__('item-sets-block-starter', skillorder)),
         new Block().setName(i18n.__('item-sets-block-core-build')),

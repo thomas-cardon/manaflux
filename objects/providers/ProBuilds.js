@@ -20,7 +20,7 @@ class ProBuildsProvider extends Provider {
   _scrape(html, champion, gameMode) {
     const $ = cheerio.load(html);
 
-    let itemset = new ItemSet(champion.key, position);
+    let itemset = new ItemSet(champion.key, position, this.id);
 
     itemset._data = itemset;
     itemset._data.blocks[0].type = i18n.__('itemsets-block-consumables');

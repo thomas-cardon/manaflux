@@ -27,7 +27,7 @@ class ProviderHandler {
     let data;
 
     const providers = Mana.getStore().get('providers-order', Object.keys(this.providers));
-    //providers.unshift(...providers.splice(providers.indexOf('manaflux'), 1), ...providers.splice(providers.indexOf('lolflavor'), 1));
+    providers.unshift(...providers.splice(providers.indexOf('manaflux'), 1), ...providers.splice(providers.indexOf('lolflavor'), 1));
 
     for (let provider of providers) {
       provider = this.providers[provider];
@@ -38,7 +38,7 @@ class ProviderHandler {
       if (!data) {
         try {
           const x = await provider.getData(champion, preferredPosition, gameMode);
-          data = { roles: {}, role: preferredPosition, championId: champion.id, gameMode, providerId: provider.id, version: Mana.version, gameVersion: Mana.gameClient.branch, region: Mana.gameClient.region, ...x };
+          data = { roles: {}, role: preferredPosition, championId: champion.id, gameMode, version: Mana.version, gameVersion: Mana.gameClient.branch, region: Mana.gameClient.region, ...x };
         }
           catch(err) {
           console.error(err);
@@ -84,7 +84,7 @@ class ProviderHandler {
     this.saveToCache(champion, data);
 
     /* Prevents the client from sending data the server already has */
-    //if (!data._id) this.providers.manaflux.upload(data);
+    if (!data._id) this.providers.manaflux.upload(data);
 
     return console.dir(data);
   }

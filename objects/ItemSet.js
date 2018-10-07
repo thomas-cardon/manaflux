@@ -1,11 +1,13 @@
 const fs = require('fs'), path = require('path');
 
 class ItemSet {
-  constructor(key, file) {
+  constructor(key, file, ...metadata) {
     this.championKey = key.toLowerCase();
 
-    this.file = (file && file.startsWith('MFLUX_')) ? file : `MFLUX_${this.championKey}${file ? ('_' + file.toLowerCase() + '_') : '_'}${Mana.gameClient.branch}_${Mana.version}.json`;
-    this.path = path.resolve(Mana.getStore().get('leaguePath') + `\\Config\\Champions\\${this.championKey}\\Recommended\\${this.file}`);
+    this.file = (file && file.startsWith('MFLUX_')) ? file : `MFLUX_${this.championKey}${file ? ('_' + file.toLowerCase() + '_') : '_'}${metadata.length > 0 ? metadata.join('_') + '_' : ''}${Mana.gameClient.branch}_${Mana.version}.json`;
+    console.log(this.file);
+
+    this.path = path.join(Mana.getStore().get('league-client-path'), `\\Config\\Champions\\${this.championKey}\\Recommended\\${this.file}`);
 
     this._data = {
       title: i18n.__('itemsets-unknown'),
@@ -52,8 +54,8 @@ class ItemSet {
   build() {
     const x = Object.assign({}, this._data);
 
-    for (const block of this._data.blocks)
-      x.blocks[i] = this._data.blocks[i].build();
+    for (const block in this._data.blocks)
+      x.blocks[block] = this._data.blocks[block].build();
 
     return JSON.stringify(x);
   }
@@ -62,8 +64,8 @@ class ItemSet {
     const self = this;
 
     // Creates the required folders if needed
-    require('./handlers/ItemSetHandler')._ensureDir(path.resolve(Mana.getStore().get('leaguePath') + `\\Config\\Champions\\${this.championKey}`));
-    require('./handlers/ItemSetHandler')._ensureDir(path.resolve(Mana.getStore().get('leaguePath') + `\\Config\\Champions\\${this.championKey}\\Recommended`));
+    require('./handlers/ItemSetHandler')._ensureDir(path.join(Mana.getStore().get('leaguePath'), `\\Config\\Champions\\${this.championKey}`));
+    require('./handlers/ItemSetHandler')._ensureDir(path.join(Mana.getStore().get('leaguePath'), `\\Config\\Champions\\${this.championKey}\\Recommended`));
 
     return new Promise((resolve, reject) => {
       fs.writeFile(self.path, self.build(), 'utf8', err => {

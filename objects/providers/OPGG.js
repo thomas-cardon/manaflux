@@ -142,7 +142,7 @@ class OPGGProvider extends Provider {
   scrapeItemSets($, champion, position, skillorder) {
     const itemrows = $('.champion-overview__table').eq(1).find('.champion-overview__row');
 
-    let itemset = new ItemSet(champion.key, position).setTitle(`OPG ${champion.name} - ${position}`);
+    let itemset = new ItemSet(champion.key, position, this.id).setTitle(`OPG ${champion.name} - ${position}`);
     let boots = new Block().setName(i18n.__('item-sets-block-boots'));
 
     /* Block Starter */

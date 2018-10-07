@@ -150,7 +150,7 @@ class ChampionGGProvider extends Provider {
    * @param {object} skillorder
    */
   scrapeItemSets($, champion, position, skillorder) {
-    let itemset = new ItemSet(champion.key, position.toUpperCase()).setTitle(`CGG ${champion.name} - ${position}`);
+    let itemset = new ItemSet(champion.key, position.toUpperCase(), this.id).setTitle(`CGG ${champion.name} - ${position}`);
 
     $('.build-wrapper').each(function(index) {
       const type = $(this).parent().find('h2').eq(index % 2).text();

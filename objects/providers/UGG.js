@@ -104,7 +104,7 @@ class UGGProvider extends Provider {
    */
   scrapeItemSets($, champion, position, skillorder) {
     const items = $("img[src^='https://static.u.gg/lol/riot_static/lol/" + $('.champion-image').attr('src').slice(40, 46) + "/img/item/']");
-    let itemset = new ItemSet(champion.key, position).setTitle(`UGG ${champion.name} - ${position}`);
+    let itemset = new ItemSet(champion.key, position, this.id).setTitle(`UGG ${champion.name} - ${position}`);
 
     let starter = new Block().setName(i18n.__('itemsets-block-starter', skillorder));
     let coreBuild = new Block().setName(i18n.__('itemsets-block-core-build', $('.grid-block.final-items').find('.winrate').text().slice(0, 6), $('.grid-block.final-items').find('.matches').text().split(' ')[0]));

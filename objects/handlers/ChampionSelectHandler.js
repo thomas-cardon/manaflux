@@ -96,7 +96,7 @@ class ChampionSelectHandler {
     if (Mana.getStore().get('item-sets-enable')) {
       ItemSetHandler.getItemSetsByChampionKey(champion.key).then(sets => ItemSetHandler.deleteItemSets(sets).then(() => {
         UI.temporaryStatus('ChampionSelect', 'itemsets-save-status', champion.name);
-        res.roles.forEach(r => r.itemsets.forEach(x => x.save()));
+        Object.values(res.roles).forEach(r => r.itemsets.forEach(x => x.save()));
       }));
     }
 
