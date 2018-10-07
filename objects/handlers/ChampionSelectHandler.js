@@ -64,8 +64,6 @@ class ChampionSelectHandler {
 
   async onFirstTickEvent(data) {
     ipcRenderer.send('champion-select-in');
-    console.dir(3, data);
-
     this.gameMode = await Mana.user.getGameMode();
 
     /* Fallback to classic mode when not available */
@@ -82,12 +80,11 @@ class ChampionSelectHandler {
     ipcRenderer.removeAllListeners('perks-next');
 
     if (Object.keys(res).length === 0) return console.error(1, i18n.__('providers-error-data'));
-    console.dir(res);
 
     for (let position in res) {
-      if (res[position].perks.length === 0) {
+      if (res.roles[position].perks.length === 0) {
         UI.error('providers-error-runes', champion.name, position);
-        delete res[position];
+        delete res.roles[position];
       }
       else $('#positions').append(`<option value="${position}">${position === 'ADC' ? 'ADC' : position.charAt(0).toUpperCase() + position.slice(1) }</option>`)
     }
@@ -95,20 +92,20 @@ class ChampionSelectHandler {
     const onPerkPositionChange = this.onPerkPositionChange;
 
     $('#positions').change(function() {
-      onPerkPositionChange(champion, this.value.toUpperCase(), res[this.value.toUpperCase()].perks);
+      onPerkPositionChange(champion, this.value.toUpperCase(), res.roles[this.value.toUpperCase()].perks);
     });
 
     if (Mana.getStore().get('itemsets-enable')) {
       ItemSetHandler.getItemSetsByChampionKey(champion.key).then(sets => ItemSetHandler.deleteItemSets(sets).then(() => {
         UI.status('ChampionSelect', 'itemsets-save-status', champion.name);
 
-        for (let position in res)
-          for (const set of res[position].itemsets)
+        for (let position in res.roles)
+          for (const set of res.roles[position].itemsets)
             set.save();
       }));
     }
 
-    $('#positions').val(res[this.gameModeHandler.getPosition()] ? this.gameModeHandler.getPosition() : Object.keys(res)[0]).trigger('change').show();
+    $('#positions').val(res.roles[this.gameModeHandler.getPosition()] ? this.gameModeHandler.getPosition() : Object.keys(res)[0]).trigger('change').show();
     UI.tray(false);
   }
 

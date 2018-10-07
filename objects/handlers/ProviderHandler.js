@@ -43,7 +43,7 @@ class ProviderHandler {
         }
           catch(err) {
           console.error(err);
-          console.log('Couldn\'t aggregate data. Using next provider!');
+          console.log('Couldn\'t aggregate data.');
           continue;
         }
       }
@@ -53,7 +53,7 @@ class ProviderHandler {
         }
         catch(err) {
           console.error(err);
-          console.log('Couldn\'t aggregate data. Using next provider!');
+          console.log('Couldn\'t aggregate data.');
           continue;
         }
       }
@@ -62,7 +62,7 @@ class ProviderHandler {
       console.dir(data);
 
       /* If a provider can't get any data on that role/position, let's use another provider */
-      if (!data || !data.roles[preferredPosition]) {
+      if (!data || preferredPosition && !data.roles[preferredPosition] || Object.keys(data.roles).length >= Mana.getStore().get('minimumRoles', 2)) {
         console.log(`Missing data for the asked role. (${preferredPosition})`);
         continue;
       }
@@ -89,16 +89,23 @@ class ProviderHandler {
     return data;
   }
 
+  /**
+   * Copies properties or merges arrays if necessary
+   * @param {object} x - The source object
+   * @param {object} y - The object to copy properties from
+   */
   _merge(x, y) {
-    for (const [name, role] in Object.entries(y.roles))
+    for (const [name, role] of Object.entries(y.roles)) {
       if (!x.roles[name]) x.roles[name] = role;
       else {
-        for (const [k, v] in Object.entries(role)) {
+        for (const [k, v] of Object.entries(role)) {
           if (!x.roles[name][k]) x.roles[name][k] = v;
           else if (Array.isArray(x.roles[name][k])) x.roles[name][k] = x.roles[name][k].concat(v);
         }
       }
+    }
   }
+
   saveToCache(champion, d) {
     Mana.getStore().set(`data.${champion.key}`, d);
   }

@@ -28,15 +28,17 @@ class ChampionGGProvider extends Provider {
     for (const position of d.availablePositions) {
       console.log(2, `[Champion.GG] Gathering data (${position.name})`);
 
-      data.roles[position.name.toUpperCase()] = this._scrape(await rp(position.link), champion, gameMode);
-      delete data.roles[position.name.toUpperCase()].position;
+      data.roles[position.name] = this._scrape(await rp(position.link), champion, gameMode);
+      delete data.roles[position.name].position;
     }
 
     delete data.roles[d.position].availablePositions;
+    delete data.roles[d.position].position;
+
     return data;
   }
 
-  _scrape(html, champion, gameMode, firstScrape) {
+  _scrape(html, champion, gameMode, firstScrape = false) {
     const $ = cheerio.load(html);
 
     const position = $(`li[class^='selected-role'] > a[href^='/champion/']`).first().text().trim();
@@ -59,7 +61,6 @@ class ChampionGGProvider extends Provider {
     let i = perks.length;
     while (i--) {
       const page = perks[i];
-      console.dir(page);
 
       if (page.selectedPerkIds[0] === undefined && page.selectedPerkIds[1] === undefined) {
         perks.splice(i, 1);
@@ -72,7 +73,7 @@ class ChampionGGProvider extends Provider {
       }
     }
 
-    return { perks, summonerspells, itemsets, availablePositions, position };
+    return { perks, summonerspells, itemsets, availablePositions, position: position.toUpperCase() };
   }
 
   /**

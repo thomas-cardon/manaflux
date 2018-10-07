@@ -39,11 +39,13 @@ class OPGGProvider extends Provider {
     for (const position of d.availablePositions) {
       console.log(2, `[ProviderHandler] [OP.GG] Gathering data (${position.name})`);
 
-      data.roles[position.name.toUpperCase()] = this._scrape(await rp(position.link), champion, gameMode);
-      delete data.roles[position.name.toUpperCase()].position;
+      data.roles[position.name] = this._scrape(await rp(position.link), champion, gameMode);
+      delete data.roles[position.name].position;
     }
 
     delete data.roles[d.position].availablePositions;
+    delete data.roles[d.position].position;
+
     return data;
   }
 
@@ -71,7 +73,7 @@ class OPGGProvider extends Provider {
 
     const perks = this.scrapePerks($, champion, position);
 
-    return { perks, summonerspells, itemsets, availablePositions, position };
+    return { perks, summonerspells, itemsets, availablePositions, position: position.toUpperCase() };
   }
 
   /**

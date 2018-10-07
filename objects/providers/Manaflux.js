@@ -30,6 +30,10 @@ class ManafluxProvider extends Provider {
     return await this.getData(champion, position, gameMode).perks;
   }
 
+  /**
+   * Uploads data to Manaflux server
+   * @param {object} d - The data that contains perks, summonerspells etc
+   */
   async upload(d) {
     console.log(2, '[ProviderHandler] Uploading to Manaflux cache server');
 

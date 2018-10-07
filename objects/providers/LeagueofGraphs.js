@@ -11,16 +11,16 @@ class LeagueofGraphsProvider extends Provider {
   async getData(champion, gameMode, preferredPosition) {
     let data = { roles: {} };
 
-    ['JUNGLE', 'MIDDLE', 'TOP', 'ADC', 'SUPPORT'].forEach(x => {
+    for (let x of ['JUNGLE', 'MIDDLE', 'TOP', 'ADC', 'SUPPORT']) {
       console.log(2, `[ProviderHandler] [LOG] Gathering data (${x})`);
 
       try {
-        this._scrape(champion, gameMode, x).then(d => data.roles[x] = d);
+        data.roles[x] = await this._scrape(champion, gameMode, x);
       }
       catch(err) {
         console.error(err);
       }
-    });
+    }
 
     return data;
   }
@@ -45,7 +45,7 @@ class LeagueofGraphsProvider extends Provider {
     const summonerspells = Mana.getStore().get('summoner-spells') ? this.scrapeSummonerSpells(cheerio.load(data[2]), champion) : [];
     const statistics = Mana.getStore().get('statistics') ? {} : {};
 
-    return { perks, itemsets, summonerspells, statistics };
+    return console.dir({ perks, itemsets, summonerspells, statistics });
   }
 
   /**
@@ -83,7 +83,7 @@ class LeagueofGraphsProvider extends Provider {
    * @param {string} gameMode - A gamemode, from League Client, such as CLASSIC, ARAM, etc.
    */
   scrapeSummonerSpells($, gameMode) {
-    return $('td.medium-text-left.small-text-center > span > img').slice(0, 2).toArray().map(function(x) { return Mana.gameClient.findSummonerSpellByName(x.attribs.alt).id; });
+    return $('td.medium-text-left.small-text-center > span > img').slice(0, 2).toArray().map(x => Mana.gameClient.findSummonerSpellByName(x.attribs.alt).id);
   }
 
   /**

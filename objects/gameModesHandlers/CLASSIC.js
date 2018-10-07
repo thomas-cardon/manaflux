@@ -30,7 +30,7 @@ class ClassicGameMode {
   }
 
   onFirstTickEvent(data) {
-    log.dir(3, data);
+    console.dir(3, data);
   }
 
   onTickEvent(data, gameMode) {
