@@ -1,7 +1,24 @@
 var UI = {};
 
+UI.stylizeRole = role => role === 'ADC' ? 'ADC' : role.charAt(0).toUpperCase() + role.slice(1);
+
 /**
-* Shows a status on the UI and consoles it into LoggingHandler
+* Toggles or forces the loading indicator, or enables the loading indicator if parameter is a promise
+* @param {toggle} boolean - Forces the loading indicator to be shown or hidden (until this method is triggered again)
+*/
+UI.loading = async (toggle = document.getElementById('loading').style.display === 'none') => {
+  if (toggle.then) {
+    document.getElementById('loading').style.display = 'block';
+    const x = await toggle;
+    document.getElementById('loading').style.display = 'none';
+    return x;
+  }
+
+  return toggle ? document.getElementById('loading').style.display = 'block' : document.getElementById('loading').style.display = 'none';
+}
+
+/**
+* Shows a status on the UI and logs it into the console
 * @param {prefix} string - What will be written before the message in the consoles
 * @param {translationString} string - Allows Manaflux to show a translated message on the UI and in english in the consoles
 * @param {parameters} string... - Translation parameters
@@ -15,6 +32,12 @@ UI.status = (prefix, ...args) => {
 };
 
 let s, id;
+/**
+* Shows a status on the UI for 3 seconds
+* @param {prefix} string - What will be written before the message in the consoles
+* @param {translationString} string - Allows Manaflux to show a translated message on the UI and in english in the consoles
+* @param {parameters} string... - Translation parameters
+*/
 UI.temporaryStatus = (prefix, ...args) => {
   if (id) clearTimeout(id);
   else s = $('.status').text();
