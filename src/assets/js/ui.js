@@ -91,27 +91,38 @@ ipcRenderer.on('error', (event, data) => UI.error(data));
 /* Manual Button Handler */
 $.fn.enableManualButton = function(cb, off) {
 	if (off) $(this).off();
-	$(this).show().click(cb);
+	$(this).prop('disabled', false).click(cb).show();
+
 	return this;
 }
 
-$.fn.disableManualButton = function() {
-	$(this).off().hide();
+$.fn.disableManualButton = function(disablesInsteadOfHiding) {
+	$(this).off();
+
+  if (disablesInsteadOfHiding) $(this).prop('disabled', true);
+  else $(this).hide();
+
 	return this;
 }
 
 /* Hextech Animation Handler */
 UI.enableHextechAnimation = function(champion, primaryStyleId = 'white') {
-	$('.championPortrait > #bg').attr('src', 'assets/img/vfx-' + primaryStyleId + '.png');
+	$('.championPortrait > #hextechAnimationBackground').attr('src', 'assets/img/vfx-' + primaryStyleId + '.png');
 	$('.championPortrait > #champion')
 	.attr('src', champion.img);
 
   if (Mana.getStore().get('ui-animations-enable')) $('.championPortrait > #champion').on('load', () => $(".title").animate({ "margin-top": "55%" }, 700, "linear", () => $('.championPortrait').show()));
+  else {
+    $(".title").hide();
+    $('.championPortrait').show();
+  }
 }
 
 UI.disableHextechAnimation = () => {
 	$('.championPortrait').hide();
-	$(".title").animate({ "margin-top": "0%" }, 700, "linear");
+
+	if (Mana.getStore().get('ui-animations-enable')) $(".title").animate({ "margin-top": "0%" }, 700, "linear");
+  else $(".title").show();
 }
 
 function getReadableFileSizeString(fileSizeInBytes) {

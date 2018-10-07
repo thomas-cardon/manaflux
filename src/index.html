@@ -45,14 +45,14 @@
         <h1 id="dev">MANAFLUX</h1>
         <img src="assets/img/underline.png" draggable="false">
       </div>
-      <div style="margin: 10px;">
-        <button type="button" class="btn normal" data-i18n="summoner-spells-load-button" id="loadSummonerSpells" style="display: none;"></button>
-        <button type="button" class="btn normal" data-i18n="runes-load-button" id="loadRunes" style="display: none; margin: 10px;"></button>
-        <select style="display: none; margin: 10px;" id="positions" data-custom-component="shortcuts" class="dropdown xs"></select>
+      <div id="buttons" style="display: none;">
+        <select style="display: none; margin-bottom: -14px;" id="positions" data-custom-component="shortcuts" class="dropdown xs"></select>
+        <button type="button" class="btn normal" data-i18n="summoner-spells-load-button" id="loadSummonerSpells"></button>
+        <button type="button" class="btn normal" data-i18n="runes-load-button" id="loadRunes"></button>
       </div>
       <div class="championPortrait" style="display: none;">
         <img id="champion">
-        <img id="bg">
+        <img id="hextechAnimationBackground" data-custom-component="hextech-background">
       </div>
     </div>
     <div data-tabid="settings" data-tabn=0 class="tabcontent" style="display: none; margin-left: 12%;">
@@ -64,7 +64,7 @@
       <div class="option">
         <p class="suboption-name" data-i18n="runes-load-automatically"></p>
         <div class="options float-left checkboxContainer">
-          <input type="checkbox" data-settings-key="runes-automatic-load" data-setting-default="true" />
+          <input type="checkbox" data-settings-key="perks-automatic-load" data-setting-default="true" />
           <label data-i18n="common-enable"></label>
         </div>
       </div>
@@ -80,7 +80,7 @@
       <div class="option">
         <p class="suboption-name" data-i18n="item-sets"></p>
         <div class="options float-left checkboxContainer">
-          <input type="checkbox" data-settings-key="item-sets" data-setting-default="false" />
+          <input type="checkbox" data-settings-key="item-sets-enable" data-setting-default="false" />
           <label data-i18n="common-enable"></label>
         </div>
       </div>

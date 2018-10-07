@@ -22,6 +22,12 @@ body {
   user-select: none;
 }
 
+#buttons {
+  position: fixed;
+  bottom: 50px;
+  width: 100%;
+}
+
 .sortable {
   list-style: disc inside;
   width: 88%;
@@ -105,11 +111,10 @@ body {
   border-radius: 110px;
 }
 
-.championPortrait > #bg {
+.championPortrait > #hextechAnimationBackground {
   z-index: 1;
   margin-left: -1%;
   will-change: transform;
-  animation: hextechRotation 1s ease-in-out alternate infinite;
 }
 
 .title {

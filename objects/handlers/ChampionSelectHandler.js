@@ -86,42 +86,52 @@ class ChampionSelectHandler {
       else $('#positions').append(`<option value="${r}">${UI.stylizeRole(r)}</option>`);
     });
 
-    const onPerkPositionChange = this.onPerkPositionChange;
+    const self = this;
 
-    $('#positions').change(function() {
-      if (this.value !== '') onPerkPositionChange(champion, this.value.toUpperCase(), res.roles[this.value.toUpperCase()].perks);
-    }).val(res.roles[this.gameModeHandler.getPosition()] ? this.gameModeHandler.getPosition() : Object.keys(res)[0]).trigger('change').show();
+    $('#positions')
+    .change(function() { self.onPerkPositionChange(champion, this.value.toUpperCase(), res.roles[this.value.toUpperCase()]); })
+    .val(res.roles[this.gameModeHandler.getPosition()] ? this.gameModeHandler.getPosition() : Object.keys(res.roles)[0])
+    .trigger('change').show();
 
-    if (Mana.getStore().get('itemsets-enable')) {
+    if (Mana.getStore().get('item-sets-enable')) {
       ItemSetHandler.getItemSetsByChampionKey(champion.key).then(sets => ItemSetHandler.deleteItemSets(sets).then(() => {
         UI.temporaryStatus('ChampionSelect', 'itemsets-save-status', champion.name);
         res.roles.forEach(r => r.itemsets.forEach(x => x.save()));
       }));
     }
 
+    $('#loadRunes, #loadSummonerSpells').disableManualButton(true);
+    $('#buttons').show();
+
     UI.enableHextechAnimation(champion);
     UI.tray(false);
   }
 
-  onPerkPositionChange(champion, position, perks) {
-    $('button#loadRunes, button#loadSummonerSpells').disableManualButton();
-    UI.enableHextechAnimation(champion, perks[0].primaryStyleId);
+  onPerkPositionChange(champion, position, data) {
+    UI.enableHextechAnimation(champion, data.perks[0].primaryStyleId);
 
-    /* Perks display */
-    if (Mana.getStore().get('runes-automatic-load')) UI.loading(Mana.user.getPerksInventory().updatePerksPages(perks));
+    this._updatePerksDisplay(data.perks);
+    if (data.summonerspells.length > 0) this._updateSummonerSpellsDisplay(data.summonerspells);
+
+    UI.status('ChampionSelect', 'champion-select-loaded', champion.name, position);
+  }
+
+  _updatePerksDisplay(perks) {
+    if (Mana.getStore().get('perks-automatic-load')) UI.loading(Mana.user.getPerksInventory().updatePerksPages(perks));
     else {
-      $('button#loadRunes').enableManualButton(() => UI.loading(Mana.user.getPerksInventory().updatePerksPages(perks))
+      $('#loadRunes').enableManualButton(() => UI.loading(Mana.user.getPerksInventory().updatePerksPages(perks))
         .catch(err => {
           UI.error(err);
           captureException(err);
         }), true);
     }
 
-    /* Summoner Spells display */
-    if (Mana.getStore().get('summoner-spells-button') && data.summonerspells.length > 0)
-      $('button#loadSummonerSpells').enableManualButton(() => UI.loading(Mana.user.updateSummonerSpells(data.summonerspells)).catch(err => { UI.error(err); captureException(err); }), true);
+    UI.temporaryStatus('ChampionSelect', 'runes-loaded');
+  }
 
-    UI.status('ChampionSelect', 'runes-loaded', champion.name, position);
+  _updateSummonerSpellsDisplay(spells) {
+    if (Mana.getStore().get('summoner-spells')) $('#loadSummonerSpells').enableManualButton(() => UI.loading(Mana.user.updateSummonerSpells(spells)).catch(err => { UI.error(err); captureException(err); }), true);
+    UI.temporaryStatus('ChampionSelect', 'summoner-spells-loaded');
   }
 
   destroyDisplay() {
@@ -129,7 +139,10 @@ class ChampionSelectHandler {
     UI.disableHextechAnimation();
 
     $('#positions').unbind().empty().hide();
-    $('button#loadRunes, button#loadSummonerSpells').disableManualButton();
+    $('#buttons').hide();
+
+    $('#loadRunes').disableManualButton(!Mana.getStore().get('perks-automatic-load'));
+    $('#loadSummonerSpells').disableManualButton(true);
 
     if (Mana.getStore().get('enableTrayIcon')) UI.tray();
   }
