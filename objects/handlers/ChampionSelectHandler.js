@@ -75,7 +75,7 @@ class ChampionSelectHandler {
     UI.status('ChampionSelect', 'champion-updating-display', champion.name);
 
     $('#positions').unbind().empty().hide();
-    
+
     if (Object.keys(res.roles).length === 0) return console.error(1, i18n.__('providers-error-data'));
 
     Object.keys(res.roles).forEach(r => {
@@ -99,15 +99,13 @@ class ChampionSelectHandler {
       }));
     }
 
+    UI.enableHextechAnimation(champion);
     UI.tray(false);
   }
 
   onPerkPositionChange(champion, position, perks) {
     $('button#loadRunes, button#loadSummonerSpells').disableManualButton();
-
-    /* Hextech Animation */
-    if (Mana.getStore().get('ui-animations-enable'))
-      UI.enableHextechAnimation(champion, perks[0].primaryStyleId);
+    UI.enableHextechAnimation(champion, perks[0].primaryStyleId);
 
     /* Perks display */
     if (Mana.getStore().get('runes-automatic-load')) UI.loading(Mana.user.getPerksInventory().updatePerksPages(perks));

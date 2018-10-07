@@ -101,11 +101,12 @@ $.fn.disableManualButton = function() {
 }
 
 /* Hextech Animation Handler */
-UI.enableHextechAnimation = function(champion, primaryStyleId) {
-	$('.championPortrait > #bg').attr('src', 'assets/img/vfx-' + (primaryStyleId ? primaryStyleId : 'white') + '.png');
+UI.enableHextechAnimation = function(champion, primaryStyleId = 'white') {
+	$('.championPortrait > #bg').attr('src', 'assets/img/vfx-' + primaryStyleId + '.png');
 	$('.championPortrait > #champion')
-	.attr('src', champion.img)
-	.on('load', () => $(".title").animate({ "margin-top": "55%" }, 700, "linear", () => $('.championPortrait').show()));
+	.attr('src', champion.img);
+
+  if (Mana.getStore().get('ui-animations-enable')) $('.championPortrait > #champion').on('load', () => $(".title").animate({ "margin-top": "55%" }, 700, "linear", () => $('.championPortrait').show()));
 }
 
 UI.disableHextechAnimation = () => {
