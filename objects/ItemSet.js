@@ -2,7 +2,7 @@ const fs = require('fs'), path = require('path');
 
 class ItemSet {
   constructor(key, file, ...metadata) {
-    this.championKey = key.toLowerCase();
+    this.championKey = key;
 
     this.file = (file && file.startsWith('MFLUX_')) ? file : `MFLUX_${this.championKey}${file ? ('_' + file.toLowerCase() + '_') : '_'}${metadata.length > 0 ? metadata.join('_') + '_' : ''}${Mana.gameClient.branch}_${Mana.version}.json`;
     console.log(this.file);
@@ -64,8 +64,8 @@ class ItemSet {
     const self = this;
 
     // Creates the required folders if needed
-    require('./handlers/ItemSetHandler')._ensureDir(path.join(Mana.getStore().get('leaguePath'), `\\Config\\Champions\\${this.championKey}`));
-    require('./handlers/ItemSetHandler')._ensureDir(path.join(Mana.getStore().get('leaguePath'), `\\Config\\Champions\\${this.championKey}\\Recommended`));
+    require('./handlers/ItemSetHandler')._ensureDir(path.join(Mana.getStore().get('league-client-path'), `\\Config\\Champions\\${this.championKey}`));
+    require('./handlers/ItemSetHandler')._ensureDir(path.join(Mana.getStore().get('league-client-path'), `\\Config\\Champions\\${this.championKey}\\Recommended`));
 
     return new Promise((resolve, reject) => {
       fs.writeFile(self.path, self.build(), 'utf8', err => {
@@ -100,7 +100,7 @@ class ItemSet {
 
 class Block {
   constructor(type, items, recMath) {
-    this.type = type || "Unknown ManaFlux Block";
+    this.type = type || 'Unknown ManaFlux Block';
     this.items = items || {};
     this.recMath = recMath;
   }
