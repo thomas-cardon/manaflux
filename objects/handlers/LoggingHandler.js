@@ -77,7 +77,7 @@ function LoggingHandler(level) {
 
     return x;
   };
-
+  
   this.ipc.on('logging-log', (event, arg) => this.onMessageCallback('log', arg));
   this.ipc.on('logging-dir', (event, arg) => this.onMessageCallback('dir', arg));
   this.ipc.on('logging-warn', (event, arg) => this.onMessageCallback('warn', arg));
@@ -95,7 +95,7 @@ LoggingHandler.prototype.onMessageCallback = function(t, arg) {
   if (t === 'log' || t === 'warn') c[t].call(console, `[${this.isRenderer ? 'Main' : 'Renderer'}] [${arg.timestamp}]`, ...arg.msg);
   else {
     c.log.call(console, `[${this.isRenderer ? 'Main' : 'Renderer'}] [${arg.timestamp}]${t === 'error' ? ' Error' : ''}`);
-    c[t].call(console, ...arg.msg);
+    c[t].call(console, ...(t === 'dir' ? arg.msg.map(JSON.parse) : arg.msg));
   }
 
   if (this.stream) this.write(t, arg, 'Renderer');
