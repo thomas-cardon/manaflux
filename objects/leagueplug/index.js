@@ -4,6 +4,7 @@ class LeaguePlug extends EventEmitter {
   constructor() {
     super();
     this.connectionHandler = new (require('./handlers/ConnectionHandler'))();
+    this.pathHandler = new (require('./handlers/PathHandler'))();
   }
 
   async load() {
@@ -19,7 +20,7 @@ class LeaguePlug extends EventEmitter {
   }
 
   getPathHandler() {
-    return !this.pathHandler ? this.pathHandler = new (require('./handlers/PathHandler'))() : this.pathHandler;
+    return this.pathHandler;
   }
 
   getConnectionHandler() {

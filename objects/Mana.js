@@ -15,11 +15,14 @@ class Mana extends EventEmitter {
 
     this.getStore().set('lastVersion', this.version);
 
-    if (!this.getStore().has('league-client-path'))
+    if (!this.getStore().get('league-client-path'))
       require('../objects/Wizard')(true).on('closed', () => {
+        const path = ipcRenderer.sendSync('lcu-get-path');
         console.log('[UI] Wizard has been closed');
-        ipcRenderer.send('lcu-get-path');
-        ipcRenderer.send('lcu-connection');
+
+        ipcRenderer.send('lcu-connection', path);
+        $('#league-client-path').trigger('lcu:path', path);
+        this.getStore().set('league-client-path', path);
       });
     else ipcRenderer.send('lcu-connection', this.getStore().get('league-client-path'));
 
