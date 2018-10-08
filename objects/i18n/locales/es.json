@@ -34,7 +34,7 @@
   "league-client-path-asked": "Por favor abra su caperta de League of Legends",
   "league-client-path-found": "Ruta encontrada",
   "champion-select-waiting": "Esperando la selección de Campeón",
-  "champion-updating-display": "Cargando la pantalla para %s",
+  "champion-select-updating-display": "Cargando la pantalla para %s",
   "champion-select-hide": "Esconder mientras la selección de Campeón",
   "developer-game-start-error": "No se pudo iniciar una partida de desarrollador",
   "providers-skipped": "Ha sido omitido por falta de método",
