@@ -47,6 +47,7 @@
   "champion-select-updating-display": "Updating display for %s",
   "champion-select-hide": "Hide when out of Champion Select",
   "champion-select-pick-a-champion": "Pick a champion!",
+  "champion-select-min-roles": "Min. roles to download",
   "providers-skipped": "%s has been skipped because of missing function #%s",
   "providers-order": "Providers order",
   "providers-error-item-sets-not-found": "Could not find Item Sets",

@@ -38,6 +38,7 @@
   "league-client-path-wrong": "Vous avez dû sélectionner le mauvais dossier: impossible de trouver League",
   "league-client-find-automatically": "Trouver automatiquement",
   "league-client-nothing-found": "Nous n'avons pas pu trouver le dossier. Cliquez sur le bouton rechercher ou glissez-déposez le dossier du jeu.",
+  "champion-select-min-roles": "Min. roles à télécharger",
   "champion-select-waiting": "En attente de la sélection des champions",
   "champion-select-updating-display": "Mise-à-jour de l'affichage pour %s",
   "champion-select-hide": "S'y cacher hors sélection des champions",
