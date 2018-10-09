@@ -35,8 +35,8 @@
       <button type="button" class="btn control" onclick="remote.getCurrentWindow().close();"><i class="material-icons icon">clear</i></button>
     </div>
     <div id="nav-menu" style="display: none;">
-      <a onclick="UI.nav(-1)"><i class="tab-arrow arrow-left"></i></a>
-      <a onclick="UI.nav(1)"><i class="tab-arrow arrow-right"></i></a>
+      <a data-custom-component="navigation-arrows" data-n="-1"><i class="tab-arrow arrow-left"></i></a>
+      <a data-custom-component="navigation-arrows" data-n="1"><i class="tab-arrow arrow-right"></i></a>
     </div>
   </div>
   <div class="content">
@@ -221,7 +221,6 @@
   <script src="assets/js/ui/i18n.js"></script>
   <script src="assets/js/ui/settings.js"></script>
   <script src="assets/js/ui/custom-components.js"></script>
-  <script src="assets/js/ui/navigation-menus.js"></script>
   <script src="assets/js/ui/update.js"></script>
   <script src="assets/js/ui/tab-handler.js"></script>
 </body>

@@ -77,6 +77,10 @@ body {
   transform: rotate(135deg);
 }
 
+.arrow-disabled {
+  opacity: 0.2;
+}
+
 .alertify-notifier {
   color: #ffffff !important;
   font-size: 12px;
