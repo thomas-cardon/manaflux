@@ -34,6 +34,10 @@
       </div>
       <textarea class="textcontainer" id="text" onchange="document.getElementById('send').disabled = this.value.trim().length === 0;">
       </textarea>
+      <div class="option">
+        <p class="suboption-name" data-i18n="bug-report-contact"></p>
+        <input type="text" id="contact" required />
+      </div>
       <p data-i18n="bug-report-consent" id="consent-note"></p>
       <button class="btn normal" data-i18n="bug-report-send" id="send" onclick="send()"></button>
     </center>
@@ -54,7 +58,7 @@
   global.i18n = new (require('../objects/i18n'));
 
   function send() {
-    ipcRenderer.sendTo(remote.getCurrentWindow().getParentWindow().id, 'bug-report', { text: document.getElementById('text').value.trim(), type: document.getElementById('type').value });
+    ipcRenderer.sendTo(remote.getCurrentWindow().getParentWindow().id, 'bug-report', { text: document.getElementById('text').value.trim(), contact: document.getElementById('contact').value, type: document.getElementById('type').value });
     remote.getCurrentWindow().close();
   }
 
