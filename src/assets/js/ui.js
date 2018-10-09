@@ -1,3 +1,4 @@
+const { captureException } = require('@sentry/electron');
 var UI = {};
 
 UI.stylizeRole = role => role === 'ADC' ? 'ADC' : role.charAt(0).toUpperCase() + role.slice(1);
@@ -59,16 +60,17 @@ UI.error = function(...args) {
   $('#warning').show();
 
   if (args[0] instanceof Error) {
+    captureException(args[0]);
     alertify.notify(args[0].toString(), 'error', 10, () => $('#warning').hide());
-    return console.error(1, args[0]);
+    return args[0];
   }
 
 	let x = i18n.__.call(i18n, ...args);
 	let y = i18n.__d.call(i18n, ...args);
 
-	$('#warning').show();
-	alertify.notify(args[0] instanceof Error ? args[0].toString() : x, 'error', 10, () => $('#warning').hide());
-	return console.error(2, y);
+	alertify.notify(x, 'error', 10, () => $('#warning').hide());
+
+	return new Error(y);
 }
 
 UI.success = msg => alertify.notify(msg, 'success', 10);
