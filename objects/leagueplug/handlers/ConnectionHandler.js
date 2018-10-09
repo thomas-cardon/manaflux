@@ -79,7 +79,7 @@ class ConnectionHandler extends EventEmitter {
       console.log(2, '[ConnectionHandler] Player is logged into League of Legends');
 
       this._loggedIn = true;
-      this.emit('logged-in', console.dir(3, loginData));
+      this.emit('logged-in', loginData);
     })
     .on('unlink', path => {
       console.log(2, '[ConnectionHandler] Connection to League has ended');
