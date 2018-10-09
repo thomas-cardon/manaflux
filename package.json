@@ -1,6 +1,10 @@
 {
   "name": "manaflux",
+<<<<<<< HEAD
   "version": "1.5.4",
+=======
+  "version": "1.9.3",
+>>>>>>> rework
   "description": "Manaflux downloads automatically your runes, itemsets, and summonerspells and injects them to your League client seamlessly!",
   "main": "main.js",
   "scripts": {
@@ -13,9 +17,13 @@
     "assistant",
     "masteries",
     "runes",
-    "perks"
+    "perks",
+    "automatic"
   ],
-  "author": { "name": "Ryzzzen", "email": "ryzzzen@protonmail.me" },
+  "author": {
+    "name": "Ryzzzen",
+    "email": "ryzzzen@protonmail.me"
+  },
   "license": "CC0-1.0",
   "devDependencies": {
     "electron": "^2.0.8",
@@ -29,19 +37,26 @@
     "electron-store": "^2.0.0",
     "electron-sudo": "^4.0.12",
     "electron-updater": "^2.22.1",
+    "jsdom": "^12.2.0",
     "request": "^2.87.0",
     "request-promise-native": "^1.0.5"
   },
   "repository": "https://github.com/Ryzzzen/manaflux",
   "build": {
     "appId": "com.github.ryzzzen.manaflux",
-    "productName": "ManaFlux",
+    "productName": "Manaflux",
     "copyright": "Copyright © 2018 Ryzzzen",
     "files": [
       "**/*",
       "build/icon.*",
       "!screenshots/*",
-      "!*.md"
-    ]
+      "!*.md",
+      "!_config.yml",
+      "!docs/*",
+      "!src/assets/img/themes/unused/*"
+    ],
+    "nsis": {
+      "license": "LICENSE.md"
+    }
   }
 }

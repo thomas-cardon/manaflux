@@ -1,0 +1,50 @@
+#release-notes {
+  min-width: 50%;
+  max-width: 90%;
+  max-height: 280px;
+  font-size: 11px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+#updateAvailableText {
+  color: #f0e6d2;
+  font-size: 25px;
+  margin-top: 30px;
+  margin-bottom: -20px;
+  letter-spacing: 0.025rem;
+}
+
+#updateStatus {
+  margin-top: 30px;
+}
+
+#updateStatus > p#version {
+  color: #c03546;
+}
+
+#updateStatus > span#updateRollout {
+  float: left;
+  margin: -3% 0 3% 0;
+  max-width: 95%;
+  color: #ffc952;
+  font-size: 15px;
+}
+
+#updateStatus > p#channel {
+  color: #ffa88b;
+  font-size: 20px;
+}
+
+#updateSize {
+  float: left;
+  margin: 27px;
+  color: #ffeaa7;
+  font-size: 20px;
+  letter-spacing: 0.025rem;
+}
+
+button#update {
+  float: left;
+  margin-top: 20px;
+}

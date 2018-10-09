@@ -1,0 +1,7 @@
+#loading {
+  position: fixed;
+  width: 4%;
+  bottom: 13px;
+  right: 120px;
+  z-index: 5;
+}

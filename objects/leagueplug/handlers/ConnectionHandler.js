@@ -22,12 +22,12 @@ class ConnectionHandler extends EventEmitter {
           timer(cb, 500);
           self.emit('logged-off');
         }).catch(err => {
-          log.error(2, err);
+          console.error(2, err);
         });
       }, ms);
     }
 
-    log.log(3, '[ConnectionHandler] Checking session...');
+    console.log(3, '[ConnectionHandler] Checking session...');
     return new Promise(resolve => timer(data => resolve(data)));
   }
 
@@ -65,10 +65,10 @@ class ConnectionHandler extends EventEmitter {
   _startLockfileWatcher(leaguePath) {
     this._lockfileWatcher = chokidar.watch(path.join(leaguePath, 'lockfile'), { disableGlobbing: true })
     .on('add', async path => {
-      log.log(2, '[ConnectionHandler] League of Legends connection data detected');
-      log.log(2, '[ConnectionHandler] Reading connection file');
+      console.log(2, '[ConnectionHandler] League of Legends connection data detected');
+      console.log(2, '[ConnectionHandler] Reading connection file');
 
-      const lockfile = log.dir(3, await this._readLockfile(leaguePath));
+      const lockfile = console.dir(3, await this._readLockfile(leaguePath));
 
       this._authentication = lockfile.authToken;
       this._connected = true;
@@ -76,13 +76,13 @@ class ConnectionHandler extends EventEmitter {
       this.emit('connected', this._lcu = lockfile);
 
       const loginData = await this.waitForConnection();
-      log.log(2, '[ConnectionHandler] Player is logged into League of Legends');
+      console.log(2, '[ConnectionHandler] Player is logged into League of Legends');
 
       this._loggedIn = true;
-      this.emit('logged-in', log.dir(3, loginData));
+      this.emit('logged-in', loginData);
     })
     .on('unlink', path => {
-      log.log(2, '[ConnectionHandler] Connection to League has ended');
+      console.log(2, '[ConnectionHandler] Connection to League has ended');
 
       this._connected = false;
       this.emit('disconnected');

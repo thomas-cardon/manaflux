@@ -1,4 +1,8 @@
-const rp = require('request-promise-native'), cheerio = require('cheerio');
+const rp = require('request-promise-native');
+
+const jsdom = require('jsdom');
+const { JSDOM } = jsdom;
+
 const { ItemSet, Block } = require('../ItemSet');
 const Provider = require('./Provider');
 
@@ -7,105 +11,67 @@ class UGGProvider extends Provider {
     super('ugg', 'U.GG');
     this.base = 'https://u.gg/';
   }
-
   async getData(champion, preferredPosition, gameMode) {
-    if (!this._perks) {
-      const d = JSON.parse(await rp(Mana.base + 'lol-perks/v1/perks'));
-      this._perks = {};
+    let data = { roles: {} };
 
-      for (let rune of d) {
-        let iconPath = rune.iconPath.slice(44, -4);
+    for (let x of ['JUNGLE', 'MIDDLE', 'TOP', 'ADC', 'SUPPORT']) {
+      console.log(2, `[ProviderHandler] [U.GG] Gathering data (${x})`);
 
-        /* Skip traits */
-        if (iconPath === 'RunesIcon') return;
-        this._perks[iconPath] = rune.id;
-      }
-
-      log.dir(3, this._perks);
-    }
-
-    let positions = ['jungle', 'middle', 'top', 'adc', 'support'];
-    for (let i = 0; i < positions.length; i++) {
       try {
-        log.log(`[U.GG] Gathering data for ${positions[i]} position`);
-
-        const d = await rp(`${this.base}lol/champions/${champion.key.toLowerCase()}/build/?role=${positions[i]}`);
-        positions[i] = this._scrape(d, champion, positions[i], gameMode);
+        const d = await rp(`${this.base}lol/champions/${champion.key.toLowerCase()}/build/?role=${x.toLowerCase()}`);
+        data.roles[x] = this._scrape(d, champion, x, gameMode, `${this.base}lol/champions/${champion.key.toLowerCase()}/build/?role=${x.toLowerCase()}`);
       }
       catch(err) {
-        log.error(1, err);
+        console.error(err);
       }
     }
 
-    return log.dir(3, positions);
+    return data;
   }
 
-  async getSummonerSpells(champion, position, gameMode) {
-    return await this.getData(champion, position, gameMode);
-  }
+  _scrape(html, champion, position, gameMode, url) {
+    const dom = new JSDOM(html, { url, resources: 'usable', runScripts: "dangerously", storageQuota: 999999999 });
 
-  async getItemSets(champion, position, gameMode) {
-    return await this.getData(champion, position, gameMode);
-  }
+    const summonerspells = this.scrapeSummonerSpells(dom.window.document);
 
-  async getRunes(champion, position, gameMode) {
-    return await this.getData(champion, position, gameMode);
-  }
+    const skillorder = this.scrapeSkillOrder(dom.window.document);
+    const itemsets = this.scrapeItemSets(dom.window.document, champion, position.charAt(0) + position.slice(1).toLowerCase(), skillorder);
 
-  _scrape(html, champion, position, gameMode) {
-    const $ = cheerio.load(html);
-    log.dir(3, $);
-
-    const summonerspells = this.scrapeSummonerSpells($);
-
-    const skillorder = this.scrapeSkillOrder($);
-    const itemsets = this.scrapeItemSets($, champion, position.charAt(0).toUpperCase() + position.slice(1), skillorder);
-
-    const runes = this.scrapeRunes($, champion, position.toUpperCase());
-
-    log.log(3, summonerspells);
-    log.log(3, skillorder);
-    log.log(3, itemsets);
-    log.log(3, runes);
-
-    return { runes, summonerspells, itemsets, position };
+    const perks = this.scrapePerks(dom.window.document, champion, position.toUpperCase());
+    return { perks, summonerspells, itemsets, position };
   }
 
   /**
    * Scrapes item sets from a U.GG page
-   * @param {cheerio} $ - The cheerio object
+   * @param {document} document - The document object
    * @param {object} champion - A champion object, from Mana.champions
    * @param {string} position - Limited to: TOP, JUNGLE, MIDDLE, ADC, SUPPORT
    */
-  scrapeRunes($, champion, position) {
-    let pages = [{ name: `UGG ${champion.name} ${position}`, selectedPerkIds: [] }];
+  scrapePerks(doc, champion, position) {
+    const page = { name: `UGG ${champion.name} ${position}`, selectedPerkIds: [] };
 
-    $('.perk-active > img').each(function(index) {
-      const src = $(this).attr('src');
-      let key = src.slice(70, -4);
-  	  key = key.slice(key.indexOf('/') + 1, key.lastIndexOf('/'));
+    doc.querySelectorAll('.perk-active > img').forEach(x => {
+      console.log(x.src.slice(53));
+      console.dir(Mana.gameClient.findPerkByImage(x.src.slice(53)).id);
 
-      if (this._perks[key]) pages[0].selectedPerkIds.push(this._perks[key]);
-      else log.log(2, `[U.GG] Skipping key ${key} because it's missing`);
+      page.selectedPerkIds.push(Mana.gameClient.findPerkByImage(x.src.slice(53)).id);
     });
 
-    $('.path-main > img').each(function(index) {
-      pages[0][index === 0 ? 'primaryStyleId' : 'subStyleId'] = parseInt($(this).attr('src').slice(-8, -4));
-    });
+    doc.querySelectorAll('.path-main > img').forEach(x => page[index === 0 ? 'primaryStyleId' : 'subStyleId'] = parseInt(x.src.slice(-8, -4)));
 
-    return pages;
+    return [page];
   }
 
   /**
-   * Scrapes summoner spells from a Champion.gg page
-   * @param {cheerio} $ - The cheerio object
+   * Scrapes summoner spells from a U.GG page
+   * @param {document} document - The document object
    * @param {string} gameMode - A gamemode, from League Client, such as CLASSIC, ARAM, etc.
    */
-  scrapeSummonerSpells($, gameMode) {
+  scrapeSummonerSpells(doc, gameMode) {
     let summonerspells = [];
 
-    $("img[alt='SummonerSpell']").each(function(index) {
-      const summoner = Mana.summonerspells[log.log(3, $(this).attr('src').slice($(this).attr('src').lastIndexOf('/'), -4))];
+    doc.querySelectorAll("img[alt='SummonerSpell']").forEach(x => {
+      const summoner = Mana.summonerspells[console.log(3, x.src.slice(x.src.lastIndexOf('/'), -4))];
 
       if (!summoner) return;
       if (summoner.gameModes.includes(gameMode)) summonerspells.push(summoner.id);
@@ -117,49 +83,42 @@ class UGGProvider extends Provider {
   }
 
   /**
-   * Scrapes skill order from a Champion.gg page
-   * @param {cheerio} $ - The cheerio object
-   * @param {function} convertSkillOrderToLanguage - Default function
+   * Scrapes skill order from a U.GG page
+   * @param {document} document - The document object
    */
-  scrapeSkillOrder($, convertSkillOrderToLanguage = this.convertSkillOrderToLanguage) {
-    let skillorder = '';
-    const skills = $('.skill-path > .image-wrapper > .label').each(function(index) {
-      skillorder += (skillorder !== '' ? ' => ' : '') + i18n.__('key-' + $(this).text());
-    });
-
+  scrapeSkillOrder(doc, convertSkillOrderToLanguage = this.convertSkillOrderToLanguage, skillorder = '') {
+    doc.querySelectorAll('.skill-path > .image-wrapper > .label').forEach(x => skillorder += (skillorder !== '' ? ' => ' : '') + i18n.__('key-' + x.textContent));
     return skillorder;
   }
 
   /**
-   * Scrapes item sets from a Champion.gg page
-   * @param {cheerio} $ - The cheerio object
+   * Scrapes item sets from a U.GG page
+   * @param {document} document - The document object
    * @param {object} champion - A champion object, from Mana.champions
    * @param {string} position - Limited to: TOP, JUNGLE, MIDDLE, ADC, SUPPORT
    * @param {object} skillorder
    */
-  scrapeItemSets($, champion, position, skillorder) {
-    const items = $("img[src^='https://static.u.gg/lol/riot_static/lol/" + $('.champion-image').attr('src').slice(40, 46) + "/img/item/']");
-    let itemset = new ItemSet(champion.key, position).setTitle(`UGG ${champion.name} - ${position}`);
+  scrapeItemSets(doc, champion, position, skillorder) {
+    console.dir(doc.querySelectorAll('.items > div > img'));
+
+    const items = [].slice.call(doc.querySelectorAll('.items > div > img'));
+
+    console.dir(items);
+
+    let itemset = new ItemSet(champion.key, position, this.id).setTitle(`UGG ${champion.name} - ${position}`);
 
     let starter = new Block().setName(i18n.__('itemsets-block-starter', skillorder));
     let coreBuild = new Block().setName(i18n.__('itemsets-block-core-build', $('.grid-block.final-items').find('.winrate').text().slice(0, 6), $('.grid-block.final-items').find('.matches').text().split(' ')[0]));
     let options = new Block().setName(i18n.__('itemsets-block-options'));
 
     /* Starter Block */
-    items.slice(0, 2).each(function(index) {
-      starter.addItem($(this).attr('src').slice(-8, -4));
-    });
-
+    items.slice(0, 2).forEach(x => starter.addItem(x.src.slice(-8, -4)));
 
     /* Core Build Block */
-    items.slice(2, 5).each(function(index) {
-      coreBuild.addItem($(this).attr('src').slice(-8, -4));
-    });
+    items.slice(2, 5).forEach(x => coreBuild.addItem(x.src.slice(-8, -4)));
 
     /* Options Block */
-    items.slice(5).each(function(index) {
-      options.addItem($(this).attr('src').slice(-8, -4));
-    });
+    items.slice(5).forEach(x => options.addItem(x.src.slice(-8, -4)));
 
     itemset.addBlock(starter, new Block().setName(`Trinkets`).addItem(2055).addItem(3340).addItem(3341).addItem(3348).addItem(3363));
     itemset.addBlock(coreBuild).addBlock(options);

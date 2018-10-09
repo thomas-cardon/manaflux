@@ -3,17 +3,16 @@ const { EventEmitter } = require('events');
 class LeaguePlug extends EventEmitter {
   constructor() {
     super();
-
-    this.pathHandler = new (require('./handlers/PathHandler'))();
     this.connectionHandler = new (require('./handlers/ConnectionHandler'))();
+    this.pathHandler = new (require('./handlers/PathHandler'))();
   }
 
   async load() {
     return await this.pathHandler.load();
   }
 
-  start() {
-    return this.connectionHandler.start(this.getPathHandler().getLeaguePath());
+  start(path = this.getPathHandler().getLeaguePath()) {
+    return this.connectionHandler.start(path);
   }
 
   getPath() {

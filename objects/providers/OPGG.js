@@ -32,38 +32,24 @@ class OPGGProvider extends Provider {
 
   async getData(champion, preferredPosition, gameMode) {
     const res = await rp(`${this.base}/champion/${champion.key}/statistics${preferredPosition ? '/' + this.convertOPGGPosition(preferredPosition) : ''}`);
-    const data = this._scrape(res, champion, gameMode, this.getOPGGPosition(preferredPosition));
+    const d = this._scrape(res, champion, gameMode, true);
 
-    let positions = {};
-    positions[data.position] = data;
+    let data = { roles: { [d.position]: d } };
 
-    for (const position of data.availablePositions) {
-      log.log(2, `[ProviderHandler] [OP.GG] Gathering data for ${position.name} position`);
+    for (const position of d.availablePositions) {
+      console.log(2, `[ProviderHandler] [OP.GG] Gathering data (${position.name})`);
 
-      const d = await rp(position.link);
-      positions[position.name] = this._scrape(d, champion, position.name, gameMode);
+      data.roles[position.name] = this._scrape(await rp(position.link), champion, gameMode);
+      delete data.roles[position.name].position;
     }
 
-    log.dir(3, positions);
-    return positions;
+    delete data.roles[d.position].availablePositions;
+    delete data.roles[d.position].position;
+
+    return data;
   }
 
-  async getSummonerSpells(champion, position, gameMode) {
-    const { summonerspells } = await this.getData(champion, position, gameMode);
-    return summonerspells;
-  }
-
-  async getItemSets(champion, position, gameMode) {
-    const { itemsets } = await this.getData(champion, position, gameMode);
-    return itemsets;
-  }
-
-  async getRunes(champion, position, gameMode) {
-    const { runes } = await this.getData(champion, position, gameMode);
-    return runes;
-  }
-
-  _scrape(html, champion, position, gameMode) {
+  _scrape(html, champion, gameMode, firstScrape) {
     let $ = cheerio.load(html);
 
     const version = $('.champion-stats-header-version').text().trim().slice(-4);
@@ -71,21 +57,23 @@ class OPGGProvider extends Provider {
 
     if (version != Mana.gameClient.branch) UI.error('OP.GG: ' + i18n.__('providers-error-outdated'));
 
-    position = this.convertOPGGPosition($('li.champion-stats-header__position.champion-stats-header__position--active').data('position')).toUpperCase();
-    let availablePositions = [];
+    let position = this.convertOPGGPosition($('li.champion-stats-header__position.champion-stats-header__position--active').data('position')).toUpperCase();
+    const availablePositions = [];
 
-    $('[data-position] > a').each(function(index) {
-      availablePositions.push({ name: convertOPGGPosition($(this).parent().data('position')).toUpperCase(), link: 'https://op.gg' + $(this).attr('href') });
-    });
+    if (firstScrape) {
+      $('[data-position] > a').each(function(index) {
+        availablePositions.push({ name: convertOPGGPosition($(this).parent().data('position')).toUpperCase(), link: 'https://op.gg' + $(this).attr('href') });
+      });
+    }
 
     const summonerspells = this.scrapeSummonerSpells($);
 
     const skillorder = this.scrapeSkillOrder($);
     const itemsets = this.scrapeItemSets($, champion, position.charAt(0) + position.slice(1).toLowerCase(), skillorder);
 
-    const runes = this.scrapeRunes($, champion, position);
+    const perks = this.scrapePerks($, champion, position);
 
-    return { runes, summonerspells, itemsets, availablePositions, position };
+    return { perks, summonerspells, itemsets, availablePositions, position: position.toUpperCase() };
   }
 
   /**
@@ -94,7 +82,7 @@ class OPGGProvider extends Provider {
    * @param {object} champion - A champion object, from Mana.champions
    * @param {string} position - Limited to: TOP, JUNGLE, MIDDLE, ADC, SUPPORT
    */
-  scrapeRunes($, champion, position) {
+  scrapePerks($, champion, position) {
     let pages = [{ selectedPerkIds: [] }, { selectedPerkIds: [] }];
 
     $('.perk-page').find('img.perk-page__image.tip').slice(0, 4).each(function(index) {
@@ -154,12 +142,12 @@ class OPGGProvider extends Provider {
   scrapeItemSets($, champion, position, skillorder) {
     const itemrows = $('.champion-overview__table').eq(1).find('.champion-overview__row');
 
-    let itemset = new ItemSet(champion.key, position).setTitle(`OPG ${champion.name} - ${position}`);
-    let boots = new Block().setName(i18n.__('itemsets-block-boots'));
+    let itemset = new ItemSet(champion.key, position, this.id).setTitle(`OPG ${champion.name} - ${position}`);
+    let boots = new Block().setName(i18n.__('item-sets-block-boots'));
 
     /* Block Starter */
     itemrows.slice(0, 2).each(function(index) {
-      let starter = new Block().setName(i18n.__('itemsets-block-starter-numbered', index + 1, skillorder));
+      let starter = new Block().setName(i18n.__('item-sets-block-starter-numbered', index + 1, skillorder));
       let pots = 0;
 
       let items = {};
@@ -177,7 +165,7 @@ class OPGGProvider extends Provider {
     itemset.addBlock(new Block().setName(`Trinkets`).addItem(2055).addItem(3340).addItem(3341).addItem(3348).addItem(3363));
 
     /* Block Recommanded */
-    let recommanded = new Block().setName(i18n.__('itemsets-block-recommanded'));
+    let recommanded = new Block().setName(i18n.__('item-sets-block-recommanded'));
     itemrows.slice(2, -3).find('li:not(.champion-stats__list__arrow) > img').each(function(index) {
       recommanded.addItem($(this).attr('src').slice(44, 48), false);
     });
@@ -190,7 +178,7 @@ class OPGGProvider extends Provider {
     });
 
     itemset.addBlock(boots);
-    itemset.addBlock(new Block().setName(i18n.__('itemsets-block-consumables')).addItem(2003).addItem(2138).addItem(2139).addItem(2140));
+    itemset.addBlock(new Block().setName(i18n.__('item-sets-block-consumables')).addItem(2003).addItem(2138).addItem(2139).addItem(2140));
 
     return [itemset];
   }

@@ -1,183 +1,227 @@
 <html>
 <head>
-  <title>ManaFlux</title>
+  <title>Manaflux</title>
   <meta charset="utf-8">
   <meta name="author" content="Ryzzzen">
   <link rel="stylesheet" href="assets/css/manaflux.css">
-  <link rel="stylesheet" href="assets/css/alertify.min.css"/>
-  <link rel="stylesheet" href="assets/css/alertify.rtl.min.css"/>
-  <link rel="stylesheet" href="assets/css/jquery-ui.min.css">
+  <link rel="stylesheet" href="assets/css/components/button.css">
+  <link rel="stylesheet" href="assets/css/components/input.css">
+  <link rel="stylesheet" href="assets/css/components/dropdown.css">
+  <link rel="stylesheet" href="assets/css/components/hr.css">
+  <link rel="stylesheet" href="assets/css/components/settings.css">
+  <link rel="stylesheet" href="assets/css/components/update.css">
+  <link rel="stylesheet" href="assets/css/components/loading.css">
+  <link rel="stylesheet" href="assets/css/components/warning.css">
+  <link rel="stylesheet" href="assets/css/components/status.css">
+  <link rel="stylesheet" href="assets/css/components/version.css">
+  <link rel="stylesheet" href="vendor/alertify.min.css"/>
+  <link rel="stylesheet" href="vendor/alertify.rtl.min.css"/>
+  <link rel="stylesheet" href="vendor/jquery-ui.min.css">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
+  <img src="assets/img/warning.png" id="warning" draggable="false" style="display: none;">
+  <img src="assets/img/components/loading.gif" id="loading"></img>
   <div class="tab-container">
-    <img src="assets/img/warning.png" id="warning" draggable="false" style="display: none;">
-    <img src="assets/img/selected.png" id="selected" class="selected" draggable="false">
+    <img src="assets/img/selected.png" id="selected" draggable="false">
     <div class="tab">
-      <button data-i18n="menu-home" class="tablinks active" data-tabid="home"></button>
-      <button data-i18n="menu-settings" class="tablinks" data-tabid="settings"></button>
-      <button data-i18n="menu-update" class="tablinks flash" data-tabid="update" style="display: none;"></button>
+      <button type="button" class="btn tab active" data-i18n="ui-menu-home" data-tabid="home"></button>
+      <button type="button" class="btn tab" data-i18n="ui-menu-settings" data-tabid="settings"></button>
+      <button type="button" class="btn tab flash" data-i18n="ui-menu-update" data-tabid="update" style="display: none;"></button>
     </div>
     <div class="controls">
-      <button onclick="ipcRenderer.send('win-minimize');"><i class="material-icons icon">remove</i></button>
-      <button onclick="ipcRenderer.send('win-close');"><i class="material-icons icon">clear</i></button>
+      <button type="button" class="btn control" data-custom-component="bug-reports"><i class="material-icons icon">announcement</i></button>
+      <button type="button" class="btn control" onclick="remote.getCurrentWindow().minimize();"><i class="material-icons icon">remove</i></button>
+      <button type="button" class="btn control" onclick="remote.getCurrentWindow().close();"><i class="material-icons icon">clear</i></button>
     </div>
     <div id="nav-menu" style="display: none;">
-      <a onclick="UI.nav(-1)"><i class="tab-arrow arrow-left"></i></a>
-      <a onclick="UI.nav(1)"><i class="tab-arrow arrow-right"></i></a>
+      <a data-custom-component="navigation-arrows" data-n="-1"><i class="tab-arrow arrow-left"></i></a>
+      <a data-custom-component="navigation-arrows" data-n="1"><i class="tab-arrow arrow-right"></i></a>
     </div>
   </div>
   <div class="content">
     <!-- BEGIN SECTIONS -->
     <div data-tabid="home" data-tabn=0 class="tabcontent center" style="display: block;">
       <div class="title">
-        <h1>MANAFLUX</h1>
+        <h1 id="dev">MANAFLUX</h1>
         <img src="assets/img/underline.png" draggable="false">
       </div>
-      <div class="buttons">
-        <button type="button" data-i18n="button-load-summoner-spells" id="loadSummonerSpells" style="display: none;"></button>
-        <button type="button" data-i18n="button-load-runes" id="loadRunes" style="display: none; margin: 10px;"></button>
-        <select style="display: none; margin: 10px;" id="positions" class="dropdown center-area"></select>
+      <div id="buttons" style="display: none;">
+        <select style="display: none; margin-bottom: -14px;" id="positions" data-custom-component="shortcuts" class="dropdown xs"></select>
+        <button type="button" class="btn normal" data-i18n="summoner-spells-load-button" id="loadSummonerSpells"></button>
+        <button type="button" class="btn normal" data-i18n="runes-load-button" id="loadRunes"></button>
       </div>
       <div class="championPortrait" style="display: none;">
         <img id="champion">
-        <img id="bg">
+        <img id="hextechAnimationBackground" data-custom-component="hextech-background">
       </div>
     </div>
     <div data-tabid="settings" data-tabn=0 class="tabcontent" style="display: none; margin-left: 12%;">
+      <p class="option-name" data-i18n="category-runes"></p>
       <div class="option">
-        <p class="suboption-name" data-i18n="runes"></p>
+        <p class="suboption-name" data-i18n="runes-max"></p>
+        <input type="number" data-settings-key="runes-max" data-settings-default="2" class="center-area" min="1" step="1" />
+      </div>
+      <div class="option">
+        <p class="suboption-name" data-i18n="runes-load-automatically"></p>
         <div class="options float-left checkboxContainer">
-          <input type="checkbox" data-settings-key="loadRunesAutomatically" />
-          <label data-i18n="load-automatically"></label>
+          <input type="checkbox" data-settings-key="perks-automatic-load" data-setting-default="true" />
+          <label data-i18n="common-enable"></label>
+        </div>
+      </div>
+      <hr class="break" />
+      <p class="option-name" data-i18n="category-misc"></p>
+      <div class="option">
+        <p class="suboption-name" data-i18n="summoner-spells"></p>
+        <div class="options float-left checkboxContainer">
+          <input type="checkbox" data-settings-key="summoner-spells" data-setting-default="true" />
+          <label data-i18n="common-enable"></label>
         </div>
       </div>
       <div class="option">
-        <p class="suboption-name" data-i18n="summonerspells"></p>
+        <p class="suboption-name" data-i18n="item-sets"></p>
         <div class="options float-left checkboxContainer">
-          <input type="checkbox" data-settings-key="enableSummonerSpells" />
-          <label data-i18n="enable"></label>
-        </div>
-      </div>
-      <div class="option">
-        <p class="suboption-name" data-i18n="itemsets"></p>
-        <div class="options float-left checkboxContainer">
-          <input type="checkbox" data-settings-key="enableItemSets" />
-          <label data-i18n="enable"></label>
+          <input type="checkbox" data-settings-key="item-sets-enable" data-setting-default="false" />
+          <label data-i18n="common-enable"></label>
         </div>
       </div>
       <div class="option">
         <p class="suboption-name" data-i18n="startup"></p>
         <div class="options float-left checkboxContainer">
-          <input type="checkbox" data-settings-key="auto-start" onclick="autoStart(this.checked)" />
+          <input type="checkbox" data-settings-key="launch-at-startup" data-settings-default="false" data-custom-component="launch-at-startup" />
           <label data-i18n="startup-windows"></label>
         </div>
       </div>
       <div class="option">
         <p class="suboption-name" data-i18n="taskbar"></p>
         <div class="options float-left checkboxContainer">
-          <input type="checkbox" data-settings-key="enableTrayIcon" class="center-area" onclick="UI.tray(this.checked)" />
+          <input type="checkbox" data-settings-key="tray-enable" data-settings-default="false" class="center-area" data-custom-component="tray" />
           <label data-i18n="champion-select-hide"></label>
-        </div>
-      </div>
-      <div class="option">
-        <p class="suboption-name" data-i18n="animations"></p>
-        <div class="options float-left checkboxContainer">
-          <input type="checkbox" data-settings-key="enableAnimations" class="center-area" />
-          <label data-i18n="enable"></label>
         </div>
       </div>
     </div>
     <div data-tabid="settings" data-tabn=1 class="tabcontent" style="display: none; margin-left: 12%;">
+      <p class="option-name" data-i18n="category-misc"></p>
       <div class="option">
-        <p class="suboption-name" data-i18n="runes-max"></p>
-        <input type="number" data-settings-key="runes-max" class="center-area" min="1" step="1" />
+        <p class="suboption-name" data-i18n="champion-select-min-roles"></p>
+        <input type="number" data-settings-key="champion-select-min-roles" data-settings-default="2" class="center-area" min="1" step="1" />
       </div>
       <div class="option">
         <p class="suboption-name" data-i18n="summoner-spells-priority"></p>
-        <select data-settings-key="summoner-spells-priority" class="dropdown center-area">
+        <select data-settings-key="summoner-spells-priority" data-settings-default="d" class="dropdown">
           <option data-i18n="summoner-spells-priority-flash-d" value=d></option>
           <option data-i18n="summoner-spells-priority-flash-f" value=f></option>
         </select>
       </div>
-      <div class="option">
-        <p class="suboption-name" data-i18n="league-client-path"></p>
-        <input type="text" data-settings-key="leaguePath" class="center-area" disabled />
+      <hr class="break" />
+      <p class="option-name"data-i18n="ui"></p>
+      <div class="option" style="width: 20%;">
+        <p class="suboption-name" data-i18n="ui-animations"></p>
+        <div class="options float-left checkboxContainer">
+          <input type="checkbox" data-settings-key="ui-animations-enable" data-settings-default="false" class="center-area" />
+          <label data-i18n="common-enable"></label>
+        </div>
+      </div>
+      <div class="option" style="width: 20%;">
+        <p class="suboption-name" data-i18n="ui-gradient"></p>
+        <div class="options float-left checkboxContainer">
+          <input type="checkbox" data-settings-key="ui-gradient" data-settings-default="true" class="center-area" data-custom-component="ui-gradient" />
+          <label data-i18n="common-enable"></label>
+        </div>
       </div>
       <div class="option">
-        <p class="suboption-name" data-i18n="theme"></p>
-        <select data-settings-key="theme" class="dropdown center-area">
-          <option data-i18n="theme-default" value="themes/default-bg.jpg"></option>
-          <option data-i18n="theme-forest" value="themes/forest-bg.png"></option>
-          <option data-i18n="theme-shurima-desert" value="themes/shurima-desert-bg.jpg"></option>
-          <option data-i18n="color-red_dark" value="themes/red_dark-bg.jpg"></option>
-          <option data-i18n="color-red" value="themes/red-bg.jpg"></option>
-          <option data-i18n="color-green" value="themes/green-bg.jpg"></option>
-          <option data-i18n="color-purple" value="themes/purple-bg.jpg"></option>
-          <option data-i18n="color-gray" value="themes/gray-bg.jpg"></option>
+        <p class="suboption-name" data-i18n="ui-background"></p>
+        <select data-settings-key="ui-background" data-settings-default="themes/default-bg.jpg" data-custom-component="ui-background" class="dropdown">
+          <option data-i18n="common-disabled" value="null"></option>
+          <option data-i18n="ui-background-default" value="themes/default-bg.jpg"></option>
+          <option data-i18n="ui-background-forest" value="themes/forest-bg.png"></option>
+          <option data-i18n="ui-background-shurima-desert" value="themes/shurima-desert-bg.jpg"></option>
+          <option data-i18n="ui-background-red_dark" value="themes/red_dark-bg.jpg"></option>
+          <option data-i18n="ui-background-red" value="themes/red-bg.jpg"></option>
+          <option data-i18n="ui-background-green" value="themes/green-bg.jpg"></option>
+          <option data-i18n="ui-background-purple" value="themes/purple-bg.jpg"></option>
+          <option data-i18n="ui-background-gray" value="themes/gray-bg.jpg"></option>
+          <option data-i18n="ui-background-dark" value="themes/dark-1.jpg"></option>
+          <option data-i18n="ui-background-cloudy" value="themes/cloudy-bg.png"></option>
+          <option data-i18n="ui-background-inspiration" value="themes/styles-inspiration.png" data-background-position="center"></option>
+          <option data-i18n="ui-background-domination" value="themes/styles-domination.png" data-background-position="center"></option>
+          <option data-i18n="ui-background-sorcery" value="themes/styles-sorcery.png" data-background-position="center"></option>
+          <option data-i18n="ui-background-precision" value="themes/styles-precision.png" data-background-position="center"></option>
         </select>
       </div>
     </div>
     <div data-tabid="settings" data-tabn=2 class="tabcontent" style="display: none; margin-left: 12%;">
+      <p class="option-name" data-i18n="category-advanced"></p>
       <div class="option">
         <p class="suboption-name" data-i18n="empty-cache-settings-option"></p>
-        <button data-custom-component="empty-cache" data-i18n="empty-cache-button"></button>
+        <button class="btn normal" data-custom-component="empty-cache" data-i18n="empty-cache-button"></button>
       </div>
       <div class="option">
         <p class="suboption-name" data-i18n="reset-settings-settings-option"></p>
-        <button data-custom-component="reset-settings" data-i18n="reset-settings-button"></button>
+        <button class="btn normal" data-custom-component="reset-settings" data-i18n="reset-settings-button"></button>
       </div>
       <div class="option">
         <p class="suboption-name" data-i18n="providers-order"></p>
-        <ul class="sortable" data-settings-key="providers-order", data-settings-sortable-list-values="championgg,opgg,lolflavor" data-settings-merge-list-if-missing-value="true">
+        <ul class="sortable" data-settings-key="providers-order" data-settings-default="manaflux,championgg,leagueofgraphs,opgg,lolflavor" data-settings-merge-list-if-missing-value="true" data-settings-remove-if-missing-value="true">
         </ul>
+      </div>
+      <div class="option">
+        <p class="suboption-name" data-i18n="settings-logs-clear"></p>
+        <button class="btn normal" data-custom-component="settings-logs-clear" data-i18n="common-clear"></button>
+      </div>
+      <div class="option">
+        <p class="suboption-name" data-i18n="settings-logs-open-folder"></p>
+        <button class="btn normal" data-custom-component="settings-logs-open" data-i18n="common-open"></button>
+      </div>
+      <div class="option">
+        <p class="suboption-name" data-i18n="league-client-path"></p>
+        <input type="text" data-settings-key="league-client-path" class="center-area" data-custom-component="league-client-path" disabled />
       </div>
     </div>
     <div data-tabid="update" data-tabn=0 class="tabcontent" style="display: none; margin-left: 12%;">
-      <div class="option">
-        <p class="option-name" data-i18n="update-available"></p>
-        <p class="suboption-name" id="version"></p>
-        <p class="suboption-name" id="size" style="margin-top: 5px;"></p>
-        <!--div class="textcontainer" id="releasenotes" style="width: 45%;"></div-->
-        <button type="button" id="update" style="margin-top: 10px;" data-i18n="menu-update"></button>
+      <p data-i18n="update-available" id="updateAvailableText"></p>
+      <div id="updateStatus">
+        <p id="version">VX.X.X</p>
+        <span id="updateRollout">You're part of the 100% of users who received the update</span>
       </div>
+      <div class="textcontainer" id="release-notes">
+      </div>
+      <button class="btn normal" type="button" id="update" data-i18n="update-button-download"></button>
+      <span id="updateSize">XXX.XXMB</span>
     </div>
-    <p class="status" data-i18n="loading-login"></p>
+    <p class="status" data-i18n="status-loading"></p>
     <p class="version"></p>
   </div>
     <!-- END SECTIONS -->
   </div>
+  <script src="vendor/jquery-3.3.1.min.js" onload="window.$ = window.jQuery = module.exports;"></script>
+  <script src="vendor/jquery-ui.min.js"></script>
+  <script src="vendor/markdown.min.js"></script>
+  <script src="vendor/alertify.min.js"></script>
   <script>
-  window.eval = global.eval = function () { throw new Error(i18n.__('eval')) };
-  </script>
-  <script src="assets/js/jquery-3.3.1.min.js" onload="window.$ = window.jQuery = module.exports;"></script>
-  <script src="assets/js/jquery-ui.min.js"></script>
-  <script src="assets/js/alertify.min.js"></script>
-  <script>
-  require('../crash-reporting.js');
-
-  process.on('unhandledRejection', (reason, p) => console.log(`${i18n.__('process-unhandled-rejection')}: ${p}, ${i18n.__('reason')}: ${reason}`));
-  process.on('uncaughtException', console.error);
-
-  const { ipcRenderer } = require('electron');
-  const EventEmitter = require('events');
-
-  const log = new (require('../objects/handlers/LoggingHandler'))(3);
-  global.i18n = new (require('../objects/i18n'));
-
-  log.onMessage((type, message) => {
-    if (type === 'dir' && typeof message === 'string') message = JSON.parse(message);
-    console[type].call(this, message);
-  });
-
-  class MF extends EventEmitter {}
-  global.Mana = new MF();
+    const { ipcRenderer, remote } = require('electron');
+    const LoggingHandler = new (require('../objects/handlers/LoggingHandler'))(3);
   </script>
   <script src="assets/js/ui.js"></script>
   <script>
-  require('../renderer.js');
+  window.eval = global.eval = () => console.warn(i18n.__('security-eval'));
+  require('../crash-reporting.js');
 
-  $('.version').text('v' + Mana.version);
+  process.on('unhandledRejection', (reason, p) => console.log(0, `Unhandled rejection at: ${p}, reason: ${reason}`));
+  process.on('uncaughtException', console.error);
+
+  global.i18n = new (require('../objects/i18n'));
+
+  document.getElementById('dev').addEventListener('click', e => {
+    if (e.detail === 3) remote.getCurrentWindow().toggleDevTools();
+  });
+
+  global.Mana = new (require('../objects/Mana'))(ipcRenderer);
   </script>
+  <script src="assets/js/ui/i18n.js"></script>
+  <script src="assets/js/ui/settings.js"></script>
+  <script src="assets/js/ui/custom-components.js"></script>
+  <script src="assets/js/ui/update.js"></script>
+  <script src="assets/js/ui/tab-handler.js"></script>
 </body>
 </html>

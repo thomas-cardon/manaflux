@@ -29,7 +29,7 @@ class LoLFlavorProvider extends Provider {
   async _aggregate(data, champion, position, gameMode) {
     position = position.charAt(0).toUpperCase() + position.slice(1);
 
-    let itemset = new ItemSet(champion.key, position);
+    let itemset = new ItemSet(champion.key, position, this.id);
 
     itemset._data = data;
     itemset._data.blocks[0].type = i18n.__('itemsets-block-consumables');

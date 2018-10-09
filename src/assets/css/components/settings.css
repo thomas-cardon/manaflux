@@ -1,0 +1,34 @@
+.checkboxContainer {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  position: relative;
+}
+
+label {
+  color: #c4b998;
+  font-family: "beaufort-bold", sans-serif;
+}
+
+.checkboxContainer > label {
+  margin-left: 5px;
+}
+
+.option {
+  margin: 0px 10px 10px 5px;
+  width: 45%;
+  float: left;
+}
+
+.option-name {
+  color: #f0e6d2;
+  font-size: 25px;
+  margin-bottom: -3px;
+  letter-spacing: 0.025rem;
+}
+
+.suboption-name {
+  font-size: 16px;
+  color: #cdbe91;
+  margin-bottom: 5px;
+}

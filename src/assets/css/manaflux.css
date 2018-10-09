@@ -14,9 +14,6 @@
 }
 
 body {
-  background-position: center;
-  background-size: cover;
-  background-attachment: fixed;
   font-family: "beaufort-bold";
   text-transform: uppercase;
   margin: 0 auto;
@@ -25,8 +22,10 @@ body {
   user-select: none;
 }
 
-.buttons {
-  margin: 10px;
+#buttons {
+  position: fixed;
+  bottom: 50px;
+  width: 100%;
 }
 
 .sortable {
@@ -78,6 +77,10 @@ body {
   transform: rotate(135deg);
 }
 
+.arrow-disabled {
+  opacity: 0.2;
+}
+
 .alertify-notifier {
   color: #ffffff !important;
   font-size: 12px;
@@ -112,47 +115,10 @@ body {
   border-radius: 110px;
 }
 
-.championPortrait > #bg {
+.championPortrait > #hextechAnimationBackground {
   z-index: 1;
   margin-left: -1%;
   will-change: transform;
-  animation: hextechRotation 1s ease-in-out alternate infinite;
-}
-
-#warning {
-  position: absolute;
-  margin-top: 32px;
-  margin-left: 15px;
-}
-
-.checkboxContainer {
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-align-items: flex-start;
-  -ms-flex-align: start;
-  align-items: flex-start;
-  margin-bottom: 16px;
-  position: relative;
-}
-
-label {
-  color: #c4b998;
-  font-family: "beaufort-bold", sans-serif;
-}
-
-.option-name {
-  color: #f0e6d2;
-  font-size: 25px;
-  margin-bottom: 10px;
-  letter-spacing: 0.025rem;
-}
-
-.suboption-name {
-  font-size: 16px;
-  color: #cdbe91;
-  margin-bottom: 5px;
-  margin-left: 2px;
 }
 
 .title {
@@ -164,13 +130,6 @@ h1 {
   font-weight: 100;
   font-size: 59px;
   margin-bottom: 5px;
-}
-
-hr {
-  width: 350px;
-  margin-top: 40px;
-  margin-bottom: 40px;
-  border: 1px solid #cdbe91;
 }
 
 .tier {
@@ -210,95 +169,8 @@ hr {
   -webkit-app-region: no-drag;
 }
 
-.version {
-  position: fixed;
-  bottom: 15px;
-  right: 15px;
-  cursor: default;
-  margin: 0px;
-  color: #a09b8c;
-  opacity: 0.5;
-  transition: opacity .1s ease-in-out;
-  text-decoration: none;
-}
-
-.status {
-  position: fixed;
-  bottom: 15px;
-  left: 15px;
-  cursor: default;
-  margin: 0px;
-  color: #a09b8c;
-  opacity: 0.5;
-  transition: opacity .1s ease-in-out;
-  text-decoration: none;
-}
-
-.version-tag:hover {
-  opacity: 1;
-  color: #a09b8c;
-  text-decoration: none;
-}
-
 .icon {
   font-size: 20px !important;
-}
-
-/* Number inputs */
-input[type="number"]:disabled, input[type="text"]:disabled {
-  cursor: auto;
-}
-
-input[type="number"], input[type="text"] {
-  display: inline-block;
-  position: relative;
-  cursor: pointer;
-  width: 200px;
-  font-family: 'beaufort-bold', sans-serif;
-  color: rgb(62.7%, 60.8%, 54.9%);
-  letter-spacing: 0.025rem;
-  padding: 10px 14px;
-  background-color: rgba(30, 35, 40, 0.5);
-  border: 1px solid transparent;
-  border-image: linear-gradient(to top, #695625 0%, #A9852D 23%, #B88D35 93%, #C8AA6E 100%) 1;
-  outline: none;
-  box-sizing: border-box;
-  -webkit-appearance: none;
-}
-
-/* Style the buttons that are used to open the tab content */
-
-.controls button {
-  background-color: transparent;
-  float: left;
-  border: none;
-  outline: none;
-  cursor: pointer;
-  padding: 4px 4px;
-  transition: 0.3s;
-  -webkit-box-shadow: none;
-  -moz-box-shadow: none;
-  box-shadow: none;
-  font-size: 8px;
-  margin-left: 10px;
-}
-
-/* Change background color of buttons on hover */
-
-.controls button:hover {
-  color: #f0e6d2;
-  border: none;
-  outline: none;
-  cursor: pointer;
-  -webkit-box-shadow: none;
-  -moz-box-shadow: none;
-  box-shadow: none;
-}
-
-/* Create an active/current tablink class */
-
-.controls button.active {
-  color: #f0e6d2;
 }
 
 /*
@@ -329,73 +201,6 @@ input[type="number"], input[type="text"] {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #d4b373;
-}
-
-/*
-    BUTTONS
-*/
-
-@keyframes flash {
-  0% {
-    color: #CDBE91;
-  }
-
-  100% {
-    color: #F0E6D2;
-  }
-}
-
-.flash {
-  animation: flash 0.3s alternate infinite;
-}
-
-button {
-  display: inline-block;
-  position: relative;
-  font-family: 'beaufort-bold', cursive;
-  /* font-family: 'Beaufort', 'Times New Roman', serif; */
-  text-transform: uppercase;
-  color: #CDBE91;
-  font-weight: 100;
-  letter-spacing: 1px;
-  white-space: nowrap;
-  padding: 9px 21px;
-  cursor: pointer;
-  box-shadow: 0 0 1px 1px #010A13, inset 0 0 1px 1px #010A13;
-  background: #1E2328;
-  border: 2px solid transparent;
-  border-image: linear-gradient(to top, #785B28 0%, #C89C3C 55%, #C8A355 71%, #C8AA6E 100%);
-  border-image-slice: 1;
-  transition: opacity 300ms linear;
-  margin-top: 5px;
-  transition: color 100ms linear;
-}
-
-button:hover {
-  color: #F0E6D2;
-  border: 2px solid transparent;
-  border-image: linear-gradient(to top, rgb(78.4%, 61.2%, 23.5%) 0%, rgb(86.3%, 75.7%, 53.3%) 50%, rgb(88.2%, 78.8%, 59.6%) 71%, rgb(94.1%, 90.2%, 84.7%) 100%);
-  border-image-slice: 1;
-  box-shadow: 0px 0px 13px 0px rgba(205, 190, 145, 0.39);
-  transition: color 100ms linear;
-  /* filter: blur(4px); */
-}
-
-button:active {
-  color: #E4E1D8;
-  border-image: linear-gradient(to top, #FFFFFF 0%, #FFFFFF 33%, #FFFFFF 66%, #FFFFFF 100%);
-  border-image-slice: 1;
-  color: #5C5B57;
-  transition: color 100ms linear;
-  animation: none;
-}
-
-button:focus {
-  outline: 0;
-}
-
-button:after {
-  transition: all 0.8s
 }
 
 /*
@@ -462,7 +267,7 @@ textarea:disabled {
   display: inline-block;
   position: relative;
   cursor: pointer;
-  width: 200px;
+  width: 72%;
   font-family: 'beaufort-bold', sans-serif;
   color: rgb(62.7%, 60.8%, 54.9%);
   letter-spacing: 0.025rem;
@@ -543,54 +348,10 @@ textarea:disabled {
   overflow: hidden;
 }
 
-.selected {
+#selected {
   position: absolute;
-  left: -10px;
   width: 5%;
   height: auto;
-}
-
-/* Style the buttons that are used to open the tab content */
-
-.tab button {
-  background-color: transparent;
-  float: left;
-  border: none;
-  outline: none;
-  cursor: pointer;
-  padding: 14px 16px;
-  transition: 0.3s;
-  -webkit-box-shadow: none;
-  -moz-box-shadow: none;
-  box-shadow: none;
-  font-size: 25px;
-  margin-left: 28px;
-  -webkit-app-region: no-drag;
-}
-
-.tab button::before {
-  top: -2px;
-  height: 16px;
-  background: url(assets/img/selected.png) no-repeat center;
-}
-
-.tab button::after {
-  bottom: -1px !important;
-  height: 1px !important;
-  width: 100% !important;
-  background: rgba(242,233,218,0.5) !important;
-}
-
-/* Change background color of buttons on hover */
-
-.tab button:hover {
-  color: #f0e6d2;
-}
-
-/* Create an active/current tablink class */
-
-.tab button.active {
-  color: #f0e6d2;
 }
 
 /* Style the tab content */
@@ -617,12 +378,6 @@ textarea:disabled {
 .float-left {
   float: left;
   margin-right: 5px;
-}
-
-.option {
-  margin-bottom: 25px;
-  width: 50%;
-  float: left;
 }
 
 .summonericon {

@@ -10,8 +10,8 @@ class ChampionSelect extends EventEmitter {
     super();
     this.inChampionSelect = false;
 
-    this.on('firstTick', async () => log.log(2, '[ChampionSelect] Entering'));
-    this.on('ended', () => log.log(2, '[ChampionSelect] Leaving'));
+    this.on('firstTick', async () => console.log(2, '[ChampionSelect] Entering'));
+    this.on('ended', () => console.log(2, '[ChampionSelect] Leaving'));
     this.on('change', async id => {
       const champion = Mana.champions[id];
       log.log(2, `[ChampionSelect] Changed champion to: #${id} (${champion.name})`);
@@ -93,7 +93,7 @@ class ChampionSelect extends EventEmitter {
       ipcRenderer.removeAllListeners('runes-previous');
       ipcRenderer.removeAllListeners('runes-next');
 
-      if (Object.keys(res).length === 0) return log.error(1, i18n.__('providers-error-data'));
+      if (Object.keys(res).length === 0) return console.error(1, i18n.__('providers-error-data'));
       console.dir(res);
 
       for (let position in res) {
@@ -114,12 +114,12 @@ class ChampionSelect extends EventEmitter {
         * Runes display
         */
 
-        if (Mana.store.get('enableAnimations'))
+        if (Mana.getStore().get('enableAnimations'))
           UI.enableHextechAnimation(champion, data.runes[0].primaryStyleId);
 
         // TODO: Change hextech animation according to active rune page change
 
-        if (Mana.store.get('loadRunesAutomatically')) {
+        if (Mana.getStore().get('loadRunesAutomatically')) {
           try {
             await Mana.user.getPerksInventory().updatePerksPages(data.runes);
           }
@@ -135,14 +135,14 @@ class ChampionSelect extends EventEmitter {
         * Summoner Spells display
         */
 
-        if (Mana.store.get('enableSummonerSpells') && data.summonerspells.length > 0)
+        if (Mana.getStore().get('enableSummonerSpells') && data.summonerspells.length > 0)
           $('button#loadSummonerSpells').enableManualButton(() => Mana.user.updateSummonerSpells(data.summonerspells).catch(err => { UI.error(err); captureException(err); }), true);
       });
 
       /*
       * Item Sets display
       */
-      if (Mana.store.get('enableItemSets')) {
+      if (Mana.getStore().get('enableItemSets')) {
         try {
           let old = await ItemSetHandler.deleteItemSets(await ItemSetHandler.getItemSetsByChampionKey(champion.key));
           UI.status('ChampionSelect', 'itemsets-save-status', champion.name);
@@ -210,7 +210,7 @@ class ChampionSelect extends EventEmitter {
 
     $('#positions').unbind().empty().hide();
 
-    if (Mana.store.get('enableTrayIcon')) UI.tray();
+    if (Mana.getStore().get('enableTrayIcon')) UI.tray();
   }
 
   destroyTimer() {

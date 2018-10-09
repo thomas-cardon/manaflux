@@ -4,7 +4,6 @@ global.log = new (require('./objects/handlers/LoggingHandler'))(3);
 const i18n = new (require('./objects/i18n'));
 
 const { autoUpdater } = require('electron-updater');
-const platform = process.platform;
 
 const LeaguePlug = require('./objects/leagueplug');
 const AutoLaunch = require('auto-launch');
@@ -14,13 +13,17 @@ require('./crash-reporting.js');
 let connector = new LeaguePlug();
 let win, tray;
 
-const shouldQuit = app.makeSingleInstance(function(commandLine, workingDirectory) {
-  if (win) {
-    if (win.isMinimized()) win.restore();
-    else if (!win.isVisible()) win.show();
+autoUpdater.fullChangelog = true;
+autoUpdater.autoDownload = false;
+autoUpdater.autoInstallOnAppQuit = false;
 
-    win.focus();
-  }
+const shouldQuit = app.makeSingleInstance((commandLine, workingDirectory) => {
+  if (!win) return;
+
+  if (win.isMinimized()) win.restore();
+  else if (!win.isVisible()) win.show();
+
+  win.focus();
 });
 
 if (shouldQuit) return app.quit();
@@ -28,7 +31,7 @@ if (shouldQuit) return app.quit();
 let launcher = new AutoLaunch({ name: 'Manaflux', isHidden: true });
 
 function createWindow () {
-  win = new BrowserWindow({ width: 600, height: 600, frame: false, icon: __dirname + '/build/icon.' + (platform === 'win32' ? 'ico' : 'png'), backgroundColor: '#000A13', maximizable: false, disableblinkfeatures: 'BlockCredentialedSubresources', show: false });
+  win = new BrowserWindow({ width: 600, height: 600, frame: false, icon: __dirname + '/build/icon.' + (process.platform === 'win32' ? 'ico' : 'png'), backgroundColor: '#000A13', maximizable: false, disableblinkfeatures: 'BlockCredentialedSubresources', show: false });
 
   win.loadURL(`file://${__dirname}/src/index.html`);
   win.setMenu(null);
@@ -36,9 +39,6 @@ function createWindow () {
   win.once('ready-to-show', () => !tray ? win.show() : null);
 
   log.setBrowserWindow(win);
-  log.onMessage((type, message) => {
-    console[type].call(this, message)
-  });
 
   if (process.argv[2] === '--dev')
     win.webContents.openDevTools({ mode: 'detach' });
@@ -55,31 +55,42 @@ function createWindow () {
 app.on('ready', () => {
   createWindow();
 
-  if (process.argv[2] !== '--dev') autoUpdater.checkForUpdates();
+  const { Menu, MenuItem } = require('electron');
+  const menu = new Menu();
 
-  globalShortcut.register('CommandOrControl+Shift+I', () => {
-    if (!win.isFocused() && !win.isDevToolsFocused()) return;
+  if (process.argv[2] !== '--dev') return autoUpdater.checkForUpdates();
+  menu.append(new MenuItem({
+    label: 'Dev Tools',
+    accelerator: 'CommandOrControl+Shift+I',
+    click: () => BrowserWindow.getFocusedWindow().toggleDevTools()
+  }));
 
-    if (win.webContents.isDevToolsOpened()) win.webContents.closeDevTools();
-    else win.webContents.openDevTools({ mode: 'detach' });
-  });
+  Menu.setApplicationMenu(menu);
 });
 
 ipcMain.on('restart', () => {
-  log.log(2, '[IPC] Restarting app...');
+  console.log(2, '[IPC] Restarting app...');
 
   app.relaunch();
   app.exit(0);
 });
 
+autoUpdater.on('update-available', info => {
+  win.webContents.send('update-available', info);
+  ipcMain.once('update-download', () => autoUpdater.downloadUpdate().then(cancelToken => ipcMain.once('update-cancel', () => cancelToken.cancel())));
+});
+
+autoUpdater.on('update-not-available', info => win.webContents.send('update-not-available', info));
+autoUpdater.on('download-progress', info => win.webContents.send('update-progress', info));
+
 autoUpdater.on('update-downloaded', info => {
-  ipcMain.on('update-install', (event, arg) => autoUpdater.quitAndInstall());
+  ipcMain.once('update-install', (event, arg) => autoUpdater.quitAndInstall());
   win.webContents.send('update-ready', info);
 });
 
 ipcMain.on('champion-select-in', (event, arg) => {
-  globalShortcut.register('Alt+Left', () => event.sender.send('runes-previous'));
-  globalShortcut.register('Alt+Right', () => event.sender.send('runes-next'));
+  globalShortcut.register('Alt+Left', () => event.sender.send('perks-shortcut', true));
+  globalShortcut.register('Alt+Right', () => event.sender.send('perks-shortcut', false));
 });
 
 ipcMain.on('champion-select-out', () => {
@@ -94,7 +105,7 @@ ipcMain.on('tray', (event, show) => {
     return tray.destroy();
   }
 
-  tray = new Tray(__dirname + '/build/icon.' + (platform === 'win32' ? 'ico' : 'png'));
+  tray = new Tray(__dirname + '/build/icon.' + (process.platform === 'win32' ? 'ico' : 'png'));
   tray.setToolTip(i18n.__('tray-show'));
 
   tray.on('click', () => win.isVisible() ? win.hide() : win.showInactive());
@@ -108,24 +119,15 @@ ipcMain.on('auto-start', (event, enable) => {
   .catch(err => event.sender.send('error', { type: 'AUTO-START', error: err }));
 });
 
-ipcMain.on('lcu-league-path', event => {
-  log.log(2, '[IPC] Asked for League\'s path');
-  const id = setInterval(() => {
-    connector.getPathHandler().findLeaguePath().then(path => {
-      event.sender.send('lcu-league-path', path);
-      clearInterval(id);
-    });
-  }, 500);
-});
-
 ipcMain.on('lcu-connection', (event, path) => {
+  if (!path) return;
+
   if (connector.getConnectionHandler().hasStarted()) {
     connector.getConnectionHandler().removeAllListeners();
     connector.getConnectionHandler().end();
   }
 
-  connector.getPathHandler().setLeaguePath(path);
-  connector.start();
+  connector.start(path);
 
   connector.getConnectionHandler().on('connected', d => event.sender.send('lcu-connected', d));
   connector.getConnectionHandler().on('logged-in', d => event.sender.send('lcu-logged-in', d));
@@ -133,22 +135,31 @@ ipcMain.on('lcu-connection', (event, path) => {
   connector.getConnectionHandler().on('disconnected', () => event.sender.send('lcu-disconnected'));
 });
 
-ipcMain.on('lcu-is-connected', event => event.sender.send('lcu-is-connected', connector.isConnected()));
-ipcMain.on('lcu-is-logged-in', event => event.sender.send('lcu-is-logged-in', connector.isLoggedIn()));
+ipcMain.on('lcu-get-path', event => event.returnValue = connector.getPath());
+
+ipcMain.on('lcu-find-path', event => connector.getPathHandler().findLeaguePath().then(x => event.sender.send('lcu-find-path', x)));
+ipcMain.on('lcu-set-path', (event, path) => connector.getPathHandler().setLeaguePath(path));
+
+ipcMain.on('lcu-is-connected', event => event.returnValue = connector.isConnected());
+ipcMain.on('lcu-is-logged-in', event => event.returnValue = connector.isLoggedIn());
 
 ipcMain.on('win-show', (event, inactive) => {
   if (!win.isVisible()) win[inactive ? 'showInactive' : 'show']();
 });
 
 ipcMain.on('win-hide', () => win.hide());
-ipcMain.on('win-close', () => win.close());
-ipcMain.on('win-minimize', () => win.minimize());
+app.on('window-all-closed', () => app.quit());
 
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') app.quit();
-})
+process.on('SIGTERM', function () {
+  log.end();
+  globalShortcut.unregisterAll();
+  process.exit(0);
+});
 
-app.on('will-quit', () => globalShortcut.unregisterAll());
+app.on('will-quit', () => {
+  log.end();
+  globalShortcut.unregisterAll();
+});
 
 app.on('activate', () => {
   if (win === null) createWindow();
