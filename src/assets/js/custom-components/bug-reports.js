@@ -21,8 +21,13 @@ ipcRenderer.on('bug-report', async (event, data) => {
   }
 });
 
+let opened = false;
 module.exports = {
   click: function() {
+    if (opened) return;
+    if (!Mana.user || !Mana.user.getSummonerId()) throw UI.error('status-please-login');
+
+    opened = true;
     let wiz = new BrowserWindow({ parent: require('electron').remote.getCurrentWindow(), width: 350, height: 550, frame: false, icon: __dirname + '/build/icon.' + (process.platform === 'win32' ? 'ico' : 'png'), backgroundColor: '#000A13', maximizable: false, resizable: false, modal: true, show: false });
 
     wiz.loadURL(`file://${__dirname}/../../../bugreports.html`);

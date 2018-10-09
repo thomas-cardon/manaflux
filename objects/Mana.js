@@ -46,7 +46,7 @@ class Mana extends EventEmitter {
 
     this.championSelectHandler = new (require('./handlers/ChampionSelectHandler'))();
 
-    UI.status('Status', 'status-loading-data-login');
+    UI.status('Status', 'status-please-login');
 
     this.assetsProxy.load();
 
