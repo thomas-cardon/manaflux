@@ -148,9 +148,6 @@ ipcMain.on('win-show', (event, inactive) => {
 });
 
 ipcMain.on('win-hide', () => win.hide());
-ipcMain.on('win-close', () => win.close());
-ipcMain.on('win-minimize', () => win.minimize());
-
 app.on('window-all-closed', () => app.quit());
 
 process.on('SIGTERM', function () {
