@@ -74,6 +74,7 @@ class ChampionSelectHandler {
   updateDisplay(champion, res) {
     UI.status('ChampionSelect', 'champion-updating-display', champion.name);
 
+    $('button[data-tabid]').eq(0).click();
     $('#positions').unbind().empty().hide();
 
     if (Object.keys(res.roles).length === 0) return console.error(1, i18n.__('providers-error-data'));
