@@ -25,7 +25,7 @@ class PerksInventory {
     const perks = console.dir(3, await this.getPerks());
     let count = await this.getCount();
 
-    if (!pages || pages.length === 0 || pages.find(x => x.selectedPerkIds.length === 0) !== undefined) throw UI.error('runes-error-empty');
+    if (!pages || pages.length === 0 || pages.find(x => x.selectedPerkIds.length === 0) !== undefined) throw Error('Runes are empty');
 
     count = count > Mana.getStore().get('runes-max', 2) ? Mana.getStore().get('runes-max', 2) : count;
     count = count > pages.length ? pages.length : count;

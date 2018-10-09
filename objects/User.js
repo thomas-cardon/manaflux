@@ -21,13 +21,13 @@ class User extends Summoner {
   }
 
   async updateSummonerSpells(spells) {
-    if (!spells || spells.length !== 2) throw Error(i18n.__('summoner-spells-empty-error'));
+    if (!spells || spells.length !== 2) throw Error('Summoner spells are empty');
     spells = this.sortSummonerSpells(spells);
 
     return await rp({
       method: 'PATCH',
       uri: Mana.base + 'lol-champ-select/v1/session/my-selection',
-      body: log.dir(3, { spell1Id: spells[0], spell2Id: spells[1] }),
+      body: { spell1Id: spells[0], spell2Id: spells[1] },
       json: true
     });
   }
