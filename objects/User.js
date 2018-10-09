@@ -21,13 +21,9 @@ class User extends Summoner {
   }
 
   async updateSummonerSpells(spells) {
-<<<<<<< HEAD
-    if (!spells || spells.length !== 2) throw Error(i18n.__('summoner-spells-empty-error'));
-=======
     if (!spells || spells.length !== 2) throw Error('Summoner spells are empty');
     spells = this.sortSummonerSpells(spells);
 
->>>>>>> rework
     return await rp({
       method: 'PATCH',
       uri: Mana.base + 'lol-champ-select/v1/session/my-selection',
@@ -35,13 +31,10 @@ class User extends Summoner {
       json: true
     });
   }
-<<<<<<< HEAD
-=======
 
   sortSummonerSpells(spells) {
     return spells.sort((a, b) => a === 4 || a === 6 ? (Mana.getStore().get('summoner-spells-priority') === "f" ? 1 : -1) : -1);
   }
->>>>>>> rework
 }
 
 module.exports = User;

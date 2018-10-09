@@ -19,17 +19,6 @@ class PerksInventory {
   }
 
   async updatePerksPages(pages) {
-<<<<<<< HEAD
-    if (Mana.user.getSummonerLevel() < 8) return UI.error('runes-safeguard-level-error');
-    log.log(2, `[Perks] ${i18n.__('loading')}`);
-
-    const perks = log.dir(3, await this.getPerks());
-    let count = await this.getCount();
-
-    if (!pages || pages.length === 0 || pages.find(x => x.selectedPerkIds.length === 0) !== undefined) throw Error(i18n.__('runes-empty-error'));
-
-    count = count > Mana.store.get('runes-max', 2) ? Mana.store.get('runes-max', 2) : count;
-=======
     if (Mana.user.getSummonerLevel() < 8) throw UI.error('runes-error-safeguard-level');
     console.log(2, `[Perks] Loading`);
 
@@ -39,7 +28,6 @@ class PerksInventory {
     if (!pages || pages.length === 0 || pages.find(x => x.selectedPerkIds.length === 0) !== undefined) throw Error('Runes are empty');
 
     count = count > Mana.getStore().get('runes-max', 2) ? Mana.getStore().get('runes-max', 2) : count;
->>>>>>> rework
     count = count > pages.length ? pages.length : count;
     pages = pages.slice(0, count);
     console.log(count);
@@ -47,12 +35,8 @@ class PerksInventory {
     for (let i = 0; i < count; i++) {
       if (!perks[i]) perks[i] = await this.createPerkPage(Object.assign(pages[i], { current: count === 0 }));
       else if (perks[i].selectedPerkIds === pages[i].selectedPerkIds && perks[i].name === pages[i].name) continue;
-<<<<<<< HEAD
-      else await this.updatePerkPage(Object.assign(perks[i], pages[i], { current: count === 0 }));
-=======
 
       await this.updatePerkPage(Object.assign(perks[i], pages[i], { current: count === 0 }));
->>>>>>> rework
     }
   }
 
