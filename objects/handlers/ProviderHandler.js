@@ -31,8 +31,6 @@ class ProviderHandler {
 
     for (let provider of providers) {
       provider = this.providers[provider];
-      if (provider.name === 'Manaflux') continue;
-
       console.log(2, `[ProviderHandler] Using ${provider.name}`);
 
       if (!data) {
@@ -42,7 +40,7 @@ class ProviderHandler {
         }
           catch(err) {
           console.error(err);
-          console.log('Couldn\'t aggregate data.');
+          console.log('[ProviderHandler] Couldn\'t aggregate data.');
           continue;
         }
       }
@@ -52,16 +50,16 @@ class ProviderHandler {
         }
         catch(err) {
           console.error(err);
-          console.log('Couldn\'t aggregate data.');
+          console.log('[ProviderHandler] Couldn\'t aggregate data.');
           continue;
         }
       }
 
-      console.log('Provider data changed.');
+      console.log('[ProviderHandler] Data has changed.');
       console.dir(data);
 
       /* If a provider can't get any data on that role/position, let's use another provider */
-      if (!data || (!preferredPosition && Object.keys(data.roles).length <= Mana.getStore().get('minimumRoles', 2)) || preferredPosition && !data.roles[preferredPosition]) {
+      if (!data || (!preferredPosition && Object.keys(data.roles).length <= Mana.getStore().get('champion-select-min-roles', 2)) || preferredPosition && !data.roles[preferredPosition]) {
         console.log(`Missing data for the asked role. (${preferredPosition}) - or because there's not enough data`);
         continue;
       }
