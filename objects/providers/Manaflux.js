@@ -40,6 +40,7 @@ class ManafluxProvider extends Provider {
   async upload(data) {
     console.log(2, '[ProviderHandler] Uploading to Manaflux cache server');
     if (Object.values(data.roles).some(x => x.summonerspells.length === 0 || x.itemsets.length === 0 || x.perks.length === 0)) return console.log(2, 'Upload cancelled: missing data');
+    Object.values(data.roles).forEach(r => r.itemsets.map(x => x.build());
 
     await rp({
       method: 'POST',
