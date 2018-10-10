@@ -32,7 +32,7 @@ An assistant that can choose your runes, summoner spells, and item sets for Leag
 - [NodeJS](https://nodejs.org)
 - Web Technologies: HTML5, CSS3 and JavaScript for rendering
 - [LeaguePlug](https://github.com/Ryzzzen/manaflux/tree/master/objects/leagueplug), Simplifies the connection to League of Legends client
-- [manaflux-server](https://github.com/Ryzzzen/manaflux/tree/master/objects/leagueplug), Simplifies the connection to League of Legends client
+- [manaflux-server](https://github.com/Ryzzzen/manaflux-server), Speeds up the downloads between you and the providers
 ## Credits
 Thanks to my friends who gave me the idea of making this software, without them this would've not existed!
 
