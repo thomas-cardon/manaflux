@@ -1,10 +1,10 @@
 const rp = require('request-promise-native');
 const Provider = require('./Provider');
 
-class ManafluxProvider extends Provider {
+class FluxProvider extends Provider {
   constructor() {
-    super('manaflux', 'Manaflux');
-    this.base = 'https://manaflux-server.herokuapp.com/';
+    super('flux', 'Flu.x');
+    this.base = 'http://localhost:8920/';
   }
 
   async getData(champion, preferredPosition, gameMode) {
@@ -13,11 +13,14 @@ class ManafluxProvider extends Provider {
     let data = JSON.parse(await rp(`${this.base}v1/data/${champion.id}`));
     if (Array.isArray(data)) data = data[0];
 
-    if (data) {
-      Object.keys(data.roles).forEach(r => data.roles[r].itemsets.map(x => require('./ItemSetHandler').parse(champion.key, x, r, 'manaflux')));
+    if (data.message) {
+      if (data.statusCode === 404) throw Error(`Flu.x: Data not found`);
+      else throw Error(`Flu.x error: ${data.statusCode} - ${data.message} (${data.error})`);
+    }
+    else if (data && data.roles) {
+      Object.keys(data.roles).filter(x => !x.startsWith('_')).forEach(r => data.roles[r].itemsets.map(x => require('../handlers/ItemSetHandler').parse(champion.key, x, r, this._id)));
       return data;
     }
-    else if (data.message) throw Error(`Manaflux cache server error: ${data.statusCode} - ${data.message} (${data.error})`);
     else throw Error('Unexpected error');
   }
 
@@ -34,13 +37,13 @@ class ManafluxProvider extends Provider {
   }
 
   /**
-   * Uploads data to Manaflux server
+   * Uploads data to Fl.ux
    * @param {object} data - The data that contains perks, summonerspells etc
    */
   async upload(data) {
-    console.log(2, '[ProviderHandler] Uploading to Manaflux cache server');
-    if (Object.values(data.roles).some(x => x.summonerspells.length === 0 || x.itemsets.length === 0 || x.perks.length === 0)) return console.log(2, 'Upload cancelled: missing data');
-    Object.values(data.roles).forEach(r => r.itemsets.map(x => x.build());
+    console.log(2, '[ProviderHandler] Uploading to Fl.ux');
+    if (Object.values(data.roles).some(x => Array.isArray(x) && x.length === 0)) return console.log(2, 'Upload cancelled: missing data');
+    Object.values(data.roles).forEach(r => r.itemsets.map(x => x.build()));
 
     await rp({
       method: 'POST',

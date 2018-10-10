@@ -7,7 +7,7 @@ class ProviderHandler {
       ugg: new (require('../providers/UGG'))(),
       leagueofgraphs: new (require('../providers/LeagueofGraphs'))(),
       lolflavor: new (require('../providers/LoLFlavor'))(),
-      manaflux: new (require('../providers/Manaflux'))()
+      flux: new (require('../providers/Flux'))()
     };
   }
 
@@ -27,7 +27,7 @@ class ProviderHandler {
     let data;
 
     const providers = Mana.getStore().get('providers-order', Object.keys(this.providers));
-    providers.unshift(...providers.splice(providers.indexOf('manaflux'), 1), ...providers.splice(providers.indexOf('lolflavor'), 1));
+    providers.unshift(...providers.splice(providers.indexOf('flux'), 1), ...providers.splice(providers.indexOf('lolflavor'), 1));
 
     for (let provider of providers) {
       provider = this.providers[provider];
@@ -82,7 +82,7 @@ class ProviderHandler {
     this.saveToCache(champion, data);
 
     /* Prevents the client from sending data the server already has */
-    if (!data._id) this.providers.manaflux.upload(data);
+    if (!data._id && !data.roles._id) this.providers.flux.upload(data);
 
     return console.dir(data);
   }
