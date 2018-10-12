@@ -26,7 +26,7 @@
   "settings-providers-order-probuilds": "ProBuilds",
   "settings-providers-order-lolflavor": "LoLFlavor",
   "settings-providers-order-leagueofgraphs": "League Of Graphs",
-  "settings-providers-order-manaflux": "Pamięć Manaflux",
+  "settings-providers-order-flux": "Pamięć Manaflux",
   "empty-cache-settings-option": "Opróżnij pamięć",
   "empty-cache-status": "Pamięć opróżniona",
   "empty-cache-button": "Opróżnij",

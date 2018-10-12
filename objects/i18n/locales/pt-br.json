@@ -26,7 +26,7 @@
     "settings-providers-order-probuilds": "ProBuilds",
     "settings-providers-order-lolflavor": "LoLFlavor",
     "settings-providers-order-leagueofgraphs": "League Of Graphs",
-    "settings-providers-order-manaflux": "Manaflux cache",
+    "settings-providers-order-flux": "Manaflux cache",
     "empty-cache-settings-option": "Limpar o cache",
     "empty-cache-status": "Cache limpo",
     "empty-cache-button": "Vazio",
