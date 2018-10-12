@@ -5,15 +5,12 @@ const { dialog, app } = require('electron').remote;
 
 const Store = require('electron-store');
 
-class Mana extends EventEmitter {
+class Mana {
   constructor() {
-    super();
     $('.version').text(`V${this.version = app.getVersion()}`);
 
     UI.status('Status', 'status-loading-storage');
     this._store = new Store();
-
-    this.getStore().set('lastVersion', this.version);
 
     if (!this.getStore().get('league-client-path'))
       require('../objects/Wizard')(true).on('closed', () => {
@@ -31,14 +28,17 @@ class Mana extends EventEmitter {
       this.getStore().set('riot-consent', true);
     }
 
-    ipcRenderer.on('lcu-connected', (event, d) => this.updateAuthenticationTokens(d));
+    ipcRenderer.on('lcu-connected', (event, d) => {
+      this.updateAuthenticationTokens(d);
+      if (!this.user) this.preload();
+    });
+
     ipcRenderer.on('lcu-logged-in', (event, d) => this.load(d));
     ipcRenderer.on('lcu-disconnected', () => this.disconnect());
-    ipcRenderer.once('lcu-connected', (event, d) => this.preload());
   }
 
   async preload() {
-    UI.status('Status', 'common-loading');
+    UI.status('Status', 'status-loading-data-login');
 
     this.user = new (require('./User'))();
     this.gameClient = new (require('./riot/leagueoflegends/GameClient'))();
@@ -46,14 +46,12 @@ class Mana extends EventEmitter {
 
     this.championSelectHandler = new (require('./handlers/ChampionSelectHandler'))();
 
-    UI.status('Status', 'status-please-login');
-
     this.assetsProxy.load();
 
-    const data = await Promise.all([this.gameClient.getChampionSummary(), this.gameClient.getSummonerSpells(), this.gameClient.load()]);
-
-    this.champions = data[0];
-    this.summonerspells = data[1];
+    const data = await UI.loading(Promise.all([this.gameClient.load(), this.gameClient.getChampionSummary(), this.gameClient.getSummonerSpells()]));
+    
+    this.champions = data[1];
+    this.summonerspells = data[2];
 
     $('.version').text(`V${this.version} - V${this.gameClient.branch}`);
 
@@ -62,7 +60,10 @@ class Mana extends EventEmitter {
       require('./handlers/ItemSetHandler').getItemSets().then(x => require('./handlers/ItemSetHandler').deleteItemSets(x)).catch(UI.error);
     }
 
-    this._store.set('lastBranchSeen', this.gameClient.branch);
+    this.getStore().set('lastVersion', this.version);
+    this.getStore().set('lastBranchSeen', this.gameClient.branch);
+
+    UI.status('Status', 'common-loaded');
   }
 
   async load(data) {
@@ -72,7 +73,6 @@ class Mana extends EventEmitter {
     this.championSelectHandler.load();
 
     UI.status('Status', 'champion-select-waiting');
-    $('#loading').hide();
 
     global._devChampionSelect = () => new (require('../CustomGame'))().create().then(game => game.start());
   }
@@ -80,7 +80,7 @@ class Mana extends EventEmitter {
   disconnect() {
     global._devChampionSelect = () => console.log(`[${i18n.__('error')}] ${i18n.__('developer-game-start-error')}\n${i18n.__('league-client-disconnected')}`);
 
-    this.championSelectHandler.stop();
+    if (this.championSelectHandler) this.championSelectHandler.stop();
     UI.status('League', 'status-disconnected');
   }
 
