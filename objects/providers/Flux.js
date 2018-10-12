@@ -37,7 +37,7 @@ class FluxProvider extends Provider {
   }
 
   /**
-   * Uploads data to Fl.ux
+   * Uploads data to Flu.x
    * @param {object} data - The data that contains perks, summonerspells etc
    */
   async upload(data) {
@@ -54,4 +54,4 @@ class FluxProvider extends Provider {
   }
 }
 
-module.exports = ManafluxProvider;
+module.exports = FluxProvider;
