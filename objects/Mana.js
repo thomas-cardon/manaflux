@@ -9,13 +9,14 @@ class Mana {
   constructor() {
     UI.loading(true);
 
+    this.devMode = ipcRenderer.sendSync('is-dev');
     $('.version').text(`V${this.version = app.getVersion()}`);
 
     UI.status('Status', 'status-loading-storage');
     this._store = new Store();
 
     if (!this.getStore().get('league-client-path'))
-      require('../objects/Wizard')(true).on('closed', () => {
+      require('../objects/Wizard')(this.devMode).on('closed', () => {
         const path = ipcRenderer.sendSync('lcu-get-path');
         console.log('[UI] Wizard has been closed');
 

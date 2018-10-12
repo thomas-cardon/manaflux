@@ -143,6 +143,8 @@ ipcMain.on('lcu-set-path', (event, path) => connector.getPathHandler().setLeague
 ipcMain.on('lcu-is-connected', event => event.returnValue = connector.isConnected());
 ipcMain.on('lcu-is-logged-in', event => event.returnValue = connector.isLoggedIn());
 
+ipcMain.on('is-dev', event => event.returnValue = process.argv[2] === '--dev');
+
 ipcMain.on('win-show', (event, inactive) => {
   if (!win.isVisible()) win[inactive ? 'showInactive' : 'show']();
 });
