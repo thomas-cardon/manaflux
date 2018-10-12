@@ -26,6 +26,14 @@ class LeaguePlug extends EventEmitter {
   getConnectionHandler() {
     return this.connectionHandler;
   }
+
+  isConnected() {
+    return this.connectionHandler._connected;
+  }
+
+  isLoggedIn() {
+    return this.connectionHandler._loggedIn && this.connectionHandler._connected;
+  }
 }
 
 module.exports = LeaguePlug;
