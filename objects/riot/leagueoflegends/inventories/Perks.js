@@ -1,9 +1,5 @@
 const rp = require('request-promise-native');
 class PerksInventory {
-  constructor(summoner) {
-    this._summoner = summoner;
-  }
-
   async getCount() {
     if (!this._pageCount) this._pageCount = JSON.parse(await rp(Mana.base + 'lol-perks/v1/inventory')).ownedPageCount;
     return this._pageCount;
@@ -30,7 +26,6 @@ class PerksInventory {
     count = count > Mana.getStore().get('runes-max', 2) ? Mana.getStore().get('runes-max', 2) : count;
     count = count > pages.length ? pages.length : count;
     pages = pages.slice(0, count);
-    console.log(count);
 
     for (let i = 0; i < count; i++) {
       if (!perks[i]) perks[i] = await this.createPerkPage(Object.assign(pages[i], { current: count === 0 }));

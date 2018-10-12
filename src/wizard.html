@@ -41,10 +41,6 @@
   const fs = require('fs'), path = require('path');
   const { dialog } = remote;
 
-  process.on('unhandledRejection', (reason, p) => console.log(3, `Unhandled rejection at: ${p}, reason: ${reason}`));
-  process.on('uncaughtException', console.error);
-
-  const log = new (require('../objects/handlers/LoggingHandler'))(3);
   global.i18n = new (require('../objects/i18n'));
 
   ipcRenderer.on('lcu-find-path', (event, path) => {
@@ -57,7 +53,7 @@
   (async function() {
       document.getElementById('go').addEventListener('click', () => remote.getCurrentWindow().close());
       document.getElementById('searchPath').addEventListener('click', () => {
-        let leaguePath = console.dir(3, dialog.showOpenDialog({ properties: ['openDirectory', 'showHiddenFiles'], message: i18n.__('league-client-path-asked'), title: i18n.__('league-client-path-asked') }));
+        let leaguePath = dialog.showOpenDialog({ properties: ['openDirectory', 'showHiddenFiles'], message: i18n.__('league-client-path-asked'), title: i18n.__('league-client-path-asked') });
 
         if (!leaguePath || leaguePath.length === 0) return;
         leaguePath = leaguePath[0];
@@ -73,7 +69,6 @@
 
   function _exists(path) {
     return new Promise((resolve, reject) => {
-      console.log(path);
       fs.access(path, fs.constants.F_OK, err => {
         if (err && err.code === 'ENOENT') resolve(false);
         else if (err) reject(err);

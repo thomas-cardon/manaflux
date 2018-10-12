@@ -31,7 +31,7 @@ class ConnectionHandler extends EventEmitter {
     return new Promise(resolve => timer(data => resolve(data)));
   }
 
-  _checkSession(port = this._lcu.port) {
+  _checkSession(port = this._lockfile.port) {
     const token = this.getAuthenticationToken();
     return new Promise((resolve, reject) => {
       require('https').get({
@@ -68,18 +68,16 @@ class ConnectionHandler extends EventEmitter {
       console.log(2, '[ConnectionHandler] League of Legends connection data detected');
       console.log(2, '[ConnectionHandler] Reading connection file');
 
-      const lockfile = console.dir(3, await this._readLockfile(leaguePath));
+      const lockfile = await this._readLockfile(leaguePath);
 
-      this._authentication = lockfile.authToken;
       this._connected = true;
 
-      this.emit('connected', this._lcu = lockfile);
+      this.emit('connected', this._lockfile = lockfile);
 
-      const loginData = await this.waitForConnection();
+      this._loginData = await this.waitForConnection();
       console.log(2, '[ConnectionHandler] Player is logged into League of Legends');
 
-      this._loggedIn = true;
-      this.emit('logged-in', loginData);
+      this.emit('logged-in', this._loginData);
     })
     .on('unlink', path => {
       console.log(2, '[ConnectionHandler] Connection to League has ended');
@@ -99,7 +97,11 @@ class ConnectionHandler extends EventEmitter {
   }
 
   getAuthenticationToken() {
-    return this._authentication;
+    return this._lockfile.authToken;
+  }
+
+  getLockfile() {
+    return this._lockfile;
   }
 }
 

@@ -5,7 +5,7 @@ const PerksInventory = require('./riot/leagueoflegends/inventories/Perks');
 class User extends Summoner {
   constructor(d) {
     super(d);
-    this._perksInventory = new PerksInventory(this);
+    this._perksInventory = new PerksInventory();
   }
 
   async getGameMode() {

@@ -28,13 +28,14 @@ module.exports = {
     if (!Mana.user || !Mana.user.getSummonerId()) throw UI.error('status-please-login');
 
     opened = true;
-    let wiz = new BrowserWindow({ parent: require('electron').remote.getCurrentWindow(), width: 350, height: 550, frame: false, icon: __dirname + '/build/icon.' + (process.platform === 'win32' ? 'ico' : 'png'), backgroundColor: '#000A13', maximizable: false, resizable: false, modal: true, show: false });
+    const win = new BrowserWindow({ parent: require('electron').remote.getCurrentWindow(), width: 350, height: 550, frame: false, icon: __dirname + '/build/icon.' + (process.platform === 'win32' ? 'ico' : 'png'), backgroundColor: '#000A13', maximizable: false, resizable: false, modal: true, show: false });
 
-    wiz.loadURL(`file://${__dirname}/../../../bugreports.html`);
-    wiz.setMenu(null);
+    win.loadURL(`file://${__dirname}/../../../bugreports.html`);
+    win.setMenu(null);
 
-    wiz.once('ready-to-show', () => wiz.show());
+    win.once('ready-to-show', () => win.show());
+    win.on('closed', () => opened = false);
 
-    if (dev) wiz.webContents.openDevTools({ mode: 'detach' });
+    if (Mana.devMode) win.webContents.openDevTools({ mode: 'detach' });
   }
 };

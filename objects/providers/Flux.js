@@ -37,11 +37,11 @@ class FluxProvider extends Provider {
   }
 
   /**
-   * Uploads data to Fl.ux
+   * Uploads data to Flu.x
    * @param {object} data - The data that contains perks, summonerspells etc
    */
   async upload(data) {
-    console.log(2, '[ProviderHandler] Uploading to Fl.ux');
+    console.log(2, '[ProviderHandler] Uploading to Flu.x');
     if (Object.values(data.roles).some(x => Array.isArray(x) && x.length === 0)) return console.log(2, 'Upload cancelled: missing data');
     Object.values(data.roles).forEach(r => r.itemsets.map(x => x.build()));
 
@@ -54,4 +54,4 @@ class FluxProvider extends Provider {
   }
 }
 
-module.exports = ManafluxProvider;
+module.exports = FluxProvider;
