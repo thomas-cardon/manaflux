@@ -7,6 +7,8 @@ const Store = require('electron-store');
 
 class Mana {
   constructor() {
+    UI.loading(true);
+
     $('.version').text(`V${this.version = app.getVersion()}`);
 
     UI.status('Status', 'status-loading-storage');
@@ -29,6 +31,8 @@ class Mana {
     }
 
     ipcRenderer.on('lcu-connected', (event, d) => {
+      UI.loading(false);
+
       this.updateAuthenticationTokens(d);
       if (!this.user) this.preload();
     });
@@ -49,7 +53,7 @@ class Mana {
     this.assetsProxy.load();
 
     const data = await UI.loading(Promise.all([this.gameClient.load(), this.gameClient.getChampionSummary(), this.gameClient.getSummonerSpells()]));
-    
+
     this.champions = data[1];
     this.summonerspells = data[2];
 
@@ -62,8 +66,6 @@ class Mana {
 
     this.getStore().set('lastVersion', this.version);
     this.getStore().set('lastBranchSeen', this.gameClient.branch);
-
-    UI.status('Status', 'common-loaded');
   }
 
   async load(data) {
