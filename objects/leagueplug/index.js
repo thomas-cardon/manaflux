@@ -27,6 +27,10 @@ class LeaguePlug extends EventEmitter {
     return this.connectionHandler;
   }
 
+  getLoginData() {
+    return this._loginData;
+  }
+
   isConnected() {
     return this.connectionHandler._connected;
   }
