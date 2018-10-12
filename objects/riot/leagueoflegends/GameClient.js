@@ -5,7 +5,6 @@ class GameClient {
   }
 
   async getSystemBuilds() {
-    console.log(Mana.base + 'system/v1/builds');
     return JSON.parse(await rp(Mana.base + 'system/v1/builds'));
   }
 
@@ -38,7 +37,7 @@ class GameClient {
   }
 
   async getRegionAndLocale() {
-    return await rp(Mana.base + 'riotclient/get_region_locale');
+    return JSON.parse(await rp(Mana.base + 'riotclient/get_region_locale'));
   }
 
   async downloadDDragonRealm() {
@@ -46,7 +45,7 @@ class GameClient {
   }
 
   async getPerks() {
-    return await rp(`http://ddragon.leagueoflegends.com/cdn/${this.realm.v}/data/${this.locale || this.realm.l}/runesReforged.json`);
+    return JSON.parse(await rp(`http://ddragon.leagueoflegends.com/cdn/${this.realm.v}/data/${this.locale || this.realm.l}/runesReforged.json`));
   }
 
   findPerkByImage(img) {
@@ -62,7 +61,7 @@ class GameClient {
   }
 
   async load() {
-    let r = JSON.parse(await this.getRegionAndLocale());
+    let r = await this.getRegionAndLocale();
 
     this.region = r.region.toLowerCase();
     this.locale = r.locale;
@@ -72,7 +71,7 @@ class GameClient {
 
     this.branch = x.branch;
     this.fullVersion = x.version;
-    this.perks = JSON.parse(await this.getPerks());
+    this.perks = await this.getPerks();
   }
  }
 
