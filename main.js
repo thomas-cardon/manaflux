@@ -141,7 +141,7 @@ ipcMain.on('lcu-find-path', event => connector.getPathHandler().findLeaguePath()
 ipcMain.on('lcu-set-path', (event, path) => connector.getPathHandler().setLeaguePath(path));
 
 ipcMain.on('lcu-is-connected', event => event.returnValue = connector.isConnected());
-ipcMain.on('lcu-is-logged-in', event => event.returnValue = connector.isLoggedIn());
+ipcMain.on('lcu-logged-in', (event, arg) => event.returnValue = connector.getLoginData());
 
 ipcMain.on('is-dev', event => event.returnValue = process.argv[2] === '--dev');
 

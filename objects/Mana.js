@@ -35,11 +35,14 @@ class Mana {
       UI.loading(false);
 
       this.updateAuthenticationTokens(d);
-      if (!this.user) this.preload();
+      this.preload().then(() => {
+        const data = ipcRenderer.sendSync('lcu-logged-in');
+        if (data) this.load(data);
+      });
     });
 
-    ipcRenderer.on('lcu-logged-in', (event, d) => this.load(d));
     ipcRenderer.on('lcu-disconnected', () => this.disconnect());
+    ipcRenderer.on('lcu-logged-in', (event, d) => this.load(d));
   }
 
   async preload() {
@@ -76,7 +79,6 @@ class Mana {
     this.championSelectHandler.load();
 
     UI.status('Status', 'champion-select-waiting');
-
     global._devChampionSelect = () => new (require('../CustomGame'))().create().then(game => game.start());
   }
 
