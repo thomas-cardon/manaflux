@@ -22,7 +22,7 @@ class ChampionSelectHandler {
     const self = this;
     this._checkTimer = setInterval(function() {
       if (!Mana.user) return;
-      
+
       self.getSession().then(x => self.onTickEvent(x.body)).catch(err => {
         if (err.statusCode === 404) {
           if (self.inChampionSelect) return self.end();
@@ -55,13 +55,15 @@ class ChampionSelectHandler {
     const champion = Mana.champions[this.gameModeHandler.getPlayer().championId];
 
     /* Delete ItemSets before downloading */
-    await ItemSetHandler.deleteItemSets(await ItemSetHandler.getItemSetsByChampionKey(champion.key));
+    await UI.loading(ItemSetHandler.deleteItemSets(await UI.loading(ItemSetHandler.getItemSetsByChampionKey(champion.key))));
 
     this.gameModeHandler.onChampionChangeEvent(champion);
 
     UI.status('ChampionSelect', 'common-loading');
+
+    this.onDisplayUpdatePreDownload(champion);
     const res = await UI.loading(ProviderHandler.getChampionData(champion, this.gameModeHandler.getPosition(), this.gameMode, true));
-    this.updateDisplay(champion, res);
+    this.onDisplayUpdate(champion, res);
   }
 
   async onFirstTickEvent(data) {
@@ -73,12 +75,16 @@ class ChampionSelectHandler {
     this.gameModeHandler.onFirstTickEvent(data);
   }
 
-  updateDisplay(champion, res) {
-    UI.status('ChampionSelect', 'champion-updating-display', champion.name);
-
+  onDisplayUpdatePreDownload(champion) {
+    UI.status('ChampionSelect', 'champion-select-updating-display', champion.name);
     $('button[data-tabid]').eq(0).click();
     $('#positions').unbind().empty().hide();
 
+    UI.enableHextechAnimation(champion);
+  }
+
+  onDisplayUpdate(champion, res) {
+    UI.status('ChampionSelect', 'champion-select-updating-display', champion.name);
     if (Object.keys(res.roles).length === 0) return console.error(1, i18n.__('providers-error-data'));
 
     Object.keys(res.roles).forEach(r => {
@@ -98,7 +104,7 @@ class ChampionSelectHandler {
 
     if (Mana.getStore().get('item-sets-enable')) {
       ItemSetHandler.getItemSetsByChampionKey(champion.key).then(sets => ItemSetHandler.deleteItemSets(sets).then(() => {
-        UI.temporaryStatus('ChampionSelect', 'itemsets-save-status', champion.name);
+        UI.temporaryStatus('ChampionSelect', 'item-sets-save-status', champion.name);
         Object.values(res.roles).forEach(r => r.itemsets.forEach(x => x.save()));
       }));
     }
@@ -106,7 +112,6 @@ class ChampionSelectHandler {
     $('#loadRunes, #loadSummonerSpells').disableManualButton(true);
     $('#buttons').show();
 
-    UI.enableHextechAnimation(champion);
     UI.tray(false);
   }
 
