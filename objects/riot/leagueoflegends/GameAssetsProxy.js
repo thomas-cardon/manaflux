@@ -1,4 +1,4 @@
-const http = require('http'), request = require('request');
+const http = require('http'), https = require('https');
 
 /*
 * GameAssetsProxy
@@ -10,13 +10,16 @@ class GameAssetsProxy {
     if (req.url === '/favicon.ico') return;
     console.log(3, `[GameAssetsProxy] ${Mana.base}${req.url.slice(1)}`);
 
-    try {
-      request.get(Mana.base + req.url.slice(1)).pipe(res);
-    }
-    catch(err) {
+    require('https').get({
+      host: '127.0.0.1',
+      port: Mana.riot.port,
+      path: req.url,
+      headers: { 'Authorization': Mana.riot.authToken },
+      rejectUnauthorized: false,
+    }, r => r.pipe(res)).on('error', err => {
       res.end(err);
       captureException(err);
-    }
+    });
   }
 
   load() {
