@@ -22,7 +22,10 @@ class ConnectionHandler extends EventEmitter {
           timer(cb, 500);
           self.emit('logged-off');
         }).catch(err => {
-          console.error(2, err);
+          if (err.code !== 'ECONNREFUSED') return console.error(err);
+
+          timer(cb, 500);
+          self.emit('logged-off');
         });
       }, ms);
     }

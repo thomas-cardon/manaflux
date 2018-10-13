@@ -35,20 +35,18 @@ class Mana {
       UI.loading(false);
 
       this.updateAuthenticationTokens(d);
-      this.preload().then(() => {
-        const data = ipcRenderer.sendSync('lcu-logged-in');
-        if (data) this.load(data);
-      });
+      this.preload().then(() => ipcRenderer.send('lcu-logged-in'));
     });
 
     ipcRenderer.on('lcu-disconnected', () => this.disconnect());
-    ipcRenderer.on('lcu-logged-in', (event, d) => this.load(d));
+    ipcRenderer.on('lcu-logged-in', (event, d) => {
+      if (d) this.load(d);
+    });
   }
 
   async preload() {
     UI.status('Status', 'status-loading-data-login');
 
-    this.user = new (require('./User'))();
     this.gameClient = new (require('./riot/leagueoflegends/GameClient'))();
     this.assetsProxy = new (require('./riot/leagueoflegends/GameAssetsProxy'))();
 
@@ -75,7 +73,7 @@ class Mana {
   async load(data) {
     UI.status('League', 'league-client-connection');
 
-    this.user._load(data);
+    this.user = new (require('./User'))(data);
     this.championSelectHandler.load();
 
     UI.status('Status', 'champion-select-waiting');
@@ -86,6 +84,8 @@ class Mana {
     global._devChampionSelect = () => console.log(`[${i18n.__('error')}] ${i18n.__('developer-game-start-error')}\n${i18n.__('league-client-disconnected')}`);
 
     if (this.championSelectHandler) this.championSelectHandler.stop();
+    delete this.user;
+
     UI.status('League', 'status-disconnected');
   }
 

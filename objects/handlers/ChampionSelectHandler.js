@@ -21,6 +21,8 @@ class ChampionSelectHandler {
   load() {
     const self = this;
     this._checkTimer = setInterval(function() {
+      if (!Mana.user) return;
+      
       self.getSession().then(x => self.onTickEvent(x.body)).catch(err => {
         if (err.statusCode === 404) {
           if (self.inChampionSelect) return self.end();

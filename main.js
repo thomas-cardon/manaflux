@@ -135,13 +135,18 @@ ipcMain.on('lcu-connection', (event, path) => {
   connector.getConnectionHandler().on('disconnected', () => event.sender.send('lcu-disconnected'));
 });
 
-ipcMain.on('lcu-get-path', event => event.returnValue = connector.getPath());
+ipcMain.on('lcu-get-path', event => {
+  event.returnValue = connector.getPath()
+});
 
 ipcMain.on('lcu-find-path', event => connector.getPathHandler().findLeaguePath().then(x => event.sender.send('lcu-find-path', x)));
 ipcMain.on('lcu-set-path', (event, path) => connector.getPathHandler().setLeaguePath(path));
 
-ipcMain.on('lcu-is-connected', event => event.returnValue = connector.isConnected());
-ipcMain.on('lcu-logged-in', (event, arg) => event.returnValue = connector.getLoginData());
+ipcMain.on('lcu-is-connected', event => {
+  event.returnValue = connector.isConnected()
+});
+
+ipcMain.on('lcu-logged-in', (event, arg) => event.sender.send('lcu-logged-in', connector.getLoginData()));
 
 ipcMain.on('is-dev', event => event.returnValue = process.argv[2] === '--dev');
 
