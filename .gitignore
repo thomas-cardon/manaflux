@@ -3,3 +3,4 @@ dist
 electron-builder.yml
 dev-app-update.yml
 package-lock.json
+package-lock.json
