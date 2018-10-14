@@ -59,18 +59,15 @@ class ProviderHandler {
       console.dir(data);
 
       /* If a provider can't get any data on that role/position, let's use another provider */
-      if (!data || (!preferredPosition && Object.keys(data.roles).length <= Mana.getStore().get('champion-select-min-roles', 2)) || preferredPosition && !data.roles[preferredPosition]) {
-        console.log(`Missing data for the asked role. (${preferredPosition}) - or because there's not enough data`);
-        continue;
-      }
+      if (!data || preferredPosition && !data.roles[preferredPosition] || !preferredPosition && Object.keys(data.roles).length < Mana.getStore().get('champion-select-min-roles', 2)) continue;
       else if (!preferredPosition) preferredPosition = Object.keys(data.roles)[0];
 
       /* Else we need to check the provider provided the required data */
       if (data.roles[preferredPosition].perks.length === 0)
           data.roles[preferredPosition] = { ...data.roles[preferredPosition], ...await provider.getPerks(champion, preferredPosition, gameMode) || {} };
-      else if (data.roles[preferredPosition].itemsets.length === 0 && Mana.getStore().get('enableItemSets'))
+      else if (data.roles[preferredPosition].itemsets.length === 0 && Mana.getStore().get('item-sets-enable'))
           data.roles[preferredPosition] = { ...data.roles[preferredPosition], ...await provider.getItemSets(champion, preferredPosition, gameMode) || {} };
-      else if (data.roles[preferredPosition].summonerspells.length === 0 && Mana.getStore().get('enableSummonerSpells'))
+      else if (data.roles[preferredPosition].summonerspells.length === 0 && Mana.getStore().get('summoner-spells'))
           data.roles[preferredPosition] = { ...data.roles[preferredPosition], ...await provider.getSummonerSpells(champion, preferredPosition, gameMode) || {} };
 
       break;
