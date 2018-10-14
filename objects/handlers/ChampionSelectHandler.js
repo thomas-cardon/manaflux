@@ -1,5 +1,4 @@
 const rp = require('request-promise-native');
-const { captureException } = require('@sentry/electron');
 
 const ItemSetHandler = require('./ItemSetHandler');
 const ProviderHandler = new (require('./ProviderHandler'))();
@@ -97,6 +96,9 @@ class ChampionSelectHandler {
 
     const self = this;
 
+    $('#loadRunes, #loadSummonerSpells').disableManualButton(true);
+    $('#buttons').show();
+
     $('#positions')
     .change(function() { self.onPerkPositionChange(champion, this.value.toUpperCase(), res.roles[this.value.toUpperCase()]); })
     .val(res.roles[this.gameModeHandler.getPosition()] ? this.gameModeHandler.getPosition() : Object.keys(res.roles)[0])
@@ -108,9 +110,6 @@ class ChampionSelectHandler {
         Object.values(res.roles).forEach(r => r.itemsets.forEach(x => x.save()));
       }));
     }
-
-    $('#loadRunes, #loadSummonerSpells').disableManualButton(true);
-    $('#buttons').show();
 
     UI.tray(false);
   }
@@ -128,17 +127,14 @@ class ChampionSelectHandler {
     if (Mana.getStore().get('perks-automatic-load')) UI.loading(Mana.user.getPerksInventory().updatePerksPages(perks));
     else {
       $('#loadRunes').enableManualButton(() => UI.loading(Mana.user.getPerksInventory().updatePerksPages(perks))
-        .catch(err => {
-          UI.error(err);
-          captureException(err);
-        }), true);
+        .catch(UI.error), true);
     }
 
     UI.temporaryStatus('ChampionSelect', 'runes-loaded');
   }
 
   _updateSummonerSpellsDisplay(spells) {
-    if (Mana.getStore().get('summoner-spells')) $('#loadSummonerSpells').enableManualButton(() => UI.loading(Mana.user.updateSummonerSpells(spells)).catch(err => { UI.error(err); captureException(err); }), true);
+    if (Mana.getStore().get('summoner-spells')) $('#loadSummonerSpells').enableManualButton(() => UI.loading(Mana.user.updateSummonerSpells(spells)).catch(UI.error), true);
     UI.temporaryStatus('ChampionSelect', 'summoner-spells-loaded');
   }
 
