@@ -63,6 +63,8 @@
           document.getElementById('leaguePath').value = exists ? leaguePath : i18n.__('league-client-path-wrong');
           document.getElementById('league-client-path').style.color = exists ? '#cdbe91' : '#b33939';
           document.getElementById('go').disabled = !exists;
+
+          if (exists) ipcRenderer.send('lcu-set-path', leaguePath);
         });
       });
     })();
