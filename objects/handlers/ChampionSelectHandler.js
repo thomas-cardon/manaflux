@@ -87,7 +87,7 @@ class ChampionSelectHandler {
     if (Object.keys(res.roles).length === 0) return console.error(1, i18n.__('providers-error-data'));
 
     Object.keys(res.roles).forEach(r => {
-      if (res.roles[r].perks.length === 0) {
+      if (res.roles[r].perks.length === 0 && !res.fromFlux) {
         UI.error('providers-error-runes', champion.name, r);
         delete res.roles[r];
       }
