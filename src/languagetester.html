@@ -1,0 +1,75 @@
+<html>
+<head>
+  <title>Language tester</title>
+  <meta charset="utf-8">
+  <meta name="author" content="Ryzzzen">
+  <link rel="stylesheet" href="assets/css/manaflux.css">
+  <link rel="stylesheet" href="assets/css/components/button.css">
+  <link rel="stylesheet" href="assets/css/components/settings.css">
+  <link rel="stylesheet" href="assets/css/components/loading.css">
+  <link rel="stylesheet" href="assets/css/components/warning.css">
+  <link rel="stylesheet" href="assets/css/components/status.css">
+  <link rel="stylesheet" href="assets/css/components/version.css">
+  <link rel="stylesheet" href="assets/css/components/input.css">
+  <link rel="stylesheet" href="assets/css/languagetester.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body style="background: linear-gradient(rgba(125, 185, 232, 0) -1%, rgba(50, 96, 122, 0) 65%, rgba(10, 49, 64, 0.8) 100%), url(./assets/img/themes/default-bg.jpg) no-repeat;">
+  <img src="assets/img/warning.png" id="warning" draggable="false" style="display: none;">
+  <img src="assets/img/components/loading.gif" id="loading"></img>
+  <div class="tab-container">
+    <div class="controls">
+      <button type="button" class="btn control" onclick="remote.getCurrentWindow().close();"><i class="material-icons icon">clear</i></button>
+    </div>
+  </div>
+  <div class="content">
+    <center>
+      <h2 class="title" data-i18n="ui-language-tester"></h2>
+      <div class="option">
+        <p class="suboption-name" data-i18n="ui-language-tester-choose-a-language"></p>
+        <select class="dropdown" id="languages">
+        </select>
+      </div>
+      <div class="option">
+        <div class="textcontainer" id="text" disabled>
+        </div>
+      </div>
+      <button class="btn normal" data-i18n="ui-language-tester-test" id="test" onclick="test()"></button>
+    </center>
+  </div>
+  <script src="vendor/jquery-3.3.1.min.js" onload="window.$ = window.jQuery = module.exports;"></script>
+  <script>
+  window.eval = global.eval = function () { throw new Error(i18n.__('eval')) };
+  require('../crash-reporting.js');
+
+  const { ipcRenderer, remote } = require('electron');
+  const fs = require('fs'), path = require('path');
+  const { dialog } = remote;
+
+  process.on('unhandledRejection', (reason, p) => console.log(3, `Unhandled rejection at: ${p}, reason: ${reason}`));
+  process.on('uncaughtException', console.error);
+
+  const log = new (require('../objects/handlers/LoggingHandler'))(3);
+  global.i18n = new (require('../objects/i18n'));
+
+
+  const list = i18n.getLanguagesList(), data = i18n.getLanguages();
+  list.forEach(x => $('#languages').append(`<option value="${x}">${x}</option>`));
+
+  function test() {
+    const language = document.getElementById('languages').value;
+    const lines = [Object.keys(data[language]).filter(y => i18n._default[y] ? false : true), Object.keys(i18n._default).filter(y => data[language][y] ? false : true)];
+
+    $('#text').children().remove();
+    $('#text')
+    .append(`<h6>Unused lines</h6><ul>`)
+    .append(lines[0].map(x => `<li>${x}</li>`).join(''))
+    .append(`<h6>Missing lines</h6>`)
+    .append(lines[1].map(x => `<li>${x}</li>`).join(''));
+  }
+  </script>
+  <script src="assets/js/ui.js"></script>
+  <script src="assets/js/ui/i18n.js"></script>
+  <script src="assets/js/ui/tab-handler.js"></script>
+</body>
+</html>

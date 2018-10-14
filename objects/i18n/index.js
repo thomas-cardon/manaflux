@@ -39,7 +39,11 @@ i18n.prototype.getLanguagesList = function() {
 }
 
 i18n.prototype.getLanguages = function(x) {
-  if (!x) return fs.readdirSync(require('path').join(__dirname, '/locales')).map(x => JSON.parse(fs.readFileSync(path.join(__dirname, '/locales/', x), 'utf8')));
+  if (!x) {
+    const d = {};
+    fs.readdirSync(require('path').join(__dirname, '/locales')).forEach(x => d[x.slice(0, -5)] = JSON.parse(fs.readFileSync(path.join(__dirname, '/locales/', x), 'utf8')));
+    return d;
+  }
   else return JSON.parse(fs.readFileSync(path.join(__dirname, '/locales/' + x + '.json'), 'utf8'));
 }
 

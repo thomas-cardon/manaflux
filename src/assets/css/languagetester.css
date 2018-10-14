@@ -1,0 +1,26 @@
+#loading {
+  width: 6%;
+  bottom: 13px;
+  right: 15px;
+}
+
+.title {
+  color: #fff;
+  margin-top: 20px;
+}
+
+.option {
+  float: none;
+  width: 100%;
+}
+
+.controls {
+  margin-top: 0;
+}
+
+.textcontainer {
+  max-width: 80%;
+  height: 350px;
+  font-size: 14px;
+  overflow-y: scroll;
+}
