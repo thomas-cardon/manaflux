@@ -49,19 +49,15 @@ class ChampionSelectHandler {
     this.gameModeHandler.onTickEvent(data);
 
     if (this._lastChampionId === this.gameModeHandler.getPlayer().championId) return;
-    if ((this._lastChampionId = this.gameModeHandler.getPlayer().championId) === 0) return UI.status('ChampionSelect', 'champion-select-pick-a-champion');
+    if ((this._lastChampionId = this.gameModeHandler.getPlayer().championId) === 0) return UI.status('champion-select-pick-a-champion');
+    UI.status('common-loading');
 
     const champion = Mana.champions[this.gameModeHandler.getPlayer().championId];
 
-    /* Delete ItemSets before downloading */
-    await UI.loading(ItemSetHandler.deleteItemSets(await UI.loading(ItemSetHandler.getItemSetsByChampionKey(champion.key))));
-
     this.gameModeHandler.onChampionChangeEvent(champion);
-
-    UI.status('ChampionSelect', 'common-loading');
-
     this.onDisplayUpdatePreDownload(champion);
-    const res = await UI.loading(ProviderHandler.getChampionData(champion, this.gameModeHandler.getPosition(), this.gameMode, true));
+
+    const res = await UI.indicator(ProviderHandler.getChampionData(champion, this.gameModeHandler.getPosition(), this.gameMode, true), 'champion-select-downloading-data', champion.name);
     this.onDisplayUpdate(champion, res);
   }
 
@@ -75,27 +71,27 @@ class ChampionSelectHandler {
   }
 
   onDisplayUpdatePreDownload(champion) {
-    UI.status('ChampionSelect', 'champion-select-updating-display', champion.name);
+    UI.status('champion-select-updating-display', champion.name);
 
     $('#positions').unbind().empty().hide();
     $('#loadRunes, #loadSummonerSpells').disableManualButton(true);
 
     UI.enableHextechAnimation(champion);
     $('button[data-tabid]').eq(0).click();
+
+    UI.status('common-ready', champion.name);
   }
 
-  onDisplayUpdate(champion, res) {
-    UI.status('ChampionSelect', 'champion-select-updating-display', champion.name);
-    if (Object.keys(res.roles).length === 0) return console.error(1, i18n.__('providers-error-data'));
+  async onDisplayUpdate(champion, res) {
+    if (Object.keys(res.roles).length === 0) return console.error(i18n.__('providers-error-data'));
 
     Object.keys(res.roles).forEach(r => {
       if (res.roles[r].perks.length === 0) {
-        UI.error('providers-error-runes', champion.name, r);
+        UI.error('providers-error-perks', champion.name, r);
         delete res.roles[r];
       }
       else $('#positions').append(`<option value="${r}">${UI.stylizeRole(r)}</option>`);
     });
-    console.dir(res);
 
     const self = this;
 
@@ -105,15 +101,14 @@ class ChampionSelectHandler {
     .val(res.roles[this.gameModeHandler.getPosition()] ? this.gameModeHandler.getPosition() : Object.keys(res.roles)[0])
     .trigger('change').show();
 
-    if (Mana.getStore().get('item-sets-enable')) {
-      ItemSetHandler.getItemSetsByChampionKey(champion.key).then(sets => ItemSetHandler.deleteItemSets(sets).then(() => {
-        UI.temporaryStatus('ChampionSelect', 'item-sets-save-status', champion.name);
-        Object.values(res.roles).forEach(r => r.itemsets.forEach(x => x.save()));
-      }));
-    }
-
     UI.tray(false);
-    UI.status('ChampionSelect', 'common-ready');
+    UI.status('common-ready');
+
+    if (Mana.getStore().get('item-sets-enable')) {
+      /* Delete ItemSets before downloading */
+      await UI.indicator(ItemSetHandler.deleteItemSets(await UI.indicator(ItemSetHandler.getItemSetsByChampionKey(champion.key), 'item-sets-collecting-champion', champion.name)), 'item-sets-deleting');
+      await UI.indicator(Promise.all(Object.values(res.roles).map(r => r.itemsets.map(x => x.save()))), 'item-sets-save-status', champion.name);
+    }
   }
 
   onPerkPositionChange(champion, position, data) {
@@ -124,19 +119,16 @@ class ChampionSelectHandler {
   }
 
   _updatePerksDisplay(champion, position, perks) {
-    if (Mana.getStore().get('perks-automatic-load')) UI.loading(Mana.user.getPerksInventory().updatePerksPages(perks).then(() => UI.temporaryStatus('ChampionSelect', 'runes-loaded', champion.name, position)));
-    else {
-      $('#loadRunes').enableManualButton(() => UI.loading(Mana.user.getPerksInventory().updatePerksPages(perks).then(() => UI.temporaryStatus('ChampionSelect', 'runes-loaded', champion.name, position)))
-        .catch(UI.error), true);
-    }
+    if (Mana.getStore().get('perks-automatic-load')) UI.indicator(Mana.user.getPerksInventory().updatePerksPages(perks), 'perks-loading', champion.name, position);
+    else $('#loadRunes').enableManualButton(() => UI.indicator(Mana.user.getPerksInventory().updatePerksPages(perks), 'perks-loading', champion.name, position).catch(UI.error), true);
   }
 
   _updateSummonerSpellsDisplay(champion, position, spells) {
-    if (Mana.getStore().get('summoner-spells')) $('#loadSummonerSpells').enableManualButton(() => UI.loading(Mana.user.updateSummonerSpells(spells)).then(() => UI.temporaryStatus('ChampionSelect', 'summoner-spells-loaded', champion.name, position)).catch(UI.error), true);
+    if (Mana.getStore().get('summoner-spells')) $('#loadSummonerSpells').enableManualButton(() => UI.indicator(Mana.user.updateSummonerSpells(spells), 'summoner-spells-loading', champion.name, position).catch(UI.error), true);
   }
 
   destroyDisplay() {
-    UI.status('ChampionSelect', 'champion-select-waiting');
+    UI.status('champion-select-waiting');
     UI.disableHextechAnimation();
 
     $('#positions').unbind().empty().hide();
