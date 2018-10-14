@@ -15,14 +15,14 @@ class PerksInventory {
   }
 
   async updatePerksPages(pages) {
-    if (Mana.user.getSummonerLevel() < 8) throw UI.error('runes-error-safeguard-level');
+    if (Mana.user.getSummonerLevel() < 8) throw UI.error('perks-error-safeguard-level');
     console.log(2, `[Perks] Loading`);
 
     let perks = await this.getPerks(), count = await this.getCount();
 
     if (!pages || pages.length === 0 || pages.find(x => x.selectedPerkIds.length === 0) !== undefined) throw Error('Runes are empty');
 
-    count = count > Mana.getStore().get('runes-max', 2) ? Mana.getStore().get('runes-max', 2) : count;
+    count = count > Mana.getStore().get('perks-max', 2) ? Mana.getStore().get('perks-max', 2) : count;
     count = count > pages.length ? pages.length : count;
     pages = pages.slice(0, count);
 
