@@ -18,8 +18,7 @@ class PerksInventory {
     if (Mana.user.getSummonerLevel() < 8) throw UI.error('runes-error-safeguard-level');
     console.log(2, `[Perks] Loading`);
 
-    const perks = console.dir(3, await this.getPerks());
-    let count = await this.getCount();
+    let perks = await this.getPerks(), count = await this.getCount();
 
     if (!pages || pages.length === 0 || pages.find(x => x.selectedPerkIds.length === 0) !== undefined) throw Error('Runes are empty');
 
