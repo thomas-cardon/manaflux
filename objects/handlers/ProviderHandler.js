@@ -80,9 +80,7 @@ class ProviderHandler {
        4/4 - Uploading to online cache */
     if (!cache) return console.dir(data);
     this.saveToCache(champion, data);
-
-    /* Prevents the client from sending data the server already has */
-    if (!data._id && !data.roles._id) this.providers.flux.upload(data);
+    this.providers.flux.upload(data);
 
     return console.dir(data);
   }

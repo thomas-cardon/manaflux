@@ -46,6 +46,7 @@ class FluxProvider extends Provider {
   async upload(data) {
     console.log(2, '[ProviderHandler] Uploading to Flu.x');
     if (Object.values(data.roles).some(x => Array.isArray(x) && x.length === 0)) return console.log(2, 'Upload cancelled: missing data');
+    if (data.fromFlux) return console.log(2, 'Upload cancelled: data already exists in Flu.x');
 
     Object.values(data.roles).forEach(r => {
       r.itemsets = r.itemsets.map(x => x.build(false));
