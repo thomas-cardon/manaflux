@@ -51,23 +51,23 @@
   }).send('lcu-find-path');
 
   (async function() {
-      document.getElementById('go').addEventListener('click', () => remote.getCurrentWindow().close());
-      document.getElementById('searchPath').addEventListener('click', () => {
-        let leaguePath = dialog.showOpenDialog({ properties: ['openDirectory', 'showHiddenFiles'], message: i18n.__('league-client-path-asked'), title: i18n.__('league-client-path-asked') });
+    document.getElementById('go').addEventListener('click', () => remote.getCurrentWindow().close());
+    document.getElementById('searchPath').addEventListener('click', () => {
+      let leaguePath = dialog.showOpenDialog({ properties: ['openDirectory', 'showHiddenFiles'], message: i18n.__('league-client-path-asked'), title: i18n.__('league-client-path-asked') });
 
-        if (!leaguePath || leaguePath.length === 0) return;
-        leaguePath = leaguePath[0];
+      if (!leaguePath || leaguePath.length === 0) return;
+      leaguePath = leaguePath[0];
 
-        _exists(path.resolve(leaguePath + '\\LeagueClient.' + (process.platform === 'win32' ? 'exe' : 'app')))
-        .then(exists => {
-          document.getElementById('leaguePath').value = exists ? leaguePath : i18n.__('league-client-path-wrong');
-          document.getElementById('league-client-path').style.color = exists ? '#cdbe91' : '#b33939';
-          document.getElementById('go').disabled = !exists;
+      _exists(path.resolve(leaguePath + '\\LeagueClient.' + (process.platform === 'win32' ? 'exe' : 'app')))
+      .then(exists => {
+        document.getElementById('leaguePath').value = exists ? leaguePath : i18n.__('league-client-path-wrong');
+        document.getElementById('league-client-path').style.color = exists ? '#cdbe91' : '#b33939';
+        document.getElementById('go').disabled = !exists;
 
-          if (exists) ipcRenderer.send('lcu-set-path', leaguePath);
-        });
+        if (exists) ipcRenderer.send('lcu-set-path', leaguePath);
       });
-    })();
+    });
+  })();
 
   function _exists(path) {
     return new Promise((resolve, reject) => {
