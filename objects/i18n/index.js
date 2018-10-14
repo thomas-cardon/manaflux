@@ -34,6 +34,15 @@ i18n.prototype.__ = function(...args) {
   return args[0].includes("%s") ? require('util').format.call(this, ...args) : args[0];
 }
 
+i18n.prototype.getLanguagesList = function() {
+  return fs.readdirSync(require('path').join(__dirname, '/locales')).map(x => x.slice(0, -5));
+}
+
+i18n.prototype.getLanguages = function(x) {
+  if (!x) return fs.readdirSync(require('path').join(__dirname, '/locales')).map(x => JSON.parse(fs.readFileSync(path.join(__dirname, '/locales/', x), 'utf8')));
+  else return JSON.parse(fs.readFileSync(path.join(__dirname, '/locales/' + x + '.json'), 'utf8'));
+}
+
 i18n.prototype.getUnusedLines = function() {
   return this._unused;
 }
