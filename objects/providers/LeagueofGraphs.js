@@ -32,7 +32,7 @@ class LeagueofGraphsProvider extends Provider {
   async _scrape(champion, gameMode, position) {
     let promises = [rp(`${this.base}/runes/${champion.key.toLowerCase()}${position ? '/' + position : ''}`)];
 
-    promises.push(Mana.getStore().get('item-sets') ? rp(`${this.base}/items/${champion.key.toLowerCase()}${position ? '/' + position : ''}`) : Promise.resolve());
+    promises.push(Mana.getStore().get('item-sets-enable') ? rp(`${this.base}/items/${champion.key.toLowerCase()}${position ? '/' + position : ''}`) : Promise.resolve());
     promises.push(Mana.getStore().get('summoner-spells') ? rp(`${this.base}/spells/${champion.key.toLowerCase()}${position ? '/' + position : ''}`) : Promise.resolve());
     promises.push(Mana.getStore().get('statistics') ? rp(`${this.base}/stats/${champion.key.toLowerCase()}${position ? '/' + position : ''}`) : null);
 
@@ -41,11 +41,11 @@ class LeagueofGraphsProvider extends Provider {
     const $perks = cheerio.load(data[0]);
     const perks = this.scrapePerks($perks, champion, position);
 
-    const itemsets = Mana.getStore().get('item-sets') ? this.scrapeItemSets(cheerio.load(data[1]), champion, position, '') : [];
+    const itemsets = Mana.getStore().get('item-sets-enable') ? this.scrapeItemSets(cheerio.load(data[1]), champion, position, '') : [];
     const summonerspells = Mana.getStore().get('summoner-spells') ? this.scrapeSummonerSpells(cheerio.load(data[2]), champion) : [];
     const statistics = Mana.getStore().get('statistics') ? {} : {};
 
-    return console.dir({ perks, itemsets, summonerspells, statistics });
+    return { perks, itemsets, summonerspells, statistics };
   }
 
   /**

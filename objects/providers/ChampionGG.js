@@ -171,7 +171,7 @@ class ChampionGGProvider extends Provider {
       else itemset.addBlock(block.setName(type + ` | ${$(this).find('div > strong').text().trim().slice(0, 6)} WR`));
     });
 
-    itemset.addBlock(new Block().setName(i18n.__('itemsets-block-consumables') + `: ${skillorder.mf}`).addItem(2003).addItem(2138).addItem(2139).addItem(2140));
+    itemset.addBlock(new Block().setName(i18n.__('item-sets-block-consumables') + `: ${skillorder.mf}`).addItem(2003).addItem(2138).addItem(2139).addItem(2140));
     itemset._data.blocks[2] = new Block().setName('Trinkets').addItem(2055).addItem(3340).addItem(3341).addItem(3348).addItem(3363);
 
     return [itemset];

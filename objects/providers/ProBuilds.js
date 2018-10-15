@@ -23,7 +23,7 @@ class ProBuildsProvider extends Provider {
     let itemset = new ItemSet(champion.key, position, this.id);
 
     itemset._data = itemset;
-    itemset._data.blocks[0].type = i18n.__('itemsets-block-consumables');
+    itemset._data.blocks[0].type = i18n.__('item-sets-block-consumables');
 
     itemset.setTitle(`PBD ${champion.name} - ${gameMode === 'ARAM' ? 'ARAM' : preferredPosition}`)
 

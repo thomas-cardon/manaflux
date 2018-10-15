@@ -122,7 +122,7 @@ class UGGProvider extends Provider {
 
     itemset.addBlock(starter, new Block().setName(`Trinkets`).addItem(2055).addItem(3340).addItem(3341).addItem(3348).addItem(3363));
     itemset.addBlock(coreBuild).addBlock(options);
-    itemset.addBlock(new Block().setName(i18n.__('itemsets-block-consumables')).addItem(2003).addItem(2138).addItem(2139).addItem(2140));
+    itemset.addBlock(new Block().setName(i18n.__('item-sets-block-consumables')).addItem(2003).addItem(2138).addItem(2139).addItem(2140));
 
     return [itemset];
   }
