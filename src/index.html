@@ -49,7 +49,7 @@
       <div id="buttons" style="display: none;">
         <select style="display: none; margin-bottom: -14px;" id="positions" data-custom-component="shortcuts" class="dropdown xs"></select>
         <button type="button" class="btn normal" data-i18n="summoner-spells-load-button" id="loadSummonerSpells"></button>
-        <button type="button" class="btn normal" data-i18n="runes-load-button" id="loadRunes"></button>
+        <button type="button" class="btn normal" data-i18n="perks-load-button" id="loadRunes"></button>
       </div>
       <div class="championPortrait" style="display: none;">
         <img id="champion">
@@ -57,13 +57,13 @@
       </div>
     </div>
     <div data-tabid="settings" data-tabn=0 class="tabcontent" style="display: none; margin-left: 12%;">
-      <p class="option-name" data-i18n="category-runes"></p>
+      <p class="option-name" data-i18n="category-perks"></p>
       <div class="option">
-        <p class="suboption-name" data-i18n="runes-max"></p>
-        <input type="number" data-settings-key="runes-max" data-settings-default="2" class="center-area" min="1" step="1" />
+        <p class="suboption-name" data-i18n="perks-max"></p>
+        <input type="number" data-settings-key="perks-max" data-settings-default="2" class="center-area" min="1" step="1" />
       </div>
       <div class="option">
-        <p class="suboption-name" data-i18n="runes-load-automatically"></p>
+        <p class="suboption-name" data-i18n="perks-load-automatically"></p>
         <div class="options float-left checkboxContainer">
           <input type="checkbox" data-settings-key="perks-automatic-load" data-setting-default="true" />
           <label data-i18n="common-enable"></label>
@@ -114,7 +114,7 @@
         </select>
       </div>
       <hr class="break" />
-      <p class="option-name"data-i18n="ui"></p>
+      <p class="option-name" data-i18n="ui"></p>
       <div class="option" style="width: 20%;">
         <p class="suboption-name" data-i18n="ui-animations"></p>
         <div class="options float-left checkboxContainer">
@@ -149,6 +149,10 @@
           <option data-i18n="ui-background-precision" value="themes/styles-precision.png" data-background-position="center"></option>
         </select>
       </div>
+      <div class="option">
+        <p class="suboption-name" data-i18n="ui-language-tester"></p>
+        <button class="btn normal" data-custom-component="ui-language-tester" data-i18n="common-run"></button>
+      </div>
     </div>
     <div data-tabid="settings" data-tabn=2 class="tabcontent" style="display: none; margin-left: 12%;">
       <p class="option-name" data-i18n="category-advanced"></p>
@@ -162,7 +166,7 @@
       </div>
       <div class="option">
         <p class="suboption-name" data-i18n="providers-order"></p>
-        <ul class="sortable" data-settings-key="providers-order" data-settings-default="manaflux,championgg,leagueofgraphs,opgg,lolflavor" data-settings-merge-list-if-missing-value="true" data-settings-remove-if-missing-value="true">
+        <ul class="sortable" data-settings-key="providers-order" data-settings-default="flux,championgg,leagueofgraphs,opgg,lolflavor" data-settings-merge-list-if-missing-value="true" data-settings-remove-if-missing-value="true">
         </ul>
       </div>
       <div class="option">

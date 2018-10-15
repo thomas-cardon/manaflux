@@ -4,10 +4,10 @@ class ProviderHandler {
     this.providers = {
       championgg: new (require('../providers/ChampionGG'))(),
       opgg: new (require('../providers/OPGG'))(),
-      ugg: new (require('../providers/UGG'))(),
+      /*ugg: new (require('../providers/UGG'))(),*/
       leagueofgraphs: new (require('../providers/LeagueofGraphs'))(),
       lolflavor: new (require('../providers/LoLFlavor'))(),
-      manaflux: new (require('../providers/Manaflux'))()
+      flux: new (require('../providers/Flux'))()
     };
   }
 
@@ -27,7 +27,7 @@ class ProviderHandler {
     let data;
 
     const providers = Mana.getStore().get('providers-order', Object.keys(this.providers));
-    providers.unshift(...providers.splice(providers.indexOf('manaflux'), 1), ...providers.splice(providers.indexOf('lolflavor'), 1));
+    providers.unshift(...providers.splice(providers.indexOf('flux'), 1), ...providers.splice(providers.indexOf('lolflavor'), 1));
 
     for (let provider of providers) {
       provider = this.providers[provider];
@@ -59,18 +59,15 @@ class ProviderHandler {
       console.dir(data);
 
       /* If a provider can't get any data on that role/position, let's use another provider */
-      if (!data || (!preferredPosition && Object.keys(data.roles).length <= Mana.getStore().get('champion-select-min-roles', 2)) || preferredPosition && !data.roles[preferredPosition]) {
-        console.log(`Missing data for the asked role. (${preferredPosition}) - or because there's not enough data`);
-        continue;
-      }
+      if (!data || preferredPosition && !data.roles[preferredPosition] || !preferredPosition && Object.keys(data.roles).length < Mana.getStore().get('champion-select-min-roles', 2)) continue;
       else if (!preferredPosition) preferredPosition = Object.keys(data.roles)[0];
 
       /* Else we need to check the provider provided the required data */
       if (data.roles[preferredPosition].perks.length === 0)
           data.roles[preferredPosition] = { ...data.roles[preferredPosition], ...await provider.getPerks(champion, preferredPosition, gameMode) || {} };
-      else if (data.roles[preferredPosition].itemsets.length === 0 && Mana.getStore().get('enableItemSets'))
+      else if (data.roles[preferredPosition].itemsets.length === 0 && Mana.getStore().get('item-sets-enable'))
           data.roles[preferredPosition] = { ...data.roles[preferredPosition], ...await provider.getItemSets(champion, preferredPosition, gameMode) || {} };
-      else if (data.roles[preferredPosition].summonerspells.length === 0 && Mana.getStore().get('enableSummonerSpells'))
+      else if (data.roles[preferredPosition].summonerspells.length === 0 && Mana.getStore().get('summoner-spells'))
           data.roles[preferredPosition] = { ...data.roles[preferredPosition], ...await provider.getSummonerSpells(champion, preferredPosition, gameMode) || {} };
 
       break;
@@ -80,9 +77,7 @@ class ProviderHandler {
        4/4 - Uploading to online cache */
     if (!cache) return console.dir(data);
     this.saveToCache(champion, data);
-
-    /* Prevents the client from sending data the server already has */
-    if (!data._id) this.providers.manaflux.upload(data);
+    this.providers.flux.upload(data);
 
     return console.dir(data);
   }

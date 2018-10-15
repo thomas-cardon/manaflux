@@ -24,31 +24,39 @@ UI.loading = async (toggle = document.getElementById('loading').style.display ==
 * @param {translationString} string - Allows Manaflux to show a translated message on the UI and in english in the consoles
 * @param {parameters} string... - Translation parameters
 */
-UI.status = (prefix, ...args) => {
-  let x = i18n.__.call(i18n, ...args);
-  let y = i18n.__d.call(i18n, ...args);
+let s, id;
+UI.status = async (...args) => {
+  let x = i18n.__.call(i18n, ...args.slice(args[0].then ? 1 : 0));
 
-  $('.status').text(x + '...');
-  console.log(2, `[${prefix}]`, y, '...');
+  if (args[0].then) {
+    $('.status').text(x + '...');
+    const d = await args[0];
+    $('.status').text(s);
+    return d;
+  }
+
+  $('.status').text(s = x + '...');
 };
 
-let s, id;
 /**
 * Shows a status on the UI for 3 seconds
 * @param {prefix} string - What will be written before the message in the consoles
 * @param {translationString} string - Allows Manaflux to show a translated message on the UI and in english in the consoles
 * @param {parameters} string... - Translation parameters
 */
-UI.temporaryStatus = (prefix, ...args) => {
-  if (id) clearTimeout(id);
-  else s = $('.status').text();
+UI.temporaryStatus = (...args) => {
+  return UI.status(new Promise(resolve => setTimeout(resolve, 3000)), ...args);
+}
 
-  UI.status.call(UI, prefix, ...args);
-
-  id = setTimeout(() => {
-    $('.status').text(s);
-    id = null;
-  }, 3000);
+/**
+* Shows a status and adds a loading that shows with a promise
+* @param {prefix} string - What will be written before the message in the consoles
+* @param {translationString} string - Allows Manaflux to show a translated message on the UI and in english in the consoles
+* @param {parameters} string... - Translation parameters
+*/
+UI.indicator = (promise, ...args) => {
+  UI.status(promise, ...args);
+  return UI.loading(promise);
 }
 
 /**

@@ -145,4 +145,11 @@ LoggingHandler.prototype.end = function() {
   return this.ipc.sendSync('logging-end');
 };
 
+LoggingHandler.prototype.disable = function() {
+  console.log('LoggingHandler now redirects to console.');
+  LoggingHandler.prototype.log = console.log;
+  LoggingHandler.prototype.dir = console.dir;
+  LoggingHandler.prototype.error = console.error;
+
+}
 module.exports = LoggingHandler;

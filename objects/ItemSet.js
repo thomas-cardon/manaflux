@@ -51,13 +51,9 @@ class ItemSet {
     return this;
   }
 
-  build() {
-    const x = Object.assign({}, this._data);
-
-    for (const block in this._data.blocks)
-      x.blocks[block] = this._data.blocks[block].build();
-
-    return JSON.stringify(x);
+  build(json = true) {
+    const x = Object.assign({}, this._data, { blocks: this._data.blocks.map(x => x.build()) });
+    return json ? JSON.stringify(x) : x;
   }
 
   save() {

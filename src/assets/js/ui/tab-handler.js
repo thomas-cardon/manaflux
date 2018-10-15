@@ -14,7 +14,5 @@ $(document).ready(function() {
 		else $('#nav-menu').hide();
 
 		document.getElementById('selected').style.marginLeft = ($(this).offset().left + ($(this).width() / 2)) + 'px';
-	});
-
-	$('button[data-tabid]').eq(0).click();
+	}).eq(0).click();
 });
