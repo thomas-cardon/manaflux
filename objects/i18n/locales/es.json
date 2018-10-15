@@ -36,7 +36,7 @@
   "champion-select-waiting": "Esperando la selección de Campeón",
   "champion-select-updating-display": "Cargando la pantalla para %s",
   "champion-select-hide": "Esconder mientras la selección de Campeón",
-  "developer-game-start-error": "No se pudo iniciar una partida de desarrollador",
+  "league-client-test-game-error": "No se pudo iniciar una partida de desarrollador",
   "providers-skipped": "Ha sido omitido por falta de método",
   "providers-order": "Orden de proveedores",
   "providers-error-item-sets-not-found": "No se pudo encontrar conjunto de objectos",
