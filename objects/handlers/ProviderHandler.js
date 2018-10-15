@@ -55,9 +55,6 @@ class ProviderHandler {
         }
       }
 
-      console.log('[ProviderHandler] Data has changed.');
-      console.dir(data);
-
       /* If a provider can't get any data on that role/position, let's use another provider */
       if (!data || preferredPosition && !data.roles[preferredPosition] || !preferredPosition && Object.keys(data.roles).length < Mana.getStore().get('champion-select-min-roles', 2)) continue;
       else if (!preferredPosition) preferredPosition = Object.keys(data.roles)[0];
