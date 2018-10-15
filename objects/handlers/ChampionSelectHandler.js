@@ -48,17 +48,43 @@ class ChampionSelectHandler {
 
     this.gameModeHandler.onTickEvent(data);
 
+    if (Mana.getStore().get('champion-select-waiting-finalization-phase')) this._finalizationTick(data);
+    else this._normalTick(data);
+  }
+
+  async _normalTick(data) {
     if (this._lastChampionId === this.gameModeHandler.getPlayer().championId) return;
     if ((this._lastChampionId = this.gameModeHandler.getPlayer().championId) === 0) return UI.status('champion-select-pick-a-champion');
-    UI.status('common-loading');
 
     const champion = Mana.champions[this.gameModeHandler.getPlayer().championId];
 
+    UI.status('common-loading');
     this.gameModeHandler.onChampionChangeEvent(champion);
     this.onDisplayUpdatePreDownload(champion);
 
     const res = await UI.indicator(ProviderHandler.getChampionData(champion, this.gameModeHandler.getPosition(), this.gameMode, true), 'champion-select-downloading-data', champion.name);
-    this.onDisplayUpdate(champion, res);
+    if (res.championId === champion.id) this.onDisplayUpdate(champion, res);
+    else console.log(`[ProviderHandler] ${Mana.champions[res.championId].name}'s data is not shown because champion picked has changed`);
+  }
+
+  async _finalizationTick(data) {
+    if (this._lastChampionId === this.gameModeHandler.getPlayer().championId && data.timer.phase !== "FINALIZATION" && !this.inFinalizationPhase) return;
+    if ((this._lastChampionId = this.gameModeHandler.getPlayer().championId) === 0) return UI.status('champion-select-pick-a-champion');
+
+    const champion = Mana.champions[this.gameModeHandler.getPlayer().championId];
+
+    UI.status('common-loading');
+    this.gameModeHandler.onChampionChangeEvent(champion);
+    this.onDisplayUpdatePreDownload(champion);
+
+    if (data.timer.phase !== "FINALIZATION") return UI.status('champion-select-waiting-finalization-phase');
+    if (this.inFinalizationPhase) return;
+
+    this.inFinalizationPhase = true;
+
+    const res = await UI.indicator(ProviderHandler.getChampionData(champion, this.gameModeHandler.getPosition(), this.gameMode, true), 'champion-select-downloading-data', champion.name);
+    if (res.championId === champion.id) this.onDisplayUpdate(champion, res);
+    else console.log(`[ProviderHandler] ${Mana.champions[res.championId].name}'s data is not shown because champion picked has changed`);
   }
 
   async onFirstTickEvent(data) {
@@ -142,6 +168,8 @@ class ChampionSelectHandler {
 
   end() {
     this.inChampionSelect = false;
+    this.inFinalizationPhase = false;
+
     this.cachedPerks = {};
 
     ipcRenderer.send('champion-select-out');
