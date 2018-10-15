@@ -154,7 +154,7 @@ class ChampionSelectHandler {
     if (Mana.getStore().get('item-sets-enable')) {
       /* Delete ItemSets before downloading */
       await UI.indicator(ItemSetHandler.deleteItemSets(await UI.indicator(ItemSetHandler.getItemSetsByChampionKey(champion.key), 'item-sets-collecting-champion', champion.name)), 'item-sets-deleting');
-      await UI.indicator(Promise.all(Object.values(res.roles).forEach(r => r.itemsets.map(x => x.save()))), 'item-sets-save-status', champion.name);
+      await UI.indicator(Promise.all([].concat(...Object.values(res.roles).map(r => r.itemsets)).map(x => x._data ? x.save() : ItemSetHandler.parse(champion.key, x, 'UNK_' + Math.floor(Math.random() * 100)).save())), 'item-sets-save-status', champion.name);
     }
   }
 
@@ -199,6 +199,8 @@ class ChampionSelectHandler {
     Mana.user.getPerksInventory()._perks = null;
 
     this.destroyDisplay();
+
+    ProviderHandler.onChampionSelectEnd();
   }
 
   stop() {
