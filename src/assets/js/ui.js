@@ -25,15 +25,17 @@ UI.loading = async (toggle = document.getElementById('loading').style.display ==
 * @param {parameters} string... - Translation parameters
 */
 let s, id;
-UI.status = async (...args) => {
+UI.status = (...args) => {
   let x = i18n.__.call(i18n, ...args.slice(args[0].then ? 1 : 0));
 
-  if (args[0].then) {
-    $('.status').text(x + '...');
-    const d = await args[0];
-    $('.status').text(s);
-    return d;
-  }
+  if (args[0].then)
+    return new Promise((resolve, reject) => {
+      $('.status').text(x + '...');
+      args[0].then(x => {
+        $('.status').text(s);
+        resolve(x);
+      }).catch(reject);
+    });
 
   $('.status').text(s = x + '...');
 };
