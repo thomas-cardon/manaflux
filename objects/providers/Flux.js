@@ -4,7 +4,9 @@ const Provider = require('./Provider');
 class FluxProvider extends Provider {
   constructor() {
     super('flux', 'Flu.x');
-    this.base = Mana.devMode ? 'http://localhost:8920/' : 'https://manaflux-server.herokuapp.com/';
+    this.base = 'https://manaflux-server.herokuapp.com/';
+
+    if (Mana.devMode) rp('http://localhost:8920/').then(() => this.base = 'http://localhost:8920/').catch(() => console.log('[Flu.x] Local server is unavailable.'));
   }
 
   async getData(champion, preferredPosition, gameMode) {
