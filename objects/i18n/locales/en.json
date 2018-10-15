@@ -15,6 +15,7 @@
   "status-loading": "Loading",
   "status-loading-data": "Loading data",
   "status-loading-storage": "Loading storage",
+  "status-loading-resources": "Loading resources",
   "status-please-login": "Please login",
   "status-connected": "Connected",
   "status-disconnected": "Disconnected",
