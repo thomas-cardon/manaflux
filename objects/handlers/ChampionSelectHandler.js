@@ -203,6 +203,7 @@ class ChampionSelectHandler {
 
   stop() {
     clearInterval(this._checkTimer);
+    ipcRenderer.removeAllListeners('perks-shortcut');
   }
 }
 
