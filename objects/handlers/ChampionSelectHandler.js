@@ -10,11 +10,16 @@ class ChampionSelectHandler {
       ARAM: new (require('../gameModesHandlers/ARAM'))(this, ProviderHandler)
     };
 
-    this.cachedPerks = {};
+    ipcRenderer.on('perks-shortcut', this.onShortcutPressedEvent);
   }
 
-  async _devDownloadProviderData(champion, pos, mode = 'CLASSIC', cache) {
-    return await ProviderHandler.getChampionData(champion, pos, mode, cache);
+  async getSession() {
+    return await rp({
+      method: 'GET',
+      uri: Mana.base + 'lol-champ-select/v1/session',
+      resolveWithFullResponse: true,
+      json: true
+    });
   }
 
   load() {
@@ -31,13 +36,29 @@ class ChampionSelectHandler {
     }, 1000);
   }
 
-  async getSession() {
-    return await rp({
-      method: 'GET',
-      uri: Mana.base + 'lol-champ-select/v1/session',
-      resolveWithFullResponse: true,
-      json: true
-    });
+  async _devDownloadProviderData(champion, pos, mode = 'CLASSIC', cache) {
+    return await ProviderHandler.getChampionData(champion, pos, mode, cache);
+  }
+
+  onShortcutPressedEvent(event, next) {
+    if (document.getElementById('positions').style.display === 'none') return;
+    console.log(2, `[Shortcuts] Selecting ${next ? 'next' : 'previous'} position..`);
+
+    const keys = Array.from(document.getElementById('positions').childNodes).map(x => x.value);
+    let i = keys.length, positionIndex = keys.indexOf(document.getElementById('positions').value);
+    let newIndex = positionIndex;
+
+    if (next) {
+      if (newIndex === i - 1) newIndex = 0;
+      else newIndex++;
+    }
+    else {
+      if (newIndex === 0) newIndex = i - 1;
+      else newIndex--;
+    }
+
+    /* Useless to change position if it's already the one chosen */
+    if (newIndex !== positionIndex) $('#positions').val(keys[newIndex]).trigger('change');
   }
 
   async onTickEvent(data) {
@@ -169,8 +190,6 @@ class ChampionSelectHandler {
   end() {
     this.inChampionSelect = false;
     this.inFinalizationPhase = false;
-
-    this.cachedPerks = {};
 
     ipcRenderer.send('champion-select-out');
 
