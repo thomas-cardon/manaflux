@@ -107,9 +107,9 @@ class UGGProvider extends Provider {
 
     let itemset = new ItemSet(champion.key, position, this.id).setTitle(`UGG ${champion.name} - ${position}`);
 
-    let starter = new Block().setName(i18n.__('itemsets-block-starter', skillorder));
-    let coreBuild = new Block().setName(i18n.__('itemsets-block-core-build', $('.grid-block.final-items').find('.winrate').text().slice(0, 6), $('.grid-block.final-items').find('.matches').text().split(' ')[0]));
-    let options = new Block().setName(i18n.__('itemsets-block-options'));
+    let starter = new Block().setName(i18n.__('item-sets-block-starter', skillorder));
+    let coreBuild = new Block().setName(i18n.__('item-sets-block-core-build', $('.grid-block.final-items').find('.winrate').text().slice(0, 6), $('.grid-block.final-items').find('.matches').text().split(' ')[0]));
+    let options = new Block().setName(i18n.__('item-sets-block-options'));
 
     /* Starter Block */
     items.slice(0, 2).forEach(x => starter.addItem(x.src.slice(-8, -4)));
