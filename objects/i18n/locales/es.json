@@ -91,7 +91,7 @@
   "item-sets-block-options": "Opciones de objeto",
   "item-sets-block-boots": "Botas (elegir una)",
   "item-sets-block-consumables": "Consumibles",
-  "update-available": "An update is available",
+  "update-available": "Una actualización está disponible",
   "update-button-download": "Update",
   "update-staged-rollout": "You're part of the %s of users who received the update",
   "wizard-help-one": "If you don't know what it is, just press %s, or click",
@@ -103,6 +103,5 @@
   "taskbar": "Barra de tareas",
   "startup": "Inicio",
   "startup-windows": "Abrir al inicio de Windows",
-  "update-available": "Una actualización está disponible",
   "riot-consent": "ManaFlux no está respaldado por Riot Games y no refleja los puntos de vista ni las opiniones de Riot Games ni de nadie oficialmente involucrado en la producción o administración de League of Legends. League of Legends y Riot Games son marcas comerciales o marcas comerciales registradas de Riot Games, Inc.\nLeague of Legends © Riot Games, Inc."
 }
