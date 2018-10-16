@@ -8,7 +8,7 @@ class ItemSet {
     this.path = path.join(Mana.getStore().get('league-client-path'), `\\Config\\Champions\\${this.championKey}\\Recommended\\${this.file}`);
 
     this._data = {
-      title: i18n.__('itemsets-unknown'),
+      title: i18n.__('item-sets-unknown'),
       type: 'custom',
       map: 'any',
       mode: 'any',
@@ -32,8 +32,8 @@ class ItemSet {
     return this;
   }
 
-  setBlocks(block) {
-    this._data.blocks = block;
+  setBlocks(blocks) {
+    this._data.blocks = blocks.map(x => new Block(x.type, x.items, x.recMath));
     return this;
   }
 
