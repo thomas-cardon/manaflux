@@ -128,7 +128,7 @@ class LeagueofGraphsProvider extends Provider {
     });
 
     itemset.setBlocks(blocks);
-    itemset.addBlock(new Block().setType({ i18n:'itemsets-block-consumables' }).addItem(2003).addItem(2138).addItem(2139).addItem(2140));
+    itemset.addBlock(new Block().setType({ i18n:'item-sets-block-consumables' }).addItem(2003).addItem(2138).addItem(2139).addItem(2140));
     itemset.addBlock(new Block().setType({ i18n: 'item-sets-block-trinkets' }).addItem(2055).addItem(3340).addItem(3341).addItem(3348).addItem(3363));
     return [itemset];
   }
