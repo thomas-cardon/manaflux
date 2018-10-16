@@ -76,6 +76,7 @@ class ChampionSelectHandler {
   async _normalTick(data) {
     if (this._lastChampionId === this.gameModeHandler.getPlayer().championId) return;
     if ((this._lastChampionId = this.gameModeHandler.getPlayer().championId) === 0) return UI.status('champion-select-pick-a-champion');
+    this.hasLoadedUI = false;
 
     const champion = Mana.champions[this.gameModeHandler.getPlayer().championId];
 
@@ -89,18 +90,23 @@ class ChampionSelectHandler {
   }
 
   async _finalizationTick(data) {
-    if (this._lastChampionId === this.gameModeHandler.getPlayer().championId && data.timer.phase !== "FINALIZATION" && !this.inFinalizationPhase) return;
+    if (this._lastChampionId === this.gameModeHandler.getPlayer().championId) return;
+    if (data.timer.phase !== "FINALIZATION" && !this.inFinalizationPhase) return;
     if ((this._lastChampionId = this.gameModeHandler.getPlayer().championId) === 0) return UI.status('champion-select-pick-a-champion');
+
+    if (this.inFinalizationPhase) return;
 
     const champion = Mana.champions[this.gameModeHandler.getPlayer().championId];
 
-    UI.status('common-loading');
-    this.gameModeHandler.onChampionChangeEvent(champion);
-    this.onDisplayUpdatePreDownload(champion);
+    if (!this.hasLoadedUI) {
+      this.hasLoadedUI = true;
+
+      UI.status('common-loading');
+      this.gameModeHandler.onChampionChangeEvent(champion);
+      this.onDisplayUpdatePreDownload(champion);
+    }
 
     if (data.timer.phase !== "FINALIZATION") return UI.status('champion-select-waiting-finalization-phase');
-    if (this.inFinalizationPhase) return;
-
     this.inFinalizationPhase = true;
 
     const res = await UI.indicator(ProviderHandler.getChampionData(champion, this.gameModeHandler.getPosition(), this.gameMode, true), 'champion-select-downloading-data', champion.name);
