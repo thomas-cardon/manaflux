@@ -1,7 +1,16 @@
 const { captureException } = require('@sentry/electron');
 var UI = {};
 
-UI.stylizeRole = role => role === 'ADC' ? 'ADC' : role.charAt(0).toUpperCase() + role.slice(1);
+UI.stylizeRole = (role = 'unknown') => {
+  switch(role.toLowerCase()) {
+    case 'aram':
+      return 'ARAM';
+    case 'adc':
+      return 'ADC';
+    default:
+      return role.charAt(0).toUpperCase() + role.slice(1).toLowerCase();
+  }
+}
 
 /**
 * Toggles or forces the loading indicator, or enables the loading indicator if parameter is a promise
