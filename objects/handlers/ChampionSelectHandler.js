@@ -109,7 +109,7 @@ class ChampionSelectHandler {
     if (data.timer.phase !== "FINALIZATION") return UI.status('champion-select-waiting-finalization-phase');
     this.inFinalizationPhase = true;
 
-    const res = await UI.indicator(ProviderHandler.getChampionData(champion, this.gameModeHandler.getPosition(), this.gameMode, true), 'champion-select-downloading-data', champion.name);
+    const res = await UI.indicator(ProviderHandler.getChampionData(champion, this.gameModeHandler.getPosition(), this.gameModeHandler, true), 'champion-select-downloading-data', champion.name);
     if (res.championId === champion.id) this.onDisplayUpdate(champion, res);
     else console.log(`[ProviderHandler] ${Mana.champions[res.championId].name}'s data is not shown because champion picked has changed`);
   }

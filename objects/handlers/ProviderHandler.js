@@ -12,12 +12,14 @@ class ProviderHandler {
     };
   }
 
-  async getChampionData(champion, preferredPosition, gameMode = 'CLASSIC', cache) {
+  async getChampionData(champion, preferredPosition, gameModeHandler, cache) {
+    const gameMode = gameModeHandler.getGameMode();
+
     /* 1/4 - Storage Checking */
     if (Mana.getStore().has(`data.${champion.championId}`) && cache) return Mana.getStore().get(`data.${champion.key}`);
 
     /* 2/4 - Downloading */
-    const providers = Mana.getStore().get('providers-order', Object.keys(this.providers));
+    const providers = Mana.getStore().get('providers-order', Object.keys(this.providers)).filter(x => gameModeHandler.getProviders() === null || gameModeHandler.getProviders().includes(x));
     providers.unshift(...providers.splice(providers.indexOf('flux'), 1), ...providers.splice(providers.indexOf('lolflavor'), 1));
 
     let data;
