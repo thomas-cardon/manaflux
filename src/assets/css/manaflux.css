@@ -30,6 +30,7 @@ body {
 
 .sortable {
   list-style: disc inside;
+  width: 88%;
   margin: 0;
   padding: 0;
 }
