@@ -11,8 +11,7 @@ class FluxProvider extends Provider {
 
   async getData(champion, preferredPosition, gameMode) {
     console.log(2, '[Flu.x] Fetching data from the cache server');
-
-    let data = JSON.parse(await rp(`${this.base}v1/data/${champion.id}`));
+    let data = JSON.parse(await rp(`${this.base}v1/data/${champion.id}?itemsets=${Mana.getStore().get('item-sets-enable')}&summonerspells=${Mana.getStore().get('summoner-spells')}`));
 
     if (data.message) {
       if (data.statusCode === 404) throw Error(`Flu.x: Data not found`);
