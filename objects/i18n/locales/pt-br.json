@@ -48,7 +48,7 @@
     "champion-select-hide": "Esconder quando fora da Seleção de Campeões",
     "champion-select-pick-a-champion": "Escolha um campeão!",
     "champion-select-min-roles": "Min. rotas para baixar",
-    "providers-skipped": "%s foi pulado por falta da função #%s",
+    "providers-skipped": "%s foi pulado por falta da função: #%s",
     "providers-order": "Ordem dos Provedores",
     "providers-error-item-sets-not-found": "Não foi possível encontrar conjunto de itens",
     "providers-error-outdated": "Dados desatualizados",

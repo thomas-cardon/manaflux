@@ -64,12 +64,12 @@ class ChampionGGProvider extends Provider {
 
       if (page.selectedPerkIds[0] === undefined && page.selectedPerkIds[1] === undefined) {
         perks.splice(i, 1);
-        UI.error(`[Champion.GG] ${i18n.__('providers-error-data')}`);
+        UI.error('providers-error-data');
       }
       else if (page.selectedPerkIds[0] === page.selectedPerkIds[1]) {
         page.selectedPerkIds.splice(1, 1);
         page.selectedPerkIds.splice(3, 0, fixes[page.primaryStyleId]);
-        UI.error(`[Champion.GG] ${i18n.__('providers-cgg-perks-fix')}`);
+        UI.error('providers-cgg-perks-fix');
       }
     }
 
@@ -154,25 +154,25 @@ class ChampionGGProvider extends Provider {
 
     $('.build-wrapper').each(function(index) {
       const type = $(this).parent().find('h2').eq(index % 2).text();
-      let block = new Block();
+      let block = new Block(), wr = $(this).find('div > strong').text().trim().slice(0, 6);
 
       $(this).children('a').each(function(index) {
         block.addItem($(this).children().first().data('id'), 1);
       });
 
       if (index === 0)
-          itemset._data.blocks[3] = block.setName(i18n.__('providers-cgg-blocks-completed-build-mf') + ` | ${$(this).find('div > strong').text().trim().slice(0, 6)} WR`);
+          itemset._data.blocks[3] = block.setType({ i18n: 'providers-cgg-blocks-completed-build-mf', arguments: [wr] });
       else if (index === 1)
-          itemset._data.blocks[4] = block.setName(i18n.__('providers-cgg-blocks-completed-build-hw%') + ` | ${$(this).find('div > strong').text().trim().slice(0, 6)} WR`);
+          itemset._data.blocks[4] = block.setType({ i18n: 'providers-cgg-blocks-completed-build-hw%', arguments: [wr] });
       else if (index === 2)
-        itemset._data.blocks[0] = block.setName(i18n.__('providers-cgg-blocks-starters-mf') + ` | ${$(this).find('div > strong').text().trim().slice(0, 6)} WR`);
+        itemset._data.blocks[0] = block.setType({ i18n: 'providers-cgg-blocks-starters-mf', arguments: [wr] });
       else if (index === 3)
-        itemset._data.blocks[1] = block.setName(i18n.__('providers-cgg-blocks-starters-hw%') + ` | ${$(this).find('div > strong').text().trim().slice(0, 6)} WR`);
-      else itemset.addBlock(block.setName(type + ` | ${$(this).find('div > strong').text().trim().slice(0, 6)} WR`));
+        itemset._data.blocks[1] = block.setType({ i18n: 'providers-cgg-blocks-starters-hw%', arguments: [wr] });
+      else itemset.addBlock(block.setType(type + ` | ${$(this).find('div > strong').text().trim().slice(0, 6)} WR`));
     });
 
-    itemset.addBlock(new Block().setName(i18n.__('itemsets-block-consumables') + `: ${skillorder.mf}`).addItem(2003).addItem(2138).addItem(2139).addItem(2140));
-    itemset._data.blocks[2] = new Block().setName('Trinkets').addItem(2055).addItem(3340).addItem(3341).addItem(3348).addItem(3363);
+    itemset.addBlock(new Block().setType({ i18n: 'item-sets-block-consumables-skill-order', arguments: [skillorder.mf] }).addItem(2003).addItem(2138).addItem(2139).addItem(2140));
+    itemset._data.blocks[2] = new Block().setType({ i18n: 'item-sets-block-trinkets' }).addItem(2055).addItem(3340).addItem(3341).addItem(3348).addItem(3363);
 
     return [itemset];
   }

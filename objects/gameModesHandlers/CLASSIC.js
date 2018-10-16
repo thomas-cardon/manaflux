@@ -1,7 +1,8 @@
 class ClassicGameMode {
-  constructor(ChampionSelectHandler, ProviderHandler) {
+  constructor(ChampionSelectHandler, ProviderHandler, gameMode = 'CLASSIC') {
     this._championSelectHandler = ChampionSelectHandler;
     this._providerHandler = ProviderHandler;
+    this.gameMode = gameMode;
   }
 
   async load() {
@@ -10,6 +11,23 @@ class ClassicGameMode {
 
   async end() {
 
+  }
+
+  onFirstTickEvent(data) {
+    console.dir(3, data);
+  }
+
+  onTickEvent(data, gameMode) {
+    this._timer = data.timer;
+    this._myTeam = data.myTeam;
+    this._theirTeam = data.theirTeam;
+  }
+
+  onChampionChangeEvent(champion) {
+  }
+
+  getGameMode() {
+    return this.gameMode;
   }
 
   getPlayer() {
@@ -29,17 +47,8 @@ class ClassicGameMode {
     }
   }
 
-  onFirstTickEvent(data) {
-    console.dir(3, data);
-  }
-
-  onTickEvent(data, gameMode) {
-    this._timer = data.timer;
-    this._myTeam = data.myTeam;
-    this._theirTeam = data.theirTeam;
-  }
-
-  onChampionChangeEvent(champion) {
+  getProviders() {
+    return null;
   }
 }
 

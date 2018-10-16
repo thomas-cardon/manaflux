@@ -48,7 +48,7 @@
   "champion-select-hide": "Ukryj, gdy brakuje wyboru bohatera",
   "champion-select-pick-a-champion": "Wybierz bohatera!",
   "champion-select-min-roles": "Min. ról do pobrania",
-  "providers-skipped": "s% został pominięty z powodu braku funkcji #%s",
+  "providers-skipped": "%s został pominięty z powodu braku funkcji: #%s",
   "providers-order": "Kolejność dostawców",
   "providers-error-item-sets-not-found": "Nie można znaleźć zestawów przedmiotów",
   "providers-error-outdated": "Nieaktualne dane",

@@ -1,6 +1,7 @@
 const rp = require('request-promise-native');
 class ProviderHandler {
   constructor() {
+    this._cache = [];
     this.providers = {
       championgg: new (require('../providers/ChampionGG'))(),
       opgg: new (require('../providers/OPGG'))(),
@@ -11,23 +12,18 @@ class ProviderHandler {
     };
   }
 
-  async getChampionData(champion, preferredPosition, gameMode = 'CLASSIC', cache) {
+  async getChampionData(champion, preferredPosition, gameModeHandler, cache) {
+    const gameMode = gameModeHandler.getGameMode() || 'CLASSIC';
+
     /* 1/4 - Storage Checking */
-    if (Mana.getStore().has(`data.${champion.key}`) && cache) {
-      const data = Mana.getStore().get(`data.${champion.key}`);
-
-      for (const [role, d] of Object.entries(data.roles))
-        d.itemsets = d.itemsets.map(x => require('./ItemSetHandler').parse(champion.key, x._data, role));
-
-      return data;
-    }
+    if (Mana.getStore().has(`data.${champion.championId}`) && cache) return Mana.getStore().get(`data.${champion.key}`);
 
     /* 2/4 - Downloading */
+    const providers = Mana.getStore().get('providers-order', Object.keys(this.providers)).filter(x => gameModeHandler.getProviders() === null || gameModeHandler.getProviders().includes(x));
+    providers.unshift(...providers.splice(providers.indexOf('flux'), 1));
+    providers.push(providers.splice(providers.indexOf('lolflavor'), 1)[0])
 
     let data;
-
-    const providers = Mana.getStore().get('providers-order', Object.keys(this.providers));
-    providers.unshift(...providers.splice(providers.indexOf('flux'), 1), ...providers.splice(providers.indexOf('lolflavor'), 1));
 
     for (let provider of providers) {
       provider = this.providers[provider];
@@ -36,7 +32,7 @@ class ProviderHandler {
       if (!data) {
         try {
           const x = await provider.getData(champion, preferredPosition, gameMode);
-          data = { roles: {}, role: preferredPosition, championId: champion.id, gameMode, version: Mana.version, gameVersion: Mana.gameClient.branch, region: Mana.gameClient.region, ...x };
+          data = { roles: {}, championId: champion.id, gameMode, version: Mana.version, gameVersion: Mana.gameClient.branch, region: Mana.gameClient.region, ...x };
         }
           catch(err) {
           console.error(err);
@@ -54,9 +50,6 @@ class ProviderHandler {
           continue;
         }
       }
-
-      console.log('[ProviderHandler] Data has changed.');
-      console.dir(data);
 
       /* If a provider can't get any data on that role/position, let's use another provider */
       if (!data || preferredPosition && !data.roles[preferredPosition] || !preferredPosition && Object.keys(data.roles).length < Mana.getStore().get('champion-select-min-roles', 2)) continue;
@@ -76,10 +69,27 @@ class ProviderHandler {
     /* 3/4 - Saving to offline cache
        4/4 - Uploading to online cache */
     if (!cache) return console.dir(data);
-    this.saveToCache(champion, data);
-    this.providers.flux.upload(data);
+    this._cache.push(data);
 
     return console.dir(data);
+  }
+
+  /**
+   * Runs tasks when champion select ends
+   */
+  onChampionSelectEnd() {
+    this._cache.forEach(data => {
+      UI.loading(true);
+
+      Object.values(data.roles).forEach(r => {
+        r.itemsets = r.itemsets.map(x => x._data ? x.build(false, false) : x)
+      });
+
+      Mana.getStore().set(`data.${data.championId}`, data);
+      UI.indicator(this.providers.flux.upload(data), 'providers-flux-uploading');
+    });
+
+    this._cache = [];
   }
 
   /**
@@ -97,10 +107,6 @@ class ProviderHandler {
         }
       }
     }
-  }
-
-  saveToCache(champion, d) {
-    Mana.getStore().set(`data.${champion.key}`, d);
   }
 }
 

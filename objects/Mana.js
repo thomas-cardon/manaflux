@@ -12,7 +12,7 @@ class Mana {
     this.devMode = ipcRenderer.sendSync('is-dev');
     $('.version').text(`V${this.version = app.getVersion()}`);
 
-    UI.status('Status', 'status-loading-storage');
+    UI.status('status-loading-storage');
     this._store = new Store();
 
     if (!this.getStore().get('league-client-path'))
@@ -32,8 +32,6 @@ class Mana {
     }
 
     ipcRenderer.on('lcu-connected', (event, d) => {
-      UI.loading(false);
-
       this.updateAuthenticationTokens(d);
       this.preload().then(() => ipcRenderer.send('lcu-logged-in'));
     });
@@ -45,7 +43,7 @@ class Mana {
   }
 
   async preload() {
-    UI.status('Status', 'status-loading-data-login');
+    UI.status('status-loading-data-login');
 
     this.gameClient = new (require('./riot/leagueoflegends/GameClient'))();
     this.assetsProxy = new (require('./riot/leagueoflegends/GameAssetsProxy'))();
@@ -54,7 +52,7 @@ class Mana {
 
     this.assetsProxy.load();
 
-    const data = await UI.loading(Promise.all([this.gameClient.load(), this.gameClient.getChampionSummary(), this.gameClient.getSummonerSpells()]));
+    const data = await UI.indicator(Promise.all([this.gameClient.load(), this.gameClient.getChampionSummary(), this.gameClient.getSummonerSpells()]), 'status-loading-resources');
 
     this.champions = data[1];
     this.summonerspells = data[2];
@@ -71,12 +69,12 @@ class Mana {
   }
 
   async load(data) {
-    UI.status('League', 'league-client-connection');
+    UI.status('league-client-connection');
 
     this.user = new (require('./User'))(data);
     this.championSelectHandler.load();
 
-    UI.status('Status', 'champion-select-waiting');
+    UI.status('champion-select-waiting');
     global._devChampionSelect = () => new (require('../CustomGame'))().create().then(game => game.start());
   }
 
@@ -86,7 +84,7 @@ class Mana {
     if (this.championSelectHandler) this.championSelectHandler.stop();
     delete this.user;
 
-    UI.status('League', 'status-disconnected');
+    UI.status('status-disconnected');
   }
 
   updateAuthenticationTokens(data) {

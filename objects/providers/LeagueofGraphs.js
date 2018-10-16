@@ -32,20 +32,21 @@ class LeagueofGraphsProvider extends Provider {
   async _scrape(champion, gameMode, position) {
     let promises = [rp(`${this.base}/runes/${champion.key.toLowerCase()}${position ? '/' + position : ''}`)];
 
-    promises.push(Mana.getStore().get('item-sets') ? rp(`${this.base}/items/${champion.key.toLowerCase()}${position ? '/' + position : ''}`) : Promise.resolve());
+    promises.push(Mana.getStore().get('item-sets-enable') ? rp(`${this.base}/items/${champion.key.toLowerCase()}${position ? '/' + position : ''}`) : Promise.resolve());
     promises.push(Mana.getStore().get('summoner-spells') ? rp(`${this.base}/spells/${champion.key.toLowerCase()}${position ? '/' + position : ''}`) : Promise.resolve());
-    promises.push(Mana.getStore().get('statistics') ? rp(`${this.base}/stats/${champion.key.toLowerCase()}${position ? '/' + position : ''}`) : null);
+    promises.push(Mana.getStore().get('statistics') ? rp(`${this.base}/stats/${champion.key.toLowerCase()}${position ? '/' + position : ''}`) : Promise.resolve());
+    promises.push(rp(`${this.base}/skills-orders/${champion.key.toLowerCase()}${position ? '/' + position : ''}`));
 
     const data = await Promise.all(promises);
 
     const $perks = cheerio.load(data[0]);
     const perks = this.scrapePerks($perks, champion, position);
 
-    const itemsets = Mana.getStore().get('item-sets') ? this.scrapeItemSets(cheerio.load(data[1]), champion, position, '') : [];
+    const itemsets = Mana.getStore().get('item-sets-enable') ? this.scrapeItemSets(cheerio.load(data[1]), champion, position, this.scrapeSkillOrder(cheerio.load(data[data.length - 1]))) : [];
     const summonerspells = Mana.getStore().get('summoner-spells') ? this.scrapeSummonerSpells(cheerio.load(data[2]), champion) : [];
     const statistics = Mana.getStore().get('statistics') ? {} : {};
 
-    return console.dir({ perks, itemsets, summonerspells, statistics });
+    return { perks, itemsets, summonerspells, statistics };
   }
 
   /**
@@ -112,10 +113,10 @@ class LeagueofGraphsProvider extends Provider {
   scrapeItemSets($, champion, position, skillorder) {
     let itemset = new ItemSet(champion.key, position, this.id).setTitle(`LOG ${champion.name} - ${position}`);
     let blocks = [
-        new Block().setName(i18n.__('item-sets-block-starter', skillorder)),
-        new Block().setName(i18n.__('item-sets-block-core-build')),
-        new Block().setName(i18n.__('item-sets-block-endgame')),
-        new Block().setName(i18n.__('item-sets-block-boots'))
+        new Block().setType({ i18n: 'item-sets-block-starter', arguments: [skillorder] }),
+        new Block().setType({ i18n: 'item-sets-block-core-build' }),
+        new Block().setType({ i18n: 'item-sets-block-endgame' }),
+        new Block().setType({ i18n: 'item-sets-block-boots' })
     ];
 
     $('#mainContent > div > div > div > table').each(function(index) {
@@ -127,8 +128,8 @@ class LeagueofGraphsProvider extends Provider {
     });
 
     itemset.setBlocks(blocks);
-    itemset.addBlock(new Block().setName(i18n.__('itemsets-block-consumables')).addItem(2003).addItem(2138).addItem(2139).addItem(2140));
-
+    itemset.addBlock(new Block().setType({ i18n:'item-sets-block-consumables' }).addItem(2003).addItem(2138).addItem(2139).addItem(2140));
+    itemset.addBlock(new Block().setType({ i18n: 'item-sets-block-trinkets' }).addItem(2055).addItem(3340).addItem(3341).addItem(3348).addItem(3363));
     return [itemset];
   }
 }

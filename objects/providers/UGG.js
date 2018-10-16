@@ -107,9 +107,9 @@ class UGGProvider extends Provider {
 
     let itemset = new ItemSet(champion.key, position, this.id).setTitle(`UGG ${champion.name} - ${position}`);
 
-    let starter = new Block().setName(i18n.__('itemsets-block-starter', skillorder));
-    let coreBuild = new Block().setName(i18n.__('itemsets-block-core-build', $('.grid-block.final-items').find('.winrate').text().slice(0, 6), $('.grid-block.final-items').find('.matches').text().split(' ')[0]));
-    let options = new Block().setName(i18n.__('itemsets-block-options'));
+    let starter = new Block().setName(i18n.__('item-sets-block-starter', skillorder));
+    let coreBuild = new Block().setName(i18n.__('item-sets-block-core-build', $('.grid-block.final-items').find('.winrate').text().slice(0, 6), $('.grid-block.final-items').find('.matches').text().split(' ')[0]));
+    let options = new Block().setName(i18n.__('item-sets-block-options'));
 
     /* Starter Block */
     items.slice(0, 2).forEach(x => starter.addItem(x.src.slice(-8, -4)));
@@ -122,7 +122,7 @@ class UGGProvider extends Provider {
 
     itemset.addBlock(starter, new Block().setName(`Trinkets`).addItem(2055).addItem(3340).addItem(3341).addItem(3348).addItem(3363));
     itemset.addBlock(coreBuild).addBlock(options);
-    itemset.addBlock(new Block().setName(i18n.__('itemsets-block-consumables')).addItem(2003).addItem(2138).addItem(2139).addItem(2140));
+    itemset.addBlock(new Block().setName(i18n.__('item-sets-block-consumables')).addItem(2003).addItem(2138).addItem(2139).addItem(2140));
 
     return [itemset];
   }

@@ -47,7 +47,7 @@
         <img src="assets/img/underline.png" draggable="false">
       </div>
       <div id="buttons" style="display: none;">
-        <select style="display: none; margin-bottom: -14px;" id="positions" data-custom-component="shortcuts" class="dropdown xs"></select>
+        <select style="display: none; margin-bottom: -14px;" id="positions" class="dropdown xs"></select>
         <button type="button" class="btn normal" data-i18n="summoner-spells-load-button" id="loadSummonerSpells"></button>
         <button type="button" class="btn normal" data-i18n="perks-load-button" id="loadRunes"></button>
       </div>
@@ -113,6 +113,17 @@
           <option data-i18n="summoner-spells-priority-flash-f" value=f></option>
         </select>
       </div>
+      <div class="option">
+        <p class="suboption-name" data-i18n="ui-language-tester"></p>
+        <button class="btn normal" data-custom-component="ui-language-tester" data-i18n="common-run"></button>
+      </div>
+      <div class="option">
+        <p class="suboption-name" data-i18n="champion-select-waiting-finalization-phase-button"></p>
+        <div class="options float-left checkboxContainer">
+          <input type="checkbox" data-settings-key="champion-select-waiting-finalization-phase" data-setting-default="true" />
+          <label data-i18n="common-enable"></label>
+        </div>
+      </div>
       <hr class="break" />
       <p class="option-name" data-i18n="ui"></p>
       <div class="option" style="width: 20%;">
@@ -148,10 +159,6 @@
           <option data-i18n="ui-background-sorcery" value="themes/styles-sorcery.png" data-background-position="center"></option>
           <option data-i18n="ui-background-precision" value="themes/styles-precision.png" data-background-position="center"></option>
         </select>
-      </div>
-      <div class="option">
-        <p class="suboption-name" data-i18n="ui-language-tester"></p>
-        <button class="btn normal" data-custom-component="ui-language-tester" data-i18n="common-run"></button>
       </div>
     </div>
     <div data-tabid="settings" data-tabn=2 class="tabcontent" style="display: none; margin-left: 12%;">

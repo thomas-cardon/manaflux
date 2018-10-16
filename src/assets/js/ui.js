@@ -1,7 +1,16 @@
 const { captureException } = require('@sentry/electron');
 var UI = {};
 
-UI.stylizeRole = role => role === 'ADC' ? 'ADC' : role.charAt(0).toUpperCase() + role.slice(1);
+UI.stylizeRole = (role = 'unknown') => {
+  switch(role.toLowerCase()) {
+    case 'aram':
+      return 'ARAM';
+    case 'adc':
+      return 'ADC';
+    default:
+      return role.charAt(0).toUpperCase() + role.slice(1).toLowerCase();
+  }
+}
 
 /**
 * Toggles or forces the loading indicator, or enables the loading indicator if parameter is a promise
@@ -25,15 +34,17 @@ UI.loading = async (toggle = document.getElementById('loading').style.display ==
 * @param {parameters} string... - Translation parameters
 */
 let s, id;
-UI.status = async (...args) => {
+UI.status = (...args) => {
   let x = i18n.__.call(i18n, ...args.slice(args[0].then ? 1 : 0));
 
-  if (args[0].then) {
-    $('.status').text(x + '...');
-    const d = await args[0];
-    $('.status').text(s);
-    return d;
-  }
+  if (args[0].then)
+    return new Promise((resolve, reject) => {
+      $('.status').text(x + '...');
+      args[0].then(x => {
+        $('.status').text(s);
+        resolve(x);
+      }).catch(reject);
+    });
 
   $('.status').text(s = x + '...');
 };

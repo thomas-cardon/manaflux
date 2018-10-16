@@ -8,33 +8,47 @@ class LoLFlavorProvider extends Provider {
     this.base = 'http://lolflavor.com/champions/';
   }
 
-  async getItemSets(champion, preferredPosition, gameMode) {
-    try {
-      if (!preferredPosition || preferredPosition === 'middle') preferredPosition = 'mid';
+  getPosition(pos = 'aram') {
+    switch(pos.toLowerCase()) {
+      case 'bottom':
+        return 'adc';
+      case 'middle':
+        return 'mid';
+      default:
+        return pos.toLowerCase();
+    }
+  }
 
+  async getItemSets(champion, preferredPosition, gameMode) {
+    preferredPosition = getPosition(preferredPosition);
+
+    try {
       const res = await rp({
         method: 'GET',
-        uri: `${this.base}${champion.key}/Recommended/${champion.key}_${gameMode === 'ARAM' ? 'aram' : preferredPosition}_scrape.json`,
+        uri: `${this.base}${champion.key}/Recommended/${champion.key}_${preferredPosition}_scrape.json`,
         json: true
       });
 
-      return this._aggregate(res, champion, preferredPosition, gameMode);
+      return this._parse(res, champion, preferredPosition, gameMode);
     }
     catch(err) {
-      if (err.statusCode === 404) throw Error(i18n.__('providers-error-itemsets-not-found'));
+      if (err.statusCode === 404) throw Error('No item sets available for this champion and position');
       else throw err;
     }
   }
 
-  async _aggregate(data, champion, position, gameMode) {
-    position = position.charAt(0).toUpperCase() + position.slice(1);
+  async _parse(data, champion, position, gameMode) {
+    let itemset = new ItemSet(champion.key, UI.stylizeRole(position), this.id);
 
-    let itemset = new ItemSet(champion.key, position, this.id);
+    itemset.setData(data);
 
-    itemset._data = data;
-    itemset._data.blocks[0].type = i18n.__('itemsets-block-consumables');
+    itemset._data.blocks[0].setType('item-sets-block-consumables');
+    itemset._data.blocks[1].setType({ i18n: 'item-sets-block-starter', arguments: [itemset._data.blocks[2].getType().slice(-5)], display: line => line.split(' | ')[0] });
+    itemset._data.blocks[2].setType('item-sets-block-core-build');
+    itemset._data.blocks[3].setType('item-sets-block-endgame');
+    itemset._data.blocks[4].setType('item-sets-block-boots');
 
-    itemset.setTitle(`LFR ${champion.name} - ${gameMode === 'ARAM' ? 'ARAM' : preferredPosition}`)
+    itemset.setTitle(`LFR ${champion.name} - ${UI.stylizeRole(position)}`)
 
     return { itemsets: [itemset] };
   }

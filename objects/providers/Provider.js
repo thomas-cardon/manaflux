@@ -5,7 +5,7 @@ class Provider {
   }
 
   async getData(champion, preferredPosition, gameMode) {
-    throw Error(`[ProviderHandler] ${this.name} ${i18n.__('providers-skipped')}: #getData`);
+    throw UI.error('providers-skipped', this.name, 'getData');
   }
 
   async getSummonerSpells(champion, position, gameMode) {
