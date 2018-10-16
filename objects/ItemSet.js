@@ -46,7 +46,7 @@ class ItemSet {
   * @param {array} blocks
   */
   setBlocks(blocks) {
-    this._data.blocks = blocks.map(x => new Block(x.type, x.items, x.recMath));
+    this._data.blocks = blocks.map(x => x.getType() ? x : new Block(x.type, x.items, x.recMath));
     return this;
   }
 
@@ -62,9 +62,8 @@ class ItemSet {
     return this;
   }
 
-  build(json = true) {
-    const x = Object.assign({}, this._data, { blocks: this._data.blocks.map(x => x.build()) });
-    return json ? JSON.stringify(x) : x;
+  build(json = true, buildingForLeague) {
+    return json ? JSON.stringify({ ...this._data, blocks: this._data.blocks.map(x => x.build(buildingForLeague)) }) : { ...this._data, blocks: this._data.blocks.map(x => x.build(buildingForLeague)) };
   }
 
   save() {
@@ -75,7 +74,7 @@ class ItemSet {
     require('./handlers/ItemSetHandler')._ensureDir(path.join(Mana.getStore().get('league-client-path'), `\\Config\\Champions\\${this.championKey}\\Recommended`));
 
     return new Promise((resolve, reject) => {
-      fs.writeFile(self.path, self.build(), 'utf8', err => {
+      fs.writeFile(self.path, self.build(true, true), 'utf8', err => {
         if (err) return reject(err);
         resolve();
       });
@@ -117,11 +116,6 @@ class Block {
     return this;
   }
 
-  setName(name) {
-    this.type = name;
-    return this;
-  }
-
   setItems(o) {
     this.items = o;
     return this;
@@ -130,10 +124,12 @@ class Block {
   setType(obj) {
     if (typeof obj === 'string') this._type = { i18n: obj };
     else this._type = obj;
+
+    return this;
   }
 
   getType() {
-    if (this._type) return this._type.display ? this._type.display(i18n.__(this._type.i18n, ...(this._type.arguments || []))) : i18n.__(this._type.i18n, ...(this._type.arguments || []));
+    if (this._type) return this._type.display ? this._type.display(i18n.__(this._type.i18n, ...(this._type.arguments || [])), ...(this._type.arguments || [])) : i18n.__(this._type.i18n, ...(this._type.arguments || []));
     else return this.type;
   }
 
@@ -142,10 +138,9 @@ class Block {
     return this;
   }
 
-  build() {
+  build(buildingForLeague) {
     let items = Object.keys(this.items).map(x => ({ id: x, count: this.items[x] }));
-
-    return { type: this.getType(), _type: this._type, recMath: this.recMath, items };
+    return buildingForLeague ? { type: this.getType(), recMath: this.recMath, items } : { type: this.getType(), _type: this._type, recMath: this.recMath, items };
   }
 }
 
