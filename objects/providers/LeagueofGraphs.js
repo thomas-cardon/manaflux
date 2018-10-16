@@ -34,8 +34,8 @@ class LeagueofGraphsProvider extends Provider {
 
     promises.push(Mana.getStore().get('item-sets-enable') ? rp(`${this.base}/items/${champion.key.toLowerCase()}${position ? '/' + position : ''}`) : Promise.resolve());
     promises.push(Mana.getStore().get('summoner-spells') ? rp(`${this.base}/spells/${champion.key.toLowerCase()}${position ? '/' + position : ''}`) : Promise.resolve());
-    promises.push(Mana.getStore().get('statistics') ? rp(`${this.base}/stats/${champion.key.toLowerCase()}${position ? '/' + position : ''}`) : null);
-    promises.push(rp(`${this.base}/skills-orders/${champion.key.toLowerCase()}${position ? '/' + position : ''}`) : null);
+    promises.push(Mana.getStore().get('statistics') ? rp(`${this.base}/stats/${champion.key.toLowerCase()}${position ? '/' + position : ''}`) : Promise.resolve());
+    promises.push(rp(`${this.base}/skills-orders/${champion.key.toLowerCase()}${position ? '/' + position : ''}`));
 
     const data = await Promise.all(promises);
 
