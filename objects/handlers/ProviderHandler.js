@@ -81,7 +81,6 @@ class ProviderHandler {
       Object.values(data.roles).forEach(r => {
         r.itemsets = r.itemsets.map(x => x._data ? x.build(false) : x)
       });
-      console.dir(data);
 
       Mana.getStore().set(`data.${data.championId}`, data);
       UI.indicator(this.providers.flux.upload(data), 'providers-flux-uploading');
