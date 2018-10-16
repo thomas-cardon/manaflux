@@ -37,7 +37,7 @@ class ChampionSelectHandler {
   }
 
   async _devDownloadProviderData(champion, pos, mode = 'CLASSIC', cache) {
-    return await ProviderHandler.getChampionData(champion, pos, mode, cache);
+    return await ProviderHandler.getChampionData(champion, pos, this.gameModeHandlers[mode] ? this.gameModeHandlers[mode] : this.gameModeHandlers.CLASSIC, cache);
   }
 
   onShortcutPressedEvent(event, next) {
@@ -84,7 +84,7 @@ class ChampionSelectHandler {
     this.gameModeHandler.onChampionChangeEvent(champion);
     this.onDisplayUpdatePreDownload(champion);
 
-    const res = await UI.indicator(ProviderHandler.getChampionData(champion, this.gameModeHandler.getPosition(), this.gameMode, true), 'champion-select-downloading-data', champion.name);
+    const res = await UI.indicator(ProviderHandler.getChampionData(champion, this.gameModeHandler.getPosition(), this.gameModeHandler, true), 'champion-select-downloading-data', champion.name);
     if (res.championId === champion.id) this.onDisplayUpdate(champion, res);
     else console.log(`[ProviderHandler] ${Mana.champions[res.championId].name}'s data is not shown because champion picked has changed`);
   }
