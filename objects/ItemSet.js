@@ -17,6 +17,15 @@ class ItemSet {
     };
   }
 
+  /**
+  * Sets data from an ItemSet object, and transforms blocks into the Block object
+  * @param {object} data - ItemSet object
+  */
+  setData(data) {
+    data.blocks = data.blocks.map(x => new Block(x.type, x.items, x.recMath));
+    this._data = data;
+  }
+
   setTitle(title) {
     this._data.title = title;
     return this;
@@ -32,6 +41,10 @@ class ItemSet {
     return this;
   }
 
+  /**
+  * Transforms blocks array into a Block class array
+  * @param {array} blocks
+  */
   setBlocks(blocks) {
     this._data.blocks = blocks.map(x => new Block(x.type, x.items, x.recMath));
     return this;
@@ -114,19 +127,25 @@ class Block {
     return this;
   }
 
+  setType(obj) {
+    if (typeof obj === 'string') this._type = { i18n: obj };
+    else this._type = obj;
+  }
+
+  getType() {
+    if (this._type) return this._type.display ? this._type.display(i18n.__(this._type.i18n, ...(this._type.arguments || []))) : i18n.__(this._type.i18n, ...(this._type.arguments || []));
+    else return this.type;
+  }
+
   addItem(id, count = 1) {
     this.items[id] = (count === false) ? 1 : this.items[id] + count || count;
     return this;
   }
 
   build() {
-    let o = { type: this.type, recMath: this.recMath };
-    o.items = [];
+    let items = Object.keys(this.items).map(x => ({ id: x, count: this.items[x] }));
 
-    for (let item in this.items)
-      o.items.push({ id: item, count: this.items[item] });
-
-    return o;
+    return { type: this.getType(), _type: this._type, recMath: this.recMath, items };
   }
 }
 
