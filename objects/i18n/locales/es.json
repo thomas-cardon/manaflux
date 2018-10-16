@@ -45,7 +45,7 @@
   "league-client-path-asked": "Por favor abre tu carpeta de League of Legends",
   "league-client-path-wrong": "Parece que has seleccionado una carpeta equivocada, porque no hemos encontrado el LoL",
   "league-client-find-automatically": "Buscar automáticamente",
-  "league-client-nothing-found": "We couldn't find your League folder. Please click the search button or drag-n-drop the folder",
+  "league-client-nothing-found": "No hemos podido encontrar tu carpeta de lol. Haz click en el botón de buscar o arrastra y suelta la carpeta",
   "champion-select-waiting": "Esperando a la selección de campeón",
   "champion-select-waiting-finalization-phase": "Esperando a la fase de finalización",
   "champion-select-waiting-finalization-phase-button": "Espera a la fase de finalización",
