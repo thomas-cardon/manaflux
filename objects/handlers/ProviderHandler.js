@@ -13,7 +13,7 @@ class ProviderHandler {
   }
 
   async getChampionData(champion, preferredPosition, gameModeHandler, cache) {
-    const gameMode = gameModeHandler.getGameMode();
+    const gameMode = gameModeHandler.getGameMode() || 'CLASSIC';
 
     /* 1/4 - Storage Checking */
     if (Mana.getStore().has(`data.${champion.championId}`) && cache) return Mana.getStore().get(`data.${champion.key}`);
@@ -70,7 +70,7 @@ class ProviderHandler {
     if (!cache) return console.dir(data);
     this._cache.push(data);
 
-    return data;
+    return console.dir(data);
   }
 
   /**
@@ -81,7 +81,7 @@ class ProviderHandler {
       UI.loading(true);
 
       Object.values(data.roles).forEach(r => {
-        r.itemsets = r.itemsets.map(x => x._data ? x.build(false) : x)
+        r.itemsets = r.itemsets.map(x => x._data ? x.build(false, false) : x)
       });
 
       Mana.getStore().set(`data.${data.championId}`, data);
