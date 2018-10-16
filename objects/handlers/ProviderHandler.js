@@ -20,7 +20,8 @@ class ProviderHandler {
 
     /* 2/4 - Downloading */
     const providers = Mana.getStore().get('providers-order', Object.keys(this.providers)).filter(x => gameModeHandler.getProviders() === null || gameModeHandler.getProviders().includes(x));
-    providers.unshift(...providers.splice(providers.indexOf('flux'), 1), ...providers.splice(providers.indexOf('lolflavor'), 1));
+    providers.unshift(...providers.splice(providers.indexOf('flux'), 1));
+    providers.push(providers.splice(providers.indexOf('lolflavor'), 1)[0])
 
     let data;
 
