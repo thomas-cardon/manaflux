@@ -3,6 +3,6 @@ module.exports = {
     console.log(2, '[UI] Empty cache asked.');
     Mana.getStore().set('data', {});
 
-    UI.status('UI', 'empty-cache-status');
+    UI.status('empty-cache-status');
   }
 };

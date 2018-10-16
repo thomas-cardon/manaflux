@@ -14,7 +14,7 @@ module.exports = {
         });
       }
       LoggingHandler.start();
-      UI.temporaryStatus('Logs', 'settings-logs-cleared-files', files.length);
+      UI.temporaryStatus('settings-logs-cleared-files', files.length);
     });
   }
 };
