@@ -54,7 +54,7 @@
   "champion-select-updating-display": "Mise-à-jour de l'affichage pour %s",
   "champion-select-hide": "S'y cacher hors sélection des champions",
   "champion-select-pick-a-champion": "Sélectionnez un champion!",
-  "providers-skipped": "à été sauté à cause d'une méthode manquante",
+  "providers-skipped": "%s à été sauté à cause d'une méthode manquante: #%s",
   "providers-order": "Ordre des fournisseurs",
   "providers-error-item-sets-not-found": "Impossible de trouver un set d'objet",
   "providers-error-outdated": "Les données ne sont pas à jour pour le dernier patch",

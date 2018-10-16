@@ -51,7 +51,7 @@
   "champion-select-hide": "Скрывать вне экрана выбора чемпиона",
   "champion-select-pick-a-champion": "Выберите чемпиона!",
   "champion-select-min-roles": "Минимум ролей для загрузки",
-  "providers-skipped": "%s был пропущен, так как отсутствует функция #%s",
+  "providers-skipped": "%s был пропущен, так как отсутствует функция: #%s",
   "providers-order": "Порядок источников",
   "providers-error-item-sets-not-found": "Набор предметов не найден",
   "providers-error-outdated": "Устаревшие данные",

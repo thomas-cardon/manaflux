@@ -48,7 +48,7 @@
   "champion-select-hide": "Nascondi all'uscita della selezione dei campioni",
   "champion-select-pick-a-champion": "Scegli un campione!",
   "champion-select-min-roles": "Min. ruoli da scaricare",
-  "providers-skipped": "%s è stato saltato a causa della funzione mancante #%s",
+  "providers-skipped": "%s è stato saltato a causa della funzione mancante: #%s",
   "providers-order": "Ordine dei provider",
   "providers-error-item-sets-not-found": "Non è stato possibile trovare i set di oggetti",
   "providers-error-outdated": "Dati non aggiornati",
