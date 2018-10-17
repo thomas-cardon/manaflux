@@ -60,6 +60,10 @@ class GameClient {
       if (spell.name == name) return spell;
   }
 
+  findPerkStyleByPerkId(id) {
+    return Mana.gameClient.perks.find(x => x.slots.some(y => y.runes.some(z => z.id === parseInt(id))));
+  }
+
   async load() {
     let r = await this.getRegionAndLocale();
 
