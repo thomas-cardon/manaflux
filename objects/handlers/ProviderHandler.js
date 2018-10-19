@@ -17,7 +17,7 @@ class ProviderHandler {
     const gameMode = gameModeHandler.getGameMode() || 'CLASSIC';
 
     /* 1/4 - Storage Checking */
-    if (Mana.getStore().has(`data.${champion.championId}`) && cache) return Mana.getStore().get(`data.${champion.key}`);
+    if (Mana.getStore().has(`data.${champion.id}`) && cache) return Mana.getStore().get(`data.${champion.key}`);
 
     /* 2/4 - Downloading */
     const providers = Mana.getStore().get('providers-order', Object.keys(this.providers)).filter(x => gameModeHandler.getProviders() === null || gameModeHandler.getProviders().includes(x));
