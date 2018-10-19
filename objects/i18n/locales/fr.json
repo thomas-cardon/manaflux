@@ -118,6 +118,7 @@
   "item-sets-block-core-build-wr": "Objets principaux | WR: %s - %s games",
   "item-sets-block-most-popular": "Objets les plus populaires",
   "item-sets-block-endgame": "Objets de fin de partie",
+  "item-sets-block-completed-build-numbered": "Build complété #%s",
   "item-sets-block-options": "Options",
   "item-sets-block-boots": "Bottes (choisissez-en une)",
   "item-sets-block-consumables": "Consommables",
