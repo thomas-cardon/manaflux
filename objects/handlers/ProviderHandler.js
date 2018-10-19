@@ -5,6 +5,7 @@ class ProviderHandler {
     this.providers = {
       championgg: new (require('../providers/ChampionGG'))(),
       opgg: new (require('../providers/OPGG'))(),
+      lolalytics: new (require('../providers/LoLAlytics'))(),
       /*ugg: new (require('../providers/UGG'))(),*/
       leagueofgraphs: new (require('../providers/LeagueofGraphs'))(),
       lolflavor: new (require('../providers/LoLFlavor'))(),
