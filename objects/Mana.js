@@ -14,6 +14,7 @@ class Mana {
 
     UI.status('status-loading-storage');
     this._store = new Store();
+    //this.features = new (require('../objects/FeatureEnabler'))();
 
     if (!this.getStore().get('league-client-path'))
       require('../objects/Wizard')(this.devMode).on('closed', () => {
