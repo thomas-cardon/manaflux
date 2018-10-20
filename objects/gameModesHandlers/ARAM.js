@@ -9,7 +9,7 @@ class ARAMGameMode extends ClassicGameMode {
   }
 
   getProviders() {
-    return [''];
+    return ['lolflavor'];
   }
 }
 
