@@ -1,13 +1,12 @@
 const rp = require('request-promise-native');
 
 const ItemSetHandler = require('./ItemSetHandler');
-const ProviderHandler = new (require('./ProviderHandler'))();
 
 class ChampionSelectHandler {
   constructor() {
     this.gameModeHandlers = {
-      CLASSIC: new (require('../gameModesHandlers/CLASSIC'))(this, ProviderHandler),
-      ARAM: new (require('../gameModesHandlers/ARAM'))(this, ProviderHandler)
+      CLASSIC: new (require('../gameModesHandlers/CLASSIC'))(this, Mana.providerHandler),
+      ARAM: new (require('../gameModesHandlers/ARAM'))(this, Mana.providerHandler)
     };
 
     ipcRenderer.on('perks-shortcut', this.onShortcutPressedEvent);
@@ -37,7 +36,7 @@ class ChampionSelectHandler {
   }
 
   async _devDownloadProviderData(champion, pos, mode = 'CLASSIC', cache) {
-    return await ProviderHandler.getChampionData(champion, pos, this.gameModeHandlers[mode] ? this.gameModeHandlers[mode] : this.gameModeHandlers.CLASSIC, cache);
+    return await Mana.providerHandler.getChampionData(champion, pos, this.gameModeHandlers[mode] ? this.gameModeHandlers[mode] : this.gameModeHandlers.CLASSIC, cache);
   }
 
   onShortcutPressedEvent(event, next) {
@@ -84,7 +83,7 @@ class ChampionSelectHandler {
     this.gameModeHandler.onChampionChangeEvent(champion);
     this.onDisplayUpdatePreDownload(champion);
 
-    const res = await UI.indicator(ProviderHandler.getChampionData(champion, this.gameModeHandler.getPosition(), this.gameModeHandler, true), 'champion-select-downloading-data', champion.name);
+    const res = await UI.indicator(Mana.providerHandler.getChampionData(champion, this.gameModeHandler.getPosition(), this.gameModeHandler, true), 'champion-select-downloading-data', champion.name);
 
     if (res.championId === champion.id && this.inChampionSelect) this.onDisplayUpdate(champion, res);
     else console.log(`[ProviderHandler] ${Mana.champions[res.championId].name}'s data is not shown because champion picked has changed or you left champion select`);
@@ -110,7 +109,7 @@ class ChampionSelectHandler {
     if (data.timer.phase !== "FINALIZATION") return UI.status('champion-select-waiting-finalization-phase');
     this.inFinalizationPhase = true;
 
-    const res = await UI.indicator(ProviderHandler.getChampionData(champion, this.gameModeHandler.getPosition(), this.gameModeHandler, true), 'champion-select-downloading-data', champion.name);
+    const res = await UI.indicator(Mana.providerHandler.getChampionData(champion, this.gameModeHandler.getPosition(), this.gameModeHandler, true), 'champion-select-downloading-data', champion.name);
     if (res.championId === champion.id) this.onDisplayUpdate(champion, res);
     else console.log(`[ProviderHandler] ${Mana.champions[res.championId].name}'s data is not shown because champion picked has changed`);
   }
@@ -158,7 +157,7 @@ class ChampionSelectHandler {
     if (Mana.getStore().get('item-sets-enable')) {
       /* Delete ItemSets before downloading */
       await UI.indicator(ItemSetHandler.deleteItemSets(await UI.indicator(ItemSetHandler.getItemSetsByChampionKey(champion.key), 'item-sets-collecting-champion', champion.name)), 'item-sets-deleting');
-      await UI.indicator(Promise.all([].concat(...Object.values(res.roles).map(r => r.itemsets)).map(x => x._data ? x.save() : ItemSetHandler.parse(champion.key, x, 'UNK_' + Math.floor(Math.random() * 100)).save())), 'item-sets-save-status', champion.name);
+      await UI.indicator(Promise.all([].concat(...Object.values(res.roles).map(r => r.itemsets.save()))), 'item-sets-save-status', champion.name);
     }
   }
 
@@ -204,7 +203,7 @@ class ChampionSelectHandler {
 
     this.destroyDisplay();
 
-    ProviderHandler.onChampionSelectEnd();
+    Mana.providerHandler.onChampionSelectEnd();
   }
 
   stop() {
