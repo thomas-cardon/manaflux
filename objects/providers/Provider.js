@@ -24,7 +24,7 @@ class Provider {
   }
 
   getCondensedName() {
-    return this.slice(0, 3).toUpperCase();
+    return this.id.slice(0, 3).toUpperCase();
   }
 }
 
