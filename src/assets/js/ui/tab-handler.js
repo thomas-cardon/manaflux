@@ -2,8 +2,6 @@
 const Dots = {};
 
 Dots.onClickEvent = function(dot, tabId, i) {
-	console.log(`.tabcontent[data-tabid="${tabId}"][data-tabn="${i}"]`);
-
 	document.querySelectorAll('.tabcontent').forEach(x => x.style.display = 'none');
 	document.querySelector(`.tabcontent[data-tabid="${tabId}"][data-tabn="${i}"]`).style.display = 'block';
 
