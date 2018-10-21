@@ -57,22 +57,6 @@ class ChampionGGProvider extends Provider {
 
     let perks = this.scrapePerks($, champion, position);
 
-    /* Validation - TODO: replace by a global validator in Manaflux client/server */
-    let i = perks.length;
-    while (i--) {
-      const page = perks[i];
-
-      if (page.selectedPerkIds[0] === undefined && page.selectedPerkIds[1] === undefined) {
-        perks.splice(i, 1);
-        UI.error('providers-error-data');
-      }
-      else if (page.selectedPerkIds[0] === page.selectedPerkIds[1]) {
-        page.selectedPerkIds.splice(1, 1);
-        page.selectedPerkIds.splice(3, 0, fixes[page.primaryStyleId]);
-        UI.error('providers-cgg-perks-fix');
-      }
-    }
-
     return { perks, summonerspells, itemsets, availablePositions, position: position.toUpperCase() };
   }
 
