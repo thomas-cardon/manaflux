@@ -1,4 +1,6 @@
 const rp = require('request-promise-native');
+const DataValidator = new (require('../helpers/DataValidator'))();
+
 class ProviderHandler {
   constructor() {
     this._cache = [];
@@ -13,13 +15,22 @@ class ProviderHandler {
     };
   }
 
+  getProvider(x) {
+    return this.providers[x];
+  }
+
   async getChampionData(champion, preferredPosition, gameModeHandler, cache) {
     const gameMode = gameModeHandler.getGameMode() || 'CLASSIC';
 
-    /* 1/4 - Storage Checking */
-    if (Mana.getStore().has(`data.${champion.id}`) && cache) return Mana.getStore().get(`data.${champion.id}`);
+    /* 1/5 - Storage Checking */
+    if (Mana.getStore().has(`data.${champion.id}`) && cache) {
+      const data = Mana.getStore().get(`data.${champion.id}`);
+      DataValidator.onDataUpload(data, champion.id, gameMode);
 
-    /* 2/4 - Downloading */
+      return data;
+    }
+
+    /* 2/5 - Downloading */
     const providers = Mana.getStore().get('providers-order', Object.keys(this.providers)).filter(x => gameModeHandler.getProviders() === null || gameModeHandler.getProviders().includes(x));
     providers.unshift(...providers.splice(providers.indexOf('flux'), 1));
     providers.push(providers.splice(providers.indexOf('lolflavor'), 1)[0])
@@ -30,29 +41,16 @@ class ProviderHandler {
       provider = this.providers[provider];
       console.log(2, `[ProviderHandler] Using ${provider.name}`);
 
-      if (!data) {
-        try {
-          const x = await provider.getData(champion, preferredPosition, gameMode);
-          data = { roles: {}, championId: champion.id, gameMode, version: Mana.version, gameVersion: Mana.gameClient.branch, region: Mana.gameClient.region, ...x };
+      try {
+        if (data) this._merge(data, await provider.getData(champion, preferredPosition, gameMode));
+        else data = await provider.getData(champion, preferredPosition, gameMode);
 
-          console.dir(x);
-          console.dir(data);
-        }
-          catch(err) {
-          console.error(err);
-          console.log('[ProviderHandler] Couldn\'t aggregate data.');
-          continue;
-        }
+        DataValidator.onDataChange(data, provider.id, gameMode);
       }
-      else {
-        try {
-          this._merge(data, await provider.getData(champion, preferredPosition, gameMode));
-        }
-        catch(err) {
-          console.error(err);
-          console.log('[ProviderHandler] Couldn\'t aggregate data.');
-          continue;
-        }
+      catch(err) {
+        console.log('[ProviderHandler] Couldn\'t aggregate data.');
+        console.error(err);
+        continue;
       }
 
       /* If a provider can't get any data on that role/position, let's use another provider */
@@ -70,8 +68,11 @@ class ProviderHandler {
       break;
     }
 
-    /* 3/4 - Saving to offline cache
-       4/4 - Uploading to online cache */
+    /* 3/5 - Validate */
+    DataValidator.onDataDownloaded(data, champion.id, gameMode);
+
+    /* 4/5 - Saving to offline cache
+       5/5 - Uploading to online cache */
     if (!cache) return console.dir(data);
     this._cache.push(data);
 
