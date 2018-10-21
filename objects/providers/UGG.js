@@ -48,7 +48,7 @@ class UGGProvider extends Provider {
    * @param {string} position - Limited to: TOP, JUNGLE, MIDDLE, ADC, SUPPORT
    */
   scrapePerks(doc, champion, position) {
-    const page = { name: `UGG ${champion.name} ${position}`, selectedPerkIds: [] };
+    const page = { selectedPerkIds: [], provider: 'ugg' };
 
     doc.querySelectorAll('.perk-active > img').forEach(x => {
       console.log(x.src.slice(53));

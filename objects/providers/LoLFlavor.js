@@ -8,7 +8,7 @@ class LoLFlavorProvider extends Provider {
     this.base = 'http://lolflavor.com/champions/';
   }
 
-  getPosition(pos = 'aram') {
+  getPosition(pos) {
     switch(pos.toLowerCase()) {
       case 'bottom':
         return 'adc';
@@ -19,17 +19,24 @@ class LoLFlavorProvider extends Provider {
     }
   }
 
+  async getData(champion, preferredPosition, gameMode) {
+    return await this.getItemSets(champion, preferredPosition, gameMode);
+  }
+
   async getItemSets(champion, preferredPosition, gameMode) {
-    preferredPosition = getPosition(preferredPosition);
+    let LolflavorPosition = preferredPosition ? this.getPosition(preferredPosition) : 'aram';
 
     try {
       const res = await rp({
         method: 'GET',
-        uri: `${this.base}${champion.key}/Recommended/${champion.key}_${preferredPosition}_scrape.json`,
+        uri: `${this.base}${champion.key}/Recommended/${champion.key}_${LolflavorPosition}_scrape.json`,
         json: true
       });
 
-      return this._parse(res, champion, preferredPosition, gameMode);
+      let r = { roles: {} };
+      r.roles[preferredPosition || 'ARAM'] = this._parse(res, champion, preferredPosition || 'ARAM', gameMode);
+
+      return r;
     }
     catch(err) {
       if (err.statusCode === 404) throw Error('No item sets available for this champion and position');
@@ -37,7 +44,7 @@ class LoLFlavorProvider extends Provider {
     }
   }
 
-  async _parse(data, champion, position, gameMode) {
+  _parse(data, champion, position, gameMode) {
     let itemset = new ItemSet(champion.key, UI.stylizeRole(position), this.id);
 
     itemset.setData(data);
@@ -50,7 +57,11 @@ class LoLFlavorProvider extends Provider {
 
     itemset.setTitle(`LFR ${champion.name} - ${UI.stylizeRole(position)}`)
 
-    return { itemsets: [itemset] };
+    return { itemsets: [itemset], perks: [], summonerspells: [] };
+  }
+
+  getCondensedName() {
+    return 'LFV';
   }
 }
 

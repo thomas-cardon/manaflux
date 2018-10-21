@@ -70,7 +70,7 @@ class LoLAlyticsProvider extends Provider {
    * @param {string} position - Limited to: TOP, JUNGLE, MIDDLE, ADC, SUPPORT
    */
   scrapePerks($, champion, position) {
-    const page = { name: `ALY1 ${champion.name} ${position}`, selectedPerkIds: [] };
+    const page = { selectedPerkIds: [], provider: 'lolalytics' };
 
     $('.pick.highlight').siblings('[data-id]').each(function(index) {
       page.selectedPerkIds.push($(this).data('id'));
@@ -132,6 +132,10 @@ class LoLAlyticsProvider extends Provider {
     itemset.addBlock(new Block().setType({ i18n: 'item-sets-block-consumables-skill-order', arguments: [skillorder] }).addItem(2003).addItem(2138).addItem(2139).addItem(2140));
 
     return [itemset];
+  }
+
+  getCondensedName() {
+    return 'ALY';
   }
 }
 

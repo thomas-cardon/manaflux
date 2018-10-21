@@ -23,6 +23,9 @@ class Provider {
     return x[position] && x[position].perks ? x[position].perks : {};
   }
 
+  getCondensedName() {
+    return this.slice(0, 3).toUpperCase();
+  }
 }
 
 module.exports = Provider;

@@ -83,7 +83,7 @@ class ChampionGGProvider extends Provider {
    * @param {string} position - Limited to: TOP, JUNGLE, MIDDLE, ADC, SUPPORT
    */
   scrapePerks($, champion, position) {
-    let pages = [{ name: `CGG1 ${champion.name} ${position} (HW%)`, selectedPerkIds: [] }, { name: `CGG2 ${champion.name} ${position} (MF)`, selectedPerkIds: [] }];
+    let pages = [{ suffixName: `(HW%)`, selectedPerkIds: [], provider: 'championgg' }, { suffixName: `(MF)`, selectedPerkIds: [], provider: 'championgg' }];
 
     $("img[src*='perk-images']", $("div[class^=Slot__LeftSide]")).each(function(index) {
       let page = Math.trunc(index / 8), perk = $(this).attr("src").slice(38);
@@ -175,6 +175,10 @@ class ChampionGGProvider extends Provider {
     itemset._data.blocks[2] = new Block().setType({ i18n: 'item-sets-block-trinkets' }).addItem(2055).addItem(3340).addItem(3341).addItem(3348).addItem(3363);
 
     return [itemset];
+  }
+
+  getCondensedName() {
+    return 'CGG';
   }
 }
 

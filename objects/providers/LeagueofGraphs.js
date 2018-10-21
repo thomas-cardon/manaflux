@@ -56,7 +56,7 @@ class LeagueofGraphsProvider extends Provider {
    * @param {string} position - Limited to: TOP, JUNGLE, MIDDLE, ADC, SUPPORT
    */
   scrapePerks($, champion, position) {
-    let pages = [{ selectedPerkIds: [], name: `LOG1 ${champion.name} ${position}` }, { selectedPerkIds: [], name: `LOG2 ${champion.name} ${position}` }];
+    let pages = [{ selectedPerkIds: [] }, { selectedPerkIds: [] }];
 
     for (let page in pages) {
       $('table').eq(page).find('tr').each(function(index) {
@@ -131,6 +131,10 @@ class LeagueofGraphsProvider extends Provider {
     itemset.addBlock(new Block().setType({ i18n:'item-sets-block-consumables' }).addItem(2003).addItem(2138).addItem(2139).addItem(2140));
     itemset.addBlock(new Block().setType({ i18n: 'item-sets-block-trinkets' }).addItem(2055).addItem(3340).addItem(3341).addItem(3348).addItem(3363));
     return [itemset];
+  }
+
+  getCondensedName() {
+    return 'LOG';
   }
 }
 
