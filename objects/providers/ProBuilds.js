@@ -29,6 +29,10 @@ class ProBuildsProvider extends Provider {
 
     return { itemsets: [itemset] };
   }
+
+  getCondensedName() {
+    return 'PBD';
+  }
 }
 
 module.exports = ProBuildsProvider;
