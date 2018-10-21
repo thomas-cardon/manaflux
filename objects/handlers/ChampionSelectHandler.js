@@ -85,8 +85,9 @@ class ChampionSelectHandler {
     this.onDisplayUpdatePreDownload(champion);
 
     const res = await UI.indicator(ProviderHandler.getChampionData(champion, this.gameModeHandler.getPosition(), this.gameModeHandler, true), 'champion-select-downloading-data', champion.name);
-    if (res.championId === champion.id) this.onDisplayUpdate(champion, res);
-    else console.log(`[ProviderHandler] ${Mana.champions[res.championId].name}'s data is not shown because champion picked has changed`);
+
+    if (res.championId === champion.id && this.inChampionSelect) this.onDisplayUpdate(champion, res);
+    else console.log(`[ProviderHandler] ${Mana.champions[res.championId].name}'s data is not shown because champion picked has changed or you left champion select`);
   }
 
   async _finalizationTick(data) {
@@ -139,11 +140,8 @@ class ChampionSelectHandler {
     if (Object.keys(res.roles).length === 0) return console.error(i18n.__('providers-error-data'));
 
     Object.keys(res.roles).forEach(r => {
-      if (res.roles[r].perks.length === 0) {
-        UI.error('providers-error-perks', champion.name, r);
-        delete res.roles[r];
-      }
-      else $('#positions').append(`<option value="${r}">${UI.stylizeRole(r)}</option>`);
+      if (res.roles[r].perks.length === 0) UI.error('providers-error-perks', champion.name, r);
+      $('#positions').append(`<option value="${r}">${UI.stylizeRole(r)}</option>`);
     });
 
     const self = this;
@@ -165,9 +163,9 @@ class ChampionSelectHandler {
   }
 
   onPerkPositionChange(champion, position, data) {
-    UI.enableHextechAnimation(champion, data.perks[0].primaryStyleId);
+    UI.enableHextechAnimation(champion, (data && data.perks && data.perks[0]) ? data.perks[0].primaryStyleId : 'white');
 
-    this._updatePerksDisplay(champion, position, data.perks);
+    if (data.perks.length > 0) this._updatePerksDisplay(champion, position, data.perks);
     if (data.summonerspells.length > 0) this._updateSummonerSpellsDisplay(champion, position, data.summonerspells);
   }
 
