@@ -17,7 +17,7 @@ class ProviderHandler {
     const gameMode = gameModeHandler.getGameMode() || 'CLASSIC';
 
     /* 1/4 - Storage Checking */
-    if (Mana.getStore().has(`data.${champion.id}`) && cache) return Mana.getStore().get(`data.${champion.key}`);
+    if (Mana.getStore().has(`data.${champion.id}`) && cache) return Mana.getStore().get(`data.${champion.id}`);
 
     /* 2/4 - Downloading */
     const providers = Mana.getStore().get('providers-order', Object.keys(this.providers)).filter(x => gameModeHandler.getProviders() === null || gameModeHandler.getProviders().includes(x));
@@ -34,6 +34,9 @@ class ProviderHandler {
         try {
           const x = await provider.getData(champion, preferredPosition, gameMode);
           data = { roles: {}, championId: champion.id, gameMode, version: Mana.version, gameVersion: Mana.gameClient.branch, region: Mana.gameClient.region, ...x };
+
+          console.dir(x);
+          console.dir(data);
         }
           catch(err) {
           console.error(err);
