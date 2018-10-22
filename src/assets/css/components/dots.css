@@ -1,4 +1,5 @@
 .dot:hover {
+  cursor: pointer;
   background-clip: unset;
   background-color: #cdbe91 !important;
 }
