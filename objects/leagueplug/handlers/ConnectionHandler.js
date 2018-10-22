@@ -86,6 +86,8 @@ class ConnectionHandler extends EventEmitter {
       console.log(2, '[ConnectionHandler] Connection to League has ended');
 
       this._connected = false;
+      this._loginData = this._lockfile = null;
+
       this.emit('disconnected');
     });
   }
