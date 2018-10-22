@@ -75,7 +75,6 @@ class ChampionSelectHandler {
   async _normalTick(data) {
     if (this._lastChampionId === this.gameModeHandler.getPlayer().championId) return;
     if ((this._lastChampionId = this.gameModeHandler.getPlayer().championId) === 0) return UI.status('champion-select-pick-a-champion');
-    this.hasLoadedUI = false;
 
     const champion = Mana.champions[this.gameModeHandler.getPlayer().championId];
 
@@ -86,7 +85,10 @@ class ChampionSelectHandler {
     const res = await UI.indicator(Mana.providerHandler.getChampionData(champion, this.gameModeHandler.getPosition(), this.gameModeHandler, true), 'champion-select-downloading-data', champion.name);
 
     if (res.championId === champion.id && this.inChampionSelect) this.onDisplayUpdate(champion, res);
-    else console.log(`[ProviderHandler] ${Mana.champions[res.championId].name}'s data is not shown because champion picked has changed or you left champion select`);
+    else {
+      if (!this.inChampionSelect) this.destroyDisplay();
+      console.log(`[ProviderHandler] ${Mana.champions[res.championId].name}'s data is not shown because champion picked has changed or you left champion select`);
+    }
   }
 
   async _finalizationTick(data) {
@@ -98,20 +100,20 @@ class ChampionSelectHandler {
 
     const champion = Mana.champions[this.gameModeHandler.getPlayer().championId];
 
-    if (!this.hasLoadedUI) {
-      this.hasLoadedUI = true;
-
-      UI.status('common-loading');
-      this.gameModeHandler.onChampionChangeEvent(champion);
-      this.onDisplayUpdatePreDownload(champion);
-    }
+    UI.status('common-loading');
+    this.gameModeHandler.onChampionChangeEvent(champion);
+    this.onDisplayUpdatePreDownload(champion);
 
     if (data.timer.phase !== "FINALIZATION") return UI.status('champion-select-waiting-finalization-phase');
     this.inFinalizationPhase = true;
 
     const res = await UI.indicator(Mana.providerHandler.getChampionData(champion, this.gameModeHandler.getPosition(), this.gameModeHandler, true), 'champion-select-downloading-data', champion.name);
-    if (res.championId === champion.id) this.onDisplayUpdate(champion, res);
-    else console.log(`[ProviderHandler] ${Mana.champions[res.championId].name}'s data is not shown because champion picked has changed`);
+
+    if (res.championId === champion.id && this.inChampionSelect) this.onDisplayUpdate(champion, res);
+    else {
+      if (!this.inChampionSelect) this.destroyDisplay();
+      console.log(`[ProviderHandler] ${Mana.champions[res.championId].name}'s data is not shown because champion picked has changed or you left champion select`);
+    }
   }
 
   async onFirstTickEvent(data) {
