@@ -8,6 +8,13 @@ class User extends Summoner {
     this._perksInventory = new PerksInventory();
   }
 
+  isLoggedIn() {
+    return new Promise((resolve, reject) => {
+      ipcRenderer.once('lcu-logged-in', (event, d) => resolve(d))
+      .send('lcu-logged-in');
+    });
+  }
+
   async getGameMode() {
     return (await this.getChatMe()).lol.gameMode;
   }
