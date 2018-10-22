@@ -46,7 +46,7 @@ class Mana {
   }
 
   async preload() {
-    UI.status('status-loading-data-login');
+    UI.status('status-please-login');
 
     this.gameClient = new (require('./riot/leagueoflegends/GameClient'))();
     this.assetsProxy = new (require('./riot/leagueoflegends/GameAssetsProxy'))();
