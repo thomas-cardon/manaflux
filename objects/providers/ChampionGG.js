@@ -67,7 +67,7 @@ class ChampionGGProvider extends Provider {
    * @param {string} position - Limited to: TOP, JUNGLE, MIDDLE, ADC, SUPPORT
    */
   scrapePerks($, champion, position) {
-    let pages = [{ suffixName: `(HW%)`, selectedPerkIds: [], provider: 'championgg' }, { suffixName: `(MF)`, selectedPerkIds: [], provider: 'championgg' }];
+    let pages = [{ suffixName: `(HW%)`, selectedPerkIds: [] }, { suffixName: `(MF)`, selectedPerkIds: [] }];
 
     $("img[src*='perk-images']", $("div[class^=Slot__LeftSide]")).each(function(index) {
       let page = Math.trunc(index / 8), perk = $(this).attr("src").slice(38);
