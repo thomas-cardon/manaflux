@@ -28,8 +28,14 @@ class ChampionGGProvider extends Provider {
     for (const position of d.availablePositions) {
       console.log(2, `[Champion.GG] Gathering data (${position.name})`);
 
-      data.roles[position.name] = this._scrape(await rp(position.link), champion, gameMode);
-      delete data.roles[position.name].position;
+      try {
+        data.roles[position.name] = this._scrape(await rp(position.link), champion, gameMode);
+        delete data.roles[position.name].position;
+      }
+      catch(err) {
+        console.log(`[ProviderHandler] [Champion.GG] Something happened while gathering data (${position.name})`);
+        console.error(err);
+      }
     }
 
     delete data.roles[d.position].availablePositions;
