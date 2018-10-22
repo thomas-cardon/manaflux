@@ -52,7 +52,7 @@ class GameClient {
     for (const style of this.perks)
       for (const slot of style.slots)
         for (const perk of slot.runes)
-          if (perk.icon === img) return perk;
+          if (perk.icon.toLowerCase() === img.toLowerCase()) return perk;
   }
 
   findSummonerSpellByName(name) {
