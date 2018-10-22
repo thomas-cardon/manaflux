@@ -9,7 +9,7 @@ class ARAMGameMode extends ClassicGameMode {
   }
 
   getProviders() {
-    return ['metasrc', 'lolflavor'];
+    return ['metasrc', 'lolflavor', 'leagueofgraphs'];
   }
 }
 

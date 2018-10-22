@@ -11,15 +11,27 @@ class LeagueofGraphsProvider extends Provider {
   async getData(champion, gameMode, preferredPosition) {
     let data = { roles: {} };
 
-    for (let x of ['JUNGLE', 'MIDDLE', 'TOP', 'ADC', 'SUPPORT']) {
-      console.log(2, `[ProviderHandler] [LOG] Gathering data (${x})`);
-
+    if (gameMode === 'ARAM' || preferredPosition === 'ARAM') {
       try {
-        data.roles[x] = await this._scrape(champion, gameMode, x);
+        console.log(2, `[ProviderHandler] [LOG] Gathering data (ARAM)`);
+        data.roles.ARAM = await this._scrape(champion, gameMode, preferredPosition);
       }
       catch(err) {
-        console.log(`[ProviderHandler] [Champion.GG] Something happened while gathering data (${position.name})`);
+        console.log(`[ProviderHandler] [League of Graphs] Something happened while gathering data (ARAM)`);
         console.error(err);
+      }
+    }
+    else {
+      for (let x of ['JUNGLE', 'MIDDLE', 'TOP', 'ADC', 'SUPPORT']) {
+        console.log(2, `[ProviderHandler] [LOG] Gathering data (${x})`);
+
+        try {
+          data.roles[x] = await this._scrape(champion, gameMode, x);
+        }
+        catch(err) {
+          console.log(`[ProviderHandler] [League of Graphs] Something happened while gathering data (${x})`);
+          console.error(err);
+        }
       }
     }
 
@@ -31,12 +43,12 @@ class LeagueofGraphsProvider extends Provider {
   }
 
   async _scrape(champion, gameMode, position) {
-    let promises = [rp(`${this.base}/runes/${champion.key.toLowerCase()}${position ? '/' + position : ''}`)];
+    let promises = [rp(`${this.base}/runes/${champion.key}${position ? '/' + position : ''}`.toLowerCase())];
 
-    promises.push(Mana.getStore().get('item-sets-enable') ? rp(`${this.base}/items/${champion.key.toLowerCase()}${position ? '/' + position : ''}`) : Promise.resolve());
-    promises.push(Mana.getStore().get('summoner-spells') ? rp(`${this.base}/spells/${champion.key.toLowerCase()}${position ? '/' + position : ''}`) : Promise.resolve());
-    promises.push(Mana.getStore().get('statistics') ? rp(`${this.base}/stats/${champion.key.toLowerCase()}${position ? '/' + position : ''}`) : Promise.resolve());
-    promises.push(rp(`${this.base}/skills-orders/${champion.key.toLowerCase()}${position ? '/' + position : ''}`));
+    promises.push(Mana.getStore().get('item-sets-enable') ? rp(`${this.base}/items/${champion.key}${position ? '/' + position : ''}`.toLowerCase()) : Promise.resolve());
+    promises.push(Mana.getStore().get('summoner-spells') ? rp(`${this.base}/spells/${champion.key}${position ? '/' + position : ''}`.toLowerCase()) : Promise.resolve());
+    promises.push(Mana.getStore().get('statistics') ? rp(`${this.base}/stats/${champion.key}${position ? '/' + position : ''}`.toLowerCase()) : Promise.resolve());
+    promises.push(rp(`${this.base}/skills-orders/${champion.key}${position ? '/' + position : ''}`.toLowerCase()));
 
     const data = await Promise.all(promises);
 
@@ -82,10 +94,11 @@ class LeagueofGraphsProvider extends Provider {
   /**
    * Scrapes summoner spells from a League of Graphs page
    * @param {cheerio} $ - The cheerio object
-   * @param {string} gameMode - A gamemode, from League Client, such as CLASSIC, ARAM, etc.
    */
-  scrapeSummonerSpells($, gameMode) {
-    return $('td.medium-text-left.small-text-center > span > img').slice(0, 2).toArray().map(x => Mana.gameClient.findSummonerSpellByName(x.attribs.alt).id);
+  scrapeSummonerSpells($) {
+    // TODO: find a way to dynamically find a summoner spell ID without slowing down Manaflux
+    // (and that finds one that exists)
+    return [];
   }
 
   /**
