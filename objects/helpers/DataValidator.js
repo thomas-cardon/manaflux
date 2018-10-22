@@ -1,3 +1,5 @@
+const ItemSetHandler = require('../handlers/ItemSetHandler');
+
 class DataValidator {
 
   onDataChange(data, providerId) {
@@ -10,7 +12,7 @@ class DataValidator {
       });
 
       role.itemsets.forEach(x => {
-        if (!x._data.provider) x._data.provider = providerId;
+        if (!x.provider) x.provider = x._data.provider = providerId;
       });
     });
   }
@@ -33,7 +35,7 @@ class DataValidator {
 
   onDataUpload(data) {
     for (const [roleName, role] of Object.entries(data.roles)) {
-      role.itemsets = role.itemsets.map(x => x._data ? x : ItemSetHandler.parse(champion.key, x, Mana.providerHandler.getProvider(set.provider).getCondensedName()));
+      role.itemsets = role.itemsets.map(x => x._data ? x : ItemSetHandler.parse(champion.key, x, Mana.providerHandler.getProvider(x.provider).getCondensedName()));
 
       role.perks.forEach(x => delete x.name);
       role.itemsets.forEach(x => delete x._data.title);
