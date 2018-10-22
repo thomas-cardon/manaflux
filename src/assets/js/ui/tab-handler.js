@@ -10,11 +10,15 @@ Dots.onClickEvent = function(dot, tabId, i) {
 	dot.classList.add('selected');
 
 	Dots.lastSelected = dot;
+
+	Sounds.play('buttonClick');
 }
 
 document.addEventListener("DOMContentLoaded", function() {
 	document.querySelectorAll('.btn.tab').forEach(tab => {
 		tab.addEventListener('click', event => {
+			Sounds.play('buttonClick');
+
 			document.querySelector('.tab.active').classList.remove('active');
 			event.target.classList.add('active');
 
