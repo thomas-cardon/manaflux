@@ -161,6 +161,8 @@ class ChampionSelectHandler {
       await UI.indicator(ItemSetHandler.deleteItemSets(await UI.indicator(ItemSetHandler.getItemSetsByChampionKey(champion.key), 'item-sets-collecting-champion', champion.name)), 'item-sets-deleting');
       await UI.indicator(Promise.all([].concat(...Object.values(res.roles).map(r => r.itemsets.map(x => x.save())))), 'item-sets-save-status', champion.name);
     }
+
+    Sounds.play('dataLoaded');
   }
 
   onPerkPositionChange(champion, position, data) {
