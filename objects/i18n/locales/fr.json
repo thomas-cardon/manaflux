@@ -111,7 +111,7 @@
   "item-sets-deleting": "Suppression des sets d'objets",
   "item-sets-save-status": "Sauvegarde des sets d'objets pour %s",
   "item-sets-unknown": "Set d'objet Manaflux inconnu",
-  "item-sets-block-starter": "Starter | Sorts:",
+  "item-sets-block-starter": "Starter | Sorts: %s",
   "item-sets-block-starter-numbered": "Starter %s | Sorts: %s",
   "item-sets-block-recommanded": "Objets recommandés",
   "item-sets-block-core-build": "Objets principaux",
