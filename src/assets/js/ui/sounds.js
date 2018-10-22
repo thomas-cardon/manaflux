@@ -10,10 +10,9 @@ Sounds._dict = {
   dataLoaded: 'data-loaded.ogg'
 };
 
-Sounds.play = function(id) {
+Sounds.play = async function(id) {
   document.getElementById('soundEngineSource').src = 'assets/audio/' + Sounds._dict[id];
-  document.getElementById('soundEngine').load();
-  document.getElementById('soundEngine').play();
+  await document.getElementById('soundEngine').load();
 };
 
 Sounds.stop = function() {
