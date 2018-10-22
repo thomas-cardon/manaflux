@@ -41,6 +41,8 @@ class Mana {
     ipcRenderer.on('lcu-logged-in', (event, d) => {
       if (d) this.load(d);
     });
+
+    setTimeout(() => Sounds.play('loaded'), 800);
   }
 
   async preload() {
