@@ -18,6 +18,7 @@ class LeagueofGraphsProvider extends Provider {
         data.roles[x] = await this._scrape(champion, gameMode, x);
       }
       catch(err) {
+        console.log(`[ProviderHandler] [Champion.GG] Something happened while gathering data (${position.name})`);
         console.error(err);
       }
     }
