@@ -47,15 +47,23 @@ class LoLFlavorProvider extends Provider {
   _parse(data, champion, position, gameMode) {
     let itemset = new ItemSet(champion.key, UI.stylizeRole(position), this.id);
 
-    itemset.setData(data);
+    if (gameMode === 'ARAM') itemset.setMap('HA');
 
-    itemset._data.blocks[0].setType('item-sets-block-consumables');
-    itemset._data.blocks[1].setType({ i18n: 'item-sets-block-starter', arguments: [itemset._data.blocks[2].getType().slice(-5)], display: line => line.split(' | ')[0] });
-    itemset._data.blocks[2].setType('item-sets-block-core-build');
-    itemset._data.blocks[3].setType('item-sets-block-endgame');
-    itemset._data.blocks[4].setType('item-sets-block-boots');
+    let types = [
+      'item-sets-block-consumables',
+      { i18n: 'item-sets-block-starter', arguments: [data.blocks[2].type.slice(-5)] },
+      'item-sets-block-core-build',
+      'item-sets-block-endgame',
+      'item-sets-block-boots',
+      'item-sets-block-situational'
+    ];
 
-    itemset.setTitle(`LFR ${champion.name} - ${UI.stylizeRole(position)}`)
+    data.blocks.forEach((data, i) => {
+      let block = new Block().setType(types[i] || data.type);
+      data.items.forEach(x => block.addItem(x.id, x.count));
+
+      itemset.addBlock(block);
+    });
 
     return { itemsets: [itemset], perks: [], summonerspells: [] };
   }
