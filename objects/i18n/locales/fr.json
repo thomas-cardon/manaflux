@@ -83,6 +83,7 @@
   "ui": "Interface utilisateur",
   "ui-gradient": "Dégradé",
   "ui-animations": "Animations",
+  "ui-animations-smoke": "Fumée",
   "ui-background": "Thème",
   "ui-background-default": "Thème par défaut",
   "ui-background-forest": "Forêt",
