@@ -39,8 +39,14 @@ class OPGGProvider extends Provider {
     for (const position of d.availablePositions) {
       console.log(2, `[ProviderHandler] [OP.GG] Gathering data (${position.name})`);
 
-      data.roles[position.name] = this._scrape(await rp(position.link), champion, gameMode);
-      delete data.roles[position.name].position;
+      try {
+        data.roles[position.name] = this._scrape(await rp(position.link), champion, gameMode);
+        delete data.roles[position.name].position;
+      }
+      catch(err) {
+        console.log(`[ProviderHandler] [OP.GG] Something happened while gathering data (${position.name})`);
+        console.error(err);
+      }
     }
 
     delete data.roles[d.position].availablePositions;
@@ -139,7 +145,7 @@ class OPGGProvider extends Provider {
   scrapeItemSets($, champion, position, skillorder) {
     const itemrows = $('.champion-overview__table').eq(1).find('.champion-overview__row');
 
-    let itemset = new ItemSet(champion.key, position, this.id).setTitle(`OPG ${champion.name} - ${position}`);
+    let itemset = new ItemSet(champion.key, position, this.id);
     let boots = new Block().setType({ i18n: 'item-sets-block-boots' });
 
     /* Block Starter */
