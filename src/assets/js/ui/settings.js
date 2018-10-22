@@ -5,6 +5,8 @@ $('input[type!="checkbox"][data-settings-key], select[data-settings-key]').each(
 }).change(function() {
   console.log(2, `[Settings] Changing value of ${$(this).data('settings-key')} to: ${this.value}`);
   Mana.getStore().set($(this).data('settings-key'), this.value);
+
+  Sounds.play('dropdownSelect');
 });
 
 /* checkbox element support */
@@ -16,6 +18,8 @@ $('input[type="checkbox"]').each(function() {
 }).change(function() {
   console.log(2, `[Settings] Changing value of ${$(this).data('settings-key')} to: ${$(this).is(":checked")}`);
   Mana.getStore().set($(this).data('settings-key'), this.checked);
+
+  Sounds.play('checkboxClick');
 });
 
 /* sortable lists support */
@@ -61,6 +65,8 @@ $(".sortable[data-settings-key]").each(function() {
 
       Mana.getStore().set($(this).data('settings-key'), array);
       console.log(2, `[Settings] Changing value of #${$(this).data('settings-key')} to: ${array}`);
+
+      Sounds.play('checkboxClick');
     }
   });
 });
