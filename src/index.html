@@ -186,7 +186,7 @@
       <p class="option-name" data-i18n="category-advanced"></p>
       <div class="option">
         <p class="suboption-name" data-i18n="providers-order"></p>
-        <ul class="sortable" data-settings-key="providers-order" data-settings-default="flux,championgg,leagueofgraphs,opgg,lolflavor" data-settings-merge-list-if-missing-value="true" data-settings-remove-if-missing-value="true">
+        <ul class="sortable" data-settings-key="providers-order" data-settings-default="flux,championgg,leagueofgraphs,opgg,metasrc,lolflavor" data-settings-merge-list-if-missing-value="true" data-settings-remove-if-missing-value="true">
         </ul>
       </div>
     </div>
@@ -204,8 +204,11 @@
     <p class="status" data-i18n="status-loading"></p>
     <p class="version"></p>
   </div>
-    <!-- END SECTIONS -->
+  <!-- END SECTIONS -->
   </div>
+  <audio id="soundEngine">
+    <source id="soundEngineSource" type="audio/ogg" />
+  </audio>
   <script src="vendor/jquery-3.3.1.min.js" onload="window.$ = window.jQuery = module.exports;"></script>
   <script src="vendor/jquery-ui.min.js"></script>
   <script src="vendor/markdown.min.js"></script>
@@ -235,5 +238,6 @@
   <script src="assets/js/ui/custom-components.js"></script>
   <script src="assets/js/ui/update.js"></script>
   <script src="assets/js/ui/tab-handler.js"></script>
+  <script src="assets/js/ui/sounds.js"></script>
 </body>
 </html>
