@@ -14,7 +14,10 @@ class METAsrcProvider extends Provider {
 
     let data = { roles: { [d.position]: d } };
 
-    if (gameMode === 'ARAM') return data;
+    if (gameMode === 'ARAM') {
+      delete data.roles.ARAM.position;
+      return data;
+    }
 
     for (const position of d.availablePositions) {
       console.log(2, `[ProviderHandler] [METAsrc] Gathering data (${position.name})`);
