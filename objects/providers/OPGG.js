@@ -82,7 +82,7 @@ class OPGGProvider extends Provider {
    * @param {string} position - Limited to: TOP, JUNGLE, MIDDLE, ADC, SUPPORT
    */
   scrapePerks($, champion, position) {
-    let pages = [{ selectedPerkIds: [], provider: 'opgg' }, { selectedPerkIds: [], provider: 'opgg' }];
+    let pages = [{ selectedPerkIds: [] }, { selectedPerkIds: [] }];
 
     $('.perk-page').find('img.perk-page__image.tip').slice(0, 4).each(function(index) {
       const page = Math.trunc(index / 2);
