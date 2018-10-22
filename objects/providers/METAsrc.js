@@ -8,32 +8,46 @@ class METAsrcProvider extends Provider {
     this.base = 'https://www.metasrc.com/';
   }
 
-  getGameMode(mode) {
-    switch(mode.toLowerCase()) {
-      case 'aram':
-      return 'aram';
-      case 'classic':
-      return '5v5';
-      default:
-      return '5v5';
-    }
-  }
-
   async getData(champion, preferredPosition, gameMode) {
-    const res = await rp({
-      method: 'GET',
-      uri: `${this.base}${this.getGameMode(gameMode)}/champion/${champion.key.toLowerCase()}`,
-      json: true
+    const res = await rp(`${this.base}${this.getGameMode(gameMode)}/champion/${champion.key.toLowerCase()}`);
+    const d = this._scrape(res, champion, preferredPosition, gameMode);
+
+    let data = { roles: { [d.position]: d } };
+
+    if (gameMode === 'ARAM') return data;
+
+    for (const position of d.availablePositions) {
+      console.log(2, `[ProviderHandler] [METAsrc] Gathering data (${position.name})`);
+      try {
+        data.roles[position.position] = this._scrape(await rp(`${this.base}${this.getGameMode(gameMode)}/champion/${champion.key.toLowerCase()}/${position.metasrcPosition}`), champion, position.position, gameMode);
+      }
+      catch(err) {
+        console.log(`[ProviderHandler] [METAsrc] Something happened while gathering data (${position.name})`);
+        console.error(err);
+      }
+    }
+
+    Object.values(data.roles).forEach(role => {
+      delete role.availablePositions;
+      delete role.position;
     });
 
-    return this._scrape(res, champion, preferredPosition, gameMode);
+    return data;
   }
 
   _scrape(html, champion, position, gameMode) {
-    let $ = cheerio.load(html);
+    let $ = cheerio.load(html), availablePositions = [];
+
+    if (gameMode === 'CLASSIC') {
+      $('a[href^="/5v5/champion/"] > table').each(function(index) {
+        if ($(this).css('box-shadow') === 'none') availablePositions.push({ metasrcPosition: $(this).find('h1').text().toLowerCase(), position: $(this).find('h1').text() === 'MID' ? 'MIDDLE' : $(this).find('h1').text() });
+        else position = $(this).find('h1').text() === 'MID' ? 'MIDDLE' : $(this).find('h1').text();
+      });
+    }
+    else if (gameMode === 'ARAM') position = 'ARAM';
 
     let itemsets = this.scrapeItemSets($, champion, position, this.scrapeSkillOrder($));
-    return { perks: this.scrapePerks($), summonerspells: this.scrapeSummonerSpells($), itemsets };
+    return { position, perks: this.scrapePerks($), summonerspells: this.scrapeSummonerSpells($), itemsets, availablePositions };
   }
 
   /**
@@ -44,15 +58,9 @@ class METAsrcProvider extends Provider {
     let page = { selectedPerkIds: [] };
 
     $('svg > image').each(function(index) {
-      try {
-        console.dir($(this).attr('href'));
-        console.dir(this);
-      }
-      catch(err) {}
-      
       if (index === 0) page.primaryStyleId = $(this).attr('href').slice(-8, -4);
-      else if (index === 5) page.primaryStyleId = $(this).attr('href').slice(-8, -4);
-      else page.selectedPerkIds.push(Mana.gameClient.findPerkByImage($(this).attr('href')).id);
+      else if (index === 5) page.subStyleId = $(this).attr('href').slice(-8, -4);
+      else page.selectedPerkIds.push(Mana.gameClient.findPerkByImage($(this).attr('href').slice(84)).id);
     });
 
     return [page];
@@ -63,13 +71,13 @@ class METAsrcProvider extends Provider {
    * @param {cheerio} $ - The cheerio object
    */
   scrapeSummonerSpells($) {
-    let summonerspells = [];
+    /*let summonerspells = [];
 
-    $('img[src^="https://ddragon.leagueoflegends.com/cdn/8.20.1/img/spell/"]').slice(0, 2).each(function(index) {
+    $('img[src*="/img/spell"]').slice(0, 2).each(function(index) {
       summonerspells.push(Mana.gameClient.findSummonerSpellByName($(this).attr('src').slice($(this).attr('src').lastIndexOf('/') + 1, -4)));
-    });
-
-    return summonerspells;
+    });*/
+    // TODO: find a way to dynamically find a summoner spell ID without slowing down Manaflux
+    return [];
   }
 
   /**
@@ -88,13 +96,36 @@ class METAsrcProvider extends Provider {
    * @param {object} skillorder
    */
   scrapeItemSets($, champion, position, skillorder) {
-    return [];
-    /*const itemrows = $('.champion-overview__table').eq(1).find('.champion-overview__row');
+    const itemset = new ItemSet(champion.key, position, this.id);
 
-    let itemset = new ItemSet(champion.key, position, this.id).setTitle(`OPG ${champion.name} - ${position}`);
+    let starter = new Block().setType({ i18n: 'item-sets-block-starter', display: line => line.split(' | ')[0] });
+    let core = new Block().setType({
+      i18n: 'item-sets-block-core-build-wr',
+      arguments: [$('a[href*="/champion/"] > table > tbody > tr').eq(2).find('td').text() + '%'], /* Winrate */
+      display: line => line.split(' - ')[0] /* Removes games */
+    });
 
-    return [itemset];*/
+    $('img[src*="/img/item/"]').each(function(index) {
+      let id = $(this).attr('src').slice(-8, -4);
+
+      if (index <= 2) starter.addItem(id);
+      else core.addItem(id);
+    });
+
+    itemset.addBlocks(starter, core);
+    return [itemset];
   }
+
+  getGameMode(mode) {
+      switch(mode.toLowerCase()) {
+        case 'aram':
+        return 'aram';
+        case 'classic':
+        return '5v5';
+        default:
+        return '5v5';
+      }
+    }
 
   getCondensedName() {
     return 'MSR';
