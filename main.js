@@ -113,14 +113,6 @@ ipcMain.on('tray', (event, show) => {
   tray.on('click', () => win.isVisible() ? win.hide() : win.showInactive());
 });
 
-ipcMain.on('auto-start', (event, enable) => {
-  if (process.argv[2] === '--dev') return;
-
-  launcher.isEnabled()
-  .then(enabled => !enabled && enable ? launcher.enable() : (enabled && !enable ? launcher.disable() : null))
-  .catch(err => event.sender.send('error', { type: 'AUTO-START', error: err }));
-});
-
 ipcMain.on('lcu-connection', (event, path) => {
   if (!path) return;
 
