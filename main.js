@@ -1,5 +1,8 @@
 const { app, BrowserWindow, ipcMain, globalShortcut, Menu, Tray } = require('electron');
 
+/* Command line parameters */
+app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
+
 global.log = new (require('./objects/handlers/LoggingHandler'))(3);
 const i18n = new (require('./objects/i18n'));
 
@@ -30,7 +33,7 @@ app.on('second-instance', function (argv, cwd) {
 let launcher = new AutoLaunch({ name: 'Manaflux' });
 
 function createWindow () {
-  win = new BrowserWindow({ width: 600, height: 600, frame: false, icon: __dirname + '/build/icon.' + (process.platform === 'win32' ? 'ico' : 'png'), backgroundColor: '#000A13', maximizable: false, resizable: false, disableblinkfeatures: 'BlockCredentialedSubresources', show: false });
+  win = new BrowserWindow({ width: 600, height: 600, frame: false, icon: __dirname + '/build/icon.' + (process.platform === 'win32' ? 'ico' : 'png'), backgroundColor: '#000A13', maximizable: false, resizable: false, show: false });
 
   win.loadURL(`file://${__dirname}/src/index.html`);
   win.setMenu(null);
