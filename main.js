@@ -9,7 +9,6 @@ const i18n = new (require('./objects/i18n'));
 const { autoUpdater } = require('electron-updater');
 
 const LeaguePlug = require('./objects/leagueplug');
-const AutoLaunch = require('auto-launch');
 
 require('./crash-reporting.js');
 
@@ -29,8 +28,6 @@ app.on('second-instance', function (argv, cwd) {
 
   win.focus();
 });
-
-let launcher = new AutoLaunch({ name: 'Manaflux' });
 
 function createWindow () {
   win = new BrowserWindow({ width: 600, height: 600, frame: false, icon: __dirname + '/build/icon.' + (process.platform === 'win32' ? 'ico' : 'png'), backgroundColor: '#000A13', maximizable: false, resizable: false, show: false });
