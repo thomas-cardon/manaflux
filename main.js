@@ -17,16 +17,15 @@ autoUpdater.fullChangelog = true;
 autoUpdater.autoDownload = false;
 autoUpdater.autoInstallOnAppQuit = false;
 
-const shouldQuit = app.makeSingleInstance((commandLine, workingDirectory) => {
-  if (!win) return;
+app.requestSingleInstanceLock();
+app.on('second-instance', function (argv, cwd) {
+  if (!win) app.quit();
 
   if (win.isMinimized()) win.restore();
   else if (!win.isVisible()) win.show();
 
   win.focus();
 });
-
-if (shouldQuit) return app.quit();
 
 let launcher = new AutoLaunch({ name: 'Manaflux' });
 
