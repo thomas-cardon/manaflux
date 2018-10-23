@@ -54,7 +54,7 @@ class DataValidator {
   }
 
   onItemSetsCheck(array, championId, role) {
-    array = array.map(x => x._data ? x : ItemSetHandler.parse(champion.key, x, Mana.providerHandler.getProvider(set.provider).getCondensedName()));
+    array = array.map(x => x._data ? x : ItemSetHandler.parse(champion.key, x, Mana.providerHandler.getProvider(x.provider).getCondensedName()));
     array.forEach((set, index) => {
       set._data.title = `${set._data.provider ? Mana.providerHandler.getProvider(set._data.provider).getCondensedName() : 'XXX'}${index + 1} ${Mana.champions[championId].name} > ${UI.stylizeRole(role)}`;
     });
