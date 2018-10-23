@@ -55,6 +55,11 @@ class ItemSet {
     return this;
   }
 
+  addBlocks(...blocks) {
+    blocks.forEach(block => this.addBlock(block));
+    return this;
+  }
+
   swapBlock(x, y) {
     let b = this._data.blocks[x];
     this._data.blocks[x] = this._data.blocks[y];

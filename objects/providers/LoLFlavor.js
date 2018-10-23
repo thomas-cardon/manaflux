@@ -8,7 +8,7 @@ class LoLFlavorProvider extends Provider {
     this.base = 'http://lolflavor.com/champions/';
   }
 
-  getPosition(pos = 'aram') {
+  getPosition(pos) {
     switch(pos.toLowerCase()) {
       case 'bottom':
         return 'adc';
@@ -19,17 +19,24 @@ class LoLFlavorProvider extends Provider {
     }
   }
 
+  async getData(champion, preferredPosition, gameMode) {
+    return await this.getItemSets(champion, preferredPosition, gameMode);
+  }
+
   async getItemSets(champion, preferredPosition, gameMode) {
-    preferredPosition = getPosition(preferredPosition);
+    let LolflavorPosition = preferredPosition ? this.getPosition(preferredPosition) : 'aram';
 
     try {
       const res = await rp({
         method: 'GET',
-        uri: `${this.base}${champion.key}/Recommended/${champion.key}_${preferredPosition}_scrape.json`,
+        uri: `${this.base}${champion.key}/Recommended/${champion.key}_${LolflavorPosition}_scrape.json`,
         json: true
       });
 
-      return this._parse(res, champion, preferredPosition, gameMode);
+      let r = { roles: {} };
+      r.roles[preferredPosition || 'ARAM'] = this._parse(res, champion, preferredPosition || 'ARAM', gameMode);
+
+      return r;
     }
     catch(err) {
       if (err.statusCode === 404) throw Error('No item sets available for this champion and position');
@@ -37,20 +44,32 @@ class LoLFlavorProvider extends Provider {
     }
   }
 
-  async _parse(data, champion, position, gameMode) {
+  _parse(data, champion, position, gameMode) {
     let itemset = new ItemSet(champion.key, UI.stylizeRole(position), this.id);
 
-    itemset.setData(data);
+    if (gameMode === 'ARAM') itemset.setMap('HA');
 
-    itemset._data.blocks[0].setType('item-sets-block-consumables');
-    itemset._data.blocks[1].setType({ i18n: 'item-sets-block-starter', arguments: [itemset._data.blocks[2].getType().slice(-5)], display: line => line.split(' | ')[0] });
-    itemset._data.blocks[2].setType('item-sets-block-core-build');
-    itemset._data.blocks[3].setType('item-sets-block-endgame');
-    itemset._data.blocks[4].setType('item-sets-block-boots');
+    let types = [
+      'item-sets-block-consumables',
+      { i18n: 'item-sets-block-starter', arguments: [data.blocks[2].type.slice(-5).split('').map(x => x === '>' ? ' > ' : i18n.__('key-' + x))] },
+      'item-sets-block-core-build',
+      'item-sets-block-endgame',
+      'item-sets-block-boots',
+      'item-sets-block-situational'
+    ];
 
-    itemset.setTitle(`LFR ${champion.name} - ${UI.stylizeRole(position)}`)
+    data.blocks.forEach((data, i) => {
+      let block = new Block().setType(types[i] || data.type);
+      data.items.forEach(x => block.addItem(x.id, x.count));
 
-    return { itemsets: [itemset] };
+      itemset.addBlock(block);
+    });
+
+    return { itemsets: [itemset], perks: [], summonerspells: [] };
+  }
+
+  getCondensedName() {
+    return 'LFV';
   }
 }
 

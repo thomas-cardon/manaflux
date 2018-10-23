@@ -30,7 +30,7 @@ body {
 
 .sortable {
   list-style: disc inside;
-  width: 88%;
+  width: 100%;
   margin: 0;
   padding: 0;
 }
@@ -55,30 +55,6 @@ body {
   margin-top: -40px;
   margin-left: 15px;
   -webkit-app-region: no-drag;
-}
-
-.tab-arrow {
-  border: solid #735828;
-  border-width: 0 4px 4px 0;
-  display: inline-block;
-  padding: 4px;
-}
-
-.tab-arrow:hover {
-  border: solid #f0e6d2;
-  border-width: 0 4px 4px 0;
-}
-
-.arrow-right {
-  transform: rotate(-45deg);
-}
-
-.arrow-left {
-  transform: rotate(135deg);
-}
-
-.arrow-disabled {
-  opacity: 0.2;
 }
 
 .alertify-notifier {

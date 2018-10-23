@@ -79,6 +79,8 @@ UI.error = function(...args) {
   $('#warning').show();
 
   if (args[0] instanceof Error) {
+    console.error(args[0]);
+
     captureException(args[0]);
     alertify.notify(args[0].toString(), 'error', 10, () => $('#warning').hide());
     return args[0];

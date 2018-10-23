@@ -52,12 +52,16 @@ class GameClient {
     for (const style of this.perks)
       for (const slot of style.slots)
         for (const perk of slot.runes)
-          if (perk.icon === img) return perk;
+          if (perk.icon.toLowerCase() === img.toLowerCase()) return perk;
   }
 
   findSummonerSpellByName(name) {
     for (const spell of Object.values(Mana.summonerspells))
       if (spell.name == name) return spell;
+  }
+
+  findPerkStyleByPerkId(id) {
+    return Mana.gameClient.perks.find(x => x.slots.some(y => y.runes.some(z => z.id === parseInt(id))));
   }
 
   async load() {

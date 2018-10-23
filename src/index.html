@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="assets/css/components/button.css">
   <link rel="stylesheet" href="assets/css/components/input.css">
   <link rel="stylesheet" href="assets/css/components/dropdown.css">
+  <link rel="stylesheet" href="assets/css/components/dots.css">
   <link rel="stylesheet" href="assets/css/components/hr.css">
   <link rel="stylesheet" href="assets/css/components/settings.css">
   <link rel="stylesheet" href="assets/css/components/update.css">
@@ -20,6 +21,7 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
+  <video id="smokeAnimation" style="z-index: -30; position: absolute; display: none;" loop autoplay><source src="http://raw.communitydragon.org/8.20/plugins/rcp-fe-lol-uikit/global/default/videos/celebration-bg-magic.webm" type="video/webm"></video>
   <img src="assets/img/warning.png" id="warning" draggable="false" style="display: none;">
   <img src="assets/img/components/loading.gif" id="loading"></img>
   <div class="tab-container">
@@ -34,12 +36,9 @@
       <button type="button" class="btn control" onclick="remote.getCurrentWindow().minimize();"><i class="material-icons icon">remove</i></button>
       <button type="button" class="btn control" onclick="remote.getCurrentWindow().close();"><i class="material-icons icon">clear</i></button>
     </div>
-    <div id="nav-menu" style="display: none;">
-      <a data-custom-component="navigation-arrows" data-n="-1"><i class="tab-arrow arrow-left"></i></a>
-      <a data-custom-component="navigation-arrows" data-n="1"><i class="tab-arrow arrow-right"></i></a>
-    </div>
   </div>
   <div class="content">
+    <div id="dots"></div>
     <!-- BEGIN SECTIONS -->
     <div data-tabid="home" data-tabn=0 class="tabcontent center" style="display: block;">
       <div class="title">
@@ -56,7 +55,7 @@
         <img id="hextechAnimationBackground" data-custom-component="hextech-background">
       </div>
     </div>
-    <div data-tabid="settings" data-tabn=0 class="tabcontent" style="display: none; margin-left: 12%;">
+    <div data-tabid="settings" data-tabn=0 class="tabcontent" style="display: none; margin-left: 9%;">
       <p class="option-name" data-i18n="category-perks"></p>
       <div class="option">
         <p class="suboption-name" data-i18n="perks-max"></p>
@@ -100,11 +99,18 @@
         </div>
       </div>
     </div>
-    <div data-tabid="settings" data-tabn=1 class="tabcontent" style="display: none; margin-left: 12%;">
+    <div data-tabid="settings" data-tabn=1 class="tabcontent" style="display: none; margin-left: 9%;">
       <p class="option-name" data-i18n="category-misc"></p>
       <div class="option">
         <p class="suboption-name" data-i18n="champion-select-min-roles"></p>
         <input type="number" data-settings-key="champion-select-min-roles" data-settings-default="2" class="center-area" min="1" step="1" />
+      </div>
+      <div class="option">
+        <p class="suboption-name" data-i18n="champion-select-waiting-finalization-phase-button"></p>
+        <div class="options float-left checkboxContainer">
+          <input type="checkbox" data-settings-key="champion-select-waiting-finalization-phase" data-setting-default="true" />
+          <label data-i18n="common-enable"></label>
+        </div>
       </div>
       <div class="option">
         <p class="suboption-name" data-i18n="summoner-spells-priority"></p>
@@ -117,26 +123,26 @@
         <p class="suboption-name" data-i18n="ui-language-tester"></p>
         <button class="btn normal" data-custom-component="ui-language-tester" data-i18n="common-run"></button>
       </div>
-      <div class="option">
-        <p class="suboption-name" data-i18n="champion-select-waiting-finalization-phase-button"></p>
-        <div class="options float-left checkboxContainer">
-          <input type="checkbox" data-settings-key="champion-select-waiting-finalization-phase" data-setting-default="true" />
-          <label data-i18n="common-enable"></label>
-        </div>
-      </div>
       <hr class="break" />
       <p class="option-name" data-i18n="ui"></p>
-      <div class="option" style="width: 20%;">
+      <div class="option" style="width: 18%;">
         <p class="suboption-name" data-i18n="ui-animations"></p>
         <div class="options float-left checkboxContainer">
           <input type="checkbox" data-settings-key="ui-animations-enable" data-settings-default="false" class="center-area" />
           <label data-i18n="common-enable"></label>
         </div>
       </div>
-      <div class="option" style="width: 20%;">
+      <div class="option" style="width: 15%;">
         <p class="suboption-name" data-i18n="ui-gradient"></p>
         <div class="options float-left checkboxContainer">
           <input type="checkbox" data-settings-key="ui-gradient" data-settings-default="true" class="center-area" data-custom-component="ui-gradient" />
+          <label data-i18n="common-enable"></label>
+        </div>
+      </div>
+      <div class="option" style="width: 14%;">
+        <p class="suboption-name" data-i18n="ui-animations-smoke"></p>
+        <div class="options float-left checkboxContainer">
+          <input type="checkbox" data-settings-key='ui-animations-smoke' data-settings-default="true" class="center-area" data-custom-component="ui-animations-smoke" />
           <label data-i18n="common-enable"></label>
         </div>
       </div>
@@ -161,8 +167,12 @@
         </select>
       </div>
     </div>
-    <div data-tabid="settings" data-tabn=2 class="tabcontent" style="display: none; margin-left: 12%;">
+    <div data-tabid="settings" data-tabn=2 class="tabcontent" style="display: none; margin-left: 9%;">
       <p class="option-name" data-i18n="category-advanced"></p>
+      <div class="option">
+        <p class="suboption-name" data-i18n="league-client-path"></p>
+        <input type="text" data-settings-key="league-client-path" class="center-area" data-custom-component="league-client-path" disabled />
+      </div>
       <div class="option">
         <p class="suboption-name" data-i18n="empty-cache-settings-option"></p>
         <button class="btn normal" data-custom-component="empty-cache" data-i18n="empty-cache-button"></button>
@@ -172,11 +182,6 @@
         <button class="btn normal" data-custom-component="reset-settings" data-i18n="reset-settings-button"></button>
       </div>
       <div class="option">
-        <p class="suboption-name" data-i18n="providers-order"></p>
-        <ul class="sortable" data-settings-key="providers-order" data-settings-default="flux,championgg,leagueofgraphs,opgg,lolflavor" data-settings-merge-list-if-missing-value="true" data-settings-remove-if-missing-value="true">
-        </ul>
-      </div>
-      <div class="option">
         <p class="suboption-name" data-i18n="settings-logs-clear"></p>
         <button class="btn normal" data-custom-component="settings-logs-clear" data-i18n="common-clear"></button>
       </div>
@@ -184,12 +189,16 @@
         <p class="suboption-name" data-i18n="settings-logs-open-folder"></p>
         <button class="btn normal" data-custom-component="settings-logs-open" data-i18n="common-open"></button>
       </div>
+    </div>
+    <div data-tabid="settings" data-tabn=3 class="tabcontent" style="display: none; margin-left: 9%;">
+      <p class="option-name" data-i18n="category-advanced"></p>
       <div class="option">
-        <p class="suboption-name" data-i18n="league-client-path"></p>
-        <input type="text" data-settings-key="league-client-path" class="center-area" data-custom-component="league-client-path" disabled />
+        <p class="suboption-name" data-i18n="providers-order"></p>
+        <ul class="sortable" data-settings-key="providers-order" data-settings-default="flux,championgg,leagueofgraphs,opgg,metasrc,lolflavor" data-settings-merge-list-if-missing-value="true" data-settings-remove-if-missing-value="true">
+        </ul>
       </div>
     </div>
-    <div data-tabid="update" data-tabn=0 class="tabcontent" style="display: none; margin-left: 12%;">
+    <div data-tabid="update" data-tabn=0 class="tabcontent" style="display: none; margin-left: 9%;">
       <p data-i18n="update-available" id="updateAvailableText"></p>
       <div id="updateStatus">
         <p id="version">VX.X.X</p>
@@ -203,8 +212,11 @@
     <p class="status" data-i18n="status-loading"></p>
     <p class="version"></p>
   </div>
-    <!-- END SECTIONS -->
+  <!-- END SECTIONS -->
   </div>
+  <audio id="soundEngine" autoplay>
+    <source id="soundEngineSource" type="audio/ogg" />
+  </audio>
   <script src="vendor/jquery-3.3.1.min.js" onload="window.$ = window.jQuery = module.exports;"></script>
   <script src="vendor/jquery-ui.min.js"></script>
   <script src="vendor/markdown.min.js"></script>
@@ -214,6 +226,7 @@
     const LoggingHandler = new (require('../objects/handlers/LoggingHandler'))(3);
   </script>
   <script src="assets/js/ui.js"></script>
+  <script src="assets/js/ui/sounds.js"></script>
   <script>
   window.eval = global.eval = () => console.warn(i18n.__('security-eval'));
   require('../crash-reporting.js');

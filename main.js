@@ -17,8 +17,9 @@ autoUpdater.fullChangelog = true;
 autoUpdater.autoDownload = false;
 autoUpdater.autoInstallOnAppQuit = false;
 
-const shouldQuit = app.makeSingleInstance((commandLine, workingDirectory) => {
-  if (!win) return;
+app.requestSingleInstanceLock();
+app.on('second-instance', function (argv, cwd) {
+  if (!win) app.quit();
 
   if (win.isMinimized()) win.restore();
   else if (!win.isVisible()) win.show();
@@ -26,12 +27,10 @@ const shouldQuit = app.makeSingleInstance((commandLine, workingDirectory) => {
   win.focus();
 });
 
-if (shouldQuit) return app.quit();
-
-let launcher = new AutoLaunch({ name: 'Manaflux', isHidden: true });
+let launcher = new AutoLaunch({ name: 'Manaflux' });
 
 function createWindow () {
-  win = new BrowserWindow({ width: 600, height: 600, frame: false, icon: __dirname + '/build/icon.' + (process.platform === 'win32' ? 'ico' : 'png'), backgroundColor: '#000A13', maximizable: false, disableblinkfeatures: 'BlockCredentialedSubresources', show: false });
+  win = new BrowserWindow({ width: 600, height: 600, frame: false, icon: __dirname + '/build/icon.' + (process.platform === 'win32' ? 'ico' : 'png'), backgroundColor: '#000A13', maximizable: false, resizable: false, disableblinkfeatures: 'BlockCredentialedSubresources', show: false });
 
   win.loadURL(`file://${__dirname}/src/index.html`);
   win.setMenu(null);

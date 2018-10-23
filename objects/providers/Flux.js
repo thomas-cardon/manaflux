@@ -11,7 +11,7 @@ class FluxProvider extends Provider {
 
   async getData(champion, preferredPosition, gameMode) {
     console.log(2, '[Flu.x] Fetching data from the cache server');
-    let data = JSON.parse(await rp(`${this.base}v1/data/${champion.id}?itemsets=${Mana.getStore().get('item-sets-enable')}&summonerspells=${Mana.getStore().get('summoner-spells')}`));
+    let data = JSON.parse(await rp(`${this.base}data/v1/${champion.id}?itemsets=${Mana.getStore().get('item-sets-enable', false)}&summonerspells=${Mana.getStore().get('summoner-spells', false)}&maxperkpages=${Mana.getStore().get('perks-max', 2)}`));
 
     if (data.message) {
       if (data.statusCode === 404) throw Error(`Flu.x: Data not found`);
@@ -40,9 +40,9 @@ class FluxProvider extends Provider {
   async upload(data) {
     if (Object.values(data.roles).some(x => Array.isArray(x) && x.length === 0)) return console.log(2, 'Upload cancelled: missing data');
 
-    await rp({
+    return await rp({
       method: 'POST',
-      uri: `${this.base}v1/data`,
+      uri: `${this.base}data/v1/upload`,
       body: data,
       json: true
     });

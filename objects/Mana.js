@@ -14,6 +14,7 @@ class Mana {
 
     UI.status('status-loading-storage');
     this._store = new Store();
+    //this.features = new (require('../objects/FeatureEnabler'))();
 
     if (!this.getStore().get('league-client-path'))
       require('../objects/Wizard')(this.devMode).on('closed', () => {
@@ -40,15 +41,18 @@ class Mana {
     ipcRenderer.on('lcu-logged-in', (event, d) => {
       if (d) this.load(d);
     });
+
+    setTimeout(() => Sounds.play('loaded'), 800);
   }
 
   async preload() {
-    UI.status('status-loading-data-login');
+    UI.status('status-please-login');
 
     this.gameClient = new (require('./riot/leagueoflegends/GameClient'))();
     this.assetsProxy = new (require('./riot/leagueoflegends/GameAssetsProxy'))();
 
     this.championSelectHandler = new (require('./handlers/ChampionSelectHandler'))();
+    this.providerHandler = new (require('./handlers/ProviderHandler'))();
 
     this.assetsProxy.load();
 

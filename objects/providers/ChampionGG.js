@@ -28,8 +28,14 @@ class ChampionGGProvider extends Provider {
     for (const position of d.availablePositions) {
       console.log(2, `[Champion.GG] Gathering data (${position.name})`);
 
-      data.roles[position.name] = this._scrape(await rp(position.link), champion, gameMode);
-      delete data.roles[position.name].position;
+      try {
+        data.roles[position.name] = this._scrape(await rp(position.link), champion, gameMode);
+        delete data.roles[position.name].position;
+      }
+      catch(err) {
+        console.log(`[ProviderHandler] [Champion.GG] Something happened while gathering data (${position.name})`);
+        console.error(err);
+      }
     }
 
     delete data.roles[d.position].availablePositions;
@@ -57,22 +63,6 @@ class ChampionGGProvider extends Provider {
 
     let perks = this.scrapePerks($, champion, position);
 
-    /* Validation - TODO: replace by a global validator in Manaflux client/server */
-    let i = perks.length;
-    while (i--) {
-      const page = perks[i];
-
-      if (page.selectedPerkIds[0] === undefined && page.selectedPerkIds[1] === undefined) {
-        perks.splice(i, 1);
-        UI.error('providers-error-data');
-      }
-      else if (page.selectedPerkIds[0] === page.selectedPerkIds[1]) {
-        page.selectedPerkIds.splice(1, 1);
-        page.selectedPerkIds.splice(3, 0, fixes[page.primaryStyleId]);
-        UI.error('providers-cgg-perks-fix');
-      }
-    }
-
     return { perks, summonerspells, itemsets, availablePositions, position: position.toUpperCase() };
   }
 
@@ -83,7 +73,7 @@ class ChampionGGProvider extends Provider {
    * @param {string} position - Limited to: TOP, JUNGLE, MIDDLE, ADC, SUPPORT
    */
   scrapePerks($, champion, position) {
-    let pages = [{ name: `CGG1 ${champion.name} ${position} (HW%)`, selectedPerkIds: [] }, { name: `CGG2 ${champion.name} ${position} (MF)`, selectedPerkIds: [] }];
+    let pages = [{ suffixName: `(HW%)`, selectedPerkIds: [] }, { suffixName: `(MF)`, selectedPerkIds: [] }];
 
     $("img[src*='perk-images']", $("div[class^=Slot__LeftSide]")).each(function(index) {
       let page = Math.trunc(index / 8), perk = $(this).attr("src").slice(38);
@@ -175,6 +165,10 @@ class ChampionGGProvider extends Provider {
     itemset._data.blocks[2] = new Block().setType({ i18n: 'item-sets-block-trinkets' }).addItem(2055).addItem(3340).addItem(3341).addItem(3348).addItem(3363);
 
     return [itemset];
+  }
+
+  getCondensedName() {
+    return 'CGG';
   }
 }
 

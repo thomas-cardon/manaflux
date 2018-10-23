@@ -1,6 +1,6 @@
 {
   "name": "manaflux",
-  "version": "1.9.9",
+  "version": "2.0.0",
   "description": "Manaflux downloads automatically your runes, itemsets, and summonerspells and injects them to your League client seamlessly!",
   "main": "main.js",
   "scripts": {
@@ -22,7 +22,7 @@
   },
   "license": "CC0-1.0",
   "devDependencies": {
-    "electron": "^2.0.8",
+    "electron": "^3.0.5",
     "electron-builder": "^20.17.1"
   },
   "dependencies": {
@@ -33,7 +33,6 @@
     "electron-store": "^2.0.0",
     "electron-sudo": "^4.0.12",
     "electron-updater": "^2.22.1",
-    "jsdom": "^12.2.0",
     "request": "^2.87.0",
     "request-promise-native": "^1.0.5"
   },

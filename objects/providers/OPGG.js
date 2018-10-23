@@ -39,8 +39,14 @@ class OPGGProvider extends Provider {
     for (const position of d.availablePositions) {
       console.log(2, `[ProviderHandler] [OP.GG] Gathering data (${position.name})`);
 
-      data.roles[position.name] = this._scrape(await rp(position.link), champion, gameMode);
-      delete data.roles[position.name].position;
+      try {
+        data.roles[position.name] = this._scrape(await rp(position.link), champion, gameMode);
+        delete data.roles[position.name].position;
+      }
+      catch(err) {
+        console.log(`[ProviderHandler] [OP.GG] Something happened while gathering data (${position.name})`);
+        console.error(err);
+      }
     }
 
     delete data.roles[d.position].availablePositions;
@@ -52,10 +58,9 @@ class OPGGProvider extends Provider {
   _scrape(html, champion, gameMode, firstScrape) {
     let $ = cheerio.load(html);
 
-    const version = $('.champion-stats-header-version').text().trim().slice(-4);
     const convertOPGGPosition = this.convertOPGGPosition;
 
-    if (version != Mana.gameClient.branch) UI.error('providers-error-outdated');
+    if ($('.champion-stats-header-version').text().trim().slice(-4) != Mana.gameClient.branch) UI.error('providers-error-outdated');
 
     let position = this.convertOPGGPosition($('li.champion-stats-header__position.champion-stats-header__position--active').data('position')).toUpperCase();
     const availablePositions = [];
@@ -77,7 +82,7 @@ class OPGGProvider extends Provider {
   }
 
   /**
-   * Scrapes item sets from a Champion.gg page
+   * Scrapes item sets from a OP.GG page
    * @param {cheerio} $ - The cheerio object
    * @param {object} champion - A champion object, from Mana.champions
    * @param {string} position - Limited to: TOP, JUNGLE, MIDDLE, ADC, SUPPORT
@@ -87,8 +92,6 @@ class OPGGProvider extends Provider {
 
     $('.perk-page').find('img.perk-page__image.tip').slice(0, 4).each(function(index) {
       const page = Math.trunc(index / 2);
-
-      pages[page].name = `OPG${page + 1} ${champion.name} ${position}`;
       pages[page][index % 2 === 0 ? 'primaryStyleId' : 'subStyleId'] = parseInt($(this).attr('src').slice(-8, -4));
     });
 
@@ -100,7 +103,7 @@ class OPGGProvider extends Provider {
   }
 
   /**
-   * Scrapes summoner spells from a Champion.gg page
+   * Scrapes summoner spells from a OP.GG page
    * @param {cheerio} $ - The cheerio object
    * @param {string} gameMode - A gamemode, from League Client, such as CLASSIC, ARAM, etc.
    */
@@ -120,7 +123,7 @@ class OPGGProvider extends Provider {
   }
 
   /**
-   * Scrapes skill order from a Champion.gg page
+   * Scrapes skill order from a OP.GG page
    * @param {cheerio} $ - The cheerio object
    */
   scrapeSkillOrder($) {
@@ -133,7 +136,7 @@ class OPGGProvider extends Provider {
   }
 
   /**
-   * Scrapes item sets from a Champion.gg page
+   * Scrapes item sets from a OP.GG page
    * @param {cheerio} $ - The cheerio object
    * @param {object} champion - A champion object, from Mana.champions
    * @param {string} position - Limited to: TOP, JUNGLE, MIDDLE, ADC, SUPPORT
@@ -142,7 +145,7 @@ class OPGGProvider extends Provider {
   scrapeItemSets($, champion, position, skillorder) {
     const itemrows = $('.champion-overview__table').eq(1).find('.champion-overview__row');
 
-    let itemset = new ItemSet(champion.key, position, this.id).setTitle(`OPG ${champion.name} - ${position}`);
+    let itemset = new ItemSet(champion.key, position, this.id);
     let boots = new Block().setType({ i18n: 'item-sets-block-boots' });
 
     /* Block Starter */
