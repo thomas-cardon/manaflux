@@ -28,7 +28,7 @@ const shouldQuit = app.makeSingleInstance((commandLine, workingDirectory) => {
 
 if (shouldQuit) return app.quit();
 
-let launcher = new AutoLaunch({ name: 'Manaflux', isHidden: true });
+let launcher = new AutoLaunch({ name: 'Manaflux' });
 
 function createWindow () {
   win = new BrowserWindow({ width: 600, height: 600, frame: false, icon: __dirname + '/build/icon.' + (process.platform === 'win32' ? 'ico' : 'png'), backgroundColor: '#000A13', maximizable: false, resizable: false, disableblinkfeatures: 'BlockCredentialedSubresources', show: false });
