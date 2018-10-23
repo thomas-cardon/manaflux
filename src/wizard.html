@@ -23,15 +23,18 @@
     </div>
   </div>
   <div class="content">
-    <div data-tabid="step-1" data-tabn=0 class="tabcontent" style="display: none; margin-left: 12%;">
+    <div data-tabid="step-1" data-tabn=0 class="tabcontent" style="margin-left: 12%;">
       <div class="option">
         <p class="suboption-name" data-i18n="league-client-path" id="league-client-path"></p>
         <input id="leaguePath" type="text" class="center-area big" disabled />
         <button type="button" class="btn search" id="searchPath" style="margin: -8px 0 0 0px;position: fixed;left: 15px;"></button>
       </div>
-      <p style="color: #fdcb6e;margin-left: 3px;font-size: 12px;"><span data-i18n="wizard-help-one" data-i18n-args="ui-menu-wizard-step-2"></span>&nbsp;<a style="color: #d63031; text-transform: uppercase;" onclick="ipcRenderer.send('lcu-find-path');" data-i18n="common-here"></a>&nbsp;<span data-i18n="wizard-help-two"></span></p>
+      <p style="color: #fdcb6e;margin-left: 3px;font-size: 12px;"><span data-i18n="wizard-help-one" data-i18n-args="ui-menu-wizard-step-2"></span>&nbsp;<a style="color: #d63031; text-transform: uppercase; cursor: pointer;" onclick="ipcRenderer.send('lcu-find-path');" data-i18n="common-here"></a>&nbsp;<span data-i18n="wizard-help-two"></span></p>
     </div>
   </div>
+  <audio id="soundEngine" autoplay>
+    <source id="soundEngineSource" type="audio/ogg" />
+  </audio>
   <script src="vendor/jquery-3.3.1.min.js" onload="window.$ = window.jQuery = module.exports;"></script>
   <script>
   window.eval = global.eval = function () { throw new Error(i18n.__('eval')) };
@@ -81,6 +84,7 @@
   </script>
   <script src="assets/js/ui.js"></script>
   <script src="assets/js/ui/i18n.js"></script>
+  <script src="assets/js/ui/sounds.js"></script>
   <script src="assets/js/ui/tab-handler.js"></script>
 </body>
 </html>
