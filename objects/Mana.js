@@ -63,7 +63,12 @@ class Mana {
 
     $('.version').text(`V${this.version} - V${this.gameClient.branch}`);
 
-    if (this.getStore().get('lastBranchSeen') !== this.gameClient.branch || this.getStore().get('lastVersion') !== this.version) {
+    if (this.getStore().get('lastVersion').startsWith("1.")) {
+      Mana.getStore().clear();
+      ipcRenderer.send('restart');
+    }
+
+    if (this.getStore().get('lastBranchSeen') !== this.gameClient.branch) {
       this.getStore().set('data', {});
       require('./handlers/ItemSetHandler').getItemSets().then(x => require('./handlers/ItemSetHandler').deleteItemSets(x)).catch(UI.error);
     }
