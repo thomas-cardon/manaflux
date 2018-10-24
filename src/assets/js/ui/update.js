@@ -1,6 +1,5 @@
 ipcRenderer.on('update-not-available', async (event, data) => {
 	console.log('[Update] Not available');
-	console.dir(data);
 
 	document.querySelector('.btn.tab[data-tabid="update"]').style.display = 'none';
 	document.querySelector('.btn.tab').click();
@@ -8,7 +7,6 @@ ipcRenderer.on('update-not-available', async (event, data) => {
 
 ipcRenderer.on('update-available', async (event, data) => {
 	console.log('[Update] Available! version: ' + data.version);
-	console.dir(data);
 
 	document.getElementById('version').innerHTML = `Version ${data.version}`;
 	document.getElementById('updateRollout').innerHTML = i18n.__('update-staged-rollout', (data.stagingPercentage || 100) + '%');
@@ -38,14 +36,12 @@ ipcRenderer.on('update-available', async (event, data) => {
 
 ipcRenderer.on('update-downloaded', async (event, data) => {
 	document.getElementById('update').onclick = () => ipcRenderer.send('update-install');
-	document.getElementById('update').innerHTML = i18n.__('ui-menu-update');
+	document.getElementById('update').innerHTML = i18n.__('update-button-install');
 	document.getElementById('update').disabled = false;
 
 	document.getElementById('updateProgress').style.display = 'none';
-	console.dir(data);
 });
 
 ipcRenderer.on('update-progress', async (event, data) => {
 	document.getElementById('updateProgress').value = data.percent;
-	console.dir(data);
 });
