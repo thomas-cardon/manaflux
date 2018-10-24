@@ -16,6 +16,13 @@ class Mana {
     this._store = new Store();
     //this.features = new (require('../objects/FeatureEnabler'))();
 
+    if (!this.getStore().get('lastVersion') || this.getStore().get('lastVersion').startsWith("1.")) {
+      this.getStore().clear();
+      this.getStore().set('lastVersion', this.version);
+
+      ipcRenderer.send('restart');
+    }
+
     if (!this.getStore().get('league-client-path'))
       require('../objects/Wizard')(this.devMode).on('closed', () => {
         const path = ipcRenderer.sendSync('lcu-get-path');
@@ -63,12 +70,11 @@ class Mana {
 
     $('.version').text(`V${this.version} - V${this.gameClient.branch}`);
 
-    if (this.getStore().get('lastBranchSeen') !== this.gameClient.branch || this.getStore().get('lastVersion') !== this.version) {
+    if (this.getStore().get('lastBranchSeen') !== this.gameClient.branch) {
       this.getStore().set('data', {});
       require('./handlers/ItemSetHandler').getItemSets().then(x => require('./handlers/ItemSetHandler').deleteItemSets(x)).catch(UI.error);
     }
 
-    this.getStore().set('lastVersion', this.version);
     this.getStore().set('lastBranchSeen', this.gameClient.branch);
   }
 

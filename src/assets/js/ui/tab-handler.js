@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			const dotsNumber = document.querySelectorAll(`.tabcontent[data-tabid="${$(event.target).data('tabid')}"]`).length, dots = document.getElementById('dots');
 
 			if (dotsNumber === 0) Dots.onClickEvent(null, event.target.getAttribute('data-tabid'), 0);
-			else {
+			else if (dots) {
 				while (dots.firstChild) dots.removeChild(dots.firstChild);
 
 				if (dotsNumber > 1)

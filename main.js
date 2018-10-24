@@ -1,12 +1,14 @@
 const { app, BrowserWindow, ipcMain, globalShortcut, Menu, Tray } = require('electron');
 
+/* Command line parameters */
+app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
+
 global.log = new (require('./objects/handlers/LoggingHandler'))(3);
 const i18n = new (require('./objects/i18n'));
 
 const { autoUpdater } = require('electron-updater');
 
 const LeaguePlug = require('./objects/leagueplug');
-const AutoLaunch = require('auto-launch');
 
 require('./crash-reporting.js');
 
@@ -27,10 +29,8 @@ app.on('second-instance', function (argv, cwd) {
   win.focus();
 });
 
-let launcher = new AutoLaunch({ name: 'Manaflux' });
-
 function createWindow () {
-  win = new BrowserWindow({ width: 600, height: 600, frame: false, icon: __dirname + '/build/icon.' + (process.platform === 'win32' ? 'ico' : 'png'), backgroundColor: '#000A13', maximizable: false, resizable: false, disableblinkfeatures: 'BlockCredentialedSubresources', show: false });
+  win = new BrowserWindow({ width: 600, height: 600, frame: false, icon: __dirname + '/build/icon.' + (process.platform === 'win32' ? 'ico' : 'png'), backgroundColor: '#000A13', maximizable: false, resizable: false, show: false });
 
   win.loadURL(`file://${__dirname}/src/index.html`);
   win.setMenu(null);
@@ -108,14 +108,6 @@ ipcMain.on('tray', (event, show) => {
   tray.setToolTip(i18n.__('tray-show'));
 
   tray.on('click', () => win.isVisible() ? win.hide() : win.showInactive());
-});
-
-ipcMain.on('auto-start', (event, enable) => {
-  if (process.argv[2] === '--dev') return;
-
-  launcher.isEnabled()
-  .then(enabled => !enabled && enable ? launcher.enable() : (enabled && !enable ? launcher.disable() : null))
-  .catch(err => event.sender.send('error', { type: 'AUTO-START', error: err }));
 });
 
 ipcMain.on('lcu-connection', (event, path) => {
