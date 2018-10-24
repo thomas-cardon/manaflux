@@ -84,7 +84,7 @@ autoUpdater.on('download-progress', info => win.webContents.send('update-progres
 
 autoUpdater.on('update-downloaded', info => {
   ipcMain.once('update-install', (event, arg) => autoUpdater.quitAndInstall());
-  win.webContents.send('update-ready', info);
+  win.webContents.send('update-downloaded', info);
 });
 
 ipcMain.on('champion-select-in', (event, arg) => {
