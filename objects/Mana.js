@@ -76,6 +76,7 @@ class Mana {
     }
 
     this.getStore().set('lastBranchSeen', this.gameClient.branch);
+    document.querySelectorAll('[data-custom-component]').forEach(x => x.dispatchEvent(new Event('clientLoaded')));
   }
 
   async load(data) {
@@ -86,6 +87,7 @@ class Mana {
 
     UI.status('champion-select-waiting');
     global._devChampionSelect = () => new (require('../CustomGame'))().create().then(game => game.start());
+    document.querySelectorAll('[data-custom-component]').forEach(x => x.dispatchEvent(new Event('userConnected')));
   }
 
   disconnect() {
@@ -95,6 +97,7 @@ class Mana {
     delete this.user;
 
     UI.status('status-disconnected');
+    document.querySelectorAll('[data-custom-component]').forEach(x => x.dispatchEvent(new Event('userDisconnected')));
   }
 
   updateAuthenticationTokens(data) {
