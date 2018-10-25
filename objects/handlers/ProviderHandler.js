@@ -24,7 +24,7 @@ class ProviderHandler {
     /* 1/5 - Storage Checking */
     if (Mana.getStore().has(`data.${champion.id}`) && cache) {
       const data = Mana.getStore().get(`data.${champion.id}`);
-      DataValidator.onDataUpload(data, champion.id, gameMode);
+      DataValidator.onDataDownloaded(data, champion.id, gameMode);
 
       return data;
     }
@@ -72,24 +72,22 @@ class ProviderHandler {
 
     /* 4/5 - Saving to offline cache
        5/5 - Uploading to online cache */
-    if (!cache) return console.dir(data);
+    if (!cache) return data;
     this._cache.push(data);
 
-    return console.dir(data);
+    return data;
   }
 
   /**
    * Runs tasks when champion select ends
    */
   onChampionSelectEnd() {
+    UI.loading(true);
+
     this._cache.forEach(data => {
-      UI.loading(true);
-
-      Object.values(data.roles).forEach(r => {
-        r.itemsets = r.itemsets.map(x => x._data ? x.build(false, false) : x)
-      });
-
+      DataValidator.onDataUpload(data);
       Mana.getStore().set(`data.${data.championId}`, data);
+
       UI.indicator(this.providers.flux.upload(data), 'providers-flux-uploading');
     });
 
