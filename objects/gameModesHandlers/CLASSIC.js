@@ -5,14 +5,6 @@ class ClassicGameMode {
     this.gameMode = gameMode;
   }
 
-  async load() {
-
-  }
-
-  async end() {
-
-  }
-
   onFirstTickEvent(data) {
     console.dir(3, data);
   }
@@ -21,9 +13,6 @@ class ClassicGameMode {
     this._timer = data.timer;
     this._myTeam = data.myTeam;
     this._theirTeam = data.theirTeam;
-  }
-
-  onChampionChangeEvent(champion) {
   }
 
   getGameMode() {
