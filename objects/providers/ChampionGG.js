@@ -34,7 +34,12 @@ class ChampionGGProvider extends Provider {
       }
       catch(err) {
         console.log(`[ProviderHandler] [Champion.GG] Something happened while gathering data (${position.name})`);
-        console.error(err);
+
+        if (err.toString().includes('Data is outdated')) {
+          console.log(`[ProviderHandler] [Champion.GG] Skipping provider`);
+          return null;
+        }
+        else console.error(err);
       }
     }
 
@@ -47,6 +52,7 @@ class ChampionGGProvider extends Provider {
   _scrape(html, champion, gameMode, firstScrape = false) {
     const $ = cheerio.load(html);
 
+    if ($('.matchup-header').eq(0).text().trim() === "We are still gathering data for this stat, please check again later!") throw UI.error('providers-error-outdated', this.name);
     const position = $(`li[class^='selected-role'] > a[href^='/champion/']`).first().text().trim();
     const availablePositions = [];
 
