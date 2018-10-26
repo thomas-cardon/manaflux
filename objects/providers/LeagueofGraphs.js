@@ -136,7 +136,7 @@ class LeagueofGraphsProvider extends Provider {
       if (index === 0) {
         $(this).find('tr').each(function(index) {
           if ($(this).find('img').length === 0) return true;
-          let block = new Block().setType({ i18n: 'item-sets-block-starter-numbered', arguments: [index + 1, skillorder] });
+          let block = new Block().setType({ i18n: 'item-sets-block-starter-skill-order-numbered', arguments: [index + 1, skillorder] });
 
           $(this).find('img').each(function() {
             block.addItem($(this).attr('class').slice(20, -4), false);
