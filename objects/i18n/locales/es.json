@@ -60,7 +60,7 @@
   "providers-skipped": "%s ha sido omitido porque falta la función #%s",
   "providers-order": "Orden de proveedores",
   "providers-error-item-sets-not-found": "No se pudo encontrar conjunto de objectos",
-  "providers-error-outdated": "Datos desactualizados",
+  "providers-error-outdated": "%s: Datos desactualizados",
   "providers-error-data": "No se han podido obtener datos",
   "providers-error-perks": "No se han encontrado runas runas para %s (%s)",
   "providers-cgg-perks-fix": "Intentando arreglar runas",
