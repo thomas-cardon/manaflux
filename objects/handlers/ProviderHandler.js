@@ -26,7 +26,7 @@ class ProviderHandler {
       console.log(2, `[ProviderHandler] Using local storage`);
 
       const data = Mana.getStore().get(`data.${champion.id}`);
-      DataValidator.onDataDownloaded(data, champion.id, gameMode);
+      DataValidator.onDataDownloaded(data, champion, gameMode);
 
       return data;
     }
