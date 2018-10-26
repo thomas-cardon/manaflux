@@ -126,24 +126,36 @@ class LeagueofGraphsProvider extends Provider {
    */
   scrapeItemSets($, champion, position, skillorder) {
     let itemset = new ItemSet(champion.key, position, this.id).setTitle(`LOG ${champion.name} - ${position}`);
-    let blocks = [
-        new Block().setType({ i18n: 'item-sets-block-starter', arguments: [skillorder] }),
+    let starters = [], blocks = [
         new Block().setType({ i18n: 'item-sets-block-core-build' }),
         new Block().setType({ i18n: 'item-sets-block-endgame' }),
         new Block().setType({ i18n: 'item-sets-block-boots' })
     ];
 
     $('#mainContent > div > div > div > table').each(function(index) {
-      if (!blocks[index]) return;
+      if (index === 0) {
+        $(this).find('tr').each(function(index) {
+          if ($(this).find('img').length === 0) return true;
+          let block = new Block().setType({ i18n: 'item-sets-block-starter-numbered', arguments: [index + 1, skillorder] });
 
-      $(this).find('img').each(function() {
-        blocks[index].addItem($(this).attr('class').slice(20, -4), false);
-      });
+          $(this).find('img').each(function() {
+            block.addItem($(this).attr('class').slice(20, -4), false);
+          });
+
+          starters.push(block);
+        });
+      }
+      else if (blocks[index]) {
+        $(this).find('img').each(function() {
+          blocks[index].addItem($(this).attr('class').slice(20, -4), false);
+        });
+      }
     });
 
-    itemset.setBlocks(blocks);
-    itemset.addBlock(new Block().setType({ i18n:'item-sets-block-consumables' }).addItem(2003).addItem(2138).addItem(2139).addItem(2140));
+    itemset.setBlocks(starters.slice(0, Mana.getStore().get('item-sets-max-starters', 3)));
     itemset.addBlock(new Block().setType({ i18n: 'item-sets-block-trinkets' }).addItem(2055).addItem(3340).addItem(3341).addItem(3348).addItem(3363));
+    itemset.addBlocks(...blocks);
+    itemset.addBlock(new Block().setType({ i18n: 'item-sets-block-consumables' }).addItem(2003).addItem(2138).addItem(2139).addItem(2140));
     return [itemset];
   }
 
