@@ -131,6 +131,8 @@ class ChampionSelectHandler {
   onPerkPositionChange(champion, position, data) {
     UI.enableHextechAnimation(champion, (data && data.perks && data.perks[0]) ? data.perks[0].primaryStyleId : 'white');
 
+    $('#loadRunes, #loadSummonerSpells').disableManualButton(true);
+
     if (data.perks.length > 0) this._updatePerksDisplay(champion, position, data.perks);
     if (data.summonerspells.length > 0) this._updateSummonerSpellsDisplay(champion, position, data.summonerspells);
   }
