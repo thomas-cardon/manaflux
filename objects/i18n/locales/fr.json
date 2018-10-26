@@ -116,6 +116,7 @@
   "item-sets-block-starter-numbered": "Starter %s",
   "item-sets-block-starter-skill-order": "Starter | Sorts: %s",
   "item-sets-block-starter-skill-order-numbered": "Starter %s | Sorts: %s",
+  "item-sets-block-starter-wr-skill-order-numbered": "Starter %s | WR: %s - Sorts: %s",
   "item-sets-block-recommanded": "Objets recommandés",
   "item-sets-block-core-build": "Objets principaux",
   "item-sets-block-core-build-wr": "Objets principaux | WR: %s",

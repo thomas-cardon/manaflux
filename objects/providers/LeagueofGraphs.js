@@ -127,7 +127,7 @@ class LeagueofGraphsProvider extends Provider {
   scrapeItemSets($, champion, position, skillorder) {
     let itemset = new ItemSet(champion.key, position, this.id).setTitle(`LOG ${champion.name} - ${position}`);
     let starters = [], blocks = [
-        new Block().setType({ i18n: 'item-sets-block-core-build' }),
+        new Block().setType({ i18n: 'item-sets-block-core-build-wr' }),
         new Block().setType({ i18n: 'item-sets-block-endgame' }),
         new Block().setType({ i18n: 'item-sets-block-boots' })
     ];
@@ -136,7 +136,7 @@ class LeagueofGraphsProvider extends Provider {
       if (index === 0) {
         $(this).find('tr').each(function(index) {
           if ($(this).find('img').length === 0) return true;
-          let block = new Block().setType({ i18n: 'item-sets-block-starter-skill-order-numbered', arguments: [index + 1, skillorder] });
+          let block = new Block().setType({ i18n: 'item-sets-block-starter-wr-skill-order-numbered', arguments: [index + 1, $(this).find('div > .percentage').eq(5).text(), skillorder] });
 
           $(this).find('img').each(function() {
             block.addItem($(this).attr('class').slice(20, -4), false);
