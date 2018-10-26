@@ -42,7 +42,7 @@ class DataValidator {
   onDataUpload(data) {
     for (const [roleName, role] of Object.entries(data.roles)) {
       role.perks.forEach(x => delete x.name);
-      role.itemsets.forEach(x => delete x._data.title);
+      role.itemsets = role.itemsets.map(x => x._data ? x.build(false, false) : ItemSetHandler.parse(Mana.champions[data.championId].key, x, x.provider).build(false, false));
     }
   }
 
@@ -68,7 +68,7 @@ class DataValidator {
 
       x._data.title = `${x._data.provider ? Mana.providerHandler.getProvider(x._data.provider).getCondensedName() : 'XXX'}${indexes[x._data.provider || 'XXX']} ${champion.name} > ${UI.stylizeRole(role)}`;
       return x;
-    });
+    }).filter((set, pos, arr) => !arr.some((x, xpos) => x._data.blocks.map(i => i.id) === set._data.blocks.map(i => i.id) && pos !== xpos));
   }
 
   _hasDuplicates(array) {
