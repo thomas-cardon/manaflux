@@ -84,31 +84,38 @@ class ChampionSelectHandler {
     this.hasLoadedUI = true;
     UI.status('champion-select-updating-display', champion.name);
 
-    $('#positions').unbind().empty().hide();
+    while (document.getElementById('positions').firstChild) {
+      document.getElementById('positions').removeChild(document.getElementById('positions').firstChild);
+    }
+
     $('#loadRunes, #loadSummonerSpells').disableManualButton(true);
 
     UI.enableHextechAnimation(champion);
-    $('button[data-tabid]').eq(0).click();
+    document.querySelector('button[data-tabid]').click();
 
     UI.status('common-ready', champion.name);
   }
 
   async onDisplayUpdate(champion, res) {
-    if (!res || Object.keys(res.roles).length === 0) return console.error(i18n.__('providers-error-data'));
+    if (!res || Object.keys(res.roles).length === 0) return UI.error('providers-error-data');
 
     console.dir(res);
     Object.keys(res.roles).forEach(r => {
       if (res.roles[r].perks.length === 0) UI.error('providers-error-perks', champion.name, r);
-      $('#positions').append(`<option value="${r}">${UI.stylizeRole(r)}</option>`);
+      document.getElementById('positions').innerHTML += `<option value="${r}">${UI.stylizeRole(r)}</option>`;
     });
 
     const self = this;
 
-    $('#buttons').show();
-    $('#positions')
-    .change(function() { self.onPerkPositionChange(champion, this.value.toUpperCase(), res.roles[this.value.toUpperCase()]); })
-    .val(res.roles[this.gameModeHandler.getPosition()] ? this.gameModeHandler.getPosition() : Object.keys(res.roles)[0])
-    .trigger('change').show();
+    document.getElementById('buttons').style.display = 'block';
+
+    document.getElementById('positions').onchange = function() {
+      self.onPerkPositionChange(champion, this.value.toUpperCase(), res.roles[this.value.toUpperCase()]);
+    };
+
+    document.getElementById('positions').value = res.roles[this.gameModeHandler.getPosition()] ? this.gameModeHandler.getPosition() : Object.keys(res.roles)[0];
+    document.getElementById('positions').onchange();
+    document.getElementById('positions').style.display = 'unset';
 
     UI.tray(false);
     UI.status('common-ready');
@@ -171,8 +178,8 @@ class ChampionSelectHandler {
     UI.status('champion-select-waiting');
     UI.disableHextechAnimation();
 
-    $('#positions').unbind().empty().hide();
-    $('#buttons').hide();
+    document.getElementById('positions').style.display = 'none';
+    document.getElementById('buttons').style.display = 'none';
 
     $('#loadRunes').disableManualButton(!Mana.getStore().get('perks-automatic-load'));
     $('#loadSummonerSpells').disableManualButton(true);
