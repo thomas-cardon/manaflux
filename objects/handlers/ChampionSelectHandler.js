@@ -1,5 +1,4 @@
 const rp = require('request-promise-native');
-
 const ItemSetHandler = require('./ItemSetHandler');
 
 class ChampionSelectHandler {
@@ -18,6 +17,21 @@ class ChampionSelectHandler {
       uri: Mana.base + 'lol-champ-select/v1/session',
       resolveWithFullResponse: true,
       json: true
+    });
+  }
+
+  isChampionLocked() {
+    return new Promise((resolve, reject) => {
+      require('https').get({
+        host: '127.0.0.1',
+        port: Mana.riot.port,
+        path: '/lol-champ-select/v1/current-champion',
+        headers: { 'Authorization': Mana.riot.authToken },
+        rejectUnauthorized: false,
+      }, res => {
+        if (res.statusCode === 200) resolve(true);
+        else if (res.statusCode === 404) resolve(false);
+      }).on('error', err => reject(err));
     });
   }
 
@@ -59,9 +73,7 @@ class ChampionSelectHandler {
 
     if (!this.hasLoadedUI) this.onDisplayUpdatePreDownload(champion);
     if (!this.hasLoadedData) {
-      const isLocked = await rp(Mana.base + 'lol-champ-select/v1/current-champion') === 0 ? false : true;
-
-      if (isLocked || !Mana.getStore().get('champion-select-lock')) {
+      if (!Mana.getStore().get('champion-select-lock') || Mana.getStore().get('champion-select-lock') && await this.isChampionLocked()) {
         this.hasLoadedData = true;
 
         const res = await UI.indicator(Mana.providerHandler.getChampionData(champion, this.gameModeHandler.getPosition(), this.gameModeHandler, true), 'champion-select-downloading-data', champion.name);
@@ -84,6 +96,7 @@ class ChampionSelectHandler {
     this.hasLoadedUI = true;
     UI.status('champion-select-updating-display', champion.name);
 
+    document.getElementById('buttons').style.display = 'none';
     while (document.getElementById('positions').firstChild) {
       document.getElementById('positions').removeChild(document.getElementById('positions').firstChild);
     }
