@@ -19,15 +19,16 @@ autoUpdater.fullChangelog = true;
 autoUpdater.autoDownload = false;
 autoUpdater.autoInstallOnAppQuit = false;
 
-app.requestSingleInstanceLock();
-app.on('second-instance', function (argv, cwd) {
-  if (!win) app.quit();
-
-  if (win.isMinimized()) win.restore();
-  else if (!win.isVisible()) win.show();
-
-  win.focus();
-});
+const lock = app.requestSingleInstanceLock();
+if (!lock) app.quit();
+else {
+  app.on('second-instance', function (argv, cwd) {
+    if (win) {
+      if (win.isMinimized()) myWindow.restore()
+      win.focus()
+    }
+  });
+}
 
 function createWindow () {
   win = new BrowserWindow({ width: 600, height: 600, frame: false, icon: __dirname + '/build/icon.' + (process.platform === 'win32' ? 'ico' : 'png'), backgroundColor: '#000A13', maximizable: false, resizable: false, show: false });
@@ -84,7 +85,7 @@ autoUpdater.on('download-progress', info => win.webContents.send('update-progres
 
 autoUpdater.on('update-downloaded', info => {
   ipcMain.once('update-install', (event, arg) => autoUpdater.quitAndInstall());
-  win.webContents.send('update-ready', info);
+  win.webContents.send('update-downloaded', info);
 });
 
 ipcMain.on('champion-select-in', (event, arg) => {

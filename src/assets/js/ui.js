@@ -119,10 +119,10 @@ $.fn.enableManualButton = function(cb, off) {
 	return this;
 }
 
-$.fn.disableManualButton = function(disablesInsteadOfHiding) {
+$.fn.disableManualButton = function(disable) {
 	$(this).off();
 
-  if (disablesInsteadOfHiding) $(this).prop('disabled', true);
+  if (disable) $(this).prop('disabled', true);
   else $(this).hide();
 
 	return this;

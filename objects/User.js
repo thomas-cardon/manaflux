@@ -28,7 +28,7 @@ class User extends Summoner {
   }
 
   async updateSummonerSpells(spells) {
-    if (!spells || spells.length !== 2) throw Error('Summoner spells are empty');
+    if (!spells || spells.length < 2) throw Error('Summoner spells are empty');
     spells = this.sortSummonerSpells(spells);
 
     return await rp({

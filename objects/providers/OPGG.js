@@ -150,7 +150,7 @@ class OPGGProvider extends Provider {
 
     /* Block Starter */
     itemrows.slice(0, 2).each(function(index) {
-      let starter = new Block().setType({ i18n: 'item-sets-block-starter-numbered', arguments: [index + 1, skillorder] });
+      let starter = new Block().setType({ i18n: 'item-sets-block-starter-skill-order-numbered', arguments: [index + 1, skillorder] });
       let pots = 0;
 
       let items = {};

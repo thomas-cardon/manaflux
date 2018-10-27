@@ -101,11 +101,10 @@ class METAsrcProvider extends Provider {
   scrapeItemSets($, champion, position, skillorder) {
     const itemset = new ItemSet(champion.key, position, this.id);
 
-    let starter = new Block().setType({ i18n: 'item-sets-block-starter', display: line => line.split(' | ')[0] });
+    let starter = new Block().setType({ i18n: 'item-sets-block-starter' });
     let core = new Block().setType({
       i18n: 'item-sets-block-core-build-wr',
-      arguments: [$('a[href*="/champion/"] > table > tbody > tr').eq(2).find('td').text() + '%'], /* Winrate */
-      display: line => line.split(' - ')[0] /* Removes games */
+      arguments: [$('a[href*="/champion/"] > table > tbody > tr').eq(2).find('td').text() + '%'] /* Winrate */
     });
 
     $('img[src*="/img/item/"]').each(function(index) {
