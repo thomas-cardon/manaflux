@@ -85,7 +85,7 @@ class StatisticsHandler {
 
     for (const [key, value] of vsPlus) {
       html += `<div class="matchup matchup-left">
-        <span id="vs">VS+</span><img src="${Mana.champions[key].img}" />
+        <img src="${Mana.champions[key].img}" />
         <div class="champion-data">
           <span style="color: #dcdde1;">${i18n.__('statistics-games', value.games)}</span>
           <progress class="matchup-progress matchup-progress-counter" id="progress-vs-${key}" max="100" value="${value.wr}" data-label="${value.wr}%">
@@ -96,7 +96,6 @@ class StatisticsHandler {
     html += `</div><div class="matchup-list" id="synergies"><p style="color: #b33939;font-size: 21px;margin: -3% 0 3%;">${i18n.__('statistics-counter-them')}</p>`;
     for (const [key, value] of vsMinus) {
       html += `<div class="matchup matchup-right">
-        <span id="syn">VS-</span>
         <div class="champion-data">
           <span style="color: #dcdde1;">${i18n.__('statistics-games', value.games)}</span>
           <progress class="matchup-progress matchup-progress-synergy" id="progress-vs-${key}" max="100" value="${value.wr}" data-label="${value.wr}%"></progress>
