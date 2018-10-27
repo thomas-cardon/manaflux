@@ -1,0 +1,8 @@
+preseason seems to be V8.22
+new mini perks seems to be added in selectedPerkIds, so the length changes from 6 to 9
+type of those mini perks seems to be kStatMod, slotLabel: Flex, Defense, Offense
+5001, 5002, 5003, 5005, 5006, 5007, 5008
+schema version is 2
+/lol-perks/v1/styles
+
+can use less ddragon for more local client i think

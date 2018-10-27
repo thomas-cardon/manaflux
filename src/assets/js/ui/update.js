@@ -1,17 +1,16 @@
 ipcRenderer.on('update-not-available', async (event, data) => {
-	$('#update').off().hide();
-	console.dir(data);
+	console.log('[Update] Not available');
+
+	document.querySelector('.btn.tab[data-tabid="update"]').style.display = 'none';
+	document.querySelector('.btn.tab').click();
 });
 
 ipcRenderer.on('update-available', async (event, data) => {
-	log.dir(3, data);
+	console.log('[Update] Available! version: ' + data.version);
 
-	console.log(2, '[Update] Available! version: ' + data.version);
-	$('.btn.tab[data-tabid="update"]').show();
-
-	$('#version').text(`Version ${data.version}`);
-	$('#updateRollout').text(i18n.__('update-staged-rollout', (data.stagingPercentage || 100) + '%'));
-	$('#updateSize').text(getReadableFileSizeString(data.files[0].size));
+	document.getElementById('version').innerHTML = `Version ${data.version}`;
+	document.getElementById('updateRollout').innerHTML = i18n.__('update-staged-rollout', (data.stagingPercentage || 100) + '%');
+	document.getElementById('updateSize').innerHTML = getReadableFileSizeString(data.files[0].size);
 
 	let text = '', changelogs = {};
 
@@ -25,16 +24,24 @@ ipcRenderer.on('update-available', async (event, data) => {
 		text += notes;
 	}
 
-	console.dir(changelogs);
+	document.getElementById('release-notes').innerHTML += text;
 
-	$('#release-notes').append(text);
+	document.getElementById('update').onclick = function(e) {
+		ipcRenderer.send('update-download');
+		this.disabled = true;
+	};
 
-	$('#update').one("click", () => ipcRenderer.send('update-download'));
+	document.querySelector('.btn.tab[data-tabid="update"]').style.display = '';
 });
 
 ipcRenderer.on('update-downloaded', async (event, data) => {
-	UI.i18n($('button#update'), 'ui-menu-update');
-	console.dir(data);
+	document.getElementById('update').onclick = () => ipcRenderer.send('update-install');
+	document.getElementById('update').innerHTML = i18n.__('update-button-install');
+	document.getElementById('update').disabled = false;
+
+	document.getElementById('updateProgress').style.display = 'none';
 });
 
-ipcRenderer.on('update-progress', async (event, data) => log.dir(3, data));
+ipcRenderer.on('update-progress', async (event, data) => {
+	document.getElementById('updateProgress').value = data.percent;
+});

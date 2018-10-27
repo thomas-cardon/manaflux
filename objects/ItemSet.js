@@ -110,9 +110,8 @@ class ItemSet {
 }
 
 class Block {
-  constructor(type, items, recMath) {
-    this.type = type || 'Unknown ManaFlux Block';
-    this.items = items || {};
+  constructor(items = {}, recMath = false) {
+    this.items = items;
     this.recMath = recMath;
   }
 
@@ -135,7 +134,7 @@ class Block {
 
   getType() {
     if (this._type) return this._type.display ? this._type.display(i18n.__(this._type.i18n, ...(this._type.arguments || [])), ...(this._type.arguments || [])) : i18n.__(this._type.i18n, ...(this._type.arguments || []));
-    else return this.type;
+    return 'Unknown ManaFlux Block';
   }
 
   addItem(id, count = 1) {

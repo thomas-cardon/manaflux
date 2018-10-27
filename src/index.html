@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="assets/css/components/dropdown.css">
   <link rel="stylesheet" href="assets/css/components/dots.css">
   <link rel="stylesheet" href="assets/css/components/hr.css">
+  <link rel="stylesheet" href="assets/css/components/progress.css">
   <link rel="stylesheet" href="assets/css/components/settings.css">
   <link rel="stylesheet" href="assets/css/components/update.css">
   <link rel="stylesheet" href="assets/css/components/loading.css">
@@ -59,7 +60,7 @@
       <p class="option-name" data-i18n="category-perks"></p>
       <div class="option">
         <p class="suboption-name" data-i18n="perks-max"></p>
-        <input type="number" data-settings-key="perks-max" data-settings-default="2" class="center-area" min="1" step="1" />
+        <input type="number" data-custom-component="perks-max" data-settings-key="perks-max" data-settings-default="2" class="center-area" min="1" step="1"  disabled/>
       </div>
       <div class="option">
         <p class="suboption-name" data-i18n="perks-load-automatically"></p>
@@ -103,12 +104,12 @@
       <p class="option-name" data-i18n="category-misc"></p>
       <div class="option">
         <p class="suboption-name" data-i18n="champion-select-min-roles"></p>
-        <input type="number" data-settings-key="champion-select-min-roles" data-settings-default="2" class="center-area" min="1" step="1" />
+        <input type="number" data-settings-key="champion-select-min-roles" data-settings-default="2" class="center-area" min="1" max="5" step="1" />
       </div>
       <div class="option">
-        <p class="suboption-name" data-i18n="champion-select-waiting-finalization-phase-button"></p>
+        <p class="suboption-name" data-i18n="champion-select-lock-button"></p>
         <div class="options float-left checkboxContainer">
-          <input type="checkbox" data-settings-key="champion-select-waiting-finalization-phase" data-setting-default="true" />
+          <input type="checkbox" data-settings-key="champion-select-lock" data-setting-default="true" />
           <label data-i18n="common-enable"></label>
         </div>
       </div>
@@ -208,6 +209,7 @@
       </div>
       <button class="btn normal" type="button" id="update" data-i18n="update-button-download"></button>
       <span id="updateSize">XXX.XXMB</span>
+      <progress id="updateProgress" max="100" style="margin: 30px 0 0 -10px;"></progress>
     </div>
     <p class="status" data-i18n="status-loading"></p>
     <p class="version"></p>

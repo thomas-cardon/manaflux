@@ -51,7 +51,7 @@ class LoLFlavorProvider extends Provider {
 
     let types = [
       'item-sets-block-consumables',
-      { i18n: 'item-sets-block-starter', arguments: [data.blocks[2].type.slice(-5).split('').map(x => x === '>' ? ' > ' : i18n.__('key-' + x))] },
+      { i18n: 'item-sets-block-starter-skill-order', arguments: [data.blocks[2].type.slice(-5).split('').map(x => x === '>' ? ' > ' : i18n.__('key-' + x))] },
       'item-sets-block-core-build',
       'item-sets-block-endgame',
       'item-sets-block-boots',

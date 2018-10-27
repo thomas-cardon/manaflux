@@ -14,7 +14,7 @@ class ItemSetHandler {
       for (let j = 0; j < set._data.blocks[i].items.length; j++)
         items[set._data.blocks[i].items[j].id] = set._data.blocks[i].items[j].count;
 
-      set._data.blocks[i] = new Block(set._data.blocks[i].type, items, set._data.blocks[i].recMath);
+      set._data.blocks[i] = new Block(items, set._data.blocks[i].recMath).setType({ i18n: set._data.blocks[i]._type.i18n, arguments: set._data.blocks[i]._type.arguments });
     }
 
     return set;

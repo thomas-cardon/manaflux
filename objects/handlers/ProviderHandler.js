@@ -18,19 +18,21 @@ class ProviderHandler {
     return this.providers[x];
   }
 
-  async getChampionData(champion, preferredPosition, gameModeHandler, cache) {
+  async getChampionData(champion, preferredPosition, gameModeHandler, cache, providerList) {
     const gameMode = gameModeHandler.getGameMode() || 'CLASSIC';
 
     /* 1/5 - Storage Checking */
     if (Mana.getStore().has(`data.${champion.id}`) && cache) {
+      console.log(2, `[ProviderHandler] Using local storage`);
+
       const data = Mana.getStore().get(`data.${champion.id}`);
-      DataValidator.onDataUpload(data, champion.id, gameMode);
+      DataValidator.onDataDownloaded(data, champion, gameMode);
 
       return data;
     }
 
     /* 2/5 - Downloading */
-    const providers = Mana.getStore().get('providers-order', Object.keys(this.providers)).filter(x => gameModeHandler.getProviders() === null || gameModeHandler.getProviders().includes(x));
+    const providers = providerList || Mana.getStore().get('providers-order', Object.keys(this.providers)).filter(x => gameModeHandler.getProviders() === null || gameModeHandler.getProviders().includes(x));
     providers.unshift(...providers.splice(providers.indexOf('flux'), 1));
     providers.push(providers.splice(providers.indexOf('lolflavor'), 1)[0])
 
@@ -68,32 +70,30 @@ class ProviderHandler {
     }
 
     /* 3/5 - Validate */
-    DataValidator.onDataDownloaded(data, champion.id, gameMode);
+    data = DataValidator.onDataDownloaded(data, champion, gameMode);
 
     /* 4/5 - Saving to offline cache
        5/5 - Uploading to online cache */
-    if (!cache) return console.dir(data);
-    this._cache.push(data);
-
-    return console.dir(data);
+    if (cache) this._cache.push(data);
+    return data;
   }
 
   /**
    * Runs tasks when champion select ends
    */
-  onChampionSelectEnd() {
-    this._cache.forEach(data => {
+  onChampionSelectEnd(cache = this._cache, flux = this.providers.flux) {
+    setTimeout(function() {
       UI.loading(true);
 
-      Object.values(data.roles).forEach(r => {
-        r.itemsets = r.itemsets.map(x => x._data ? x.build(false, false) : x)
+      cache.forEach(data => {
+        DataValidator.onDataUpload(data);
+        Mana.getStore().set(`data.${data.championId}`, data);
+
+        UI.indicator(flux.upload(data), 'providers-flux-uploading');
       });
 
-      Mana.getStore().set(`data.${data.championId}`, data);
-      UI.indicator(this.providers.flux.upload(data), 'providers-flux-uploading');
-    });
-
-    this._cache = [];
+      cache = [];
+    }, 3000);
   }
 
   /**
