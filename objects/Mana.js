@@ -72,6 +72,8 @@ class Mana {
 
     if (this.getStore().get('lastBranchSeen') !== this.gameClient.branch) {
       this.getStore().set('data', {});
+      this.getStore().set('ddragon', {});
+      
       require('./handlers/ItemSetHandler').getItemSets().then(x => require('./handlers/ItemSetHandler').deleteItemSets(x)).catch(UI.error);
     }
 

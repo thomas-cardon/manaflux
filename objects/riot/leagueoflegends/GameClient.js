@@ -40,12 +40,14 @@ class GameClient {
     return JSON.parse(await rp(Mana.base + 'riotclient/get_region_locale'));
   }
 
-  async downloadDDragonRealm() {
-    return this.realm = JSON.parse(await rp(`https://ddragon.leagueoflegends.com/realms/${this.region}.json`));
+  async queryRealm() {
+    if (!Mana.getStore().has('ddragon.realm')) Mana.getStore().set('ddragon.realm', JSON.parse(await rp(`https://ddragon.leagueoflegends.com/realms/${this.region}.json`)));
+    return Mana.getStore().get('ddragon.realm');
   }
 
   async getPerks() {
-    return JSON.parse(await rp(`http://ddragon.leagueoflegends.com/cdn/${this.realm.v}/data/${this.locale || this.realm.l}/runesReforged.json`));
+    if (!Mana.getStore().has('ddragon.perks')) Mana.getStore().set('ddragon.perks', JSON.parse(await rp(`http://ddragon.leagueoflegends.com/cdn/${Mana.getStore().get('ddragon.realm').v}/data/${this.locale || Mana.getStore().get('ddragon.realm').l}/runesReforged.json`)));
+    return Mana.getStore().get('ddragon.perks');
   }
 
   findPerkByImage(img) {
@@ -70,7 +72,7 @@ class GameClient {
     this.region = r.region.toLowerCase();
     this.locale = r.locale;
 
-    await this.downloadDDragonRealm();
+    await this.queryRealm();
     let x = await this.getSystemBuilds();
 
     this.branch = x.branch;
