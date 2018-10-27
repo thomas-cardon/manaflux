@@ -1,0 +1,103 @@
+.statistics-portrait {
+  margin-top: 40%;
+}
+
+@keyframes hextechRotation {
+  from {
+      transform: translateZ(0) rotate(10deg);
+  }
+  to {
+      transform: translateZ(0) rotate(40deg);
+  }
+}
+
+.statistics-portrait > #champion {
+  width: 64px;
+  height: 64px;
+  z-index: 0;
+  position: absolute;
+  top: 120px;
+  left: 56px;
+  border-radius: 120px;
+}
+
+.statistics-portrait > #hextechAnimationBackground {
+  z-index: 1;
+  width: 128px;
+  position: absolute;
+  top: 85px;
+  left: 25px;
+}
+
+#statistics-champion-name {
+  position: absolute;
+  top: 85px;
+  left: 175px;
+  color: #c19b4b;
+  font-size: 30px;
+}
+
+.matchup {
+  width: 100%;
+}
+
+.matchup-left {
+  float: left;
+}
+
+.matchup-right {
+  float: right;
+}
+
+.matchup > img {
+  width: 64px;
+  border-radius: 50%;
+}
+
+.matchup-progress {
+  width: 100%;
+}
+
+.champion-data {
+  display: -webkit-box;
+  width: 50%;
+  margin-top: 3%;
+}
+
+.matchup-left > .champion-data {
+  float: left;
+}
+
+.matchup-right > .champion-data {
+  float: right;
+}
+
+.matchup-left > #vs {
+  font-size: 25px;
+  color: #c19b4b;
+  margin-top: 7%;
+  float: left;
+  margin-right: 5%;
+}
+
+.matchup-right > #syn {
+  font-size: 25px;
+  color: #38ada9;
+  margin-top: 7%;
+  float: right;
+}
+
+.matchup-list {
+  height: 100%;
+  width: 45%;
+}
+
+.matchup-list#counters {
+  float: left;
+  margin-left: 5%;
+}
+
+.matchup-list#synergies {
+  float: right;
+  margin-right: 5%;
+}
