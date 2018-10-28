@@ -2,6 +2,9 @@
 $('input[type!="checkbox"][data-settings-key], select[data-settings-key]').each(function() {
   console.log(2, `[Settings] Loading value of ${this.id = $(this).data('settings-key')} to: ${Mana.getStore().get($(this).data('settings-key'), $(this).data('settings-default'))}`);
   this.value = Mana.getStore().get($(this).data('settings-key'), $(this).data('settings-default'));
+
+  if ($(this).data('settings-options'))
+  this.innerHTML = $(this).data('settings-options').toString().split(',').map(x => `<option id="${x}">${i18n.__($(this).data('translation-pre') + '-' + x)}</option>`);
 }).change(function() {
   console.log(2, `[Settings] Changing value of ${$(this).data('settings-key')} to: ${this.value}`);
   Mana.getStore().set($(this).data('settings-key'), this.value);
