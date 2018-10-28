@@ -63,8 +63,6 @@ class PerksInventory {
 
   async deletePerkPage(page, index = this._perks.indexOf(page)) {
     await rp.del(Mana.base + 'lol-perks/v1/pages/' + page.id);
-    this._perks.splice(index, 1);
-    return null;
   }
 
   async deletePerkPages() {
