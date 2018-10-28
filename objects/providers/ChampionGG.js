@@ -69,7 +69,43 @@ class ChampionGGProvider extends Provider {
 
     let perks = this.scrapePerks($, champion, position);
 
-    return { perks, summonerspells, itemsets, availablePositions, position: position.toUpperCase() };
+    let statistics = this.scrapeStatistics($);
+
+    return { perks, summonerspells, itemsets, availablePositions, position: position.toUpperCase(), statistics };
+  }
+
+  scrapeStatistics($) {
+    const statistics = { stats: {}, matchups: { counters: {}, synergies: {} } };
+    $('table').find('tr').slice(1).each(function(index) {
+      const d = statistics.stats[$(this).attr('id') ? $(this).attr('id').slice(11, -4).replace('-', '') : 'overall'] = {};
+
+      $(this).find('td').slice(1).forEach(function(index) {
+        let key;
+        switch(index) {
+          case 1:
+            key = 'avg';
+            break;
+          case 2:
+            key = 'rolePlacement';
+            break;
+          case 3:
+            key = 'patchChange';
+            break;
+        }
+
+        if (index === 1) d[key] = $(this).text().trim();
+        else if (index === 2) d[key] = ($(this).children().eq(0).text() + $(this).children().eq(1).text()).replace(/\s/g, "");
+        else if (index === 3) d[key] = $(this).text().trim();
+      });
+    });
+
+    $('.progress-bar').forEach(function(index) {
+      let matchup = statistics.matchups.counters[$(this).parent().parent().parent().find('.tsm-tooltip').data('id')] = { wr: $(this).attr('style').slice(7, -2) };
+      matchup.games = parseInt($(this).parent().parent().parent().find('.ng-binding').eq(1).text());
+      matchup.position = $(this).parent().parent().parent().find('a').eq(0).attr('href').split('/')[3].toUpperCase();
+    });
+
+    return statistics;
   }
 
   /**
