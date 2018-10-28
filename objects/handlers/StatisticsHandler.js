@@ -44,8 +44,10 @@ class StatisticsHandler {
       }
     };
 
-    this.displayStatistics(champion, data);
-    this.displayMatchups(champion, data);
+    if (Mana.getStore().get('statistics')) this.displayStatistics(champion, data);
+    else UI.disableTab(document.getElementById('statistics'));
+    if (Mana.getStore().get('matchup')) this.displayMatchups(champion, data);
+    else UI.disableTab(document.getElementById('matchup'));
   }
 
   displayStatistics(champion, data) {
