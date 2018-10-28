@@ -1,8 +1,7 @@
 class StatisticsHandler {
 
-  display(champion, data) {
+  display(champion, data, position) {
     data = {
-      position: 'support',
       stats: {
         winrate: { avg: '42.68%', rolePlacement: '49/49', patchChange: '-2' },
         playrate: { avg: '0.22%', rolePlacement: '48/49', patchChange: '-1' },
@@ -46,7 +45,7 @@ class StatisticsHandler {
 
     if (Mana.getStore().get('statistics')) this.displayStatistics(champion, data);
     else UI.disableTab(document.getElementById('statistics'));
-    if (Mana.getStore().get('matchup')) this.displayMatchups(champion, data);
+    if (Mana.getStore().get('matchups')) this.displayMatchups(champion, data);
     else UI.disableTab(document.getElementById('matchup'));
   }
 
