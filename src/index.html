@@ -108,6 +108,27 @@
       </div>
     </div>
     <div data-tabid="settings" data-tabn=1 class="tabcontent" style="display: none; margin-left: 9%;">
+        <p class="option-name" data-i18n="statistics"></p>
+        <center>
+          <div class="option">
+            <p class="suboption-name" data-i18n="statistics-enable-stats"></p>
+            <input type="checkbox" data-settings-key="statistics" data-settings-default="true" />
+            <label data-i18n="common-enable"></label>
+          </div>
+          <div class="option">
+            <p class="suboption-name" data-i18n="statistics-enable-matchups"></p>
+            <input type="checkbox" data-settings-key="matchups" data-settings-default="true" />
+            <label data-i18n="common-enable"></label>
+          </div>
+        </center>
+        <hr class="break" />
+        <div class="option">
+          <p class="suboption-name" data-i18n="statistics-providers"></p>
+          <select data-settings-key="statistics-providers" data-settings-options="flux,championgg,leagueofgraphs,opgg,metasrc,lolflavor" data-translation-pre="settings-providers-order" class="dropdown">
+          </select>
+        </div>
+    </div>
+    <div data-tabid="settings" data-tabn=2 class="tabcontent" style="display: none; margin-left: 9%;">
       <p class="option-name" data-i18n="category-misc"></p>
       <div class="option">
         <p class="suboption-name" data-i18n="champion-select-min-roles"></p>
@@ -175,7 +196,7 @@
         </select>
       </div>
     </div>
-    <div data-tabid="settings" data-tabn=2 class="tabcontent" style="display: none; margin-left: 9%;">
+    <div data-tabid="settings" data-tabn=3 class="tabcontent" style="display: none; margin-left: 9%;">
       <p class="option-name" data-i18n="category-advanced"></p>
       <div class="option">
         <p class="suboption-name" data-i18n="league-client-path"></p>
@@ -198,7 +219,7 @@
         <button class="btn normal" data-custom-component="settings-logs-open" data-i18n="common-open"></button>
       </div>
     </div>
-    <div data-tabid="settings" data-tabn=3 class="tabcontent" style="display: none; margin-left: 9%;">
+    <div data-tabid="settings" data-tabn=4 class="tabcontent" style="display: none; margin-left: 9%;">
       <p class="option-name" data-i18n="category-advanced"></p>
       <div class="option">
         <p class="suboption-name" data-i18n="providers-order"></p>
