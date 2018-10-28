@@ -27,10 +27,14 @@ class PerksInventory {
     pages = pages.slice(0, count);
 
     for (let i = 0; i < count; i++) {
-      if (!perks[i]) perks[i] = await this.createPerkPage(Object.assign(pages[i], { current: count === 0 }));
-      else if (perks[i].selectedPerkIds === pages[i].selectedPerkIds && perks[i].name === pages[i].name) continue;
-
-      await this.updatePerkPage(Object.assign(perks[i], pages[i], { current: count === 0 }));
+      if (Mana.getStore().get('fixes-perks-editor')) {
+        if (perks[i]) await this.deletePerkPage(perks[i], i);
+        perks[i] = await this.createPerkPage(Object.assign(pages[i], { current: count === 0 }));
+      }
+      else {
+        if (!perks[i]) perks[i] = await this.createPerkPage(Object.assign(pages[i], { current: count === 0 }));
+        else if (perks[i].selectedPerkIds !== pages[i].selectedPerkIds) await this.updatePerkPage(Object.assign(perks[i], pages[i], { current: count === 0 }));
+      }
     }
   }
 
