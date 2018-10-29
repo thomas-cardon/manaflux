@@ -58,6 +58,11 @@ class GameClient {
     return Object.values(this.perks).find(x => x.iconPath.toLowerCase().includes(img.toLowerCase()));
   }
 
+  findPerkStyleByImage(img) {
+    return this.styles.find(x => x.iconPath.toLowerCase().includes(img.toLowerCase()));
+  }
+
+
   findPerkStyleByPerkId(id) {
     return this.styles.find(x => x.slots.some(y => y.perks.some(z => z === parseInt(id))));
   }
