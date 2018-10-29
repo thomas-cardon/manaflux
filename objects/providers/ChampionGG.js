@@ -83,8 +83,8 @@ class ChampionGGProvider extends Provider {
 
     $("img[src*='perk-images']", $("div[class^=Slot__LeftSide]")).each(function(index) {
       let page = Math.trunc(index / 8), perk = $(this).attr("src").slice(38);
-      if (index % 8 === 0) pages[page].primaryStyleId = Mana.gameClient.perks.find(x => x.icon === perk).id;
-      else if (index % 8 === 5) pages[page].subStyleId = Mana.gameClient.perks.find(x => x.icon === perk).id;
+      if (index % 8 === 0) pages[page].primaryStyleId = Mana.gameClient.findPerkStyleByImage(perk).id;
+      else if (index % 8 === 5) pages[page].subStyleId = Mana.gameClient.findPerkStyleByImage(perk).id;
       else pages[page].selectedPerkIds.push(Mana.gameClient.findPerkByImage(perk).id);
     });
 
