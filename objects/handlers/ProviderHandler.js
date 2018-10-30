@@ -115,18 +115,15 @@ class ProviderHandler {
    * Runs tasks when champion select ends
    */
   onChampionSelectEnd(cache = this._cache, flux = this.providers.flux) {
-    setTimeout(function() {
-      UI.loading(true);
+    var i = cache.length;
+    while (i--) {
+      DataValidator.onDataUpload(cache[i]);
+      Mana.getStore().set(`data.${data.championId}`, cache[i]);
 
-      cache.forEach(data => {
-        DataValidator.onDataUpload(data);
-        Mana.getStore().set(`data.${data.championId}`, data);
-
-        UI.indicator(flux.upload(data), 'providers-flux-uploading');
+      UI.indicator(flux.upload(cache[i]), 'providers-flux-uploading').then(() => {
+        cache.splice(i, 1);
       });
-
-      cache = [];
-    }, 3000);
+    }
   }
 
   /**
