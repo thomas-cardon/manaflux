@@ -36,8 +36,7 @@ class ChampionGGProvider extends Provider {
         console.log(`[ProviderHandler] [Champion.GG] Something happened while gathering data (${position.name})`);
 
         if (err.toString().includes('Data is outdated')) {
-          console.log(`[ProviderHandler] [Champion.GG] Skipping provider`);
-          return null;
+          throw UI.error('providers-error-outdated', this.name);
         }
         else console.error(err);
       }
