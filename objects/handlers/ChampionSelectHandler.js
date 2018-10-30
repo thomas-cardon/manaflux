@@ -4,8 +4,8 @@ const ItemSetHandler = require('./ItemSetHandler');
 class ChampionSelectHandler {
   constructor() {
     this.gameModeHandlers = {
-      CLASSIC: new (require('../gameModesHandlers/CLASSIC'))(this, Mana.providerHandler),
-      ARAM: new (require('../gameModesHandlers/ARAM'))(this, Mana.providerHandler)
+      CLASSIC: new (require('../gameModeHandlers/CLASSIC'))(this, Mana.providerHandler),
+      ARAM: new (require('../gameModeHandlers/ARAM'))(this, Mana.providerHandler)
     };
 
     ipcRenderer.on('perks-shortcut', this.onShortcutPressedEvent);
