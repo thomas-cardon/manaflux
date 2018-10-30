@@ -48,7 +48,7 @@ class ProviderHandler {
     return emitter;
   }*/
 
-  async getChampionData(champion, preferredPosition, gameModeHandler, cache, providerList) {
+  async getChampionData(champion, preferredPosition, gameModeHandler, cache, providerList, enableFlux = true) {
     const gameMode = gameModeHandler.getGameMode() || 'CLASSIC';
 
     /* 1/5 - Storage Checking */
@@ -63,7 +63,10 @@ class ProviderHandler {
 
     /* 2/5 - Downloading */
     const providers = providerList || Mana.getStore().get('providers-order', Object.keys(this.providers)).filter(x => gameModeHandler.getProviders() === null || gameModeHandler.getProviders().includes(x));
-    providers.unshift(...providers.splice(providers.indexOf('flux'), 1));
+
+    if (enableFlux) providers.unshift(...providers.splice(providers.indexOf('flux'), 1));
+    else providers.splice(providers.indexOf('flux'), 1);
+
     providers.push(providers.splice(providers.indexOf('lolflavor'), 1)[0])
 
     let data;
