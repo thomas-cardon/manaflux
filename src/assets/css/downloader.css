@@ -33,7 +33,9 @@ body {
   font-family: "beaufort-bold";
   width: 80%;
   font-size: 15px;
-  min-height: 350px;
+  height: 330px;
+  overflow-y: scroll;
+  scroll-behavior: smooth;
 }
 
 progress#download {
@@ -42,4 +44,11 @@ progress#download {
   height: 25px;
   bottom: 0;
   left: 0px;
+}
+
+#note {
+  font-size: 12px;
+  color: #cdbe91;
+  margin-bottom: 5px;
+  max-width: 80%;
 }

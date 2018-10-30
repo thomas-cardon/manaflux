@@ -22,7 +22,7 @@ module.exports = {
 
       for (let i = 0; i < champions.length; i++) {
         if (!win) break;
-        
+
         console.log('[ProvidersDownloader] Downloading ' + champions[i].name);
 
         win.webContents.send('champion-download', champions[i].name);
@@ -33,6 +33,7 @@ module.exports = {
       Mana.providerHandler.onChampionSelectEnd();
       win.webContents.send('download-done');
     });
+    
     win.once('closed', () => {
       this.disabled = win = false;
     });
