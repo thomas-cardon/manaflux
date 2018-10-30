@@ -60,7 +60,7 @@
   });
 
   ipcRenderer.on('download-done', (event, name) => {
-    document.getElementById('download').value = document.getElementById('download').max;
+    document.getElementById('download').setAttribute('data-label', i18n.__('providers-downloader-done', document.getElementById('download').value = document.getElementById('download').max));
   });
   </script>
   <script src="assets/js/ui.js"></script>
