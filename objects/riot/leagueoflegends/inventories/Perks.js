@@ -18,7 +18,7 @@ class PerksInventory {
     if (Mana.user.getSummonerLevel() < 8) throw UI.error('perks-error-safeguard-level');
     console.log(2, `[Perks] Loading`);
 
-    let perks = await this.getPerks(), count = await this.getCount();
+    let perks = this.getPerks(), count = await this.getCount();
 
     if (!pages || pages.length === 0 || pages.find(x => x.selectedPerkIds.length === 0) !== undefined) throw Error('Runes are empty');
 
@@ -27,20 +27,20 @@ class PerksInventory {
     pages = pages.slice(0, count);
 
     for (let i = 0; i < count; i++) {
-      if (Mana.getStore().get('fixes-perks-editor')) {
-        if (perks[i]) await this.deletePerkPage(perks[i], i);
-        perks[i] = await this.createPerkPage(Object.assign(pages[i], { current: count === 0 }));
-      }
-      else {
-        if (!perks[i]) perks[i] = await this.createPerkPage(Object.assign(pages[i], { current: count === 0 }));
-        else if (perks[i].selectedPerkIds !== pages[i].selectedPerkIds) await this.updatePerkPage(Object.assign(perks[i], pages[i], { current: count === 0 }));
-      }
+      if (perks[i] && Mana.getStore().get('fixes-perks-editor'))
+        await this.deletePerkPage(perks[i], i);
+
+      if (!perks[i]) perks[i] = await this.createPerkPage(Object.assign(pages[i], { current: count === 0 }));
+      else if (perks[i].selectedPerkIds !== pages[i].selectedPerkIds) await this.updatePerkPage(Object.assign(perks[i], pages[i], { current: count === 0 }));
     }
   }
 
-  async getPerks() {
-    if (!this._perks) this._perks = JSON.parse(await rp(Mana.base + 'lol-perks/v1/pages')).filter(page => page.isEditable);
+  getPerks() {
     return this._perks;
+  }
+
+  async queryPerks() {
+    this._perks = JSON.parse(await rp(Mana.base + 'lol-perks/v1/pages')).filter(page => page.isEditable)
   }
 
   async updatePerkPage(x) {
@@ -62,7 +62,16 @@ class PerksInventory {
   }
 
   async deletePerkPage(page, index = this._perks.indexOf(page)) {
-    await rp.del(Mana.base + 'lol-perks/v1/pages/' + page.id);
+    try {
+      await rp.del(Mana.base + 'lol-perks/v1/pages/' + page.id);
+      this._perks[index] = null;
+    }
+    catch(err) {
+      if (err.statuscode === 404) {
+        await this.queryPerks();
+      }
+      else throw err;
+    }
   }
 
   async deletePerkPages() {
