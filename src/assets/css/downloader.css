@@ -46,6 +46,10 @@ progress#download {
   left: 0px;
 }
 
+progress#download::before {
+  color: #ecf0f1;
+}
+
 #note {
   font-size: 12px;
   color: #cdbe91;

@@ -23,17 +23,22 @@ module.exports = {
       for (let i = 0; i < champions.length; i++) {
         if (!win) break;
 
-        console.log('[ProvidersDownloader] Downloading ' + champions[i].name);
+        for (let prop in Mana.championSelectHandler.gameModeHandlers) {
+          if (!win) break;
 
-        win.webContents.send('champion-download', champions[i].name);
-        await Mana.providerHandler.getChampionData(champions[i], null, Mana.championSelectHandler.gameModeHandlers.CLASSIC, true, null, false);
-        win.webContents.send('champion-downloaded');
+          console.log(`[ProviderHandlerDownloader] Downloading ${champions[i].name} (${Mana.championSelectHandler.gameModeHandlers[prop].getGameMode()})`);
+
+          win.webContents.send('champion-download', { name: champions[i].name, gameMode: Mana.championSelectHandler.gameModeHandlers[prop].getGameMode() });
+          await Mana.providerHandler.getChampionData(champions[i], null, Mana.championSelectHandler.gameModeHandlers[prop], true, null, true);
+        }
+
+        if (win) win.webContents.send('champion-downloaded');
       }
 
       Mana.providerHandler.onChampionSelectEnd();
-      win.webContents.send('download-done');
+      if (win) win.webContents.send('download-done');
     });
-    
+
     win.once('closed', () => {
       this.disabled = win = false;
     });
