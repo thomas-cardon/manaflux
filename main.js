@@ -24,8 +24,10 @@ if (!lock) app.quit();
 else {
   app.on('second-instance', function (argv, cwd) {
     if (win) {
-      if (win.isMinimized()) myWindow.restore()
-      win.focus()
+      if (!win.isVisible()) win.show();
+      else if (win.isMinimized()) win.restore();
+
+      win.focus();
     }
   });
 }
