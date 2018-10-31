@@ -24,17 +24,19 @@ class ProviderHandler {
 
     /* 1/5 - Storage Checking */
     if (Mana.getStore().has(`data.${champion.id}`) && cache) {
-      console.log(2, `[ProviderHandler] Using local storage`);
-
       const data = Mana.getStore().get(`data.${champion.id}`);
-      DataValidator.onDataDownloaded(data, champion, gameMode);
 
-      return data;
+      if (data.roles[preferredPosition] || Object.values(data.roles)[0].gameMode === gameMode) {
+        console.log(2, `[ProviderHandler] Using local storage`);
+
+        DataValidator.onDataDownloaded(data, champion);
+        return data;
+      }
     }
 
     /* 2/5 - Downloading */
     const providers = providerList || Mana.getStore().get('providers-order', Object.keys(this.providers)).filter(x => gameModeHandler.getProviders() === null || gameModeHandler.getProviders().includes(x));
-    let data;
+    let data = (Mana.getStore().has(`data.${champion.id}`) && cache) ? Mana.getStore().get(`data.${champion.id}`) : null;
 
     for (let provider of providers) {
       provider = this.providers[provider];
@@ -68,7 +70,7 @@ class ProviderHandler {
     }
 
     /* 3/5 - Validate */
-    data = DataValidator.onDataDownloaded(data, champion, gameMode);
+    data = DataValidator.onDataDownloaded(data, champion);
 
     /* 4/5 - Saving to offline cache
        5/5 - Uploading to online cache */
@@ -82,12 +84,14 @@ class ProviderHandler {
   async onChampionSelectEnd(cache = this._cache, flux = this.providers.flux) {
     var i = cache.length;
     while (i--) {
-      if (!cache[i]) return cache.splice(i, 1);;
+      if (!cache[i]) return cache.splice(i, 1);
 
       DataValidator.onDataUpload(cache[i]);
+      await UI.indicator(flux.upload(cache[i]), 'providers-flux-uploading');
+
+      DataValidator.onDataStore(cache[i]);
       Mana.getStore().set(`data.${cache[i].championId}`, cache[i]);
 
-      await UI.indicator(flux.upload(cache[i]), 'providers-flux-uploading');
       cache.splice(i, 1);
     }
   }
