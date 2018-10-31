@@ -260,8 +260,7 @@ class ChampionSelectHandler {
     UI.status('champion-select-waiting');
     UI.disableHextechAnimation();
 
-    document.getElementById('positions').style.display = 'none';
-    document.getElementById('buttons').style.display = 'none';
+    document.getElementById('positions').style.display = document.getElementById('buttons').style.display = 'none';
 
     $('#loadRunes').disableManualButton(!Mana.getStore().get('perks-automatic-load'));
     $('#loadSummonerSpells').disableManualButton(true);
