@@ -5,26 +5,12 @@ class ClassicGameMode {
     this.gameMode = gameMode;
   }
 
-  onFirstTickEvent(data) {
-    console.dir(3, data);
-  }
-
-  onTickEvent(data, gameMode) {
-    this._timer = data.timer;
-    this._myTeam = data.myTeam;
-    this._theirTeam = data.theirTeam;
-  }
-
   getGameMode() {
     return this.gameMode;
   }
 
-  getPlayer() {
-    return this._myTeam.find(x => x.summonerId === Mana.user.getSummonerId());
-  }
-
-  getPosition() {
-    switch(this.getPlayer().assignedPosition) {
+  getPosition(pos) {
+    switch(pos) {
       case 'UTILITY':
         return 'SUPPORT';
       case 'BOTTOM':
@@ -32,7 +18,7 @@ class ClassicGameMode {
       case '':
         return null;
       default:
-        return this.getPlayer().assignedPosition;
+        return pos;
     }
   }
 
