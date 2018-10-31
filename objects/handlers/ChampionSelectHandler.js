@@ -51,7 +51,7 @@ class ChampionSelectHandler {
     console.log(`[ChampionSelectHandler] Leaving`);
 
     this._inChampionSelect = false;
-    this._lastChampionPicked = null;
+    this._lastChampionPicked = this._locked = null;
 
     ipcRenderer.send('champion-select-out');
 
