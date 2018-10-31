@@ -17,15 +17,13 @@ class DataValidator {
     });
   }
 
-  onDataDownloaded(d, champion, gameMode) {
+  onDataDownloaded(d, champion) {
     if (!d) return null;
 
     console.log('[DataValidator] Copying required properties for Flu.x');
     let data = { ...d };
 
     data.championId = champion.id;
-
-    data.gameMode = gameMode;
     data.gameVersion = Mana.gameClient.branch;
 
     data.version = Mana.version;
@@ -44,6 +42,14 @@ class DataValidator {
       role.perks.forEach(x => delete x.name);
       role.itemsets = role.itemsets.map(x => x._data ? x.build(false, false) : ItemSetHandler.parse(Mana.champions[data.championId].key, x, x.provider).build(false, false));
     }
+  }
+
+  onDataStore(data) {
+    delete data.championId;
+    delete data.gameVersion;
+
+    delete data.version;
+    delete data.region;
   }
 
   onPerkPagesCheck(array, champion, role) {
