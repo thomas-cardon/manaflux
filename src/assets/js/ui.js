@@ -7,6 +7,8 @@ UI.stylizeRole = (role = 'unknown') => {
       return 'ARAM';
     case 'adc':
       return 'ADC';
+    case 'twisted_treeline':
+      return '3vs3';
     default:
       return role.charAt(0).toUpperCase() + role.slice(1).toLowerCase();
   }
