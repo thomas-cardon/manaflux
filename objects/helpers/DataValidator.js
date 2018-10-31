@@ -1,23 +1,6 @@
 const ItemSetHandler = require('../handlers/ItemSetHandler');
-const EventEmitter = require('events');
 
-class DataValidator extends EventEmitter {
-
-  updateItemSet(set) {
-
-  }
-
-  updatePerkPage(page) {
-
-  }
-
-  updateSummonerSpells(spells) {
-
-  }
-
-  updateStatistics() {
-
-  }
+class DataValidator {
 
   onDataChange(data, providerId) {
     data = { roles: {}, ...data };

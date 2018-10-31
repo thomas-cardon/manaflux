@@ -19,35 +19,6 @@ class ProviderHandler {
     return this.providers[x];
   }
 
-  /*
-  createDownloadEmitter(champion, preferredPosition, gameModeHandler, cache) {
-    const gameMode = gameModeHandler.getGameMode() || 'CLASSIC';
-    let data = {};
-
-    class DownloadEmitter extends EventEmitter {}
-    const emitter = new DownloadEmitter();
-
-    process.nextTick(() => {
-      if (Mana.getStore().has(`data.${champion.id}`) && cache) {
-        console.log(2, `[ProviderHandler] Using local storage`);
-
-        data = Mana.getStore().get(`data.${champion.id}`);
-        DataValidator.onDataDownloaded(data, champion, gameMode);
-
-        emitter.emit('cached', data);
-      }
-      else {
-        const providers = providerList || Mana.getStore().get('providers-order', Object.keys(this.providers)).filter(x => gameModeHandler.getProviders() === null || gameModeHandler.getProviders().includes(x));
-        providers.unshift(...providers.splice(providers.indexOf('flux'), 1));
-        providers.push(providers.splice(providers.indexOf('lolflavor'), 1)[0]);
-
-        providers.forEach(x => x.)
-      }
-    });
-
-    return emitter;
-  }*/
-
   async getChampionData(champion, preferredPosition, gameModeHandler, cache, providerList, enableFlux = true) {
     const gameMode = gameModeHandler.getGameMode() || 'CLASSIC';
 
