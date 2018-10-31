@@ -85,11 +85,14 @@ class Mana {
     UI.status('league-client-connection');
 
     this.user = new (require('./User'))(data);
-    this.championSelectHandler.loop();
 
-    UI.status('champion-select-waiting');
     global._devChampionSelect = () => new (require('../CustomGame'))().create().then(game => game.start());
     document.querySelectorAll('[data-custom-component]').forEach(x => x.dispatchEvent(new Event('userConnected')));
+
+    setTimeout(() => {
+      this.championSelectHandler.loop();
+      UI.status('champion-select-waiting');
+    }, 2000);
   }
 
   disconnect() {
