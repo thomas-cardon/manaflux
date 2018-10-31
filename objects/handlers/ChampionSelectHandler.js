@@ -151,7 +151,7 @@ class ChampionSelectHandler {
     }
     catch(err) {
       if (err.statusCode === 404 && this._inChampionSelect) this.onChampionSelectEnd();
-      else if (err.statusCode !== 404 && Mana.user) UI.error(err);
+      else if (err.statusCode !== 404 && err.code !== 'ECONNREFUSED') UI.error(err);
     }
 
     this.loop();
@@ -162,7 +162,7 @@ class ChampionSelectHandler {
   }
 
   onDisplayUpdatePreDownload(champion) {
-    this.hasLoadedUI = true;
+    if (!this._inChampionSelect) return;
     UI.status('champion-select-updating-display', champion.name);
 
     document.getElementById('buttons').style.display = 'none';
@@ -179,11 +179,11 @@ class ChampionSelectHandler {
   }
 
   async onDisplayUpdate(champion, res) {
+    if (!this._inChampionSelect) return;
     if (!res || Object.keys(res.roles).length === 0) return UI.error('providers-error-data');
 
-    console.dir(res);
-    Object.keys(res.roles).forEach(r => {
-      if (res.roles[r].perks.length === 0) UI.error('providers-error-perks', champion.name, r);
+    document.getElementById('positions').innerHTML = '';
+    Object.keys(res.roles).filter(x => res.roles[x].perks.length > 0).forEach(r => {
       document.getElementById('positions').innerHTML += `<option value="${r}">${UI.stylizeRole(r)}</option>`;
     });
 
