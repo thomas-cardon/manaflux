@@ -89,7 +89,7 @@ class ProviderHandler {
     var i = cache.length;
     while (i--) {
       DataValidator.onDataUpload(cache[i]);
-      Mana.getStore().set(`data.${data.championId}`, cache[i]);
+      Mana.getStore().set(`data.${cache[i].championId}`, cache[i]);
 
       UI.indicator(flux.upload(cache[i]), 'providers-flux-uploading').then(() => {
         cache.splice(i, 1);
