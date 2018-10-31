@@ -4,8 +4,33 @@ const ItemSetHandler = require('./ItemSetHandler');
 class ChampionSelectHandler {
   constructor() {
     this.gameModeHandlers = {
-      CLASSIC: new (require('../gameModeHandlers/CLASSIC'))(this, Mana.providerHandler),
-      ARAM: new (require('../gameModeHandlers/ARAM'))(this, Mana.providerHandler)
+      CLASSIC: {
+        getGameMode: () => 'CLASSIC',
+        getPosition: pos => {
+          switch(pos) {
+            case 'UTILITY':
+              return 'SUPPORT';
+            case 'BOTTOM':
+              return 'ADC';
+            case '':
+              return null;
+            default:
+              return pos;
+          }
+        },
+        getProviders: () => null
+      },
+      ARAM: {
+        getGameMode: () => 'ARAM',
+        getPosition: pos => null,
+        getProviders: () => ['metasrc', 'lolflavor', 'leagueofgraphs']
+      },
+      '10': {
+        getGameMode: () => 'TWISTED_TREELINE',
+        getPosition: pos => null,
+        getMap: map => 10,
+        getProviders: () => ['metasrc']
+      }
     };
 
     ipcRenderer.on('perks-shortcut', this.onShortcutPressedEvent);
@@ -13,13 +38,13 @@ class ChampionSelectHandler {
 
   async onChampionSelectStart() {
     ipcRenderer.send('champion-select-in');
-    this.gameMode = await Mana.user.getGameMode();
+    await Mana.user.queryChatDetails();
 
-    console.log(`[ChampionSelectHandler] Entering into ${this.gameMode}`);
+    console.log(`[ChampionSelectHandler] Entering into ${Mana.user.getGameMode()}`);
     Mana.user.getPerksInventory().queryPerks(); // Reloading perks array
 
     /* Fallback to classic mode when not available */
-    this.gameModeHandler = this.gameModeHandlers[this.gameMode] ? this.gameModeHandlers[this.gameMode] : this.gameModeHandlers.CLASSIC;
+    this.gameModeHandler = this.gameModeHandlers[Mana.user.getGameMode()] ? this.gameModeHandlers[Mana.user.getGameMode()] : this.gameModeHandlers[Mana.user.getMapId()] ? this.gameModeHandlers[Mana.user.getMapId()] : this.gameModeHandlers.CLASSIC;
   }
 
   async onChampionSelectEnd() {
@@ -60,6 +85,8 @@ class ChampionSelectHandler {
   }
 
   async _handleTick(session) {
+    console.dir(3, session);
+
     this._timer = session.timer;
     this._myTeam = session.myTeam;
     this._theirTeam = session.theirTeam;
