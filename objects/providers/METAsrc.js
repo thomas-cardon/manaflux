@@ -14,8 +14,8 @@ class METAsrcProvider extends Provider {
 
     let data = { roles: { [d.position]: d } };
 
-    if (gameMode === 'ARAM') {
-      delete data.roles.ARAM.position;
+    if (gameMode === 'ARAM' || gameMode === 'TWISTED_TREELINE') {
+      delete data.roles[gameMode].position;
       return data;
     }
 
@@ -47,7 +47,7 @@ class METAsrcProvider extends Provider {
         else position = $(this).find('h1').text() === 'MID' ? 'MIDDLE' : $(this).find('h1').text();
       });
     }
-    else if (gameMode === 'ARAM') position = 'ARAM';
+    else position = gameMode;
 
     let itemsets = this.scrapeItemSets($, champion, position, this.scrapeSkillOrder($));
     return { position, perks: this.scrapePerks($), summonerspells: this.scrapeSummonerSpells($), itemsets, availablePositions };
@@ -124,6 +124,8 @@ class METAsrcProvider extends Provider {
         return 'aram';
         case 'classic':
         return '5v5';
+        case 'twisted_treeline':
+        return '3v3';
         default:
         return '5v5';
       }

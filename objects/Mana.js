@@ -73,7 +73,7 @@ class Mana {
     if (this.getStore().get('lastBranchSeen') !== this.gameClient.branch) {
       this.getStore().set('data', {});
       this.getStore().set('ddragon', {});
-      
+
       require('./handlers/ItemSetHandler').getItemSets().then(x => require('./handlers/ItemSetHandler').deleteItemSets(x)).catch(UI.error);
     }
 
@@ -85,7 +85,7 @@ class Mana {
     UI.status('league-client-connection');
 
     this.user = new (require('./User'))(data);
-    this.championSelectHandler.load();
+    this.championSelectHandler.loop();
 
     UI.status('champion-select-waiting');
     global._devChampionSelect = () => new (require('../CustomGame'))().create().then(game => game.start());

@@ -8,18 +8,9 @@ class OPGGProvider extends Provider {
     this.base = 'https://www.op.gg';
   }
 
-  getOPGGPosition(pos) {
-    switch(pos.toLowerCase()) {
-      case 'middle':
-        return 'mid';
-      case 'adc':
-        return 'bot';
-      default:
-        return pos.toLowerCase();
-    }
-  }
-
   convertOPGGPosition(pos) {
+    if (!pos) return pos;
+
     switch(pos.toLowerCase()) {
       case 'mid':
         return 'middle';
@@ -32,7 +23,7 @@ class OPGGProvider extends Provider {
 
   async getData(champion, preferredPosition, gameMode) {
     const res = await rp(`${this.base}/champion/${champion.key}/statistics${preferredPosition ? '/' + this.convertOPGGPosition(preferredPosition) : ''}`);
-    const d = this._scrape(res, champion, gameMode, true);
+    const d = this._scrape(res, champion, gameMode, preferredPosition, true);
 
     let data = { roles: { [d.position]: d } };
 
@@ -40,7 +31,7 @@ class OPGGProvider extends Provider {
       console.log(2, `[ProviderHandler] [OP.GG] Gathering data (${position.name})`);
 
       try {
-        data.roles[position.name] = this._scrape(await rp(position.link), champion, gameMode);
+        data.roles[position.name] = this._scrape(await rp(position.link), champion, gameMode, position.name);
         delete data.roles[position.name].position;
       }
       catch(err) {
@@ -55,14 +46,14 @@ class OPGGProvider extends Provider {
     return data;
   }
 
-  _scrape(html, champion, gameMode, firstScrape) {
+  _scrape(html, champion, gameMode, position, firstScrape) {
     let $ = cheerio.load(html);
 
     const convertOPGGPosition = this.convertOPGGPosition;
 
     if ($('.champion-stats-header-version').text().trim().slice(-4) != Mana.gameClient.branch) UI.error('providers-error-outdated');
 
-    let position = this.convertOPGGPosition($('li.champion-stats-header__position.champion-stats-header__position--active').data('position')).toUpperCase();
+    position = $('li.champion-stats-header__position.champion-stats-header__position--active').data('position') ? this.convertOPGGPosition($('li.champion-stats-header__position.champion-stats-header__position--active').data('position')).toUpperCase() : position;
     const availablePositions = [];
 
     if (firstScrape) {

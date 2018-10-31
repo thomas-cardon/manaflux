@@ -165,7 +165,7 @@
 
 /* Change background color of buttons on hover */
 
-.btn.control:hover {
+.btn.control:not([disabled]):hover {
   color: #f0e6d2;
   border: none;
   outline: none;
@@ -173,6 +173,10 @@
   -webkit-box-shadow: none;
   -moz-box-shadow: none;
   box-shadow: none;
+}
+
+.btn.control:disabled {
+  color: #636e72;
 }
 
 /* Create an active/current tablink class */

@@ -31,7 +31,11 @@ function LoggingHandler(level) {
       level = 0;
     }
 
-    if (self.level >= level) {
+    if (x.length === 0) {
+      c.log.call(console, `[${self.isRenderer ? 'Renderer' : 'Main'}]`, `[${self._getTimestamp()}]`, 'No arguments but level passed:',  level);
+      self.send.call(self, level, 'log', level);
+    }
+    else if (self.level >= level) {
       c.log.call(console, `[${self.isRenderer ? 'Renderer' : 'Main'}]`, `[${self._getTimestamp()}]`, ...x);
       self.send.call(self, level, 'log', ...x);
     }
@@ -77,7 +81,7 @@ function LoggingHandler(level) {
 
     return x;
   };
-  
+
   this.ipc.on('logging-log', (event, arg) => this.onMessageCallback('log', arg));
   this.ipc.on('logging-dir', (event, arg) => this.onMessageCallback('dir', arg));
   this.ipc.on('logging-warn', (event, arg) => this.onMessageCallback('warn', arg));

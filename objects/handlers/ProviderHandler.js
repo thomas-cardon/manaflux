@@ -1,5 +1,6 @@
 const rp = require('request-promise-native');
 const DataValidator = new (require('../helpers/DataValidator'))();
+const EventEmitter = require('events');
 
 class ProviderHandler {
   constructor() {
@@ -18,7 +19,36 @@ class ProviderHandler {
     return this.providers[x];
   }
 
-  async getChampionData(champion, preferredPosition, gameModeHandler, cache, providerList) {
+  /*
+  createDownloadEmitter(champion, preferredPosition, gameModeHandler, cache) {
+    const gameMode = gameModeHandler.getGameMode() || 'CLASSIC';
+    let data = {};
+
+    class DownloadEmitter extends EventEmitter {}
+    const emitter = new DownloadEmitter();
+
+    process.nextTick(() => {
+      if (Mana.getStore().has(`data.${champion.id}`) && cache) {
+        console.log(2, `[ProviderHandler] Using local storage`);
+
+        data = Mana.getStore().get(`data.${champion.id}`);
+        DataValidator.onDataDownloaded(data, champion, gameMode);
+
+        emitter.emit('cached', data);
+      }
+      else {
+        const providers = providerList || Mana.getStore().get('providers-order', Object.keys(this.providers)).filter(x => gameModeHandler.getProviders() === null || gameModeHandler.getProviders().includes(x));
+        providers.unshift(...providers.splice(providers.indexOf('flux'), 1));
+        providers.push(providers.splice(providers.indexOf('lolflavor'), 1)[0]);
+
+        providers.forEach(x => x.)
+      }
+    });
+
+    return emitter;
+  }*/
+
+  async getChampionData(champion, preferredPosition, gameModeHandler, cache, providerList, enableFlux = true) {
     const gameMode = gameModeHandler.getGameMode() || 'CLASSIC';
 
     /* 1/5 - Storage Checking */
@@ -33,7 +63,10 @@ class ProviderHandler {
 
     /* 2/5 - Downloading */
     const providers = providerList || Mana.getStore().get('providers-order', Object.keys(this.providers)).filter(x => gameModeHandler.getProviders() === null || gameModeHandler.getProviders().includes(x));
-    providers.unshift(...providers.splice(providers.indexOf('flux'), 1));
+
+    if (enableFlux) providers.unshift(...providers.splice(providers.indexOf('flux'), 1));
+    else providers.splice(providers.indexOf('flux'), 1);
+
     providers.push(providers.splice(providers.indexOf('lolflavor'), 1)[0])
 
     let data;
@@ -82,18 +115,15 @@ class ProviderHandler {
    * Runs tasks when champion select ends
    */
   onChampionSelectEnd(cache = this._cache, flux = this.providers.flux) {
-    setTimeout(function() {
-      UI.loading(true);
+    var i = cache.length;
+    while (i--) {
+      DataValidator.onDataUpload(cache[i]);
+      Mana.getStore().set(`data.${data.championId}`, cache[i]);
 
-      cache.forEach(data => {
-        DataValidator.onDataUpload(data);
-        Mana.getStore().set(`data.${data.championId}`, data);
-
-        UI.indicator(flux.upload(data), 'providers-flux-uploading');
+      UI.indicator(flux.upload(cache[i]), 'providers-flux-uploading').then(() => {
+        cache.splice(i, 1);
       });
-
-      cache = [];
-    }, 3000);
+    }
   }
 
   /**
