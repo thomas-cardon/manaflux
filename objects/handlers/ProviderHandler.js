@@ -26,7 +26,7 @@ class ProviderHandler {
     if (Mana.getStore().has(`data.${champion.id}`) && cache) {
       const data = Mana.getStore().get(`data.${champion.id}`);
 
-      if (data.roles[preferredPosition] || Object.values(data.roles)[0].gameMode === gameMode) {
+      if (!bulkDownloadMode && (data.roles[preferredPosition] || Object.values(data.roles)[0].gameMode === gameMode)) {
         console.log(2, `[ProviderHandler] Using local storage`);
 
         DataValidator.onDataDownloaded(data, champion);
@@ -36,7 +36,7 @@ class ProviderHandler {
 
     /* 2/5 - Downloading */
     const providers = providerList || Mana.getStore().get('providers-order', Object.keys(this.providers)).filter(x => gameModeHandler.getProviders() === null || gameModeHandler.getProviders().includes(x));
-    let data = (Mana.getStore().has(`data.${champion.id}`) && cache) ? Mana.getStore().get(`data.${champion.id}`) : null;
+    let data;
 
     for (let provider of providers) {
       provider = this.providers[provider];
@@ -91,7 +91,7 @@ class ProviderHandler {
       await UI.indicator(flux.upload(cache[i]), 'providers-flux-uploading');
 
       DataValidator.onDataStore(cache[i]);
-      Mana.getStore().set(`data.${cache[i].championId}`, cache[i]);
+      Mana.getStore().set(`data.${cache[i].championId}`, Mana.getStore().has(`data.${cache[i].championId}`) ? this._merge(Mana.getStore().get(`data.${cache[i].championId}`), cache[i]) : cache[i]);
 
       cache.splice(i, 1);
     }
