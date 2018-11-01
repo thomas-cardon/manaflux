@@ -1,4 +1,5 @@
 const { BrowserWindow } = require('electron').remote;
+const rp = require('request-promise-native');
 
 module.exports = {
   userConnected: function(e) {
@@ -17,12 +18,23 @@ module.exports = {
 
     win.once('ready-to-show', () => win.show());
     win.once('show', async () => {
-      const champions = Object.values(Mana.champions).filter(x => x.id !== -1 && !Mana.getStore().has(`data.${x.id}`));
+      const champions = Object.values(Mana.champions).filter(x => x.id !== -1);
       win.webContents.send('champions-length', champions.length);
 
       let minRoles = Mana.getStore().get('champion-select-min-roles');
       Mana.getStore().set('champion-select-min-roles', 5);
 
+      console.log('[Downloader] Started downloading Flu.x database');
+      const data = await Mana.providerHandler.providers.flux.bulkDownloadQuery();
+
+      for (let championId in data) {
+        if (!Mana.champions[championId]) continue;
+
+        console.log(`[Downloader] Treating ${Mana.champions[championId].name}`);
+        const d = Mana.getStore().get(`data.${championId}`);
+
+        Mana.getStore().set(`data.${championId}`, data[championId]);
+      }
 
       for (let i = 0; i < champions.length; i++) {
         if (!win) break;

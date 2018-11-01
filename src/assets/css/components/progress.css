@@ -26,6 +26,10 @@ progress[value]::-webkit-progress-value {
   background-color: #2d98da;
 }
 
+progress.unknown-state[value]::-webkit-progress-value {
+  background-color: #f9ca24;
+}
+
 @keyframes animation {
    100% { background-position: -100px 0px; }
 }

@@ -51,6 +51,11 @@
   });
 
   ipcRenderer.on('champion-download', (event, d) => {
+    if (document.getElementById('download').classList.contains('unknown-state')) {
+      document.getElementById('download').value = 0;
+      document.getElementById('download').classList.remove('unknown-state');
+    }
+    
     document.getElementById('download').setAttribute('data-label', i18n.__('providers-downloader-downloading', d.name, UI.stylize(d.gameMode)));
     document.getElementById('text').innerHTML += `${d.name} (${UI.stylize(d.gameMode)})<br>`;
   });

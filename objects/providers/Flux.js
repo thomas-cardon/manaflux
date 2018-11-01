@@ -33,7 +33,7 @@ class FluxProvider extends Provider {
     return await this.getData(champion, position, gameMode).perks;
   }
 
-  /**
+  /*
    * Uploads data to Flu.x
    * @param {object} data - The data that contains perks, summonerspells etc
    */
@@ -46,6 +46,10 @@ class FluxProvider extends Provider {
       body: data,
       json: true
     });
+  }
+
+  async bulkDownloadQuery() {
+    return JSON.parse(await rp(`${this.base}data/v1/bulkdownload`));
   }
 }
 
