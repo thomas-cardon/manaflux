@@ -51,8 +51,8 @@
   });
 
   ipcRenderer.on('champion-download', (event, d) => {
-    document.getElementById('download').setAttribute('data-label', i18n.__('providers-downloader-downloading', d.name, d.gameMode));
-    document.getElementById('text').innerHTML += i18n.__('providers-downloader-downloading', d.name, d.gameMode) + '<br>';
+    document.getElementById('download').setAttribute('data-label', i18n.__('providers-downloader-downloading', d.name, UI.stylize(d.gameMode)));
+    document.getElementById('text').innerHTML += `${d.name} (${UI.stylize(d.gameMode)})<br>`;
   });
 
   ipcRenderer.on('champion-downloaded', (event, name) => {
