@@ -69,7 +69,7 @@ class OPGGProvider extends Provider {
 
     const perks = this.scrapePerks($, champion, position);
 
-    return { perks, summonerspells, itemsets, availablePositions, position: position.toUpperCase() };
+    return { perks, summonerspells, itemsets, availablePositions, position: position.toUpperCase(), gameMode };
   }
 
   /**

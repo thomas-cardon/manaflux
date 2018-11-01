@@ -42,7 +42,7 @@ class FluxProvider extends Provider {
 
     return await rp({
       method: 'POST',
-      uri: `${this.base}data/v1/upload`,
+      uri: `${this.base}data/v2/upload`,
       body: data,
       json: true
     });

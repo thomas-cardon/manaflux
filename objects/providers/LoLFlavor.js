@@ -65,7 +65,7 @@ class LoLFlavorProvider extends Provider {
       itemset.addBlock(block);
     });
 
-    return { itemsets: [itemset], perks: [], summonerspells: [] };
+    return { itemsets: [itemset], perks: [], summonerspells: [], gameMode };
   }
 
   getCondensedName() {

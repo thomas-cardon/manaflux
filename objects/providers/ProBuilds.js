@@ -27,7 +27,7 @@ class ProBuildsProvider extends Provider {
 
     itemset.setTitle(`PBD ${champion.name} - ${gameMode === 'ARAM' ? 'ARAM' : preferredPosition}`)
 
-    return { itemsets: [itemset] };
+    return { itemsets: [itemset], gameMode };
   }
 
   getCondensedName() {

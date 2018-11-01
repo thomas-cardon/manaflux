@@ -50,7 +50,7 @@ class METAsrcProvider extends Provider {
     else position = gameMode;
 
     let itemsets = this.scrapeItemSets($, champion, position, this.scrapeSkillOrder($));
-    return { position, perks: this.scrapePerks($), summonerspells: this.scrapeSummonerSpells($), itemsets, availablePositions };
+    return { position, perks: this.scrapePerks($), summonerspells: this.scrapeSummonerSpells($), itemsets, availablePositions, gameMode };
   }
 
   /**

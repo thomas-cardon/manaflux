@@ -59,7 +59,7 @@ class LeagueofGraphsProvider extends Provider {
     const summonerspells = Mana.getStore().get('summoner-spells') ? this.scrapeSummonerSpells(cheerio.load(data[2]), champion) : [];
     const statistics = Mana.getStore().get('statistics') ? {} : {};
 
-    return { perks, itemsets, summonerspells, statistics };
+    return { perks, itemsets, summonerspells, statistics, gameMode };
   }
 
   /**
