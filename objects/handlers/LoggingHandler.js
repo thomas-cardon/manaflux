@@ -21,7 +21,14 @@ function LoggingHandler(level) {
   this.isRenderer = !process || typeof process === 'undefined' || !process.type || process.type === 'renderer';
   this.ipc = this.isRenderer ? ipcRenderer : require('electron').ipcMain;
 
-  if (!this.isRenderer) this.stream = fs.createWriteStream(path.resolve(require('electron').app.getPath('logs'), new Date().toString().slice(0, 24).replace(/:/g, '-') + '.txt'));
+  if (!this.isRenderer) {
+    this.stream = fs.createWriteStream(path.resolve(require('electron').app.getPath('logs'), new Date().toString().slice(0, 24).replace(/:/g, '-') + '.txt'));
+    this.stream.write(`----------[ Log file level ${this.level} ]----------\n`);
+    this.stream.write(`Electron v${process.versions.electron}\n`);
+    this.stream.write(`NodeJS v${process.versions.node}\n`);
+    this.stream.write(`Chrome v${process.versions.chrome}\n`);
+    this.stream.write('----------------------------------------\n');
+  }
 
   const self = this;
   console.log = function(level = 0, ...args) {
