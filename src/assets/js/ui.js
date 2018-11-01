@@ -1,7 +1,7 @@
 const { captureException } = require('@sentry/electron');
 var UI = {};
 
-UI.stylizeRole = (role = 'unknown') => {
+UI.stylize = UI.stylizeRole = (role = 'unknown') => {
   switch(role.toLowerCase()) {
     case 'aram':
       return 'ARAM';
@@ -9,6 +9,8 @@ UI.stylizeRole = (role = 'unknown') => {
       return 'ADC';
     case 'twisted_treeline':
       return '3vs3';
+    case 'classic':
+      return '5vs5';
     default:
       return role.charAt(0).toUpperCase() + role.slice(1).toLowerCase();
   }

@@ -83,6 +83,7 @@ class ProviderHandler {
    */
   async onChampionSelectEnd(cache = this._cache, flux = this.providers.flux) {
     var i = cache.length;
+    console.dir(cache);
     while (i--) {
       if (!cache[i]) return cache.splice(i, 1);
 

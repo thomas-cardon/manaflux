@@ -20,6 +20,10 @@ module.exports = {
       const champions = Object.values(Mana.champions).filter(x => x.id !== -1 && !Mana.getStore().has(`data.${x.id}`));
       win.webContents.send('champions-length', champions.length);
 
+      let minRoles = Mana.getStore().get('champion-select-min-roles');
+      Mana.getStore().set('champion-select-min-roles', 5);
+
+
       for (let i = 0; i < champions.length; i++) {
         if (!win) break;
 
@@ -35,6 +39,7 @@ module.exports = {
         if (win) win.webContents.send('champion-downloaded');
       }
 
+      Mana.getStore().set('champion-select-min-roles', minRoles);
       Mana.providerHandler.onChampionSelectEnd();
       if (win) win.webContents.send('download-done');
     });
