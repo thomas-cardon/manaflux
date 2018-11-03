@@ -66,8 +66,7 @@ class ConnectionHandler extends EventEmitter {
   }
 
   _startLockfileWatcher(leaguePath) {
-    this._lockfileWatcher = chokidar.watch(path.join(leaguePath, 'lockfile'), { disableGlobbing: true })
-    .on('add', async path => {
+    async function check(path) {
       console.log(2, '[ConnectionHandler] League of Legends connection data detected');
       console.log(2, '[ConnectionHandler] Reading connection file');
 
@@ -81,7 +80,11 @@ class ConnectionHandler extends EventEmitter {
       console.log(2, '[ConnectionHandler] Player is logged into League of Legends');
 
       this.emit('logged-in', this._loginData);
-    })
+    }
+
+    this._lockfileWatcher = chokidar.watch(path.join(leaguePath, 'lockfile'), { disableGlobbing: true })
+    .on('add', check)
+    .on('change', check)
     .on('unlink', path => {
       console.log(2, '[ConnectionHandler] Connection to League has ended');
 
