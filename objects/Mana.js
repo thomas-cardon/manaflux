@@ -14,7 +14,6 @@ class Mana {
 
     UI.status('status-loading-storage');
     this._store = new Store();
-    //this.features = new (require('../objects/FeatureEnabler'))();
 
     if (!this.getStore().get('lastVersion') || this.getStore().get('lastVersion').startsWith("1.")) {
       this.getStore().clear();
@@ -79,6 +78,8 @@ class Mana {
 
     this.getStore().set('lastBranchSeen', this.gameClient.branch);
     document.querySelectorAll('[data-custom-component]').forEach(x => x.dispatchEvent(new Event('clientLoaded')));
+
+    ipcRenderer.send('preload-ready');
   }
 
   async load(data) {
@@ -97,9 +98,6 @@ class Mana {
 
   disconnect() {
     global._devChampionSelect = () => console.log(`[${i18n.__('error')}] ${i18n.__('developer-game-start-error')}\n${i18n.__('league-client-disconnected')}`);
-
-    if (this.championSelectHandler) this.championSelectHandler.stop();
-    delete this.user;
 
     UI.status('status-disconnected');
     document.querySelectorAll('[data-custom-component]').forEach(x => x.dispatchEvent(new Event('userDisconnected')));
