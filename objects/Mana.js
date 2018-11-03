@@ -79,7 +79,7 @@ class Mana {
     this.getStore().set('lastBranchSeen', this.gameClient.branch);
     document.querySelectorAll('[data-custom-component]').forEach(x => x.dispatchEvent(new Event('clientLoaded')));
 
-    ipcRenderer.send('preload-ready');
+    ipcRenderer.send('lcu-preload-done');
   }
 
   async load(data) {

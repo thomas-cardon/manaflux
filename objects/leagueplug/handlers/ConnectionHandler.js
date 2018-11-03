@@ -65,21 +65,40 @@ class ConnectionHandler extends EventEmitter {
     });
   }
 
+  _isLockFileOutdated(lockfile) {
+    return new Promise((resolve, reject) => {
+      require('https').get({
+        host: '127.0.0.1',
+        port: lockfile.port,
+        headers: { 'Authorization': lockfile.authToken },
+        rejectUnauthorized: false,
+      }, res => {
+        if (res.statusCode === 404) resolve(false);
+        else resolve(true);
+      }).on('error', err => {
+        resolve(true);
+      });
+    });
+  }
+
   _startLockfileWatcher(leaguePath) {
+    const self = this;
     async function check(path) {
       console.log(2, '[ConnectionHandler] League of Legends connection data detected');
       console.log(2, '[ConnectionHandler] Reading connection file');
 
-      const lockfile = await this._readLockfile(leaguePath);
+      try {
+        const lockfile = await self._readLockfile(leaguePath);
+        if (await self._isLockFileOutdated(lockfile)) return;
+      }
+      catch(err) {
+        console.error(err);
+        return;
+      }
 
-      this._connected = true;
+      self._connected = true;
 
-      this.emit('connected', this._lockfile = lockfile);
-
-      this._loginData = await this.waitForConnection();
-      console.log(2, '[ConnectionHandler] Player is logged into League of Legends');
-
-      this.emit('logged-in', this._loginData);
+      this.emit('connected', self._lockfile = lockfile);
     }
 
     this._lockfileWatcher = chokidar.watch(path.join(leaguePath, 'lockfile'), { disableGlobbing: true })
@@ -93,6 +112,13 @@ class ConnectionHandler extends EventEmitter {
 
       this.emit('disconnected');
     });
+  }
+
+  async login() {
+    this._loginData = await this.waitForConnection();
+    console.log(2, '[ConnectionHandler] Player is logged into League of Legends');
+
+    this.emit('logged-in', this._loginData);
   }
 
   _endLockfileWatcher() {

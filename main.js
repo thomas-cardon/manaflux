@@ -129,6 +129,8 @@ ipcMain.on('lcu-connection', (event, path) => {
   connector.getConnectionHandler().on('disconnected', () => event.sender.send('lcu-disconnected'));
 });
 
+ipcMain.on('lcu-preload-done', () => connector.login());
+
 ipcMain.on('lcu-get-path', event => {
   event.returnValue = connector.getPath()
 });
