@@ -10,7 +10,7 @@ class Mana {
     UI.loading(true);
 
     this.devMode = ipcRenderer.sendSync('is-dev');
-    $('.version').text(`V${this.version = app.getVersion()}`);
+    $('.version').text(`V${this.version = app.getVersion() + (!require('electron').remote.app.isPackaged ? '-BUILD' : '')}`);
 
     UI.status('status-loading-storage');
     this._store = new Store();
