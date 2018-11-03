@@ -26,7 +26,6 @@
     "electron-builder": "^20.17.1"
   },
   "dependencies": {
-    "@sentry/electron": "^0.8.1",
     "cheerio": "^1.0.0-rc.2",
     "chokidar": "^2.0.4",
     "electron-store": "^2.0.0",
