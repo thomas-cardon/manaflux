@@ -90,15 +90,14 @@ class ConnectionHandler extends EventEmitter {
       try {
         const lockfile = await self._readLockfile(leaguePath);
         if (await self._isLockFileOutdated(lockfile)) return;
+
+        self._connected = true;
+        this.emit('connected', self._lockfile = lockfile);
       }
       catch(err) {
         console.error(err);
         return;
       }
-
-      self._connected = true;
-
-      this.emit('connected', self._lockfile = lockfile);
     }
 
     this._lockfileWatcher = chokidar.watch(path.join(leaguePath, 'lockfile'), { disableGlobbing: true })
