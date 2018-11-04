@@ -73,6 +73,7 @@
   "providers-downloader-note": "This feature uses your providers order together with Flu.x. Data is downloaded for every champion in 5vs5, 3vs3 and ARAM. Download will take some time. If you close the window, the champions that are downloaded will be saved.",
   "providers-downloader-done": "Done! Downloaded %s champions!",
   "providers-downloader-flux": "Downloading Flu.x's entire database...",
+  "providers-downloader-saving-status": "Saving everything to hard drive",
   "perks-load-button": "LOAD RUNES",
   "perks-load-automatically": "Load automatically",
   "perks-loading": "Loading perks for %s (%s)",
