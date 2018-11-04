@@ -44,7 +44,6 @@ class DataValidator {
   }
 
   onDataStore(data) {
-    delete data.championId;
     delete data.gameVersion;
 
     delete data.version;
