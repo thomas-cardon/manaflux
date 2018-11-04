@@ -51,11 +51,6 @@
   });
 
   ipcRenderer.on('champion-download', (event, d) => {
-    if (document.getElementById('download').classList.contains('unknown-state')) {
-      document.getElementById('download').value = 0;
-      document.getElementById('download').classList.remove('unknown-state');
-    }
-
     document.getElementById('download').setAttribute('data-label', i18n.__('providers-downloader-downloading', d.name, UI.stylize(d.gameMode)));
     document.getElementById('text').innerHTML += `${d.name} (${UI.stylize(d.gameMode)})<br>`;
   });
@@ -72,8 +67,14 @@
     document.getElementById('download').setAttribute('data-label', i18n.__('providers-downloader-flux'));
   });
 
+  ipcRenderer.on('flux-download-done', () => {
+    document.getElementById('download').setAttribute('data-label', '...');
+    document.getElementById('download').value = 0;
+  });
+
   ipcRenderer.on('champion-treated-flux', (event, name) => {
     document.getElementById('text').innerHTML += `${name} (Flu.x)<br>`;
+    document.getElementById('download').value++;
   });
 
   </script>
