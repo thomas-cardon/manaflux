@@ -1,7 +1,6 @@
 const ItemSetHandler = require('../handlers/ItemSetHandler');
 
 class DataValidator {
-
   onDataChange(data, providerId) {
     data = { roles: {}, ...data };
 

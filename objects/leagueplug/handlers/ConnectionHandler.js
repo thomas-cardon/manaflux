@@ -67,17 +67,19 @@ class ConnectionHandler extends EventEmitter {
 
   _isLockFileOutdated(lockfile) {
     return new Promise((resolve, reject) => {
-      require('https').get({
-        host: '127.0.0.1',
-        port: lockfile.port,
-        headers: { 'Authorization': lockfile.authToken },
-        rejectUnauthorized: false,
-      }, res => {
-        if (res.statusCode === 404) resolve(false);
-        else resolve(true);
-      }).on('error', err => {
-        resolve(true);
-      });
+      setTimeout(function() {
+        require('https').get({
+          host: '127.0.0.1',
+          port: lockfile.port,
+          headers: { 'Authorization': lockfile.authToken },
+          rejectUnauthorized: false
+        }, res => {
+          if (res.statusCode === 404) resolve(false);
+          else resolve(true);
+        }).on('error', err => {
+          resolve(true);
+        });
+      }, 1000);
     });
   }
 
@@ -89,10 +91,15 @@ class ConnectionHandler extends EventEmitter {
 
       try {
         const lockfile = await self._readLockfile(leaguePath);
-        if (await self._isLockFileOutdated(lockfile)) return;
+        console.dir(lockfile);
+
+        const isOutdated = await self._isLockFileOutdated(lockfile);
+        if (isOutdated) return console.log(2, '[ConnectionHandler] Lockfile is outdated, has League of Legends crashed?');
+
+        console.log(2, '[ConnectionHandler] Connected to League of Legends!');
 
         self._connected = true;
-        this.emit('connected', self._lockfile = lockfile);
+        self.emit('connected', self._lockfile = lockfile);
       }
       catch(err) {
         console.error(err);
