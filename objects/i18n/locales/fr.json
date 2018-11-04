@@ -37,7 +37,7 @@
   "reset-settings-settings-option": "Réinitialiser les paramètres",
   "reset-settings-status": "Les paramètres ont été réinitialisés",
   "reset-settings-button": "Réinitialiser",
-  "league-client-connection": "Connexion à League Client. (démarrez-le si ce n'est pas déjà fait)",
+  "league-client-connection": "Connexion à League",
   "league-client-disconnected": "Déconnecté de League Client",
   "league-client-start-required": "Démarrage de League Client requis",
   "league-client-start-required-explanation": "Démarrage de League Client requis afin de trouver son répertoire d'installation",
