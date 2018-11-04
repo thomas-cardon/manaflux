@@ -39,7 +39,7 @@ UI.loading = async (toggle = document.getElementById('loading').style.display ==
 */
 let s, id;
 UI.status = (...args) => {
-  let x = i18n.__.call(i18n, ...args.slice(args[0].then ? 1 : 0));
+  let x = i18n.__.call(i18n, ...args.slice(args[0].then ? 1 : 0)).slice(0, 42);
 
   if (args[0].then)
     return new Promise((resolve, reject) => {
