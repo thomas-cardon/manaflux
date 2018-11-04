@@ -55,8 +55,8 @@
     document.getElementById('text').innerHTML += `${d.name} (${UI.stylize(d.gameMode)})<br>`;
   });
 
-  ipcRenderer.on('champion-downloaded', (event, name) => {
-    document.getElementById('download').value++;
+  ipcRenderer.on('champion-downloaded', (event, n = 1) => {
+    document.getElementById('download').value += n;
   });
 
   ipcRenderer.on('download-done', (event, name) => {

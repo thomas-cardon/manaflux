@@ -35,10 +35,12 @@ module.exports = {
 
           console.log(`[Downloader] Treating ${Mana.champions[championId].name}`);
           const d = Mana.getStore().get(`data.${championId}`);
+          Mana.providerHandler._cache.push(data[championId]);
 
-          Mana.getStore().set(`data.${championId}`, data[championId]);
           win.webContents.send('champion-treated-flux', Mana.champions[championId].name);
         }
+
+        win.webContents.send('flux-download-done');
       }
       catch(err) {
         console.error(err);
@@ -59,8 +61,9 @@ module.exports = {
         if (win) win.webContents.send('champion-downloaded');
       }
 
+      await UI.indicator(Mana.providerHandler.onChampionSelectEnd(), 'providers-downloader-saving-status');
       Mana.getStore().set('champion-select-min-roles', minRoles);
-      Mana.providerHandler.onChampionSelectEnd();
+      
       if (win) win.webContents.send('download-done');
     });
 
