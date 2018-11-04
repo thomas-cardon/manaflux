@@ -24,16 +24,24 @@ module.exports = {
       let minRoles = Mana.getStore().get('champion-select-min-roles');
       Mana.getStore().set('champion-select-min-roles', 5);
 
-      console.log('[Downloader] Started downloading Flu.x database');
-      const data = await Mana.providerHandler.providers.flux.bulkDownloadQuery();
+      try {
+        console.log('[Downloader] Started downloading Flu.x database');
+        win.webContents.send('flux-download');
 
-      for (let championId in data) {
-        if (!Mana.champions[championId]) continue;
+        const data = await Mana.providerHandler.providers.flux.bulkDownloadQuery();
 
-        console.log(`[Downloader] Treating ${Mana.champions[championId].name}`);
-        const d = Mana.getStore().get(`data.${championId}`);
+        for (let championId in data) {
+          if (!Mana.champions[championId]) continue;
 
-        Mana.getStore().set(`data.${championId}`, data[championId]);
+          console.log(`[Downloader] Treating ${Mana.champions[championId].name}`);
+          const d = Mana.getStore().get(`data.${championId}`);
+
+          Mana.getStore().set(`data.${championId}`, data[championId]);
+          win.webContents.send('champion-treated-flux', Mana.champions[championId].name);
+        }
+      }
+      catch(err) {
+        console.error(err);
       }
 
       for (let i = 0; i < champions.length; i++) {

@@ -55,7 +55,7 @@
       document.getElementById('download').value = 0;
       document.getElementById('download').classList.remove('unknown-state');
     }
-    
+
     document.getElementById('download').setAttribute('data-label', i18n.__('providers-downloader-downloading', d.name, UI.stylize(d.gameMode)));
     document.getElementById('text').innerHTML += `${d.name} (${UI.stylize(d.gameMode)})<br>`;
   });
@@ -67,6 +67,15 @@
   ipcRenderer.on('download-done', (event, name) => {
     document.getElementById('download').setAttribute('data-label', i18n.__('providers-downloader-done', document.getElementById('download').value = document.getElementById('download').max));
   });
+
+  ipcRenderer.on('flux-download', () => {
+    document.getElementById('download').setAttribute('data-label', i18n.__('providers-downloader-flux'));
+  });
+
+  ipcRenderer.on('champion-treated-flux', (event, name) => {
+    document.getElementById('text').innerHTML += `${name} (Flu.x)<br>`;
+  });
+
   </script>
   <script src="assets/js/ui.js"></script>
   <script src="assets/js/ui/i18n.js"></script>
