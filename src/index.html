@@ -205,6 +205,17 @@
         <button class="btn normal" data-custom-component="providers-downloader" data-i18n="common-run" disabled></button>
       </div>
       <div class="option">
+        <p class="suboption-name" data-i18n="settings-i18n-change"></p>
+        <select data-settings-key="language" data-custom-component="settings-i18n" class="dropdown">
+          <option value="en">English</option>
+          <option value="fr">Français</option>
+          <option value="it">Italiano</option>
+          <option value="ru">русский</option>
+          <option value="pl">Polski</option>
+          <option value="pt-br">Português brasileiro</option>
+        </select>
+      </div>
+      <div class="option">
         <p class="suboption-name" data-i18n="fixes-perks-editor"></p>
         <div class="options float-left checkboxContainer">
           <input type="checkbox" data-settings-key="fixes-perks-editor" data-settings-default="true" class="center-area" />
@@ -245,8 +256,6 @@
 
   process.on('unhandledRejection', (reason, p) => console.log(0, `Unhandled rejection at: ${p}, reason: ${reason}`));
   process.on('uncaughtException', console.error);
-
-  global.i18n = new (require('../objects/i18n'));
 
   document.getElementById('dev').addEventListener('click', e => {
     if (e.detail === 3) remote.getCurrentWindow().toggleDevTools();

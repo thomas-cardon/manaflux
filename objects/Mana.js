@@ -12,8 +12,12 @@ class Mana {
     this.devMode = ipcRenderer.sendSync('is-dev');
     $('.version').text(`V${this.version = app.getVersion() + (!require('electron').remote.app.isPackaged ? '-BUILD' : '')}`);
 
-    UI.status('status-loading-storage');
     this._store = new Store();
+
+    if (!this.getStore().has('language'))
+      this.getStore().set('language', require('electron').remote.app.getLocale().toLowerCase());
+
+    global.i18n = new (require('./i18n'))(this.getStore().get('language'));
 
     if (!this.getStore().get('lastVersion') || this.getStore().get('lastVersion').startsWith("1.")) {
       this.getStore().clear();

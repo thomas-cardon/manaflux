@@ -32,6 +32,7 @@
   "settings-providers-order-flux": "Flu.x",
   "settings-providers-order-lolalytics": "LoLAlytics",
   "settings-providers-order-metasrc": "METAsrc",
+  "settings-i18n-change": "Change language",
   "empty-cache-settings-option": "Empty the cache",
   "empty-cache-status": "Cache emptied",
   "empty-cache-button": "Empty",
