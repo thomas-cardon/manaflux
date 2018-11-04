@@ -85,7 +85,10 @@ class ProviderHandler {
     var i = cache.length;
 
     while (i--) {
-      if (!cache[i]) return cache.splice(i, 1);
+      if (!cache[i]) {
+        cache.splice(i, 1);
+        continue;
+      }
 
       DataValidator.onDataUpload(cache[i]);
       await UI.indicator(flux.upload(cache[i]), 'providers-flux-uploading');
@@ -94,8 +97,7 @@ class ProviderHandler {
 
       if (Mana.getStore().has(`data.${cache[i].championId}`))
         this._merge(cache[i], Mana.getStore().get(`data.${cache[i].championId}`));
-
-      Mana.getStore().set(`data.${cache[i].championId}`, cache[i]);
+      else Mana.getStore().set(`data.${cache[i].championId}`, cache[i]);
 
       cache.splice(i, 1);
     }
