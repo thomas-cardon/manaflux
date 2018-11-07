@@ -61,6 +61,7 @@ class Mana {
     this.gameClient = new (require('./riot/leagueoflegends/GameClient'))();
     this.assetsProxy = new (require('./riot/leagueoflegends/GameAssetsProxy'))();
 
+    this.championStorageHandler = new (require('./handlers/ChampionStorageHandler'))();
     this.championSelectHandler = new (require('./handlers/ChampionSelectHandler'))();
     this.providerHandler = new (require('./handlers/ProviderHandler'))();
 
@@ -73,10 +74,10 @@ class Mana {
 
     $('.version').text(`V${this.version} - V${this.gameClient.branch}`);
 
-    if (this.getStore().get('lastBranchSeen') !== this.gameClient.branch) {
-      this.getStore().set('data', {});
-      this.getStore().set('ddragon', {});
+    await this.championStorageHandler.load();
 
+    if (this.getStore().get('lastBranchSeen') !== this.gameClient.branch) {
+      this.championStorageHandler.clear();
       require('./handlers/ItemSetHandler').getItemSets().then(x => require('./handlers/ItemSetHandler').deleteItemSets(x)).catch(UI.error);
     }
 

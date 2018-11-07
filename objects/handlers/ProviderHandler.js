@@ -23,9 +23,9 @@ class ProviderHandler {
     const gameMode = gameModeHandler.getGameMode() || 'CLASSIC';
 
     /* 1/5 - Storage Checking */
-    if (Mana.getStore().has(`data.${champion.id}`) && cache) {
-      const data = Mana.getStore().get(`data.${champion.id}`);
 
+    let data = await Mana.championStorageHandler.get(champion.id);
+    if (data && cache) {
       if (!bulkDownloadMode && (data.roles[preferredPosition] || Object.values(data.roles)[0].gameMode === gameMode)) {
         console.log(2, `[ProviderHandler] Using local storage`);
 
@@ -36,7 +36,6 @@ class ProviderHandler {
 
     /* 2/5 - Downloading */
     const providers = providerList || Mana.getStore().get('providers-order', Object.keys(this.providers)).filter(x => gameModeHandler.getProviders() === null || gameModeHandler.getProviders().includes(x));
-    let data;
 
     for (let provider of providers) {
       provider = this.providers[provider];
@@ -95,12 +94,11 @@ class ProviderHandler {
 
       DataValidator.onDataStore(cache[i]);
 
-      if (Mana.getStore().has(`data.${cache[i].championId}`))
-        this._merge(cache[i], Mana.getStore().get(`data.${cache[i].championId}`));
-      else Mana.getStore().set(`data.${cache[i].championId}`, cache[i]);
-
+      await Mana.championStorageHandler.update(cache[i].championId, x => this._merge(cache[i], x));
       cache.splice(i, 1);
     }
+
+    await Mana.championStorageHandler.save();
   }
 
   /**
@@ -109,6 +107,9 @@ class ProviderHandler {
    * @param {object} y - The object to copy properties from
    */
   _merge(x, y) {
+    if (!x) return y;
+    else if (!y) return x;
+
     for (const [name, role] of Object.entries(y.roles)) {
       if (!x.roles[name]) x.roles[name] = role;
       else {
