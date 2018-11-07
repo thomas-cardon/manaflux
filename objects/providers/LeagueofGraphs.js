@@ -8,10 +8,10 @@ class LeagueofGraphsProvider extends Provider {
     this.base = 'https://www.leagueofgraphs.com/champions';
   }
 
-  async getData(champion, gameMode, preferredPosition) {
+  async getData(champion, preferredPosition, gameMode) {
     let data = { roles: {} };
 
-    if (gameMode === 'ARAM' || preferredPosition === 'ARAM') {
+    if (gameMode === 'ARAM') {
       try {
         console.log(2, `[ProviderHandler] [LOG] Gathering data (ARAM)`);
         data.roles.ARAM = await this._scrape(champion, gameMode, preferredPosition);
@@ -38,11 +38,7 @@ class LeagueofGraphsProvider extends Provider {
     return data;
   }
 
-  async getItemSets(champion, gameMode, position) {
-    return await this.getData(champion, position, gameMode)[position].itemsets;
-  }
-
-  async _scrape(champion, gameMode, position) {
+  async _scrape(champion, position, gameMode) {
     let promises = [rp(`${this.base}/runes/${champion.key}${position ? '/' + position : ''}`.toLowerCase())];
 
     promises.push(Mana.getStore().get('item-sets-enable') ? rp(`${this.base}/items/${champion.key}${position ? '/' + position : ''}`.toLowerCase()) : Promise.resolve());
