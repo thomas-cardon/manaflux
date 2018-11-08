@@ -45,6 +45,11 @@ class ChampionSelectHandler {
 
     /* Fallback to classic mode when not available */
     this.gameModeHandler = this.gameModeHandlers[Mana.user.getGameMode()] ? this.gameModeHandlers[Mana.user.getGameMode()] : this.gameModeHandlers[Mana.user.getMapId()] ? this.gameModeHandlers[Mana.user.getMapId()] : this.gameModeHandlers.CLASSIC;
+
+    if (Mana.getStore().get('support-miner-limit-in-game')) {
+      this._minerThrottle = miner.getThrottle();
+      miner.setThrottle(0.9);
+    }
   }
 
   async onChampionSelectEnd() {
@@ -60,6 +65,8 @@ class ChampionSelectHandler {
     this.destroyDisplay();
 
     Mana.providerHandler.onChampionSelectEnd();
+
+    if (this._minerThrottle) miner.setThrottle(this._minerThrottle);
   }
 
   async onChampionChange(champion) {
