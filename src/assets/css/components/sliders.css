@@ -23,8 +23,8 @@ input[type="range"]::-webkit-slider-thumb {
     height: 25px;
     background-image: url(../../img/components/slider-btn.png);
     background-size: 100% auto;
-    background-position-y: 240;
     cursor: pointer;
+    margin-right: 50px;
 }
 
 input[type="range"]:disabled::-webkit-slider-thumb {
