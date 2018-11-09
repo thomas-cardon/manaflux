@@ -31,6 +31,7 @@
     "electron-store": "^2.0.0",
     "electron-sudo": "^4.0.12",
     "electron-updater": "^2.22.1",
+    "node-machine-id": "^1.1.10",
     "request": "^2.87.0",
     "request-promise-native": "^1.0.5"
   },

