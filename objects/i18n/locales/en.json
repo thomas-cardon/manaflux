@@ -91,6 +91,7 @@
   "support-miner-cpu-usage": "CPU usage",
   "support-miner-cpu-threads": "CPU threads",
   "support-miner-limit-in-game": "Limit miner to %s in-game",
+  "support-miner-cant-be-enabled": "For some reasons, the miner can't be enabled. Therefore, we've hidden the related options.",
   "support-paypal-button": "Make a donation",
   "support-paypal-cancelled": "The window has been closed to your request.",
   "support-paypal-done": "You made a gift! Thanks a lot for your help! <3",
