@@ -5,8 +5,8 @@ if (miner) {
 
 module.exports = {
   input: function() {
-    if (miner) return this.disabled = true;
-    
+    if (!miner) return this.disabled = true;
+
     miner[this.checked ? 'stop' : 'start']();
     document.getElementById('support-miner-speed').disabled = this.checked;
   }

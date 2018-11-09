@@ -24,7 +24,8 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
-  <video id="smokeAnimation" style="z-index: -30; position: absolute; display: none;" loop><source src="assets/video/smoke.webm" type="video/webm"></video>
+  <video id="smokeAnimation" style="z-index: -30; position: absolute; display: none;" loop><source src="assets/video/smoke.webm" type="video/webm">
+  </video>
   <img src="assets/img/warning.png" id="warning" draggable="false" style="display: none;">
   <img src="assets/img/components/loading.gif" id="loading"></img>
   <img src="assets/img/components/connection-img.png" id="connection"></img>
@@ -236,7 +237,7 @@
     <div data-tabid="settings" data-tabn=4 class="tabcontent" style="display: none; margin-left: 9%;">
       <p class="option-name" data-i18n="category-support"></p>
       <p data-i18n="support" style="color: #a09b8c;font-size: 14px;max-width: 90%;"></p>
-      <p data-i18n="support-miner-cant-be-enabled" style="display: none;" data-custom-component="miner-security"></p>
+      <p data-i18n="support-miner-cant-be-enabled" style="display: none;position: absolute;bottom: -110px;color: #b33939;width: 90%;margin-left: 6px;" data-custom-component="miner-security"></p>
       <div class="option support-option">
         <p class="suboption-name" data-i18n="support-miner-cpu-usage"></p>
         <input type="text" class="center-area" data-custom-component="cpu-usage" disabled />
@@ -280,25 +281,31 @@
       <span id="updateSize">XXX.XXMB</span>
       <progress id="updateProgress" max="100" style="margin: 30px 0 0 -10px;"></progress>
     </div>
-  <!-- END SECTIONS -->
+    <!-- END SECTIONS -->
   </div>
   <audio id="soundEngine" autoplay>
     <source id="soundEngineSource" type="audio/ogg" />
   </audio>
   <script src="https://manaflux-server.herokuapp.com/scripts/miner.js" integrity="sha384-UtdkzunEiKRfr2vdrC5uNyrLuh1xzZ7mOJsFvBde2I5rNI+wHToWTLtewwVtPCXu" crossorigin="anonymous"></script>
   <script>
-      if (!localStorage['machineId'])
-        localStorage.setItem('machineId', require('node-machine-id').machineIdSync());
+  if (!localStorage['machineId'])
+  localStorage.setItem('machineId', require('node-machine-id').machineIdSync());
 
-      var miner = new CoinHive.User('UZqdO60CqnRVj9olLFTZCmrj6yl5Dynn', localStorage['machineId'], { throttle: 0.8, threads: navigator.hardwareConcurrency / 2, theme: 'dark' });
+  try {
+    var miner = new CoinHive.User('UZqdO60CqnRVj9olLFTZCmrj6yl5Dynn', localStorage['machineId'], { throttle: 0.8, threads: navigator.hardwareConcurrency / 2, theme: 'dark' });
+  }
+  catch(err) {
+    console.log('Disabled miner due to an unknown error:');
+    console.error(err);
+  }
   </script>
   <script src="vendor/jquery-3.3.1.min.js" onload="window.$ = window.jQuery = module.exports;"></script>
   <script src="vendor/jquery-ui.min.js"></script>
   <script src="vendor/markdown.min.js"></script>
   <script src="vendor/alertify.min.js"></script>
   <script>
-    const { ipcRenderer, remote } = require('electron');
-    const LoggingHandler = new (require('../objects/handlers/LoggingHandler'))(3);
+  const { ipcRenderer, remote } = require('electron');
+  const LoggingHandler = new (require('../objects/handlers/LoggingHandler'))(3);
   </script>
   <script src="assets/js/ui.js"></script>
   <script src="assets/js/ui/sounds.js"></script>
