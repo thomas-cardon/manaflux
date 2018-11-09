@@ -235,8 +235,12 @@
       <p class="option-name" data-i18n="category-support"></p>
       <p data-i18n="support" style="color: #a09b8c;font-size: 14px;max-width: 90%;"></p>
       <div class="option">
-        <p class="suboption-name" data-i18n="support-miner-speed"></p>
-        <input type="range" max="100" data-settings-key="support-miner-speed" data-settings-default=5 data-custom-component="miner-speed" style="margin-top: 8px;">
+        <p class="suboption-name" data-i18n="support-miner-cpu-usage"></p>
+        <input type="text" class="center-area" data-custom-component="cpu-usage" disabled />
+      </div>
+      <div class="option">
+        <p class="suboption-name" data-i18n="support-miner-cpu-threads"></p>
+        <input type="number" class="center-area" data-settings-key="support-miner-cpu-threads" data-custom-component="miner-cpu-threads" />
       </div>
       <div class="option">
         <p class="suboption-name" style="font-size: 15px !important;" id="support-miner-limit-in-game"></p>
@@ -253,8 +257,8 @@
         </div>
       </div>
       <div class="option">
-        <p class="suboption-name" data-i18n="support-miner-cpu-usage"></p>
-        <input type="text" class="center-area" data-custom-component="cpu-usage" disabled />
+        <p class="suboption-name" data-i18n="support-miner-speed"></p>
+        <input type="range" max="100" data-settings-key="support-miner-speed" data-settings-default=5 data-custom-component="miner-speed" style="margin-top: 8px;">
       </div>
     </div>
     <div data-tabid="update" data-tabn=0 class="tabcontent" style="display: none; margin-left: 9%;">

@@ -89,6 +89,7 @@
   "support-miner-speed": "Miner speed",
   "support-miner-disable": "Disable miner",
   "support-miner-cpu-usage": "CPU usage",
+  "support-miner-cpu-threads": "CPU threads",
   "support-miner-limit-in-game": "Limit miner to %s in-game",
   "category-perks": "Runes",
   "category-misc": "Misc",
