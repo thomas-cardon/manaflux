@@ -1,0 +1,17 @@
+#connection {
+  position: fixed;
+  width: 6%;
+  bottom: 5px;
+  left: 120px;
+  z-index: 5;
+  animation: 1s infinite alternate brightness;
+}
+
+@keyframes brightness {
+    0%   {
+        filter: brightness(0);
+    }
+    100% {
+        filter: brightness(1);
+    }
+}

@@ -57,6 +57,7 @@ class Mana {
 
   async preload() {
     UI.status('status-please-login');
+    document.getElementById('connection').style.display = 'none';
 
     this.gameClient = new (require('./riot/leagueoflegends/GameClient'))();
     this.assetsProxy = new (require('./riot/leagueoflegends/GameAssetsProxy'))();
@@ -103,6 +104,7 @@ class Mana {
 
   disconnect() {
     global._devChampionSelect = () => console.log(`[${i18n.__('error')}] ${i18n.__('developer-game-start-error')}\n${i18n.__('league-client-disconnected')}`);
+    document.getElementById('connection').style.display = 'block';
 
     UI.status('status-disconnected');
     document.querySelectorAll('[data-custom-component]').forEach(x => x.dispatchEvent(new Event('userDisconnected')));
