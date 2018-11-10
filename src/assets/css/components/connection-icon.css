@@ -4,10 +4,10 @@
   bottom: 5px;
   left: 120px;
   z-index: 5;
-  animation: 1s infinite alternate brightness;
+  animation: 1s infinite alternate flickerbrightness;
 }
 
-@keyframes brightness {
+@keyframes flickerbrightness {
     0%   {
         filter: brightness(0);
     }
