@@ -89,8 +89,10 @@ class ProviderHandler {
         continue;
       }
 
-      DataValidator.onDataUpload(cache[i]);
-      await UI.indicator(flux.upload(cache[i]), 'providers-flux-uploading');
+      if (!cache[i].flux) {
+        DataValidator.onDataUpload(cache[i]);
+        await UI.indicator(flux.upload(cache[i]), 'providers-flux-uploading');
+      }
 
       DataValidator.onDataStore(cache[i]);
 
