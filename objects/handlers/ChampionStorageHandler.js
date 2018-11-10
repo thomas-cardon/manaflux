@@ -13,11 +13,12 @@ class ChampionSelectHandler {
     if (this._cache[championId]) return this._cache[championId];
 
     try {
-      return this._cache[championId] = JSON.parse(await this._readFile(path.join(this.path, championId + '.json')));
+      const x = await this._readFile(path.join(this.path, championId + '.json'));
+      return this._cache[championId] = JSON.parse(x);
     }
     catch(err) {
-      if (err.code === 'ENOENT') return null;
-      throw err;
+      if (err.code !== 'ENOENT') console.error(err);
+      return null;
     }
   }
 
@@ -69,7 +70,7 @@ class ChampionSelectHandler {
     return new Promise((resolve, reject) => {
       fs.readFile(filePath, (err, data) => {
         if (err) return reject(err);
-        resolve(JSON.parse(data));
+        resolve(data);
       });
     });
   }
