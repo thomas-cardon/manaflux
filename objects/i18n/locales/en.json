@@ -65,7 +65,6 @@
   "providers-order": "Providers order",
   "providers-error-item-sets-not-found": "Could not find Item Sets",
   "providers-error-outdated": "%s: Data is outdated!",
-  "providers-error-data": "Could not gather data",
   "providers-error-perks": "Could not gather perks for %s (%s)",
   "providers-cgg-blocks-starters-hw%": "Starter (HW%) | %s WR",
   "providers-cgg-blocks-starters-mf": "Starter (Most Frequent) | %s WR",

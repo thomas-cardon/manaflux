@@ -191,7 +191,7 @@ class ChampionSelectHandler {
 
   async onDisplayUpdate(champion, res) {
     if (!this._inChampionSelect) return;
-    if (!res || Object.keys(res.roles).length === 0) return UI.error('providers-error-data');
+    if (!res || Object.keys(res.roles).length === 0) throw this._onCrash(i18n.__('champion-select-error-empty'));
 
     console.dir(res);
 
