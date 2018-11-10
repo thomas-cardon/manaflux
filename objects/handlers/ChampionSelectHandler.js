@@ -197,20 +197,27 @@ class ChampionSelectHandler {
 
     document.getElementById('positions').innerHTML = '';
     Object.keys(res.roles).filter(x => res.roles[x].perks.length > 0).forEach(r => {
+      console.log('[ChampionSelect] Added position:', r);
       document.getElementById('positions').innerHTML += `<option value="${r}">${UI.stylizeRole(r)}</option>`;
     });
 
     const self = this;
 
-    document.getElementById('buttons').style.display = 'block';
-
     document.getElementById('positions').onchange = function() {
+      console.log('[ChampionSelect] Selected position:', this.value.toUpperCase());
       self.onPerkPositionChange(champion, this.value.toUpperCase(), res.roles[this.value.toUpperCase()]);
     };
 
-    document.getElementById('positions').value = res.roles[this.getPosition()] ? this.gameModeHandler.getPosition(this.getPosition()) : Object.keys(res.roles).filter(x => res.roles[x].perks.length > 0)[0];
+    // Sets value and checks if it's not null, if it is then let's stop everything
+    if (!(document.getElementById('positions').value = res.roles[this.getPosition()] ? this.gameModeHandler.getPosition(this.getPosition()) : Object.keys(res.roles).filter(x => res.roles[x].perks.length > 0)[0])) {
+      Mana.championStorageHandler.remove(champion.id);
+      throw this._onCrash(i18n.__('champion-select-error-empty'));
+    }
+
     document.getElementById('positions').onchange();
     document.getElementById('positions').style.display = 'unset';
+
+    document.getElementById('buttons').style.display = 'block';
 
     UI.tray(false);
     UI.status('common-ready');
@@ -270,6 +277,15 @@ class ChampionSelectHandler {
       document.getElementById('positions').value = keys[newIndex];
       document.getElementById('positions').onchange();
     };
+  }
+
+  _onCrash(error) {
+    document.getElementById('home').innerHTML += `<div id="crash"><p style="margin-top: 23%;color: #c0392b;">${error}</p><p class="suboption-name">${i18n.__('settings-restart-app')}</p><button class="btn normal" onclick="ipcRenderer.send('restart')">${i18n.__('settings-restart-app-button')}</button></div>`;
+    return Error(error);
+  }
+
+  _cancelCrash() {
+    document.getElementById('crash').remove();
   }
 
   destroyDisplay() {
