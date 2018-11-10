@@ -19,6 +19,10 @@ class ProviderHandler {
     return this.providers[x];
   }
 
+  isProviderEnabled(x) {
+    return Mana.getStore().get('providers-order-' + x.id', true);
+  }
+
   async getChampionData(champion, preferredPosition, gameModeHandler, cache, providerList, bulkDownloadMode) {
     const gameMode = gameModeHandler.getGameMode() || 'CLASSIC';
 
@@ -35,7 +39,7 @@ class ProviderHandler {
     }
 
     /* 2/5 - Downloading */
-    const providers = providerList || Mana.getStore().get('providers-order', Object.keys(this.providers)).filter(x => gameModeHandler.getProviders() === null || gameModeHandler.getProviders().includes(x));
+    const providers = providerList || Mana.getStore().get('providers-order', Object.keys(this.providers)).filter(x => gameModeHandler.getProviders() === null || gameModeHandler.getProviders().includes(x)).filter(x => this.isProviderEnabled(x));
 
     for (let provider of providers) {
       provider = this.providers[provider];
