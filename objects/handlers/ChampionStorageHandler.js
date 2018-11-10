@@ -31,7 +31,7 @@ class ChampionSelectHandler {
   }
 
   async save() {
-    return await Promise.all(Object.entries(this._cache).map(x => this._writeFile(path.join(this.path, x[0] + '.json'), JSON.stringify(x[1]))));
+    return await Promise.all(Object.entries(this._cache).filter(x => typeof x[1] === 'object' && x[1].roles).map(x => this._writeFile(path.join(this.path, x[0] + '.json'), JSON.stringify(x[1]))));
   }
 
   async clear() {
