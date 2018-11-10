@@ -80,7 +80,7 @@ class ProviderHandler {
   /**
    * Runs tasks when champion select ends
    */
-  async onChampionSelectEnd(cache = this._cache, flux = this.providers.flux) {
+  async onChampionSelectEnd(cache = this._cache, flux = this.providers.flux, merge = this._merge) {
     var i = cache.length;
 
     while (i--) {
@@ -94,7 +94,7 @@ class ProviderHandler {
 
       DataValidator.onDataStore(cache[i]);
 
-      await Mana.championStorageHandler.update(cache[i].championId, x => this._merge(cache[i], x));
+      await Mana.championStorageHandler.update(cache[i].championId, x => merge(cache[i], x));
       cache.splice(i, 1);
     }
 

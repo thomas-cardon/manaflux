@@ -21,7 +21,7 @@ module.exports = {
       const champions = Object.values(Mana.champions).filter(x => x.id !== -1);
       win.webContents.send('champions-length', champions.length);
 
-      let minRoles = Mana.getStore().get('champion-select-min-roles');
+      let minRoles = Mana.getStore().get('champion-select-min-roles', 2);
       Mana.getStore().set('champion-select-min-roles', 5);
 
       try {
@@ -34,7 +34,6 @@ module.exports = {
           if (!Mana.champions[championId]) continue;
 
           console.log(`[Downloader] Treating ${Mana.champions[championId].name}`);
-          const d = Mana.getStore().get(`data.${championId}`);
           Mana.providerHandler._cache.push(data[championId]);
 
           win.webContents.send('champion-treated-flux', Mana.champions[championId].name);
@@ -63,7 +62,7 @@ module.exports = {
 
       await UI.indicator(Mana.providerHandler.onChampionSelectEnd(), 'providers-downloader-saving-status');
       Mana.getStore().set('champion-select-min-roles', minRoles);
-      
+
       if (win) win.webContents.send('download-done');
     });
 
