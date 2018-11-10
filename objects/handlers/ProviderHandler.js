@@ -20,7 +20,7 @@ class ProviderHandler {
   }
 
   isProviderEnabled(x) {
-    return Mana.getStore().get('providers-order-' + x.id', true);
+    return Mana.getStore().get('providers-order-' + x.id, true);
   }
 
   async getChampionData(champion, preferredPosition, gameModeHandler, cache, providerList, bulkDownloadMode) {
