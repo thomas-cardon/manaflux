@@ -14,7 +14,7 @@ class FluxProvider extends Provider {
     console.log(2, '[Flu.x] Fetching data from the cache server');
     let data = JSON.parse(await rp(`${this.base}data/v1/${champion.id}?itemsets=${Mana.getStore().get('item-sets-enable', false)}&summonerspells=${Mana.getStore().get('summoner-spells', false)}&maxperkpages=${Mana.getStore().get('perks-max', 2)}`));
     data.flux = true;
-    
+
     if (data.message) {
       if (data.statusCode === 404) throw Error(`Flu.x: Data not found`);
       else throw Error(`Flu.x error: ${data.statusCode} - ${data.message} (${data.error})`);
@@ -52,7 +52,16 @@ class FluxProvider extends Provider {
   }
 
   async bulkDownloadQuery() {
-    return JSON.parse(await rp(`${this.base}data/v1/bulkdownload`));
+    const data = JSON.parse(await rp(`${this.base}data/v1/bulkdownload`));
+    if (data.message) {
+      if (data.statusCode === 404) throw Error(`Flu.x: Data not found`);
+      else throw Error(`Flu.x error: ${data.statusCode} - ${data.message} (${data.error})`);
+    }
+
+    for (let championId in data)
+      data[championId].flux = true;
+
+    return data;
   }
 }
 
