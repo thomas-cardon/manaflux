@@ -147,7 +147,7 @@
   "bug-report-error": "Rapporter une erreur",
   "bug-report-feature": "Demander une fonctionnalité",
   "bug-report-contact": "Comment pouvons-nous vous contacter?",
-  "bug-report-consent": "NOTE: Votre rapport sera envoyé avec votre nom d'invocateur",
+  "bug-report-consent": "NOTE: Votre rapport sera envoyé avec votre nom d'invocateur et le journal de Manaflux.",
   "bug-report-send": "Envoyer",
   "bug-report-sent": "Votre rapport vient d'être envoyé!",
   "key-Q": "A",

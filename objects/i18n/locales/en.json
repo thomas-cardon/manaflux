@@ -165,7 +165,7 @@
   "bug-report-error": "Report a bug",
   "bug-report-feature": "Ask a feature",
   "bug-report-contact": "How can we contact you?",
-  "bug-report-consent": "NOTE: Your report will be sent along with your summoner name.",
+  "bug-report-consent": "NOTE: Your report will be sent along with your summoner name and Manaflux logs.",
   "bug-report-send": "Send",
   "bug-report-sent": "Your report has been sent!",
   "fixes-perks-editor": "Perks editor fix",

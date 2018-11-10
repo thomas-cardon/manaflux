@@ -30,7 +30,7 @@ ipcRenderer.on('bug-report', async (event, data) => {
     const d = await rp({
       method: 'POST',
       uri: 'https://manaflux-server.herokuapp.com/reports/v1',
-      body: console.dir(3, {...data, summonerId: Mana.user.getSummonerId(), summonerName: Mana.user.getDisplayName() }),
+      body: console.dir(3, { ...data, summonerId: Mana.user.getSummonerId(), summonerName: Mana.user.getDisplayName(), gameVersion: Mana.gameClient.fullVersion, version: Mana.version, logs }),
       json: true
     });
 
