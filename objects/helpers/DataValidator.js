@@ -49,13 +49,15 @@ class DataValidator {
     delete data.version;
     delete data.region;
 
-    for (const [roleName, role] of Object.entries(data.roles)) {
+    for (const [roleName, role] of Object.entries(data.roles))
       role.itemsets.forEach(x => x.blocks.forEach(y => y.items.forEach(z => delete z._id)));
-    }
   }
 
-  onPerkPagesCheck(array, champion, role) {
+  onPerkPagesCheck(array, champion, role, preseason) {
     array = array.filter(x => x.selectedPerkIds && x.selectedPerkIds.length >= 6 && !this._hasDuplicates(x.selectedPerkIds));
+
+    if (preseason = parseFloat(Mana.gameClient.fullVersion.slice(0, 4)) >= 8.23)
+      UI.success(i18n.__('preseason-perks'));
 
     array.forEach((page, index) => { /* Recreates primaryStyleId or subStyleId based on perks if it's missing */
       page.name = `${page.provider ? Mana.providerHandler.getProvider(page.provider).getCondensedName() : 'XXX'}${index + 1} ${champion.name} > ${UI.stylizeRole(role)}${page.suffixName ? ' ' + page.suffixName : ''}`;
@@ -63,10 +65,8 @@ class DataValidator {
       page.primaryStyleId = page.primaryStyleId || Mana.gameClient.findPerkStyleByPerkId(page.selectedPerkIds[0]).id;
       page.subStyleId = page.subStyleId || Mana.gameClient.findPerkStyleByPerkId(page.selectedPerkIds[4]).id;
 
-      if (page.selectedPerkIds.length <= 9 && parseFloat(Mana.gameClient.fullVersion.slice(0, 4)) >= 8.23) {
+      if (page.selectedPerkIds.length <= 9 && preseason)
         page.selectedPerkIds = page.selectedPerkIds.concat([5008, 5002, 5001]);
-        UI.success(i18n.__('preseason-perks'));
-      }
     });
 
     return array;
