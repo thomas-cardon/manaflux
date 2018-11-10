@@ -62,6 +62,11 @@ class DataValidator {
 
       page.primaryStyleId = page.primaryStyleId || Mana.gameClient.findPerkStyleByPerkId(page.selectedPerkIds[0]).id;
       page.subStyleId = page.subStyleId || Mana.gameClient.findPerkStyleByPerkId(page.selectedPerkIds[4]).id;
+
+      if (page.selectedPerkIds.length <= 9 && parseFloat(Mana.gameClient.fullVersion.slice(0, 4)) >= 8.23) {
+        page.selectedPerkIds = page.selectedPerkIds.concat([5008, 5002, 5001]);
+        UI.success(i18n.__('preseason-perks'));
+      }
     });
 
     return array;
