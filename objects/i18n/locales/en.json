@@ -20,6 +20,8 @@
   "status-connected": "Connected",
   "status-disconnected": "Disconnected",
   "tray-show": "Click here to show Manaflux.",
+  "settings-restart-app": "Restart app",
+  "settings-restart-app-button": "Restart",
   "settings-logs-clear": "Clear logs",
   "settings-logs-open-folder": "Open logs folder",
   "settings-logs-cleared-files": "Deleted %s files",
