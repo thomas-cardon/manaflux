@@ -6,6 +6,7 @@
   <link rel="stylesheet" href="assets/css/manaflux.css">
   <link rel="stylesheet" href="assets/css/components/button.css">
   <link rel="stylesheet" href="assets/css/components/input.css">
+  <link rel="stylesheet" href="assets/css/components/sliders.css">
   <link rel="stylesheet" href="assets/css/components/dropdown.css">
   <link rel="stylesheet" href="assets/css/components/dots.css">
   <link rel="stylesheet" href="assets/css/components/hr.css">
@@ -15,6 +16,7 @@
   <link rel="stylesheet" href="assets/css/components/loading.css">
   <link rel="stylesheet" href="assets/css/components/warning.css">
   <link rel="stylesheet" href="assets/css/components/status.css">
+  <link rel="stylesheet" href="assets/css/components/connection-icon.css">
   <link rel="stylesheet" href="assets/css/components/version.css">
   <link rel="stylesheet" href="assets/css/components/statistics.css">
   <link rel="stylesheet" href="vendor/alertify.min.css"/>
@@ -23,9 +25,11 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
-  <video id="smokeAnimation" style="z-index: -30; position: absolute; display: none;" loop><source src="assets/video/smoke.webm" type="video/webm"></video>
+  <video id="smokeAnimation" style="z-index: -30; position: absolute; display: none;" loop><source src="assets/video/smoke.webm" type="video/webm">
+  </video>
   <img src="assets/img/warning.png" id="warning" draggable="false" style="display: none;">
   <img src="assets/img/components/loading.gif" id="loading"></img>
+  <img src="assets/img/components/connection-img.png" id="connection"></img>
   <div class="tab-container">
     <img src="assets/img/selected.png" id="selected" draggable="false">
     <div class="tab">
@@ -34,12 +38,14 @@
       <button type="button" class="btn tab flash" data-i18n="ui-menu-update" data-tabid="update" style="display: none;"></button>
     </div>
     <div class="controls">
-      <button type="button" class="btn control" data-custom-component="bug-reports"><i class="material-icons icon">announcement</i></button>
+      <button type="button" class="btn control" data-custom-component="bug-reports" disabled><i class="material-icons icon">announcement</i></button>
       <button type="button" class="btn control" onclick="remote.getCurrentWindow().minimize();"><i class="material-icons icon">remove</i></button>
       <button type="button" class="btn control" onclick="remote.getCurrentWindow().close();"><i class="material-icons icon">clear</i></button>
     </div>
   </div>
   <div class="content">
+    <p class="status" data-i18n="status-loading"></p>
+    <p class="version"></p>
     <div id="dots"></div>
     <!-- BEGIN SECTIONS -->
     <div data-tabid="home" data-tabn=0 class="tabcontent center" style="display: block;">
@@ -245,21 +251,22 @@
       <span id="updateSize">XXX.XXMB</span>
       <progress id="updateProgress" max="100" style="margin: 30px 0 0 -10px;"></progress>
     </div>
-    <p class="status" data-i18n="status-loading"></p>
-    <p class="version"></p>
-  </div>
-  <!-- END SECTIONS -->
+    <!-- END SECTIONS -->
   </div>
   <audio id="soundEngine" autoplay>
     <source id="soundEngineSource" type="audio/ogg" />
   </audio>
+  <script>
+    if (!localStorage['machineId'])
+    localStorage.setItem('machineId', require('node-machine-id').machineIdSync());
+  </script>
   <script src="vendor/jquery-3.3.1.min.js" onload="window.$ = window.jQuery = module.exports;"></script>
   <script src="vendor/jquery-ui.min.js"></script>
   <script src="vendor/markdown.min.js"></script>
   <script src="vendor/alertify.min.js"></script>
   <script>
-    const { ipcRenderer, remote } = require('electron');
-    const LoggingHandler = new (require('../objects/handlers/LoggingHandler'))(3);
+  const { ipcRenderer, remote } = require('electron');
+  const LoggingHandler = new (require('../objects/handlers/LoggingHandler'))(3);
   </script>
   <script src="assets/js/ui.js"></script>
   <script src="assets/js/ui/sounds.js"></script>
@@ -269,8 +276,6 @@
 
   process.on('unhandledRejection', (reason, p) => console.log(0, `Unhandled rejection at: ${p}, reason: ${reason}`));
   process.on('uncaughtException', console.error);
-
-  global.i18n = new (require('../objects/i18n'));
 
   document.getElementById('dev').addEventListener('click', e => {
     if (e.detail === 3) remote.getCurrentWindow().toggleDevTools();

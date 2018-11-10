@@ -21,7 +21,14 @@ function LoggingHandler(level) {
   this.isRenderer = !process || typeof process === 'undefined' || !process.type || process.type === 'renderer';
   this.ipc = this.isRenderer ? ipcRenderer : require('electron').ipcMain;
 
-  if (!this.isRenderer) this.stream = fs.createWriteStream(path.resolve(require('electron').app.getPath('logs'), new Date().toString().slice(0, 24).replace(/:/g, '-') + '.txt'));
+  if (!this.isRenderer) {
+    this.stream = fs.createWriteStream(path.resolve(require('electron').app.getPath('logs'), new Date().toString().slice(0, 24).replace(/:/g, '-') + '.txt'));
+    this.stream.write(`----------[ Log file level ${this.level} ]----------\n`);
+    this.stream.write(`Electron v${process.versions.electron}\n`);
+    this.stream.write(`NodeJS v${process.versions.node}\n`);
+    this.stream.write(`Chrome v${process.versions.chrome}\n`);
+    this.stream.write('----------------------------------------\n');
+  }
 
   const self = this;
   console.log = function(level = 0, ...args) {
@@ -31,7 +38,11 @@ function LoggingHandler(level) {
       level = 0;
     }
 
-    if (self.level >= level) {
+    if (x.length === 0) {
+      c.log.call(console, `[${self.isRenderer ? 'Renderer' : 'Main'}]`, `[${self._getTimestamp()}]`, 'No arguments but level passed:',  level);
+      self.send.call(self, level, 'log', level);
+    }
+    else if (self.level >= level) {
       c.log.call(console, `[${self.isRenderer ? 'Renderer' : 'Main'}]`, `[${self._getTimestamp()}]`, ...x);
       self.send.call(self, level, 'log', ...x);
     }
@@ -77,7 +88,7 @@ function LoggingHandler(level) {
 
     return x;
   };
-  
+
   this.ipc.on('logging-log', (event, arg) => this.onMessageCallback('log', arg));
   this.ipc.on('logging-dir', (event, arg) => this.onMessageCallback('dir', arg));
   this.ipc.on('logging-warn', (event, arg) => this.onMessageCallback('warn', arg));

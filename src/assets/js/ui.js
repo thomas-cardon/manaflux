@@ -1,12 +1,15 @@
-const { captureException } = require('@sentry/electron');
 var UI = {};
 
-UI.stylizeRole = (role = 'unknown') => {
+UI.stylize = UI.stylizeRole = (role = 'unknown') => {
   switch(role.toLowerCase()) {
     case 'aram':
       return 'ARAM';
     case 'adc':
       return 'ADC';
+    case 'twisted_treeline':
+      return '3vs3';
+    case 'classic':
+      return '5vs5';
     default:
       return role.charAt(0).toUpperCase() + role.slice(1).toLowerCase();
   }
@@ -35,7 +38,7 @@ UI.loading = async (toggle = document.getElementById('loading').style.display ==
 */
 let s, id;
 UI.status = (...args) => {
-  let x = i18n.__.call(i18n, ...args.slice(args[0].then ? 1 : 0));
+  let x = i18n.__.call(i18n, ...args.slice(args[0].then ? 1 : 0)).slice(0, 42);
 
   if (args[0].then)
     return new Promise((resolve, reject) => {
@@ -81,7 +84,6 @@ UI.error = function(...args) {
   if (args[0] instanceof Error) {
     console.error(args[0]);
 
-    captureException(args[0]);
     alertify.notify(args[0].toString(), 'error', 10, () => $('#warning').hide());
     return args[0];
   }

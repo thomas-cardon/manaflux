@@ -20,6 +20,10 @@ label {
   float: left;
 }
 
+.support-option {
+  display: none;
+}
+
 .option-name {
   color: #f0e6d2;
   font-size: 25px;

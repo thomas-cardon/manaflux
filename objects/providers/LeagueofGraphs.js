@@ -8,13 +8,13 @@ class LeagueofGraphsProvider extends Provider {
     this.base = 'https://www.leagueofgraphs.com/champions';
   }
 
-  async getData(champion, gameMode, preferredPosition) {
+  async getData(champion, preferredPosition, gameMode) {
     let data = { roles: {} };
 
-    if (gameMode === 'ARAM' || preferredPosition === 'ARAM') {
+    if (gameMode === 'ARAM') {
       try {
         console.log(2, `[ProviderHandler] [LOG] Gathering data (ARAM)`);
-        data.roles.ARAM = await this._scrape(champion, gameMode, preferredPosition);
+        data.roles.ARAM = await this._scrape(champion, preferredPosition, gameMode);
       }
       catch(err) {
         console.log(`[ProviderHandler] [League of Graphs] Something happened while gathering data (ARAM)`);
@@ -26,7 +26,7 @@ class LeagueofGraphsProvider extends Provider {
         console.log(2, `[ProviderHandler] [LOG] Gathering data (${x})`);
 
         try {
-          data.roles[x] = await this._scrape(champion, gameMode, x);
+          data.roles[x] = await this._scrape(champion, x, gameMode);
         }
         catch(err) {
           console.log(`[ProviderHandler] [League of Graphs] Something happened while gathering data (${x})`);
@@ -38,11 +38,7 @@ class LeagueofGraphsProvider extends Provider {
     return data;
   }
 
-  async getItemSets(champion, gameMode, position) {
-    return await this.getData(champion, position, gameMode)[position].itemsets;
-  }
-
-  async _scrape(champion, gameMode, position) {
+  async _scrape(champion, position, gameMode) {
     let promises = [rp(`${this.base}/runes/${champion.key}${position ? '/' + position : ''}`.toLowerCase())];
 
     promises.push(Mana.getStore().get('item-sets-enable') ? rp(`${this.base}/items/${champion.key}${position ? '/' + position : ''}`.toLowerCase()) : Promise.resolve());
@@ -59,7 +55,7 @@ class LeagueofGraphsProvider extends Provider {
     const summonerspells = Mana.getStore().get('summoner-spells') ? this.scrapeSummonerSpells(cheerio.load(data[2]), champion) : [];
     const statistics = Mana.getStore().get('statistics') ? {} : {};
 
-    return { perks, itemsets, summonerspells, statistics };
+    return { perks, itemsets, summonerspells, statistics, gameMode };
   }
 
   /**

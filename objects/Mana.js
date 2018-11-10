@@ -10,11 +10,14 @@ class Mana {
     UI.loading(true);
 
     this.devMode = ipcRenderer.sendSync('is-dev');
-    $('.version').text(`V${this.version = app.getVersion()}`);
+    $('.version').text(`V${this.version = app.getVersion() + (!require('electron').remote.app.isPackaged ? '-BUILD' : '')}`);
 
-    UI.status('status-loading-storage');
     this._store = new Store();
-    //this.features = new (require('../objects/FeatureEnabler'))();
+
+    if (!this.getStore().has('language'))
+      this.getStore().set('language', require('electron').remote.app.getLocale().toLowerCase());
+
+    global.i18n = new (require('./i18n'))(this.getStore().get('language'));
 
     if (!this.getStore().get('lastVersion') || this.getStore().get('lastVersion').startsWith("1.")) {
       this.getStore().clear();
@@ -54,10 +57,12 @@ class Mana {
 
   async preload() {
     UI.status('status-please-login');
+    document.getElementById('connection').style.display = 'none';
 
     this.gameClient = new (require('./riot/leagueoflegends/GameClient'))();
     this.assetsProxy = new (require('./riot/leagueoflegends/GameAssetsProxy'))();
 
+    this.championStorageHandler = new (require('./handlers/ChampionStorageHandler'))();
     this.championSelectHandler = new (require('./handlers/ChampionSelectHandler'))();
     this.providerHandler = new (require('./handlers/ProviderHandler'))();
 
@@ -70,31 +75,36 @@ class Mana {
 
     $('.version').text(`V${this.version} - V${this.gameClient.branch}`);
 
+    await this.championStorageHandler.load();
+
     if (this.getStore().get('lastBranchSeen') !== this.gameClient.branch) {
-      this.getStore().set('data', {});
+      this.championStorageHandler.clear();
       require('./handlers/ItemSetHandler').getItemSets().then(x => require('./handlers/ItemSetHandler').deleteItemSets(x)).catch(UI.error);
     }
 
     this.getStore().set('lastBranchSeen', this.gameClient.branch);
     document.querySelectorAll('[data-custom-component]').forEach(x => x.dispatchEvent(new Event('clientLoaded')));
+
+    ipcRenderer.send('lcu-preload-done');
   }
 
   async load(data) {
     UI.status('league-client-connection');
 
     this.user = new (require('./User'))(data);
-    this.championSelectHandler.load();
 
-    UI.status('champion-select-waiting');
     global._devChampionSelect = () => new (require('../CustomGame'))().create().then(game => game.start());
     document.querySelectorAll('[data-custom-component]').forEach(x => x.dispatchEvent(new Event('userConnected')));
+
+    setTimeout(() => {
+      this.championSelectHandler.loop();
+      UI.status('champion-select-waiting');
+    }, 2000);
   }
 
   disconnect() {
     global._devChampionSelect = () => console.log(`[${i18n.__('error')}] ${i18n.__('developer-game-start-error')}\n${i18n.__('league-client-disconnected')}`);
-
-    if (this.championSelectHandler) this.championSelectHandler.stop();
-    delete this.user;
+    document.getElementById('connection').style.display = 'block';
 
     UI.status('status-disconnected');
     document.querySelectorAll('[data-custom-component]').forEach(x => x.dispatchEvent(new Event('userDisconnected')));

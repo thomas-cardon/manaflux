@@ -1,10 +1,11 @@
 /* input element support */
 $('input[type!="checkbox"][data-settings-key], select[data-settings-key]').each(function() {
   console.log(2, `[Settings] Loading value of ${this.id = $(this).data('settings-key')} to: ${Mana.getStore().get($(this).data('settings-key'), $(this).data('settings-default'))}`);
-  this.value = Mana.getStore().get($(this).data('settings-key'), $(this).data('settings-default'));
 
-  if ($(this).data('settings-options'))
-  this.innerHTML = $(this).data('settings-options').toString().split(',').map(x => `<option id="${x}">${i18n.__($(this).data('translation-pre') + '-' + x)}</option>`);
+  if (!Mana.getStore().has($(this).data('settings-key')) && $(this).data('settings-default'))
+    Mana.getStore().set($(this).data('settings-key'), $(this).data('settings-default'));
+
+  this.value = Mana.getStore().get($(this).data('settings-key'));
 }).change(function() {
   console.log(2, `[Settings] Changing value of ${$(this).data('settings-key')} to: ${this.value}`);
   Mana.getStore().set($(this).data('settings-key'), this.value);
@@ -16,7 +17,10 @@ $('input[type!="checkbox"][data-settings-key], select[data-settings-key]').each(
 $('input[type="checkbox"]').each(function() {
   console.log(2, `[Settings] Loading value of ${this.id = $(this).data('settings-key')} to: ${Mana.getStore().get($(this).data('settings-key'), $(this).data('settings-default'))}`);
 
-  this.checked = Mana.getStore().get($(this).data('settings-key'), $(this).data('settings-default'));
+  if (!Mana.getStore().has($(this).data('settings-key')) && $(this).data('settings-default'))
+    Mana.getStore().set($(this).data('settings-key'), $(this).data('settings-default'));
+
+  this.checked = Mana.getStore().get($(this).data('settings-key'));
   $(this).siblings('label').prop('for', $(this).data('settings-key'));
 }).change(function() {
   console.log(2, `[Settings] Changing value of ${$(this).data('settings-key')} to: ${$(this).is(":checked")}`);

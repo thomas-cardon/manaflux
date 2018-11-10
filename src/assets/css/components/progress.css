@@ -10,7 +10,7 @@ progress {
 
 progress:before {
   position: absolute;
-  top: -1;
+  top: 12%;
   left: 0;
   right: 0;
   content: attr(data-label);
@@ -24,6 +24,10 @@ progress::-webkit-progress-bar {
 
 progress[value]::-webkit-progress-value {
   background-color: #2d98da;
+}
+
+progress.unknown-state[value]::-webkit-progress-value {
+  background-color: #f9ca24;
 }
 
 @keyframes animation {

@@ -15,12 +15,16 @@ class User extends Summoner {
     });
   }
 
-  async getGameMode() {
-    return (await this.getChatMe()).lol.gameMode;
+  getGameMode() {
+    return this._chatDetails.lol.gameMode;
   }
 
-  async getChatMe() {
-    return JSON.parse(await rp(Mana.base + 'lol-chat/v1/me'));
+  getMapId() {
+    return this._chatDetails.lol.mapId;
+  }
+
+  async queryChatDetails() {
+    return this._chatDetails = JSON.parse(await rp(Mana.base + 'lol-chat/v1/me'));
   }
 
   getPerksInventory() {

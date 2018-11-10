@@ -4,11 +4,121 @@ const ItemSetHandler = require('./ItemSetHandler');
 class ChampionSelectHandler {
   constructor() {
     this.gameModeHandlers = {
-      CLASSIC: new (require('../gameModesHandlers/CLASSIC'))(this, Mana.providerHandler),
-      ARAM: new (require('../gameModesHandlers/ARAM'))(this, Mana.providerHandler)
+      CLASSIC: {
+        getGameMode: () => 'CLASSIC',
+        getPosition: pos => {
+          switch(pos) {
+            case 'UTILITY':
+              return 'SUPPORT';
+            case 'BOTTOM':
+              return 'ADC';
+            case '':
+              return null;
+            default:
+              return pos;
+          }
+        },
+        getProviders: () => null
+      },
+      ARAM: {
+        getGameMode: () => 'ARAM',
+        getPosition: pos => null,
+        getProviders: () => ['metasrc', 'lolflavor', 'leagueofgraphs']
+      },
+      '10': {
+        getGameMode: () => 'TWISTED_TREELINE',
+        getPosition: pos => null,
+        getMap: map => 10,
+        getProviders: () => ['metasrc']
+      }
     };
 
     ipcRenderer.on('perks-shortcut', this.onShortcutPressedEvent);
+  }
+
+  async onChampionSelectStart() {
+    ipcRenderer.send('champion-select-in');
+    await Mana.user.queryChatDetails();
+
+    console.log(`[ChampionSelectHandler] Entering into ${Mana.user.getGameMode()}`);
+    Mana.user.getPerksInventory().queryPerks(); // Reloading perks array
+
+    /* Fallback to classic mode when not available */
+    this.gameModeHandler = this.gameModeHandlers[Mana.user.getGameMode()] ? this.gameModeHandlers[Mana.user.getGameMode()] : this.gameModeHandlers[Mana.user.getMapId()] ? this.gameModeHandlers[Mana.user.getMapId()] : this.gameModeHandlers.CLASSIC;
+
+    if (Mana.getStore().get('support-miner-limit-in-game')) {
+      this._minerThrottle = miner.getThrottle();
+      miner.setThrottle(0.9);
+    }
+  }
+
+  async onChampionSelectEnd() {
+    console.log(`[ChampionSelectHandler] Leaving`);
+
+    this._inChampionSelect = false;
+    this._lastChampionPicked = this._locked = null;
+
+    ipcRenderer.send('champion-select-out');
+
+    Mana.user.getPerksInventory()._pageCount = null;
+
+    this.destroyDisplay();
+
+    Mana.providerHandler.onChampionSelectEnd();
+
+    if (this._minerThrottle) miner.setThrottle(this._minerThrottle);
+  }
+
+  async onChampionChange(champion) {
+    console.log(`[ChampionSelectHandler] Champion changed to: ${champion.name}`);
+
+    this.onDisplayUpdatePreDownload(champion);
+    if (Mana.getStore().get('champion-select-lock')) return UI.status('champion-select-lock');
+
+    const res = await UI.indicator(Mana.providerHandler.getChampionData(champion, this.getPosition(), this.gameModeHandler, true), 'champion-select-downloading-data', champion.name);
+    this.onDisplayUpdate(champion, res);
+  }
+
+  async onChampionNotPicked() {
+    return UI.status('champion-select-pick-a-champion');
+  }
+
+  async onChampionLocked(champion) {
+    console.log(`[ChampionSelectHandler] Champion locked: ${champion.name}`);
+    if (!Mana.getStore().get('champion-select-lock')) return;
+
+    const res = await UI.indicator(Mana.providerHandler.getChampionData(champion, this.getPosition(), this.gameModeHandler, true), 'champion-select-downloading-data', champion.name);
+    this.onDisplayUpdate(champion, res);
+  }
+
+  async _handleTick(session) {
+    this._timer = session.timer;
+    this._myTeam = session.myTeam;
+    this._theirTeam = session.theirTeam;
+
+    if (!this._inChampionSelect) {
+      await this.onChampionSelectStart();
+      this._inChampionSelect = true;
+    }
+
+    if (this.getPlayer().championId === 0) await this.onChampionNotPicked();
+    else if (this._lastChampionPicked !== this.getPlayer().championId) {
+      this._lastChampionPicked = this.getPlayer().championId;
+      await this.onChampionChange(Mana.champions[this.getPlayer().championId]);
+    }
+    else if (!this._locked) {
+      if (this._locked = await this.isChampionLocked()) {
+        await this.onChampionLocked(Mana.champions[this.getPlayer().championId]);
+      }
+    }
+  }
+
+  getPosition() {
+    return this.getPlayer().assignedPosition === '' ? null : this.gameModeHandler.getPosition(this.getPlayer().assignedPosition) || this.getPlayer().assignedPosition;
+  }
+
+  getPlayer() {
+    return this._myTeam.find(x => x.summonerId === Mana.user.getSummonerId());
   }
 
   async getSession() {
@@ -20,80 +130,47 @@ class ChampionSelectHandler {
     });
   }
 
-  isChampionLocked() {
-    return new Promise((resolve, reject) => {
-      require('https').get({
-        host: '127.0.0.1',
-        port: Mana.riot.port,
-        path: '/lol-champ-select/v1/current-champion',
-        headers: { 'Authorization': Mana.riot.authToken },
-        rejectUnauthorized: false,
-      }, res => {
-        if (res.statusCode === 200) resolve(true);
-        else if (res.statusCode === 404) resolve(false);
-      }).on('error', err => reject(err));
-    });
-  }
-
-  load() {
-    const self = this;
-    this._checkTimer = setInterval(function() {
-      if (!Mana.user) return;
-
-      self.getSession().then(x => self.onTickEvent(x.body)).catch(err => {
-        if (err.statusCode === 404 && self.inChampionSelect) return self.end();
-        else if (err.statusCode !== 404) UI.error(err);
+  async isChampionLocked() {
+    try {
+      let x = await rp({
+        method: 'GET',
+        uri: Mana.base + 'lol-champ-select/v1/current-champion',
+        resolveWithFullResponse: true,
+        json: false
       });
-    }, 1000);
-  }
 
-  async _devDownloadProviderData(champion, pos, mode = 'CLASSIC', cache, providers) {
-    return await Mana.providerHandler.getChampionData(champion, pos, this.gameModeHandlers[mode] ? this.gameModeHandlers[mode] : this.gameModeHandlers.CLASSIC, cache, providers);
-  }
-
-  async onTickEvent(data) {
-    if (!this.inChampionSelect) {
-      await this.onFirstTickEvent(data);
-      this.inChampionSelect = true;
+      if (x.body == 0) return false;
+      return true;
     }
-
-    this.gameModeHandler.onTickEvent(data);
-    this.onChampionSelectTick(data);
-  }
-
-  async onChampionSelectTick(data) {
-    if (this.gameModeHandler.getPlayer().championId === 0) return UI.status('champion-select-pick-a-champion');
-
-    if (this.lastChampionPicked !== this.gameModeHandler.getPlayer().championId) {
-      this.lastChampionPicked = this.gameModeHandler.getPlayer().championId;
-      this.hasLoadedData = this.hasLoadedUI = false;
-    }
-
-    const champion = Mana.champions[this.gameModeHandler.getPlayer().championId];
-
-    if (!this.hasLoadedUI) this.onDisplayUpdatePreDownload(champion);
-    if (!this.hasLoadedData) {
-      if (!Mana.getStore().get('champion-select-lock') || Mana.getStore().get('champion-select-lock') && await this.isChampionLocked()) {
-        this.hasLoadedData = true;
-
-        const res = await UI.indicator(Mana.providerHandler.getChampionData(champion, this.gameModeHandler.getPosition(), this.gameModeHandler, true), 'champion-select-downloading-data', champion.name);
-        if (this.inChampionSelect && champion.id === res.championId) this.onDisplayUpdate(champion, res);
-      }
-      else return UI.status('champion-select-lock');
+    catch(err) {
+      if (err.statusCode === 404) return false;
+      else throw err;
     }
   }
 
-  async onFirstTickEvent(data) {
-    ipcRenderer.send('champion-select-in');
-    this.gameMode = await Mana.user.getGameMode();
+  async loop() {
+    if (!Mana.user) return console.log('[ChampionSelectHandler] Stopped loop since Mana.user doesn\'t exist');
+    await this.timeout(1000);
 
-    /* Fallback to classic mode when not available */
-    this.gameModeHandler = this.gameModeHandlers[this.gameMode] ? this.gameModeHandlers[this.gameMode] : this.gameModeHandlers.CLASSIC;
-    this.gameModeHandler.onFirstTickEvent(data);
+    try {
+      const session = await this.getSession();
+      await this._handleTick(session.body);
+
+      this.loop();
+    }
+    catch(err) {
+      if (err.statusCode === 404 && this._inChampionSelect) this.onChampionSelectEnd();
+      else if (err.statusCode !== 404 && err.code !== 'ECONNREFUSED' && err.code !== 'ECONNRESET') UI.error(err);
+      else this.loop();
+    }
+  }
+
+  async timeout(ms) {
+    return new Promise(res => setTimeout(res, ms));
   }
 
   onDisplayUpdatePreDownload(champion) {
-    this.hasLoadedUI = true;
+    if (!this._inChampionSelect) return;
     UI.status('champion-select-updating-display', champion.name);
 
     document.getElementById('buttons').style.display = 'none';
@@ -110,11 +187,11 @@ class ChampionSelectHandler {
   }
 
   async onDisplayUpdate(champion, res) {
+    if (!this._inChampionSelect) return;
     if (!res || Object.keys(res.roles).length === 0) return UI.error('providers-error-data');
 
-    console.dir(res);
-    Object.keys(res.roles).forEach(r => {
-      if (res.roles[r].perks.length === 0) UI.error('providers-error-perks', champion.name, r);
+    document.getElementById('positions').innerHTML = '';
+    Object.keys(res.roles).filter(x => res.roles[x].perks.length > 0).forEach(r => {
       document.getElementById('positions').innerHTML += `<option value="${r}">${UI.stylizeRole(r)}</option>`;
     });
 
@@ -126,7 +203,7 @@ class ChampionSelectHandler {
       self.onPerkPositionChange(champion, this.value.toUpperCase(), res.roles[this.value.toUpperCase()]);
     };
 
-    document.getElementById('positions').value = res.roles[this.gameModeHandler.getPosition()] ? this.gameModeHandler.getPosition() : Object.keys(res.roles)[0];
+    document.getElementById('positions').value = res.roles[this.getPosition()] ? this.gameModeHandler.getPosition(this.getPosition()) : Object.keys(res.roles)[0];
     document.getElementById('positions').onchange();
     document.getElementById('positions').style.display = 'unset';
 
@@ -191,33 +268,12 @@ class ChampionSelectHandler {
     UI.status('champion-select-waiting');
     UI.disableHextechAnimation();
 
-    document.getElementById('positions').style.display = 'none';
-    document.getElementById('buttons').style.display = 'none';
+    document.getElementById('positions').style.display = document.getElementById('buttons').style.display = 'none';
 
     $('#loadRunes').disableManualButton(!Mana.getStore().get('perks-automatic-load'));
     $('#loadSummonerSpells').disableManualButton(true);
 
     if (Mana.getStore().get('enableTrayIcon')) UI.tray();
-  }
-
-  end() {
-    this.inChampionSelect = false;
-    this.lastChampionPicked = null;
-    this.hasLoadedData = this.hasLoadedUI = false;
-
-    ipcRenderer.send('champion-select-out');
-
-    Mana.user.getPerksInventory()._pageCount = null;
-    Mana.user.getPerksInventory()._perks = null;
-
-    this.destroyDisplay();
-
-    Mana.providerHandler.onChampionSelectEnd();
-  }
-
-  stop() {
-    clearInterval(this._checkTimer);
-    ipcRenderer.removeAllListeners('perks-shortcut');
   }
 }
 
