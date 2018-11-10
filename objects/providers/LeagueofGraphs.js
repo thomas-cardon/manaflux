@@ -14,7 +14,7 @@ class LeagueofGraphsProvider extends Provider {
     if (gameMode === 'ARAM') {
       try {
         console.log(2, `[ProviderHandler] [LOG] Gathering data (ARAM)`);
-        data.roles.ARAM = await this._scrape(champion, gameMode, preferredPosition);
+        data.roles.ARAM = await this._scrape(champion, preferredPosition, gameMode);
       }
       catch(err) {
         console.log(`[ProviderHandler] [League of Graphs] Something happened while gathering data (ARAM)`);
@@ -26,7 +26,7 @@ class LeagueofGraphsProvider extends Provider {
         console.log(2, `[ProviderHandler] [LOG] Gathering data (${x})`);
 
         try {
-          data.roles[x] = await this._scrape(champion, gameMode, x);
+          data.roles[x] = await this._scrape(champion, x, gameMode);
         }
         catch(err) {
           console.log(`[ProviderHandler] [League of Graphs] Something happened while gathering data (${x})`);
