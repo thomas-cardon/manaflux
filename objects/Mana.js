@@ -66,7 +66,10 @@ class Mana {
     this.championSelectHandler = new (require('./handlers/ChampionSelectHandler'))();
     this.providerHandler = new (require('./handlers/ProviderHandler'))();
 
+    this.remoteConnectionHandler = new (require('./handlers/RemoteConnectionHandler'))();
+
     this.assetsProxy.load();
+    this.remoteConnectionHandler.start();
 
     const data = await UI.indicator(Promise.all([this.gameClient.load(), this.gameClient.getChampionSummary(), this.gameClient.getSummonerSpells()]), 'status-loading-resources');
 
