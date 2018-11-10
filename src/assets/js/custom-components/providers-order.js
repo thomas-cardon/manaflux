@@ -1,50 +1,39 @@
-module.exports = function() {
-  const mergeIfMissing = this.dataset.settingsMergeListIfMissingValue || false, removeIfMissing = this.dataset.settingsRemoveIfMissingValue || false;
+module.exports = {
+  clientLoaded: function() {
+    const values = Object.values(Mana.providerHandler.providers);
 
-  const defaultValues = this.dataset.settingsDefault.split(',');
-  const values = Mana.getStore().get(this.dataset.settingsKey, defaultValues);
-
-  if (mergeIfMissing) {
-    let saveNeeded;
-    for (let i = 0; i < defaultValues.length; i++) {
-      if (values.indexOf(defaultValues[i]) === -1) {
-        values.push(defaultValues[i]);
-        saveNeeded = true;
+    function toggle() {
+      if (this.style.opacity === '.35') {
+        this.style.opacity = 1;
+        Mana.getStore().set('providers-order-' + this.id, true);
+      }
+      else {
+        this.style.opacity = '.35';
+        Mana.getStore().set('providers-order-' + this.id, false);
       }
     }
 
-    if (saveNeeded) Mana.getStore().set(this.dataset.settingsKey, values);
-  }
+    let list = '';
+    for (let i = 0; i < values.length; i++)
+      list += `<li class="ui-state-default sortable-button" value="${values[i].id}" style="${Mana.getStore().get('providers-order-' + values[i].id, true) ? 'opacity: 1' : 'opacity: .35'}">${values[i].name}</li>`;
 
-  if (removeIfMissing) {
-    let saveNeeded;
-    for (let i = 0; i < values.length; i++) {
-      if (defaultValues.indexOf(values[i]) === -1) {
-        values.splice(i, 1);
-        saveNeeded = true;
+    this.innerHTML = list;
+    this.childNodes.forEach(x => x.addEventListener("dblclick", toggle));
+
+    $(this).css('list-style', 'disc inside').sortable({
+      update: function(event, ui) {
+        if (ui.item.css('opacity') === '0.35') return $('#providersOrder').sortable('cancel');
+
+        let array = [];
+        $(this).children().each(function() {
+          array.push($(this).attr('value'));
+        });
+
+        Mana.getStore().set('providers-order', array);
+        console.log(2, `[Providers order] Changed value to: ${array}`);
+
+        Sounds.play('checkboxClick');
       }
-    }
-
-    if (saveNeeded) Mana.getStore().set(this.dataset.settingsKey, values);
+    });
   }
-
-  let list = '';
-  for (let i = 0; i < values.length; i++)
-    list += `<li class="ui-state-default sortable-button" value="${values[i]}">${i18n.__('settings-' + this.dataset.settingsKey + '-' + values[i])}</li>`;
-
-  this.innerHTML = list;
-
-  $(this).css('list-style', 'disc inside').sortable({
-    update: function(event, ui) {
-      let array = [];
-      $(this).children().each(function() {
-        array.push($(this).attr('value'));
-      });
-
-      Mana.getStore().set(this.dataset.settingsKey, array);
-      console.log(2, `[Settings] Changing value of #${this.dataset.settingsKey} to: ${array}`);
-
-      Sounds.play('checkboxClick');
-    }
-  });
 }
