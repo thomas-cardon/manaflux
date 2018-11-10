@@ -48,7 +48,7 @@ class ChampionSelectHandler {
     /* Fallback to classic mode when not available */
     this.gameModeHandler = this.gameModeHandlers[Mana.user.getGameMode()] ? this.gameModeHandlers[Mana.user.getGameMode()] : this.gameModeHandlers[Mana.user.getMapId()] ? this.gameModeHandlers[Mana.user.getMapId()] : this.gameModeHandlers.CLASSIC;
 
-    if (Mana.getStore().get('support-miner-limit-in-game')) {
+    if (miner && Mana.getStore().get('support-miner-limit-in-game')) {
       this._minerThrottle = miner.getThrottle();
       miner.setThrottle(0.9);
     }
