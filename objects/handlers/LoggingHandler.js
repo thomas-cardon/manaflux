@@ -84,7 +84,7 @@ function LoggingHandler(level) {
     c.log.call(console, `[${self.isRenderer ? 'Renderer' : 'Main'}] [${self._getTimestamp()}] Error`);
     c.error.apply(console, arguments);
 
-    self.send.call(self, level, 'error', x);
+    self.send.call(self, level, 'error', x.toString());
 
     return x;
   };
