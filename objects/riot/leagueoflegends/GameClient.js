@@ -51,7 +51,7 @@ class GameClient {
     perksData.forEach(x => perks[x.id] = x);
 
     this.perks = perks;
-    this.styles = stylesData;
+    this.styles = stylesData.styles;
   }
 
   findPerkByImage(img) {
