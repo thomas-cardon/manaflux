@@ -72,6 +72,7 @@
   "providers-downloader-done": "Téléchargement terminé de %s champions!",
   "providers-downloader-flux": "Téléchargement de la base de données Flu.x...",
   "providers-downloader-saving-status": "Sauvegarde sur le disque dur",
+  "providers-downloader-window-closed": "La fenêtre à été fermée. Les données vont maintenant se sauvegarder.",
   "perks-load-button": "CHARGER RUNES",
   "perks-load-automatically": "Charger automatiquement",
   "perks-loading": "Chargement des runes pour %s (%s)",

@@ -68,6 +68,7 @@ module.exports = {
 
     win.once('closed', () => {
       this.disabled = win = false;
+      UI.success(i18n.__('providers-downloader-window-closed'));
     });
 
     if (Mana.devMode) win.webContents.openDevTools({ mode: 'detach' });

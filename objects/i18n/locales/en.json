@@ -74,6 +74,7 @@
   "providers-downloader-done": "Done! Downloaded %s champions!",
   "providers-downloader-flux": "Downloading Flu.x's entire database...",
   "providers-downloader-saving-status": "Saving everything to hard drive",
+  "providers-downloader-window-closed": "The window has been closed. Data will now be saved.",
   "perks-load-button": "LOAD RUNES",
   "perks-load-automatically": "Load automatically",
   "perks-loading": "Loading perks for %s (%s)",
