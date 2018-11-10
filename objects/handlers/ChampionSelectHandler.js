@@ -38,6 +38,8 @@ class ChampionSelectHandler {
 
   async onChampionSelectStart() {
     ipcRenderer.send('champion-select-in');
+    document.getElementById('developerGame').disabled = true;
+
     await Mana.user.queryChatDetails();
 
     console.log(`[ChampionSelectHandler] Entering into ${Mana.user.getGameMode()}`);
@@ -54,6 +56,7 @@ class ChampionSelectHandler {
 
   async onChampionSelectEnd() {
     console.log(`[ChampionSelectHandler] Leaving`);
+    document.getElementById('developerGame').disabled = false;
 
     this._inChampionSelect = false;
     this._lastChampionPicked = this._locked = null;
