@@ -114,25 +114,25 @@
       </div>
     </div>
     <div data-tabid="settings" data-tabn=1 class="tabcontent" style="display: none; margin-left: 9%;">
-        <p class="option-name" data-i18n="statistics"></p>
-        <center>
-          <div class="option">
-            <p class="suboption-name" data-i18n="statistics-enable-stats"></p>
-            <input type="checkbox" data-settings-key="statistics" data-settings-default="true" />
-            <label data-i18n="common-enable"></label>
-          </div>
-          <div class="option">
-            <p class="suboption-name" data-i18n="statistics-enable-matchups"></p>
-            <input type="checkbox" data-settings-key="matchups" data-settings-default="true" />
-            <label data-i18n="common-enable"></label>
-          </div>
-        </center>
-        <hr class="break" />
+      <p class="option-name" data-i18n="statistics"></p>
+      <center>
         <div class="option">
-          <p class="suboption-name" data-i18n="statistics-providers"></p>
-          <select data-settings-key="statistics-providers" data-settings-options="championgg" data-translation-pre="settings-providers-order" class="dropdown">
-          </select>
+          <p class="suboption-name" data-i18n="statistics-enable-stats"></p>
+          <input type="checkbox" data-settings-key="statistics" data-settings-default="true" />
+          <label data-i18n="common-enable"></label>
         </div>
+        <div class="option">
+          <p class="suboption-name" data-i18n="statistics-enable-matchups"></p>
+          <input type="checkbox" data-settings-key="matchups" data-settings-default="true" />
+          <label data-i18n="common-enable"></label>
+        </div>
+      </center>
+      <hr class="break" />
+      <div class="option">
+        <p class="suboption-name" data-i18n="statistics-providers"></p>
+        <select data-settings-key="statistics-providers" data-settings-options="championgg" data-translation-pre="settings-providers-order" class="dropdown">
+        </select>
+      </div>
     </div>
     <div data-tabid="settings" data-tabn=2 class="tabcontent" style="display: none; margin-left: 9%;">
       <p class="option-name" data-i18n="category-misc"></p>
@@ -238,6 +238,42 @@
           <input type="checkbox" data-settings-key="fixes-perks-editor" data-settings-default="true" class="center-area" />
           <label data-i18n="common-enable"></label>
         </div>
+      </div>
+    </div>
+    <div data-tabid="settings" data-tabn=5 class="tabcontent" style="display: none; margin-left: 9%;">
+      <p class="option-name" data-i18n="category-support"></p>
+      <p data-i18n="support" style="color: #a09b8c;font-size: 14px;max-width: 90%;"></p>
+      <p data-i18n="support-miner-cant-be-enabled" style="position: absolute;bottom: -110px;color: #b33939;width: 90%;margin-left: 6px;" data-custom-component="miner-security" data-miner=""></p>
+      <div class="option support-option">
+        <p class="suboption-name" data-i18n="support-miner-cpu-usage"></p>
+        <input type="text" class="center-area" data-custom-component="cpu-usage" data-miner="" disabled />
+      </div>
+      <div class="option support-option">
+        <p class="suboption-name" data-i18n="support-miner-cpu-threads"></p>
+        <input type="number" class="center-area" data-settings-key="support-miner-cpu-threads" data-custom-component="miner-cpu-threads" data-miner="" />
+      </div>
+      <div class="option support-option">
+        <p class="suboption-name" style="font-size: 15px !important;" id="support-miner-limit-in-game"></p>
+        <div class="options checkboxContainer">
+          <input type="checkbox" data-settings-key="support-miner-limit-in-game" data-settings-default=true data-miner="" />
+          <label data-i18n="common-enable"></label>
+        </div>
+      </div>
+      <div class="option">
+        <p class="suboption-name" data-i18n="support-miner-disable"></p>
+        <div class="options checkboxContainer">
+          <input type="checkbox" id="support-miner-disable" data-settings-key="support-miner-disable" data-custom-component="miner-disabler" data-settings-default=true data-miner="" />
+          <label data-i18n="common-disable"></label>
+        </div>
+      </div>
+      <div class="option support-option">
+        <p class="suboption-name" data-i18n="support-miner-speed"></p>
+        <input type="range" max="100" data-settings-key="support-miner-speed" data-settings-default=5 data-custom-component="miner-speed" data-miner="" style="margin-top: 8px;">
+      </div>
+      <div class="option" style="width: 100%;">
+        <p class="suboption-name" data-i18n="support-paypal-button"></p>
+        <button class="btn normal" data-i18n="common-open" data-custom-component="paypal-button"></button>
+      </div>
     </div>
     <div data-tabid="update" data-tabn=0 class="tabcontent" style="display: none; margin-left: 9%;">
       <p data-i18n="update-available" id="updateAvailableText"></p>
@@ -257,8 +293,8 @@
     <source id="soundEngineSource" type="audio/ogg" />
   </audio>
   <script>
-    if (!localStorage['machineId'])
-    localStorage.setItem('machineId', require('node-machine-id').machineIdSync());
+  if (!localStorage['machineId'])
+  localStorage.setItem('machineId', require('node-machine-id').machineIdSync());
   </script>
   <script src="vendor/jquery-3.3.1.min.js" onload="window.$ = window.jQuery = module.exports;"></script>
   <script src="vendor/jquery-ui.min.js"></script>
