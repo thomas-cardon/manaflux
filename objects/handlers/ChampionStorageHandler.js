@@ -26,6 +26,10 @@ class ChampionSelectHandler {
     this._cache[championId] = x;
   }
 
+  async remove(championId) {
+    return this._unlink(path.join(this.path, championId + '.json'));
+  }
+
   async update(championId, cb) {
     this._cache[championId] = await cb(this._cache[championId] || await this.get(championId));
   }
