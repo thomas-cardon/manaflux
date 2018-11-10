@@ -80,7 +80,7 @@ class ProviderHandler {
   /**
    * Runs tasks when champion select ends
    */
-  async onChampionSelectEnd(cache = this._cache, flux = this.providers.flux, merge = this._merge) {
+  async onChampionSelectEnd(cache = this._cache, flux = this.providers.flux) {
     var i = cache.length;
 
     while (i--) {
@@ -96,7 +96,7 @@ class ProviderHandler {
 
       DataValidator.onDataStore(cache[i]);
 
-      await Mana.championStorageHandler.update(cache[i].championId, x => merge(cache[i], x));
+      await Mana.championStorageHandler.update(cache[i].championId, x => this._merge(cache[i], x));
       cache.splice(i, 1);
     }
 
@@ -117,10 +117,12 @@ class ProviderHandler {
       else {
         for (const [k, v] of Object.entries(role)) {
           if (!x.roles[name][k]) x.roles[name][k] = v;
-          else if (Array.isArray(x.roles[name][k])) x.roles[name][k] = x.roles[name][k].concat(v);
+          else if (Array.isArray(x.roles[name][k])) x.roles[name][k] = x.roles[name][k].concat(v).filter((x, pos, self) => self.indexOf(x) === pos);
         }
       }
     }
+
+    return x;
   }
 }
 
