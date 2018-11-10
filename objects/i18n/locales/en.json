@@ -103,6 +103,8 @@
   "category-misc": "Misc",
   "category-advanced": "Advanced",
   "category-support": "Support me!",
+  "category-android-app": "Scan the QR Code!",
+  "android-app-note": "Use the Manaflux app to scan the QR code. It will then connect automatically.",
   "ui": "User Interface",
   "ui-gradient": "Gradient",
   "ui-animations": "Animations",
