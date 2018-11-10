@@ -10,7 +10,6 @@ class FluxProvider extends Provider {
   }
 
   async getData(champion, preferredPosition, gameMode) {
-    if (!Mana.getStore().get('providers-flux-enable', true)) throw Error('[ProviderHandler] Skipped Flu.x because you disabled it');
     console.log(2, '[Flu.x] Fetching data from the cache server');
     let data = JSON.parse(await rp(`${this.base}data/v1/${champion.id}?itemsets=${Mana.getStore().get('item-sets-enable', false)}&summonerspells=${Mana.getStore().get('summoner-spells', false)}&maxperkpages=${Mana.getStore().get('perks-max', 2)}`));
     data.flux = true;
