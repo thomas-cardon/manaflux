@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="assets/css/components/hr.css">
   <link rel="stylesheet" href="assets/css/components/progress.css">
   <link rel="stylesheet" href="assets/css/components/settings.css">
+  <link rel="stylesheet" href="assets/css/components/qrcode.css">
   <link rel="stylesheet" href="assets/css/components/update.css">
   <link rel="stylesheet" href="assets/css/components/loading.css">
   <link rel="stylesheet" href="assets/css/components/warning.css">
@@ -276,7 +277,8 @@
       <p class="option-name" data-i18n="category-android-app"></p>
       <p data-i18n="android-app-note" style="color: #c0392b;"></p>
       <div id="qr-canvas" class="option">
-        <canvas id="qr-template" data-custom-component="qr-canvas"></canvas>
+        <img id="qrcode-frame" src="http://raw.communitydragon.org/8.20/plugins/rcp-fe-lol-loot/global/default/assets/border_images/permanent.png">
+        <canvas id="qrcode" data-custom-component="qr-canvas" style=""></canvas>
       </div>
     </div>
     <div data-tabid="update" data-tabn=0 class="tabcontent" style="display: none; margin-left: 9%;">
