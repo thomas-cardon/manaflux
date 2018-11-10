@@ -43,7 +43,7 @@ class ChampionSelectHandler {
     await Mana.user.queryChatDetails();
 
     console.log(`[ChampionSelectHandler] Entering into ${Mana.user.getGameMode()}`);
-    Mana.user.getPerksInventory().queryPerks(); // Reloading perks array
+    Mana.user.getPerksInventory().getCount();
 
     /* Fallback to classic mode when not available */
     this.gameModeHandler = this.gameModeHandlers[Mana.user.getGameMode()] ? this.gameModeHandlers[Mana.user.getGameMode()] : this.gameModeHandlers[Mana.user.getMapId()] ? this.gameModeHandlers[Mana.user.getMapId()] : this.gameModeHandlers.CLASSIC;
