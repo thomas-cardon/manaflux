@@ -6,11 +6,12 @@ $('input[type!="checkbox"][data-settings-key], select[data-settings-key]').each(
     Mana.getStore().set($(this).data('settings-key'), $(this).data('settings-default'));
 
   this.value = Mana.getStore().get($(this).data('settings-key'));
-}).change(function() {
-  console.log(2, `[Settings] Changing value of ${$(this).data('settings-key')} to: ${this.value}`);
-  Mana.getStore().set($(this).data('settings-key'), this.value);
+  this.addEventListener('input', function() {
+    console.log(2, `[Settings] Changing value of ${$(this).data('settings-key')} to: ${this.value}`);
+    Mana.getStore().set($(this).data('settings-key'), this.value);
 
-  Sounds.play('dropdownSelect');
+    Sounds.play('dropdownSelect');
+  });
 });
 
 /* checkbox element support */
