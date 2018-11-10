@@ -3,13 +3,15 @@ module.exports = {
     const values = Object.values(Mana.providerHandler.providers);
 
     function toggle() {
-      if (this.style.opacity === '.35') {
+      if (this.style.opacity === '0.35') {
         this.style.opacity = 1;
-        Mana.getStore().set('providers-order-' + this.id, true);
+        Mana.getStore().set('providers-order-' + this.getAttribute('value'), true);
+        console.log(2, `[Providers order] Enabled: ${this.getAttribute('value')}`);
       }
       else {
         this.style.opacity = '.35';
-        Mana.getStore().set('providers-order-' + this.id, false);
+        Mana.getStore().set('providers-order-' + this.getAttribute('value'), false);
+        console.log(2, `[Providers order] Disabled: ${this.getAttribute('value')}`);
       }
     }
 
