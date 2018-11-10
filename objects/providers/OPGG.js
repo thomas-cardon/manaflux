@@ -51,7 +51,7 @@ class OPGGProvider extends Provider {
 
     const convertOPGGPosition = this.convertOPGGPosition;
 
-    if ($('.champion-stats-header-version').text().trim().slice(-4) != Mana.gameClient.branch) UI.error('providers-error-outdated');
+    if ($('.champion-stats-header-version').text().trim().slice(-4) != Mana.gameClient.branch) UI.error('providers-error-outdated', this.name);
 
     position = $('li.champion-stats-header__position.champion-stats-header__position--active').data('position') ? this.convertOPGGPosition($('li.champion-stats-header__position.champion-stats-header__position--active').data('position')).toUpperCase() : position;
     const availablePositions = [];
