@@ -7,7 +7,7 @@ document.getElementById('support-miner-cpu-threads').min = 1;
 document.getElementById('support-miner-cpu-threads').max = navigator.hardwareConcurrency;
 
 module.exports = {
-  change: function(e) {
+  input: function() {
     if (!miner) return e.preventDefault();
     miner.setNumThreads(this.value);
   }
