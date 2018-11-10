@@ -266,7 +266,10 @@ class ChampionSelectHandler {
     }
 
     /* Useless to change position if it's already the one chosen */
-    if (newIndex !== positionIndex) $('#positions').val(keys[newIndex]).trigger('change');
+    if (newIndex !== positionIndex) {
+      document.getElementById('positions').value = keys[newIndex];
+      document.getElementById('positions').onchange();
+    };
   }
 
   destroyDisplay() {
