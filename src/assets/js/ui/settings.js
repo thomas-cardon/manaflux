@@ -2,7 +2,7 @@
 $('input[type!="checkbox"][data-settings-key], select[data-settings-key]').each(function() {
   console.log(2, `[Settings] Loading value of ${this.id = $(this).data('settings-key')} to: ${Mana.getStore().get($(this).data('settings-key'), $(this).data('settings-default'))}`);
 
-  if (!Mana.getStore().get($(this).data('settings-key')) && $(this).data('settings-default'))
+  if (!Mana.getStore().has($(this).data('settings-key')) && $(this).data('settings-default'))
     Mana.getStore().set($(this).data('settings-key'), $(this).data('settings-default'));
 
   this.value = Mana.getStore().get($(this).data('settings-key'));
@@ -17,7 +17,7 @@ $('input[type!="checkbox"][data-settings-key], select[data-settings-key]').each(
 $('input[type="checkbox"]').each(function() {
   console.log(2, `[Settings] Loading value of ${this.id = $(this).data('settings-key')} to: ${Mana.getStore().get($(this).data('settings-key'), $(this).data('settings-default'))}`);
 
-  if (!Mana.getStore().get($(this).data('settings-key')) && $(this).data('settings-default'))
+  if (!Mana.getStore().has($(this).data('settings-key')) && $(this).data('settings-default'))
     Mana.getStore().set($(this).data('settings-key'), $(this).data('settings-default'));
 
   this.checked = Mana.getStore().get($(this).data('settings-key'));
