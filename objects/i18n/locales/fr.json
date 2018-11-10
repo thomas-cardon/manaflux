@@ -66,7 +66,7 @@
   "providers-cgg-blocks-completed-build-hw%": "Set d'objets complet (taux de victoire) | %s WR",
   "providers-cgg-blocks-completed-build-mf": "Set d'objets complet (plus fréquent) | %s WR",
   "providers-flux-uploading": "Téléversement des données vers Flu.x",
-  "providers-downloader": "Download in advance",
+  "providers-downloader": "Télécharger à l'avance",
   "providers-downloader-downloading": "Downloading %s (%s)...",
   "providers-downloader-note": "Cette fonctionnalité utilise votre ordre de fournisseurs ainsi que Flu.x. Les données sont téléchargées pour tous les champions en 5vs5, 3vs3, et ARAM. Le téléchargement prendra du temps. Si vous fermez la fenêtre, les téléchargements seront sauvegardés.",
   "providers-downloader-done": "Téléchargement terminé de %s champions!",
