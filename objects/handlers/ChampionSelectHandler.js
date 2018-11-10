@@ -190,6 +190,8 @@ class ChampionSelectHandler {
     if (!this._inChampionSelect) return;
     if (!res || Object.keys(res.roles).length === 0) return UI.error('providers-error-data');
 
+    console.dir(res);
+
     document.getElementById('positions').innerHTML = '';
     Object.keys(res.roles).filter(x => res.roles[x].perks.length > 0).forEach(r => {
       document.getElementById('positions').innerHTML += `<option value="${r}">${UI.stylizeRole(r)}</option>`;
@@ -203,7 +205,7 @@ class ChampionSelectHandler {
       self.onPerkPositionChange(champion, this.value.toUpperCase(), res.roles[this.value.toUpperCase()]);
     };
 
-    document.getElementById('positions').value = res.roles[this.getPosition()] ? this.gameModeHandler.getPosition(this.getPosition()) : Object.keys(res.roles)[0];
+    document.getElementById('positions').value = res.roles[this.getPosition()] ? this.gameModeHandler.getPosition(this.getPosition()) : Object.keys(res.roles).filter(x => res.roles[x].perks.length > 0)[0];
     document.getElementById('positions').onchange();
     document.getElementById('positions').style.display = 'unset';
 
