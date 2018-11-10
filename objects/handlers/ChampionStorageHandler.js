@@ -35,7 +35,8 @@ class ChampionSelectHandler {
   }
 
   async clear() {
-    return await Promise.all(this._readdir(this.path).map(x => this._unlink(path.join(this.path, x))));
+    const dir = await this._readdir(this.path);
+    return await Promise.all(dir.map(x => this._unlink(path.join(this.path, x))));
   }
 
   _ensureDir(path) {
