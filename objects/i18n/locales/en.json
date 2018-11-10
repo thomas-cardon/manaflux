@@ -60,6 +60,7 @@
   "champion-select-pick-a-champion": "Pick a champion!",
   "champion-select-min-roles": "Min. roles to download",
   "champion-select-test-game": "Create a test game",
+  "champion-select-error-empty": "Internal error: the gathered data is empty. This is an error that shouldn't happen. Manaflux can't recover from it. You should restart the app.",
   "providers-skipped": "%s has been skipped because of missing function: #%s",
   "providers-order": "Providers order",
   "providers-error-item-sets-not-found": "Could not find Item Sets",
