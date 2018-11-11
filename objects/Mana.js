@@ -26,18 +26,7 @@ class Mana {
       ipcRenderer.send('restart');
     }
 
-    this.load().then(() => {
-      if (!this.getStore().get('league-client-path'))
-        require('../objects/Wizard')(this.devMode).on('closed', () => {
-          const path = ipcRenderer.sendSync('lcu-get-path');
-          console.log('[UI] Wizard has been closed');
-
-          ipcRenderer.send('lcu-connection', path);
-          $('#league-client-path').trigger('lcu:path', path);
-          this.getStore().set('league-client-path', path);
-        });
-      else ipcRenderer.send('lcu-connection', this.getStore().get('league-client-path'));
-    });
+    this.load();
 
     if (!this.getStore().has('riot-consent')) {
       dialog.showMessageBox({ title: i18n.__('common-info'), message: i18n.__('riot-consent') });
@@ -46,31 +35,40 @@ class Mana {
 
     ipcRenderer.on('lcu-connected', (event, d) => {
       this.updateAuthenticationTokens(d);
-      this.preload().then(() => ipcRenderer.send('lcu-logged-in'));
+      this.onLeagueStart().then(() => ipcRenderer.send('lcu-logged-in'));
     });
 
-    ipcRenderer.on('lcu-disconnected', () => this.disconnect());
+    ipcRenderer.on('lcu-disconnected', () => this.onLeagueDisconnect());
     ipcRenderer.on('lcu-logged-in', (event, d) => {
-      if (d) this.load(d);
+      if (d) this.onLeagueUserConnected(d);
     });
 
     setTimeout(() => Sounds.play('loaded'), 800);
   }
 
   async load() {
-
-  }
-
-  async preload() {
-    UI.status('status-please-login');
-    document.getElementById('connection').style.display = 'none';
-
     this.gameClient = new (require('./riot/leagueoflegends/GameClient'))();
     this.assetsProxy = new (require('./riot/leagueoflegends/GameAssetsProxy'))();
 
     this.championStorageHandler = new (require('./handlers/ChampionStorageHandler'))();
     this.championSelectHandler = new (require('./handlers/ChampionSelectHandler'))();
-    this.providerHandler = new (require('./handlers/ProviderHandler'))();
+    this.providerHandler = new (require('./handlers/ProviderHandler'))(this.devMode);
+
+    if (!this.getStore().get('league-client-path'))
+      require('../objects/Wizard')(this.devMode).on('closed', () => {
+        const path = ipcRenderer.sendSync('lcu-get-path');
+        console.log('[UI] Wizard has been closed');
+
+        ipcRenderer.send('lcu-connection', path);
+        $('#league-client-path').trigger('lcu:path', path);
+        this.getStore().set('league-client-path', path);
+      });
+    else ipcRenderer.send('lcu-connection', this.getStore().get('league-client-path'));
+}
+
+  async onLeagueStart() {
+    document.getElementById('connection').style.display = 'none';
+    UI.status('status-please-login');
 
     this.assetsProxy.load();
 
@@ -95,7 +93,7 @@ class Mana {
     ipcRenderer.send('lcu-preload-done');
   }
 
-  async load(data) {
+  async onLeagueUserConnected(data) {
     UI.status('league-client-connection');
 
     this.user = new (require('./User'))(data);
@@ -106,10 +104,11 @@ class Mana {
     setTimeout(() => {
       this.championSelectHandler.loop();
       UI.status('champion-select-waiting');
-    }, 2000);
+    }, 0);
   }
 
-  disconnect() {
+  onLeagueDisconnect() {
+    this.user.connected = false;
     this.assetsProxy.stop();
 
     global._devChampionSelect = () => console.log(`[${i18n.__('error')}] ${i18n.__('developer-game-start-error')}\n${i18n.__('league-client-disconnected')}`);
