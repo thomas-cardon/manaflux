@@ -40,7 +40,8 @@ document.addEventListener("DOMContentLoaded", function() {
 				Dots.onClickEvent(dots.firstChild, event.target.getAttribute('data-tabid'), 0);
 			}
 
-			document.getElementById('selected').style.marginLeft = ($(event.target).offset().left + ($(event.target).width() / 2)) + 'px';
+			document.getElementById('selected').style.left = event.target.offsetLeft + (event.target.offsetWidth / 2) - (document.getElementById('selected').offsetWidth / 2);
+			document.getElementById('dots').style.left = event.target.offsetLeft + (event.target.offsetWidth / 2) - (document.getElementById('dots').offsetWidth / 2);
 		});
 	});
 });
