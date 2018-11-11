@@ -1,12 +1,12 @@
 #qrcode {
   z-index: 1;
   position: absolute;
-  left: 59px;
+  left: 172px;
 }
 
 #qrcode-frame {
-  width: 132px;
+  width: 256px;
   z-index: 2;
   position: absolute;
-  left: 59px;
+  left: 172px;
 }
