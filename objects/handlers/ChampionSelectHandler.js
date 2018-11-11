@@ -76,7 +76,7 @@ class ChampionSelectHandler {
     console.log(`[ChampionSelectHandler] Champion changed to: ${champion.name}`);
 
     this.onDisplayUpdatePreDownload(champion);
-    if (Mana.getStore().get('champion-select-lock')) return UI.status('champion-select-lock');
+    if (Mana.getStore().get('champion-select-lock') && this.gameModeHandler.getGameMode() !== 'ARAM') return UI.status('champion-select-lock');
 
     const res = await UI.indicator(Mana.providerHandler.getChampionData(champion, this.getPosition(), this.gameModeHandler, true), 'champion-select-downloading-data', champion.name);
     this.onDisplayUpdate(champion, res);
@@ -88,7 +88,6 @@ class ChampionSelectHandler {
 
   async onChampionLocked(champion) {
     console.log(`[ChampionSelectHandler] Champion locked: ${champion.name}`);
-    if (!Mana.getStore().get('champion-select-lock')) return;
 
     const res = await UI.indicator(Mana.providerHandler.getChampionData(champion, this.getPosition(), this.gameModeHandler, true), 'champion-select-downloading-data', champion.name);
 
@@ -111,7 +110,7 @@ class ChampionSelectHandler {
       this._lastChampionPicked = this.getPlayer().championId;
       await this.onChampionChange(Mana.champions[this.getPlayer().championId]);
     }
-    else if (!this._locked) {
+    else if (!this._locked && Mana.getStore().get('champion-select-lock') && this.gameModeHandler.getGameMode() !== 'ARAM') {
       if (this._locked = await this.isChampionLocked())
         await this.onChampionLocked(Mana.champions[this.getPlayer().championId]);
     }
@@ -216,7 +215,7 @@ class ChampionSelectHandler {
     }
 
     document.getElementById('positions').onchange();
-    
+
     document.getElementById('positions').style.display = 'unset';
     document.getElementById('buttons').style.display = 'block';
 
