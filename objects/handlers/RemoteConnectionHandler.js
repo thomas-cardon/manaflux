@@ -35,6 +35,8 @@ class RemoteConnectionHandler {
     const interfaces = os.networkInterfaces();
 
     var all = Object.keys(interfaces).map(function (nic) {
+      if (nic.includes('VirtualBox')) return undefined;
+
       var addresses = interfaces[nic].filter(function (details) {
         details.family = details.family.toLowerCase();
         if (details.family !== 'ipv4' && details.internal === false) return false;
