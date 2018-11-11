@@ -51,7 +51,8 @@ class GameClient {
     perksData.forEach(x => perks[x.id] = x);
 
     this.perks = perks;
-    this.styles = stylesData.styles;
+
+    this.styles = Mana.preseason ? stylesData.styles : stylesData;
   }
 
   findPerkByImage(img) {

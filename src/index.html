@@ -3,6 +3,7 @@
   <title>Manaflux</title>
   <meta charset="utf-8">
   <meta name="author" content="Ryzzzen">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' file:; script-src 'self' 'unsafe-inline' file: https://manaflux-server.herokuapp.com; style-src 'self' 'unsafe-inline' file: https://fonts.googleapis.com/; img-src *; media-src 'self' file:; font-src *; worker-src * blob: file:; connect-src wss:">
   <link rel="stylesheet" href="assets/css/manaflux.css">
   <link rel="stylesheet" href="assets/css/components/button.css">
   <link rel="stylesheet" href="assets/css/components/input.css">
@@ -23,7 +24,7 @@
   <link rel="stylesheet" href="vendor/alertify.rtl.min.css"/>
   <link rel="stylesheet" href="vendor/animate.css">
   <link rel="stylesheet" href="vendor/jquery-ui.min.css">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link crossorigin href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
   <video id="smokeAnimation" style="z-index: -30; position: absolute; display: none;" loop><source src="assets/video/smoke.webm" type="video/webm">
@@ -46,7 +47,7 @@
   </div>
   <div class="content">
     <p class="status" data-i18n="status-loading"></p>
-    <p class="version"></p>
+    <p class="version" id="version"></p>
     <div id="dots"></div>
     <!-- BEGIN SECTIONS -->
     <div id="home" data-tabid="home" data-tabn=0 class="tabcontent center" style="display: block;">
@@ -209,6 +210,7 @@
       <div class="option">
         <p class="suboption-name" data-i18n="providers-order"></p>
         <ul id="providersOrder" class="sortable" data-custom-component="providers-order">
+          <p style="color: rgba(230, 33, 66, 0.7);margin: 0 2px;">Loading</p>
         </ul>
       </div>
       <div class="option">
@@ -284,7 +286,7 @@
     <div data-tabid="update" data-tabn=0 class="tabcontent" style="display: none; margin-left: 9%;">
       <p data-i18n="update-available" id="updateAvailableText"></p>
       <div id="updateStatus">
-        <p id="version">VX.X.X</p>
+        <p id="updateVersion">VX.X.X</p>
         <span id="updateRollout">You're part of the 100% of users who received the update</span>
       </div>
       <div class="textcontainer" id="release-notes">
@@ -312,6 +314,8 @@
   </script>
   <script src="assets/js/ui.js"></script>
   <script src="assets/js/ui/sounds.js"></script>
+  <script src="assets/js/ui/settings.js"></script>
+  <script src="assets/js/ui/custom-components.js"></script>
   <script>
   window.eval = global.eval = () => console.warn(i18n.__('security-eval'));
   require('../crash-reporting.js');
@@ -326,8 +330,6 @@
   global.Mana = new (require('../objects/Mana'))(ipcRenderer);
   </script>
   <script src="assets/js/ui/i18n.js"></script>
-  <script src="assets/js/ui/settings.js"></script>
-  <script src="assets/js/ui/custom-components.js"></script>
   <script src="assets/js/ui/update.js"></script>
   <script src="assets/js/ui/tab-handler.js"></script>
 </body>

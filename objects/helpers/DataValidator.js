@@ -56,7 +56,7 @@ class DataValidator {
   onPerkPagesCheck(array, champion, role, preseason) {
     array = array.filter(x => x.selectedPerkIds && x.selectedPerkIds.length >= 6 && !this._hasDuplicates(x.selectedPerkIds));
 
-    if (preseason = parseFloat(Mana.gameClient.fullVersion.slice(0, 4)) >= 8.23)
+    if (Mana.preseason)
       UI.success(i18n.__('preseason-perks'));
 
     array.forEach((page, index) => { /* Recreates primaryStyleId or subStyleId based on perks if it's missing */
@@ -65,7 +65,7 @@ class DataValidator {
       page.primaryStyleId = page.primaryStyleId || Mana.gameClient.findPerkStyleByPerkId(page.selectedPerkIds[0]).id;
       page.subStyleId = page.subStyleId || Mana.gameClient.findPerkStyleByPerkId(page.selectedPerkIds[4]).id;
 
-      if (page.selectedPerkIds.length <= 9 && preseason)
+      if (page.selectedPerkIds.length <= 9 && Mana.preseason)
         page.selectedPerkIds = page.selectedPerkIds.concat([5008, 5002, 5001]);
     });
 
