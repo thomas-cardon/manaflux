@@ -91,7 +91,9 @@ class ChampionSelectHandler {
     if (!Mana.getStore().get('champion-select-lock')) return;
 
     const res = await UI.indicator(Mana.providerHandler.getChampionData(champion, this.getPosition(), this.gameModeHandler, true), 'champion-select-downloading-data', champion.name);
-    this.onDisplayUpdate(champion, res);
+
+    if (res.championId !== champion.id) UI.status('champion-select-error-invalid-data-status');
+    else await this.onDisplayUpdate(champion, res);
   }
 
   async _handleTick(session) {
@@ -100,8 +102,8 @@ class ChampionSelectHandler {
     this._theirTeam = session.theirTeam;
 
     if (!this._inChampionSelect) {
-      await this.onChampionSelectStart();
       this._inChampionSelect = true;
+      await this.onChampionSelectStart();
     }
 
     if (this.getPlayer().championId === 0) await this.onChampionNotPicked();
@@ -110,9 +112,8 @@ class ChampionSelectHandler {
       await this.onChampionChange(Mana.champions[this.getPlayer().championId]);
     }
     else if (!this._locked) {
-      if (this._locked = await this.isChampionLocked()) {
+      if (this._locked = await this.isChampionLocked())
         await this.onChampionLocked(Mana.champions[this.getPlayer().championId]);
-      }
     }
   }
 
