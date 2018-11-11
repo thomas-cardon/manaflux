@@ -161,7 +161,8 @@ class ChampionSelectHandler {
     }
     catch(err) {
       if (err.statusCode === 404 && this._inChampionSelect) await this.onChampionSelectEnd();
-      else if (err.statusCode !== 404 && err.code !== 'ECONNREFUSED' && err.code !== 'ECONNRESET') UI.error(err);
+      else if (err.statusCode !== 404 && err.error.code !== 'ECONNREFUSED' && err.error.code !== 'ECONNRESET') return this._onCrash(UI.error(err));
+      else this.loop();
     }
 
     this.loop();
