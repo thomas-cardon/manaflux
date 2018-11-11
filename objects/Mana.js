@@ -10,7 +10,7 @@ class Mana {
     UI.loading(true);
 
     this.devMode = ipcRenderer.sendSync('is-dev');
-    $('.version').text(`V${this.version = app.getVersion() + (!require('electron').remote.app.isPackaged ? '-BUILD' : '')}`);
+    document.getElementById('version').innerhTML = `V${this.version = app.getVersion() + (!require('electron').remote.app.isPackaged ? '-BUILD' : '')}`;
 
     this._store = new Store();
 
@@ -26,12 +26,12 @@ class Mana {
       ipcRenderer.send('restart');
     }
 
-    this.load();
-
     if (!this.getStore().has('riot-consent')) {
       dialog.showMessageBox({ title: i18n.__('common-info'), message: i18n.__('riot-consent') });
       this.getStore().set('riot-consent', true);
     }
+
+    this.load();
 
     ipcRenderer.on('lcu-connected', (event, d) => {
       this.updateAuthenticationTokens(d);
@@ -53,6 +53,9 @@ class Mana {
     this.championStorageHandler = new (require('./handlers/ChampionStorageHandler'))();
     this.championSelectHandler = new (require('./handlers/ChampionSelectHandler'))();
     this.providerHandler = new (require('./handlers/ProviderHandler'))(this.devMode);
+
+    UI.loadSettings(this);
+    UI.loadCustomComponents(this);
 
     if (!this.getStore().get('league-client-path'))
       require('../objects/Wizard')(this.devMode).on('closed', () => {
