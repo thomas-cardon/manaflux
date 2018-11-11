@@ -76,7 +76,7 @@ class Mana {
 
     const data = await UI.indicator(Promise.all([this.gameClient.load(), this.gameClient.getChampionSummary(), this.gameClient.getSummonerSpells()]), 'status-loading-resources');
 
-    this.preseason = parseFloat(Mana.gameClient.fullVersion.slice(0, 4)) >= 8.23;
+    this.preseason = parseFloat(this.gameClient.fullVersion.slice(0, 4)) >= 8.23;
     this.champions = data[1];
     this.summonerspells = data[2];
 
@@ -110,6 +110,8 @@ class Mana {
   }
 
   disconnect() {
+    this.assetsProxy.stop();
+
     global._devChampionSelect = () => console.log(`[${i18n.__('error')}] ${i18n.__('developer-game-start-error')}\n${i18n.__('league-client-disconnected')}`);
     document.getElementById('connection').style.display = 'block';
 
