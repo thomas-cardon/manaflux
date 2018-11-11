@@ -104,10 +104,8 @@ class Mana {
     global._devChampionSelect = () => new (require('../CustomGame'))().create().then(game => game.start());
     document.querySelectorAll('[data-custom-component]').forEach(x => x.dispatchEvent(new Event('userConnected')));
 
-    setTimeout(() => {
-      this.championSelectHandler.loop();
-      UI.status('champion-select-waiting');
-    }, 0);
+    this.championSelectHandler.loop();
+    UI.status('champion-select-waiting');
   }
 
   onLeagueDisconnect() {
