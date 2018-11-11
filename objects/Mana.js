@@ -26,16 +26,18 @@ class Mana {
       ipcRenderer.send('restart');
     }
 
-    if (!this.getStore().get('league-client-path'))
-      require('../objects/Wizard')(this.devMode).on('closed', () => {
-        const path = ipcRenderer.sendSync('lcu-get-path');
-        console.log('[UI] Wizard has been closed');
+    this.load().then(() => {
+      if (!this.getStore().get('league-client-path'))
+        require('../objects/Wizard')(this.devMode).on('closed', () => {
+          const path = ipcRenderer.sendSync('lcu-get-path');
+          console.log('[UI] Wizard has been closed');
 
-        ipcRenderer.send('lcu-connection', path);
-        $('#league-client-path').trigger('lcu:path', path);
-        this.getStore().set('league-client-path', path);
-      });
-    else ipcRenderer.send('lcu-connection', this.getStore().get('league-client-path'));
+          ipcRenderer.send('lcu-connection', path);
+          $('#league-client-path').trigger('lcu:path', path);
+          this.getStore().set('league-client-path', path);
+        });
+      else ipcRenderer.send('lcu-connection', this.getStore().get('league-client-path'));
+    });
 
     if (!this.getStore().has('riot-consent')) {
       dialog.showMessageBox({ title: i18n.__('common-info'), message: i18n.__('riot-consent') });
@@ -55,6 +57,10 @@ class Mana {
     setTimeout(() => Sounds.play('loaded'), 800);
   }
 
+  async load() {
+
+  }
+
   async preload() {
     UI.status('status-please-login');
     document.getElementById('connection').style.display = 'none';
@@ -70,6 +76,7 @@ class Mana {
 
     const data = await UI.indicator(Promise.all([this.gameClient.load(), this.gameClient.getChampionSummary(), this.gameClient.getSummonerSpells()]), 'status-loading-resources');
 
+    this.preseason = parseFloat(Mana.gameClient.fullVersion.slice(0, 4)) >= 8.23;
     this.champions = data[1];
     this.summonerspells = data[2];
 
