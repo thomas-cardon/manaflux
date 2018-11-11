@@ -45,7 +45,4 @@ document.addEventListener("DOMContentLoaded", function() {
 	});
 });
 
-$(document).ready(function() {
-	$('.btn.tab').click(function() {
-	}).eq(0).click();
-});
+$(document).ready(() => $('.btn.tab').eq(0).click());
