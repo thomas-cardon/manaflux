@@ -45,7 +45,7 @@
   </div>
   <div class="content">
     <p class="status" data-i18n="status-loading"></p>
-    <p class="version"></p>
+    <p class="version" id="version"></p>
     <div id="dots"></div>
     <!-- BEGIN SECTIONS -->
     <div id="home" data-tabid="home" data-tabn=0 class="tabcontent center" style="display: block;">
@@ -208,6 +208,7 @@
       <div class="option">
         <p class="suboption-name" data-i18n="providers-order"></p>
         <ul id="providersOrder" class="sortable" data-custom-component="providers-order">
+          <p style="color: rgba(230, 33, 66, 0.7);margin: 0 2px;">Loading</p>
         </ul>
       </div>
       <div class="option">
@@ -275,7 +276,7 @@
     <div data-tabid="update" data-tabn=0 class="tabcontent" style="display: none; margin-left: 9%;">
       <p data-i18n="update-available" id="updateAvailableText"></p>
       <div id="updateStatus">
-        <p id="version">VX.X.X</p>
+        <p id="updateVersion">VX.X.X</p>
         <span id="updateRollout">You're part of the 100% of users who received the update</span>
       </div>
       <div class="textcontainer" id="release-notes">
