@@ -8,7 +8,7 @@ ipcRenderer.on('update-not-available', async (event, data) => {
 ipcRenderer.on('update-available', async (event, data) => {
 	console.log('[Update] Available! version: ' + data.version);
 
-	document.getElementById('version').innerHTML = `Version ${data.version}`;
+	document.getElementById('updateVersion').innerHTML = `Version ${data.version}`;
 	document.getElementById('updateRollout').innerHTML = i18n.__('update-staged-rollout', (data.stagingPercentage || 100) + '%');
 	document.getElementById('updateSize').innerHTML = getReadableFileSizeString(data.files[0].size);
 
