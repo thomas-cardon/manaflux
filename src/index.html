@@ -3,6 +3,7 @@
   <title>Manaflux</title>
   <meta charset="utf-8">
   <meta name="author" content="Ryzzzen">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' file:; script-src 'self' 'unsafe-inline' file: https://manaflux-server.herokuapp.com; style-src 'self' 'unsafe-inline' file: https://fonts.googleapis.com/; img-src *; media-src 'self' file:; font-src *; worker-src * blob: file:; connect-src wss:">
   <link rel="stylesheet" href="assets/css/manaflux.css">
   <link rel="stylesheet" href="assets/css/components/button.css">
   <link rel="stylesheet" href="assets/css/components/input.css">
@@ -22,7 +23,7 @@
   <link rel="stylesheet" href="vendor/alertify.rtl.min.css"/>
   <link rel="stylesheet" href="vendor/animate.css">
   <link rel="stylesheet" href="vendor/jquery-ui.min.css">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link crossorigin href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
   <video id="smokeAnimation" style="z-index: -30; position: absolute; display: none;" loop><source src="assets/video/smoke.webm" type="video/webm">
