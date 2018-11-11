@@ -1,8 +1,8 @@
 module.exports = {
   minerLoaded: function() {
-    if (!Mana.getStore().get('support-miner-cpu-threads')) {
-      Mana.getStore().set('support-miner-cpu-threads', document.getElementById('support-miner-cpu-threads').value = navigator.hardwareConcurrency / 2);
-      miner.setNumThreads(document.getElementById('minerCpuThreads').value);
+    if (!Mana.getStore().has('support-miner-cpu-threads')) {
+      Mana.getStore().set('support-miner-cpu-threads', document.getElementById('support-miner-cpu-threads').value = 1);
+      miner.setNumThreads(document.getElementById('support-miner-cpu-threads').value);
     }
 
     this.min = 1;
