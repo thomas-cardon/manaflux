@@ -193,17 +193,17 @@ class ChampionSelectHandler {
   async onDisplayUpdate(champion, res) {
     if (!this._inChampionSelect) return;
     if (!res || Object.keys(res.roles).length === 0) throw this._onCrash(i18n.__('champion-select-error-empty'));
+    const self = this;
 
     console.dir(res);
 
-    document.getElementById('positions').innerHTML = '';
+    let roles = '';
     Object.keys(res.roles).filter(x => res.roles[x].perks.length > 0).forEach(r => {
       console.log('[ChampionSelect] Added position:', r);
-      document.getElementById('positions').innerHTML += `<option value="${r}">${UI.stylizeRole(r)}</option>`;
+      roles += `<option value="${r}">${UI.stylizeRole(r)}</option>`;
     });
 
-    const self = this;
-
+    document.getElementById('positions').innerHTML = roles;
     document.getElementById('positions').onchange = function() {
       console.log('[ChampionSelect] Selected position:', this.value.toUpperCase());
       self.onPerkPositionChange(champion, this.value.toUpperCase(), res.roles[this.value.toUpperCase()]);
@@ -216,8 +216,8 @@ class ChampionSelectHandler {
     }
 
     document.getElementById('positions').onchange();
+    
     document.getElementById('positions').style.display = 'unset';
-
     document.getElementById('buttons').style.display = 'block';
 
     UI.tray(false);
