@@ -175,7 +175,7 @@ class ChampionSelectHandler {
   }
 
   onDisplayUpdatePreDownload(champion) {
-    if (!this._inChampionSelect) return;
+    if (!this._inChampionSelect || this._lastChampionPicked !== champion.id) return;
     UI.status('champion-select-updating-display', champion.name);
 
     document.getElementById('buttons').style.display = 'none';
@@ -237,6 +237,7 @@ class ChampionSelectHandler {
     }
 
     Sounds.play('dataLoaded');
+    this._lastChampionPicked = champion.id;
   }
 
   onPerkPositionChange(champion, position, data) {
