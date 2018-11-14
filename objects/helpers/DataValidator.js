@@ -73,7 +73,7 @@ class DataValidator {
     let indexes = {};
 
     return array.map((x, index) => {
-      if (!x._data) x = ItemSetHandler.parse(champion.key, x, x.provider);
+      x = ItemSetHandler.parse(champion.key, x, x.provider);
       indexes[x._data.provider || 'XXX'] = indexes[x._data.provider || 'XXX'] + 1 || 1;
 
       x._data.title = `${x._data.provider ? Mana.providerHandler.getProvider(x._data.provider).getCondensedName() : 'XXX'}${indexes[x._data.provider || 'XXX']} ${champion.name} > ${UI.stylizeRole(role)}`;
