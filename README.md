@@ -4,8 +4,6 @@ An assistant that can choose your runes, summoner spells, and item sets for Leag
 
 ![Manaflux Main Page](screenshots/1.png "Main page")
 
-> Support for Spanish has been added ! It's work-in-progress.
-
 ## Key Features
 - Automatic Runes, Item Sets, and Summoner Spells downloading
 - Ability to change positions (roles, e.g MIDDLE, TOP) using the User Interface or the shortcuts
@@ -13,6 +11,7 @@ An assistant that can choose your runes, summoner spells, and item sets for Leag
 - You can hide it automatically in taskbar when you're not in champion select
 - Instead of controlling your mouse to setup your runes, Manaflux injects them directly in the client, so you don't have to do anything but pick your champion.
 - Optimized network requests!
+- Control Manaflux from your phone ! (coming soon)
 
 ## Getting Started
 
@@ -32,7 +31,8 @@ An assistant that can choose your runes, summoner spells, and item sets for Leag
 - [NodeJS](https://nodejs.org)
 - Web Technologies: HTML5, CSS3 and JavaScript for rendering
 - [LeaguePlug](https://github.com/Ryzzzen/manaflux/tree/master/objects/leagueplug), Simplifies the connection to League of Legends client
-- [manaflux-server](https://github.com/Ryzzzen/manaflux-server), Speeds up the downloads between you and the providers
+- [flu.x](https://github.com/Ryzzzen/manaflux-server), Speeds up the downloads between you and the providers
+
 ## Credits
 Thanks to my friends who gave me the idea of making this software, without them this would've not existed!
 
