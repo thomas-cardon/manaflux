@@ -76,7 +76,7 @@ class ChampionSelectHandler {
     console.log(`[ChampionSelectHandler] Champion changed to: ${champion.name}`);
 
     this.onDisplayUpdatePreDownload(champion);
-    if (Mana.getStore().get('champion-select-lock')) return UI.status('champion-select-lock');
+    if (Mana.getStore().get('champion-select-lock') && this.gameModeHandler.getGameMode() !== 'ARAM') return UI.status('champion-select-lock');
 
     const res = await UI.indicator(Mana.providerHandler.getChampionData(champion, this.getPosition(), this.gameModeHandler, true), 'champion-select-downloading-data', champion.name);
     this.onDisplayUpdate(champion, res);
@@ -88,10 +88,11 @@ class ChampionSelectHandler {
 
   async onChampionLocked(champion) {
     console.log(`[ChampionSelectHandler] Champion locked: ${champion.name}`);
-    if (!Mana.getStore().get('champion-select-lock')) return;
 
     const res = await UI.indicator(Mana.providerHandler.getChampionData(champion, this.getPosition(), this.gameModeHandler, true), 'champion-select-downloading-data', champion.name);
-    this.onDisplayUpdate(champion, res);
+
+    if (res.championId !== champion.id) UI.status('champion-select-error-invalid-data-status');
+    else await this.onDisplayUpdate(champion, res);
   }
 
   async _handleTick(session) {
@@ -100,8 +101,8 @@ class ChampionSelectHandler {
     this._theirTeam = session.theirTeam;
 
     if (!this._inChampionSelect) {
-      await this.onChampionSelectStart();
       this._inChampionSelect = true;
+      await this.onChampionSelectStart();
     }
 
     if (this.getPlayer().championId === 0) await this.onChampionNotPicked();
@@ -109,10 +110,9 @@ class ChampionSelectHandler {
       this._lastChampionPicked = this.getPlayer().championId;
       await this.onChampionChange(Mana.champions[this.getPlayer().championId]);
     }
-    else if (!this._locked) {
-      if (this._locked = await this.isChampionLocked()) {
+    else if (!this._locked && Mana.getStore().get('champion-select-lock') && this.gameModeHandler.getGameMode() !== 'ARAM') {
+      if (this._locked = await this.isChampionLocked())
         await this.onChampionLocked(Mana.champions[this.getPlayer().championId]);
-      }
     }
   }
 
@@ -192,17 +192,17 @@ class ChampionSelectHandler {
   async onDisplayUpdate(champion, res) {
     if (!this._inChampionSelect) return;
     if (!res || Object.keys(res.roles).length === 0) throw this._onCrash(i18n.__('champion-select-error-empty'));
+    const self = this;
 
     console.dir(res);
 
-    document.getElementById('positions').innerHTML = '';
+    let roles = '';
     Object.keys(res.roles).filter(x => res.roles[x].perks.length > 0).forEach(r => {
       console.log('[ChampionSelect] Added position:', r);
-      document.getElementById('positions').innerHTML += `<option value="${r}">${UI.stylizeRole(r)}</option>`;
+      roles += `<option value="${r}">${UI.stylizeRole(r)}</option>`;
     });
 
-    const self = this;
-
+    document.getElementById('positions').innerHTML = roles;
     document.getElementById('positions').onchange = function() {
       console.log('[ChampionSelect] Selected position:', this.value.toUpperCase());
       self.onPerkPositionChange(champion, this.value.toUpperCase(), res.roles[this.value.toUpperCase()]);
@@ -215,8 +215,8 @@ class ChampionSelectHandler {
     }
 
     document.getElementById('positions').onchange();
-    document.getElementById('positions').style.display = 'unset';
 
+    document.getElementById('positions').style.display = 'unset';
     document.getElementById('buttons').style.display = 'block';
 
     UI.tray(false);

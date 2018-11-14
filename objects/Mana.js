@@ -63,8 +63,9 @@ class Mana {
         console.log('[UI] Wizard has been closed');
 
         ipcRenderer.send('lcu-connection', path);
-        $('#league-client-path').trigger('lcu:path', path);
         this.getStore().set('league-client-path', path);
+
+        document.getElementById('league-client-path').dispatchEvent(new Event('leaguePathChange'));
       });
     else ipcRenderer.send('lcu-connection', this.getStore().get('league-client-path'));
 }

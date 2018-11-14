@@ -48,9 +48,6 @@ class DataValidator {
 
     delete data.version;
     delete data.region;
-
-    for (const [roleName, role] of Object.entries(data.roles))
-      role.itemsets.forEach(x => x.blocks.forEach(y => y.items.forEach(z => delete z._id)));
   }
 
   onPerkPagesCheck(array, champion, role, preseason) {
