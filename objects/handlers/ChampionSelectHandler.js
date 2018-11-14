@@ -70,6 +70,8 @@ class ChampionSelectHandler {
     Mana.providerHandler.onChampionSelectEnd();
 
     if (this._minerThrottle) miner.setThrottle(this._minerThrottle);
+
+    this.loop();
   }
 
   async onChampionChange(champion) {
@@ -158,14 +160,14 @@ class ChampionSelectHandler {
     try {
       const session = await this.getSession();
       await this._handleTick(session.body);
+
+      this.loop();
     }
     catch(err) {
       if (err.statusCode === 404 && this._inChampionSelect) await this.onChampionSelectEnd();
-      else if (err.statusCode !== 404 && err.error.code !== 'ECONNREFUSED' && err.error.code !== 'ECONNRESET' && err.error.code !== 'EPROTO') return this._onCrash(err);
-      else this.loop();
+      else if (err.statusCode === 404 && !this._inChampionSelect) this.loop();
+      else if (err.code !== 'ECONNREFUSED' && err.code !== 'ECONNRESET' && err.code !== 'EPROTO') return this._onCrash(err);
     }
-
-    this.loop();
   }
 
   async timeout(ms) {
