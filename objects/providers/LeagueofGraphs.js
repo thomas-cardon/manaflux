@@ -47,7 +47,7 @@ class LeagueofGraphsProvider extends Provider {
       rp({ uri: `${this.base}/skills-orders/${champion.key}${position ? '/' + position : ''}`.toLowerCase(), transform: body => cheerio.load(body) })
     ]);
 
-    const perks = this.scrapePerks(perks, champion, position);
+    const perks = this.scrapePerks(data[0], champion, position);
 
     const itemsets = Mana.getStore().get('item-sets-enable') ? this.scrapeItemSets(data[1], champion, position, this.scrapeSkillOrder(data[data.length - 1])) : [];
     const summonerspells = Mana.getStore().get('summoner-spells') ? this.scrapeSummonerSpells(data[2], champion) : [];
