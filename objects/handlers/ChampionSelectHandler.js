@@ -37,21 +37,20 @@ class ChampionSelectHandler {
   }
 
   async onChampionSelectStart() {
-    ipcRenderer.send('champion-select-in');
+    console.log(`[ChampionSelectHandler] Entering`);
     document.getElementById('developerGame').disabled = true;
 
-    await Mana.user.queryChatDetails();
-
-    console.log(`[ChampionSelectHandler] Entering into ${Mana.user.getGameMode()}`);
-    Mana.user.getPerksInventory().getCount();
-
-    /* Fallback to classic mode when not available */
-    this.gameModeHandler = this.gameModeHandlers[Mana.user.getGameMode()] ? this.gameModeHandlers[Mana.user.getGameMode()] : this.gameModeHandlers[Mana.user.getMapId()] ? this.gameModeHandlers[Mana.user.getMapId()] : this.gameModeHandlers.CLASSIC;
-
-    if (!Mana.getStore().get('support-miner-disable', true) && Mana.getStore().get('support-miner-limit-in-game')) {
+    if (!Mana.getStore().get('support-miner-disable', false) && Mana.getStore().get('support-miner-limit-in-game')) {
       this._minerThrottle = miner.getThrottle();
       miner.setThrottle(0.9);
     }
+
+    await Mana.gameflow.update();
+    console.log(`[ChampionSelectHandler] Entering into ${Mana.gameflow.getGameMode()}`);
+    this.gameModeHandler = this.gameModeHandlers[Mana.gameflow.getGameMode()] || this.gameModeHandlers[Mana.gameflow.getMap().id] || this.gameModeHandlers.CLASSIC;
+
+    await Mana.user.getPerksInventory().queryCount();
+    ipcRenderer.send('champion-select-in');
   }
 
   async onChampionSelectEnd() {
@@ -106,8 +105,7 @@ class ChampionSelectHandler {
       this._inChampionSelect = true;
       await this.onChampionSelectStart();
     }
-
-    if (this.getPlayer().championId === 0) await this.onChampionNotPicked();
+    else if (this.getPlayer().championId === 0) await this.onChampionNotPicked();
     else if (this._lastChampionPicked !== this.getPlayer().championId) {
       this._lastChampionPicked = this.getPlayer().championId;
       await this.onChampionChange(Mana.champions[this.getPlayer().championId]);
@@ -287,7 +285,7 @@ class ChampionSelectHandler {
     return Error(error);
   }
 
-  _cancelCrash() {
+  _recoverCrash() {
     document.getElementById('crash').remove();
   }
 

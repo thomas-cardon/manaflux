@@ -24,13 +24,13 @@ class ProviderHandler {
   }
 
   async getChampionData(champion, preferredPosition, gameModeHandler, cache, providerList, bulkDownloadMode) {
-    const gameMode = gameModeHandler.getGameMode() || 'CLASSIC';
+    console.log(2, '[ProviderHandler] Downloading data for', champion.name);
+    console.dir(gameModeHandler);
 
     /* 1/5 - Storage Checking */
-
     let data = await Mana.championStorageHandler.get(champion.id);
     if (data && cache) {
-      if (!bulkDownloadMode && (data.roles[preferredPosition] || Object.values(data.roles)[0].gameMode === gameMode)) {
+      if (!bulkDownloadMode && (data.roles[preferredPosition] || Object.values(data.roles)[0].gameMode === Mana.gameflow.getGameMode())) {
         console.log(2, `[ProviderHandler] Using local storage`);
 
         DataValidator.onDataDownloaded(data, champion);
@@ -46,10 +46,10 @@ class ProviderHandler {
       console.log(2, `[ProviderHandler] Using ${provider.name}`);
 
       try {
-        if (data) this._merge(data, await provider.getData(champion, preferredPosition, gameMode));
-        else data = await provider.getData(champion, preferredPosition, gameMode);
+        if (data) this._merge(data, await provider.getData(champion, preferredPosition, Mana.gameflow.getGameMode()));
+        else data = await provider.getData(champion, preferredPosition, Mana.gameflow.getGameMode());
 
-        DataValidator.onDataChange(data, provider.id, gameMode);
+        DataValidator.onDataChange(data, provider.id, Mana.gameflow.getGameMode());
       }
       catch(err) {
         console.log('[ProviderHandler] Couldn\'t aggregate data.');
@@ -63,11 +63,11 @@ class ProviderHandler {
 
       /* Else we need to check the provider provided the required data */
       if (data.roles[preferredPosition].perks.length === 0)
-          data.roles[preferredPosition] = { ...data.roles[preferredPosition], ...await provider.getPerks(champion, preferredPosition, gameMode) || {} };
+          data.roles[preferredPosition] = { ...data.roles[preferredPosition], ...await provider.getPerks(champion, preferredPosition, Mana.gameflow.getGameMode()) || {} };
       else if (data.roles[preferredPosition].itemsets.length === 0 && Mana.getStore().get('item-sets-enable'))
-          data.roles[preferredPosition] = { ...data.roles[preferredPosition], ...await provider.getItemSets(champion, preferredPosition, gameMode) || {} };
+          data.roles[preferredPosition] = { ...data.roles[preferredPosition], ...await provider.getItemSets(champion, preferredPosition, Mana.gameflow.getGameMode()) || {} };
       else if (data.roles[preferredPosition].summonerspells.length === 0 && Mana.getStore().get('summoner-spells'))
-          data.roles[preferredPosition] = { ...data.roles[preferredPosition], ...await provider.getSummonerSpells(champion, preferredPosition, gameMode) || {} };
+          data.roles[preferredPosition] = { ...data.roles[preferredPosition], ...await provider.getSummonerSpells(champion, preferredPosition, Mana.gameflow.getGameMode()) || {} };
 
       break;
     }
