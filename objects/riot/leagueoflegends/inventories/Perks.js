@@ -1,7 +1,11 @@
 const rp = require('request-promise-native');
 class PerksInventory {
-  async getCount() {
-    if (!this._pageCount) this._pageCount = JSON.parse(await rp(Mana.base + 'lol-perks/v1/inventory')).ownedPageCount;
+
+  async queryCount() {
+    return this._pageCount = JSON.parse(await rp(Mana.base + 'lol-perks/v1/inventory')).ownedPageCount;
+  }
+
+  getCount() {
     return this._pageCount;
   }
 
@@ -18,7 +22,7 @@ class PerksInventory {
     if (Mana.user.getSummonerLevel() < 8) throw UI.error('perks-error-safeguard-level');
     console.log(2, `[Perks] Loading`);
 
-    let perks = await Mana.user.getPerksInventory().queryPerks() || this.getPerks(), count = await this.getCount();
+    let perks = await Mana.user.getPerksInventory().queryPerks() || this.getPerks(), count = this.getCount();
 
     if (!pages || pages.length === 0 || pages.find(x => x.selectedPerkIds.length === 0) !== undefined) throw Error('Runes are empty');
 
