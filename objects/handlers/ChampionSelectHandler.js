@@ -70,6 +70,9 @@ class ChampionSelectHandler {
 
     if (this._minerThrottle) miner.setThrottle(this._minerThrottle);
 
+    Mana.gameflow.destroy();
+    try { this._recoverCrash(); } catch(err) {}
+
     this.loop();
   }
 
@@ -77,13 +80,13 @@ class ChampionSelectHandler {
     console.log(`[ChampionSelectHandler] Champion changed to: ${champion.name}`);
 
     this.onDisplayUpdatePreDownload(champion);
-    if (Mana.getStore().get('champion-select-lock') && this.gameModeHandler.getGameMode() !== 'ARAM') return UI.status('champion-select-lock');
+    if (Mana.getStore().get('champion-select-lock') && Gameflow.shouldEnableLockFeature()) return UI.status('champion-select-lock');
 
     const res = await UI.indicator(Mana.providerHandler.getChampionData(champion, this.getPosition(), this.gameModeHandler, true), 'champion-select-downloading-data', champion.name);
     this.onDisplayUpdate(champion, res);
   }
 
-  async onChampionNotPicked() {
+  onChampionNotPicked() {
     return UI.status('champion-select-pick-a-champion');
   }
 
@@ -97,6 +100,8 @@ class ChampionSelectHandler {
   }
 
   async _handleTick(session) {
+    console.log('tick');
+
     this._timer = session.timer;
     this._myTeam = session.myTeam;
     this._theirTeam = session.theirTeam;
@@ -105,14 +110,14 @@ class ChampionSelectHandler {
       this._inChampionSelect = true;
       await this.onChampionSelectStart();
     }
-    else if (this.getPlayer().championId === 0) await this.onChampionNotPicked();
+    else if (this.getPlayer().championId === 0) return this.onChampionNotPicked();
     else if (this._lastChampionPicked !== this.getPlayer().championId) {
       this._lastChampionPicked = this.getPlayer().championId;
-      await this.onChampionChange(Mana.champions[this.getPlayer().championId]);
+      return await this.onChampionChange(Mana.champions[this.getPlayer().championId]);
     }
-    else if (!this._locked && Mana.getStore().get('champion-select-lock') && this.gameModeHandler.getGameMode() !== 'ARAM') {
+    else if (!this._locked && Mana.getStore().get('champion-select-lock') && Gameflow.shouldEnableLockFeature()) {
       if (this._locked = await this.isChampionLocked())
-        await this.onChampionLocked(Mana.champions[this.getPlayer().championId]);
+        return await this.onChampionLocked(Mana.champions[this.getPlayer().championId]);
     }
   }
 
