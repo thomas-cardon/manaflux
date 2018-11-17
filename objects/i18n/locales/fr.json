@@ -130,7 +130,7 @@
     "support-miner-cpu-threads": "Nombre de processus max.",
     "support-miner-cpu-usage": "Utilisation du processeur",
     "support-miner-disable": "Désactiver le mineur",
-    "support-miner-limit-in-game": "Limiter le mineur à %s en jeu.",
+    "support-miner-limit-in-game": "Limiter à %s en jeu",
     "support-miner-speed": "Vitesse du mineur",
     "support-paypal-button": "Faire un don",
     "support-paypal-cancelled": "La fenêtre à été fermée à votre demande.",
