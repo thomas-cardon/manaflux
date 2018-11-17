@@ -100,8 +100,6 @@ class ChampionSelectHandler {
   }
 
   async _handleTick(session) {
-    console.log('tick');
-
     this._timer = session.timer;
     this._myTeam = session.myTeam;
     this._theirTeam = session.theirTeam;
