@@ -8,7 +8,15 @@ Gameflow.update = async function() {
     uri: Mana.base + 'lol-gameflow/v1/session',
     json: true
   });
-};
+}
+
+Gameflow.destroy = function() {
+  this._data = null;
+}
+
+Gameflow.isUpdated = function() {
+  return typeof this._data !== null;
+}
 
 Gameflow.getPhase = function() {
   return this._data.phase;
