@@ -54,6 +54,8 @@ class Mana {
     this.championSelectHandler = new (require('./handlers/ChampionSelectHandler'))();
     this.providerHandler = new (require('./handlers/ProviderHandler'))(this.devMode);
 
+    this.gameflow = require('./riot/leagueoflegends/Gameflow');
+
     UI.loadSettings(this);
     UI.loadCustomComponents(this);
 
