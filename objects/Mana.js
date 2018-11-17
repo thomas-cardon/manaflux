@@ -99,7 +99,9 @@ class Mana {
     ipcRenderer.send('lcu-preload-done');
   }
 
-  async onLeagueUserConnected(data) {
+  onLeagueUserConnected(data) {
+    if (this.user && this.user.getSummonerId() === data.summonerId) return;
+
     UI.status('league-client-connection');
 
     this.user = new (require('./User'))(data);
