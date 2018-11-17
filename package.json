@@ -22,17 +22,17 @@
   },
   "license": "CC0-1.0",
   "devDependencies": {
-    "electron": "^3.0.5",
-    "electron-builder": "^20.17.1"
+    "electron": "^3.0.9",
+    "electron-builder": "^20.36.2"
   },
   "dependencies": {
     "cheerio": "^1.0.0-rc.2",
     "chokidar": "^2.0.4",
     "electron-store": "^2.0.0",
     "electron-sudo": "^4.0.12",
-    "electron-updater": "^2.22.1",
+    "electron-updater": "^2.23.3",
     "node-machine-id": "^1.1.10",
-    "request": "^2.87.0",
+    "request": "^2.88.0",
     "request-promise-native": "^1.0.5"
   },
   "repository": "https://github.com/Ryzzzen/manaflux",
