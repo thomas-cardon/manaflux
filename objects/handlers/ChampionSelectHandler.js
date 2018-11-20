@@ -71,8 +71,8 @@ class ChampionSelectHandler {
     if (this._minerThrottle) miner.setThrottle(this._minerThrottle);
 
     Mana.gameflow.destroy();
-    try { this._recoverCrash(); } catch(err) {}
 
+    if (this._hasCrashed) this._recoverCrash();
     this.loop();
   }
 
@@ -284,7 +284,10 @@ class ChampionSelectHandler {
   }
 
   _onCrash(error) {
+    this._hasCrashed = true;
+    
     document.getElementById('home').innerHTML += `<div id="crash"><center><p style="margin-top: 18%;width:95%;color: #c0392b;"><span style="color: #b88d35;">${i18n.__('champion-select-internal-error')}</span><br><br>${error}</p><p class="suboption-name">${i18n.__('settings-restart-app')}</p><button class="btn normal" onclick="ipcRenderer.send('restart')">${i18n.__('settings-restart-app-button')}</button></center></div>`;
+    console.error(err);
     return Error(error);
   }
 
