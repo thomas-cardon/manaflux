@@ -80,7 +80,7 @@ class Mana {
 
     const data = await UI.indicator(Promise.all([this.gameClient.load(), this.gameClient.getChampionSummary(), this.gameClient.getSummonerSpells()]), 'status-loading-resources');
 
-    this.preseason = parseFloat(this.gameClient.fullVersion.slice(0, 4)) >= 8.23;
+    this.preseason = data[0];
     this.champions = data[1];
     this.summonerspells = data[2];
 
