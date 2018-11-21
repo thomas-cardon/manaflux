@@ -62,8 +62,10 @@ class DataValidator {
       page.primaryStyleId = page.primaryStyleId || Mana.gameClient.findPerkStyleByPerkId(page.selectedPerkIds[0]).id;
       page.subStyleId = page.subStyleId || Mana.gameClient.findPerkStyleByPerkId(page.selectedPerkIds[4]).id;
 
-      if (page.selectedPerkIds.length <= 9 && Mana.preseason)
+      if (page.selectedPerkIds.length <= 9 && page.selectedPerkIds === 6 && Mana.preseason) {
+        console.log('[DataValidator] Looks like it\'s preseason and it\'s time to fix missing things...');
         page.selectedPerkIds = page.selectedPerkIds.concat([5008, 5002, 5001]);
+      }
     });
 
     return array;
