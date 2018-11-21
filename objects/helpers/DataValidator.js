@@ -62,10 +62,23 @@ class DataValidator {
       page.primaryStyleId = page.primaryStyleId || Mana.gameClient.findPerkStyleByPerkId(page.selectedPerkIds[0]).id;
       page.subStyleId = page.subStyleId || Mana.gameClient.findPerkStyleByPerkId(page.selectedPerkIds[4]).id;
 
-      if (page.selectedPerkIds.length <= 9 && page.selectedPerkIds === 6 && Mana.preseason) {
+      const primaryStyle = Mana.gameClient.styles.find(x => x.id === page.primaryStyleId);
+      if (page.selectedPerkIds.length === 6 && Mana.preseason) {
         console.log('[DataValidator] Looks like it\'s preseason and it\'s time to fix missing things...');
-        page.selectedPerkIds = page.selectedPerkIds.concat([5008, 5002, 5001]);
+        page.selectedPerkIds = page.selectedPerkIds.concat(primaryStyle.defaultPerks.slice(-3));
       }
+
+      page.selectedPerkIds.forEach((id, index) => {
+        console.log(index);
+        if (index > 3 && !primaryStyle.defaultStatModsPerSubStyle.find(x => x.id == page.subStyleId).perks.includes(id)) {
+          console.log('[DataValidator] Perk mod isn\'t supposed to be at this slot. Using a generic one.');
+          id = primaryStyle.defaultStatModsPerSubStyle.find(x => x.id == page.subStyleId).perks[0];
+        }
+        else if (index <= 6 && !primaryStyle.slots[index].perks.includes(id)) {
+          console.log('[DataValidator] Perk ID isn\'t supposed to be at this slot. Using a generic one.');
+          id = primaryStyle.slots[index].perks[0];
+        }
+      });
     });
 
     return array;
