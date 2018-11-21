@@ -5,6 +5,7 @@ const Provider = require('./Provider');
 class LeagueofGraphsProvider extends Provider {
   constructor() {
     super('leagueofgraphs', 'League of Graphs');
+
     this.base = 'https://www.leagueofgraphs.com/champions';
   }
 
@@ -23,7 +24,7 @@ class LeagueofGraphsProvider extends Provider {
     }
     else {
       for (let x of ['JUNGLE', 'MIDDLE', 'TOP', 'ADC', 'SUPPORT']) {
-        console.log(2, `[ProviderHandler] [LOG] Gathering data (${x})`);
+        console.log(2, `[ProviderHandler] [League of Graphs] Gathering data (${x})`);
 
         try {
           data.roles[x] = await this._scrape(champion, x, gameMode);
@@ -91,9 +92,14 @@ class LeagueofGraphsProvider extends Provider {
    * @param {cheerio} $ - The cheerio object
    */
   scrapeSummonerSpells($) {
-    // TODO: find a way to dynamically find a summoner spell ID without slowing down Manaflux
-    // (and that finds one that exists)
-    return [];
+    if (Mana.gameClient.locale !== 'en_GB' && Mana.gameClient.locale !== 'en_US') return console.log(2, `[ProviderHandler] [League of Graphs] Summoner spells are not supported because you're not using the english language in League`);
+
+    let summoners = [];
+    $('table').find('td > span').each(function(index) {
+      summoners.push($(this).text().trim().split(' - ').map(y => Object.values(Mana.summonerspells).find(z => z.name === y)));
+    });
+
+    return summoners;
   }
 
   /**
