@@ -47,7 +47,7 @@ class LeagueofGraphsProvider extends Provider {
       rp({ uri: `${this.base}/skills-orders/${champion.key}${position ? '/' + position : ''}`.toLowerCase(), transform: body => cheerio.load(body) })
     ]);
 
-    const perks = this.scrapePerks(data[0], champion, position);
+    const perks = this.scrapePerks(data[0]);
 
     const itemsets = Mana.getStore().get('item-sets-enable') ? this.scrapeItemSets(data[1], champion, position, this.scrapeSkillOrder(data[data.length - 1])) : [];
     const summonerspells = Mana.getStore().get('summoner-spells') ? this.scrapeSummonerSpells(data[2], champion) : [];
@@ -59,10 +59,8 @@ class LeagueofGraphsProvider extends Provider {
   /**
    * Scrapes item sets from a League of Graphs page
    * @param {cheerio} $ - The cheerio object
-   * @param {object} champion - A champion object, from Mana.champions
-   * @param {string} position - Limited to: TOP, JUNGLE, MIDDLE, ADC, SUPPORT
    */
-  scrapePerks($, champion, position) {
+  scrapePerks($) {
     let pages = [{ selectedPerkIds: [] }, { selectedPerkIds: [] }];
 
     for (let page in pages) {
@@ -76,10 +74,13 @@ class LeagueofGraphsProvider extends Provider {
         }
 
         const perks = $(this).find("img[src^='//cdn.leagueofgraphs.com/img/perks/']").toArray().sort((a, b) => parseFloat($(a).css('opacity')) - parseFloat($(b).css('opacity')));
-        pages[page].selectedPerkIds.push(parseInt(perks[perks.length - 1].attribs.src.slice(-8, -4)));
-      });
 
-      pages[page].selectedPerkIds.pop();
+        if (4 < index && index < 7) {
+          if (perks.every(x => parseFloat(x.attribs.style.slice(x.attribs.style.lastIndexOf(' ') + 1)) > 0.5))
+            pages[page].selectedPerkIds.push(parseInt(perks[perks.length - 1].attribs.src.slice(-8, -4)));
+        }
+        else pages[page].selectedPerkIds.push(parseInt(perks[perks.length - 1].attribs.src.slice(-8, -4)));
+      });
     }
 
     return pages;
