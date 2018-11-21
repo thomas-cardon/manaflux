@@ -69,7 +69,6 @@ class DataValidator {
       }
 
       page.selectedPerkIds.forEach((id, index) => {
-        console.log(index);
         if (index > 3 && !primaryStyle.defaultStatModsPerSubStyle.find(x => x.id == page.subStyleId).perks.includes(id)) {
           console.log('[DataValidator] Perk mod isn\'t supposed to be at this slot. Using a generic one.');
           id = primaryStyle.defaultStatModsPerSubStyle.find(x => x.id == page.subStyleId).perks[0];
