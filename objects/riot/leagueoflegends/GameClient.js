@@ -73,6 +73,7 @@ class GameClient {
 
     this.region = r.region.toLowerCase();
     this.locale = r.locale;
+    this.language = r.webLanguage;
 
     let x = await this.getSystemBuilds();
 
