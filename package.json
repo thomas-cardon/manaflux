@@ -5,7 +5,8 @@
   "main": "main.js",
   "scripts": {
     "build": "build --win",
-    "ship": "build --win --ia32 --x64 -p always"
+    "ship": "build --win --ia32 --x64 -p always",
+    "test": "mocha ./tests"
   },
   "keywords": [
     "League of Legends",
@@ -22,8 +23,14 @@
   },
   "license": "CC0-1.0",
   "devDependencies": {
+    "@types/mocha": "^5.2.5",
+    "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
     "electron": "^3.0.9",
-    "electron-builder": "^20.36.2"
+    "electron-builder": "^20.36.2",
+    "electron-chromedriver": "^4.0.0-beta.1",
+    "mocha": "^5.2.0",
+    "spectron": "^5.0.0"
   },
   "dependencies": {
     "cheerio": "^1.0.0-rc.2",
