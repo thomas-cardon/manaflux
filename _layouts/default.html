@@ -21,9 +21,9 @@
       <h2 class="project-tagline">{{ site.description | default: site.github.project_tagline }}</h2>
       <div>
         {% if site.download.windows %}
-          <a href="{{ site.download.windows }}" class="btn download" target="_blank">Download for Windows</a>
+          <a href="{{ site.github.latest_release.assets[1].browser_download_url }}" class="btn download" target="_blank">Download for Windows</a>
         {% endif %}
-        <a href="{{ site.github.repository_url }}/releases/latest/" class="btn" target="_blank">Latest Release Notes</a>
+        <a href="{{ site.github.latest_release.html_url }}" class="btn" target="_blank">Latest Release Notes</a>
         <a href="https://discord.gg/JrPVnFy" class="btn" target="_blank">Discord Channel</a>
         {% if site.github.is_project_page %}
           <a href="{{ site.github.repository_url }}" class="btn">View on GitHub</a>
