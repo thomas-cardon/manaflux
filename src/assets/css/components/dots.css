@@ -20,8 +20,6 @@
 
 #dots {
   top: 80px;
-  left: 45%;
-  z-index: 500;
   position: absolute;
 }
 

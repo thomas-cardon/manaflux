@@ -6,25 +6,15 @@ class User extends Summoner {
   constructor(d) {
     super(d);
     this._perksInventory = new PerksInventory();
+    this.connected = true;
   }
 
   isLoggedIn() {
+    const self = this;
     return new Promise((resolve, reject) => {
-      ipcRenderer.once('lcu-logged-in', (event, d) => resolve(d))
+      ipcRenderer.once('lcu-logged-in', (event, d) => resolve(self.connected = d))
       .send('lcu-logged-in');
     });
-  }
-
-  getGameMode() {
-    return this._chatDetails.lol.gameMode;
-  }
-
-  getMapId() {
-    return this._chatDetails.lol.mapId;
-  }
-
-  async queryChatDetails() {
-    return this._chatDetails = JSON.parse(await rp(Mana.base + 'lol-chat/v1/me'));
   }
 
   getPerksInventory() {

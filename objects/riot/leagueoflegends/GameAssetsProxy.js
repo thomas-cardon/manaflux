@@ -24,11 +24,12 @@ class GameAssetsProxy {
 
   load() {
     this._server = http.createServer(this.onRequest);
+    this.port = parseInt(Math.random() * (3680 - 3670) + 3670);
 
-    this._server.listen(3681, 'localhost', (err) => {
+    this._server.listen(this.port, 'localhost', (err) => {
       if (err) UI.error(err);
 
-      console.log(2, `[GameAssetsProxy] Listening on port 3681`);
+      console.log(2, `[GameAssetsProxy] Listening on port ${this.port}`);
     });
   }
 

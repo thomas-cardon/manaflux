@@ -48,20 +48,36 @@ class DataValidator {
 
     delete data.version;
     delete data.region;
-
-    for (const [roleName, role] of Object.entries(data.roles)) {
-      role.itemsets.forEach(x => x.blocks.forEach(y => y.items.forEach(z => delete z._id)));
-    }
   }
 
-  onPerkPagesCheck(array, champion, role) {
+  onPerkPagesCheck(array, champion, role, preseason) {
     array = array.filter(x => x.selectedPerkIds && x.selectedPerkIds.length >= 6 && !this._hasDuplicates(x.selectedPerkIds));
+
+    if (Mana.preseason)
+      UI.success(i18n.__('preseason-perks'));
 
     array.forEach((page, index) => { /* Recreates primaryStyleId or subStyleId based on perks if it's missing */
       page.name = `${page.provider ? Mana.providerHandler.getProvider(page.provider).getCondensedName() : 'XXX'}${index + 1} ${champion.name} > ${UI.stylizeRole(role)}${page.suffixName ? ' ' + page.suffixName : ''}`;
 
       page.primaryStyleId = page.primaryStyleId || Mana.gameClient.findPerkStyleByPerkId(page.selectedPerkIds[0]).id;
       page.subStyleId = page.subStyleId || Mana.gameClient.findPerkStyleByPerkId(page.selectedPerkIds[4]).id;
+
+      const primaryStyle = Mana.gameClient.styles.find(x => x.id === page.primaryStyleId);
+      if (page.selectedPerkIds.length === 6 && Mana.preseason) {
+        console.log('[DataValidator] Looks like it\'s preseason and it\'s time to fix missing things...');
+        page.selectedPerkIds = page.selectedPerkIds.concat(primaryStyle.defaultPerks.slice(-3));
+      }
+
+      page.selectedPerkIds.forEach((id, index) => {
+        if (index > 3 && !primaryStyle.defaultStatModsPerSubStyle.find(x => x.id == page.subStyleId).perks.includes(id)) {
+          console.log('[DataValidator] Perk mod isn\'t supposed to be at this slot. Using a generic one.');
+          id = primaryStyle.defaultStatModsPerSubStyle.find(x => x.id == page.subStyleId).perks[0];
+        }
+        else if (index <= 6 && !primaryStyle.slots[index].perks.includes(id)) {
+          console.log('[DataValidator] Perk ID isn\'t supposed to be at this slot. Using a generic one.');
+          id = primaryStyle.slots[index].perks[0];
+        }
+      });
     });
 
     return array;
@@ -71,7 +87,7 @@ class DataValidator {
     let indexes = {};
 
     return array.map((x, index) => {
-      if (!x._data) x = ItemSetHandler.parse(champion.key, x, x.provider);
+      x = ItemSetHandler.parse(champion.key, x, x.provider);
       indexes[x._data.provider || 'XXX'] = indexes[x._data.provider || 'XXX'] + 1 || 1;
 
       x._data.title = `${x._data.provider ? Mana.providerHandler.getProvider(x._data.provider).getCondensedName() : 'XXX'}${indexes[x._data.provider || 'XXX']} ${champion.name} > ${UI.stylizeRole(role)}`;

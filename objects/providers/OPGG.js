@@ -51,7 +51,7 @@ class OPGGProvider extends Provider {
 
     const convertOPGGPosition = this.convertOPGGPosition;
 
-    if ($('.champion-stats-header-version').text().trim().slice(-4) != Mana.gameClient.branch) UI.error('providers-error-outdated');
+    if ($('.champion-stats-header-version').text().trim().slice(-4) != Mana.gameClient.branch) UI.error('providers-error-outdated', this.name);
 
     position = $('li.champion-stats-header__position.champion-stats-header__position--active').data('position') ? this.convertOPGGPosition($('li.champion-stats-header__position.champion-stats-header__position--active').data('position')).toUpperCase() : position;
     const availablePositions = [];
@@ -89,6 +89,10 @@ class OPGGProvider extends Provider {
     $('.perk-page__item--active').find('img').slice(0, 12).each(function(index) {
       pages[Math.trunc(index / 6)].selectedPerkIds.push(parseInt($(this).attr('src').slice(-8, -4)));
     });
+
+    $('.fragment__summary').find('img').slice(0, 6).each(function(index) {
+      pages[index > 2 ? 1 : 0].selectedPerkIds.push(parseInt($(this).attr('src').slice(-8, -4)));
+    })
 
     return pages;
   }

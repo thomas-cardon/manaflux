@@ -131,23 +131,30 @@ $.fn.disableManualButton = function(disable) {
 }
 
 /* Hextech Animation Handler */
-UI.enableHextechAnimation = function(champion, primaryStyleId = 'white') {
-	$('.championPortrait > #hextechAnimationBackground').attr('src', 'assets/img/vfx-' + primaryStyleId + '.png');
-	$('.championPortrait > #champion')
-	.attr('src', champion.img);
+UI.enableHextechAnimation = function(champion = Mana.champions[-1], primaryStyleId = 'white') {
+	document.querySelector('.championPortrait > #hextechAnimationBackground').setAttribute('src', 'assets/img/vfx-' + primaryStyleId + '.png');
+  document.querySelector('.championPortrait > #champion').setAttribute('src', champion.img);
 
-  if (Mana.getStore().get('ui-animations-enable')) $('.championPortrait > #champion').on('load', () => $(".title").animate({ "margin-top": "55%" }, 700, "linear", () => $('.championPortrait').show()));
+  if (Mana.getStore().get('ui-animations-enable'))
+    document.querySelector('.championPortrait > #champion').onload = function() {
+      document.querySelector('.title').classList.remove('animated', 'fadeInDown');
+      document.querySelector('.title').classList.add('animated', 'fadeOutDown');
+      document.querySelector('.championPortrait').style.display = 'block';
+    };
   else {
-    $(".title").hide();
-    $('.championPortrait').show();
+    document.querySelector('.title').style.display = 'none';
+    document.querySelector('.championPortrait').style.display = 'block';
   }
 }
 
 UI.disableHextechAnimation = () => {
-	$('.championPortrait').hide();
+  document.querySelector('.championPortrait').style.display = 'none';
 
-	if (Mana.getStore().get('ui-animations-enable')) $(".title").animate({ "margin-top": "0%" }, 700, "linear");
-  else $(".title").show();
+	if (Mana.getStore().get('ui-animations-enable')) {
+    document.querySelector('.title').classList.remove('animated', 'fadeOutDown');
+    document.querySelector('.title').classList.add('animated', 'fadeInDown');
+  }
+  else document.querySelector('.title').style.display = 'block';
 }
 
 function getReadableFileSizeString(fileSizeInBytes) {

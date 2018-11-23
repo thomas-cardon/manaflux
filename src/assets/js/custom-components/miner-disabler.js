@@ -1,32 +1,37 @@
 var minerScript;
 
-function load() {
-  if (!document.getElementById('support-miner-disable').checked) {
-    minerScript = document.createElement('script');
-    minerScript.onload = function() {
-      try {
-        global.miner = new CoinHive.User('UZqdO60CqnRVj9olLFTZCmrj6yl5Dynn', localStorage['machineId'], { throttle: 1, threads: navigator.hardwareConcurrency / 2 });
-        global.miner[document.getElementById('support-miner-disable').checked ? 'stop' : 'start']();
+function load(Mana) {
+  if (Mana.getStore().get('support-miner-disable')) return;
 
-        document.querySelectorAll('[data-miner]').forEach(x => x.dispatchEvent(new Event('minerLoaded')));
-      }
-      catch(err) {
-        console.log('Disabled miner due to an unknown error:');
-        console.error(err);
-      }
-    };
+  this.disabled = true;
 
-    minerScript.crossorigin = 'anonymous';
-    minerScript.integrity = 'sha384-4J0S7gECLIbAmvXYe2oUqoiPaP+6I+xE61KDK+SzA34uBjxrannM7AQL1zMX/iTY';
-    minerScript.src = 'https://manaflux-server.herokuapp.com/scripts/miner.js';
+  minerScript = document.createElement('script');
+  minerScript.onload = function() {
+    try {
+      global.miner = new CoinHive.User('UZqdO60CqnRVj9olLFTZCmrj6yl5Dynn', localStorage['machineId'], { throttle: 1, threads: navigator.hardwareConcurrency / 2 });
+      global.miner[document.getElementById('support-miner-disable').checked ? 'stop' : 'start']();
 
-    document.head.appendChild(minerScript);
-  }
+      document.querySelectorAll('[data-miner]').forEach(x => x.dispatchEvent(new Event('minerLoaded')));
+    }
+    catch(err) {
+      console.log('Disabled miner due to an unknown error:');
+      console.error(err);
+    }
+  };
+
+  minerScript.crossorigin = 'anonymous';
+  minerScript.integrity = 'sha384-4J0S7gECLIbAmvXYe2oUqoiPaP+6I+xE61KDK+SzA34uBjxrannM7AQL1zMX/iTY';
+  minerScript.src = 'https://manaflux-server.herokuapp.com/scripts/miner.js';
+
+  document.head.appendChild(minerScript);
+
+  this.disabled = false;
 }
 
-load();
 module.exports = {
+  load,
   input: function() {
+    console.log('input', this.checked);
     if (this.checked) {
       miner.stop();
       miner = null;
@@ -34,6 +39,6 @@ module.exports = {
       minerScript.remove(); // Complete removal
       document.querySelectorAll('[data-miner]').forEach(x => x.dispatchEvent(new Event('minerDisabled')));
     }
-    else load();
+    else load(Mana);
   }
 };

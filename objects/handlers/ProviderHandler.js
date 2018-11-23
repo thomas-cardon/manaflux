@@ -19,11 +19,15 @@ class ProviderHandler {
     return this.providers[x];
   }
 
+  isProviderEnabled(x) {
+    return Mana.getStore().get('providers-order-' + x.id, true);
+  }
+
   async getChampionData(champion, preferredPosition, gameModeHandler, cache, providerList, bulkDownloadMode) {
-    const gameMode = gameModeHandler.getGameMode() || 'CLASSIC';
+    console.log(2, '[ProviderHandler] Downloading data for', champion.name);
+    const gameMode = bulkDownloadMode ? gameModeHandler.getGameMode() : Mana.gameflow.getGameMode();
 
     /* 1/5 - Storage Checking */
-
     let data = await Mana.championStorageHandler.get(champion.id);
     if (data && cache) {
       if (!bulkDownloadMode && (data.roles[preferredPosition] || Object.values(data.roles)[0].gameMode === gameMode)) {
@@ -35,7 +39,7 @@ class ProviderHandler {
     }
 
     /* 2/5 - Downloading */
-    const providers = providerList || Mana.getStore().get('providers-order', Object.keys(this.providers)).filter(x => gameModeHandler.getProviders() === null || gameModeHandler.getProviders().includes(x));
+    const providers = providerList || Mana.getStore().get('providers-order', Object.keys(this.providers)).filter(x => gameModeHandler.getProviders() === null || gameModeHandler.getProviders().includes(x)).filter(x => this.isProviderEnabled(x));
 
     for (let provider of providers) {
       provider = this.providers[provider];

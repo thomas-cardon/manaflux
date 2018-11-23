@@ -35,7 +35,7 @@ class GameClient {
     const championSummaryData = JSON.parse(await rp(Mana.base + 'lol-game-data/assets/v1/champion-summary.json'));
 
     for (let champion of championSummaryData)
-      d[champion.id] = { id: champion.id, key: champion.alias, name: champion.name, img: 'http://localhost:3681' + champion.squarePortraitPath };
+      d[champion.id] = { id: champion.id, key: champion.alias, name: champion.name, img: 'http://localhost:' + Mana.assetsProxy.port + champion.squarePortraitPath };
 
     return d;
   }
@@ -51,7 +51,8 @@ class GameClient {
     perksData.forEach(x => perks[x.id] = x);
 
     this.perks = perks;
-    this.styles = stylesData;
+
+    this.styles = this.preseason ? stylesData.styles : stylesData;
   }
 
   findPerkByImage(img) {
@@ -72,12 +73,17 @@ class GameClient {
 
     this.region = r.region.toLowerCase();
     this.locale = r.locale;
+    this.language = r.webLanguage;
 
-    await this.queryPerks();
     let x = await this.getSystemBuilds();
 
     this.branch = x.branch;
     this.fullVersion = x.version;
+
+    this.preseason = parseFloat(this.fullVersion.slice(0, 4)) >= 8.23;
+    await this.queryPerks();
+
+    return this.preseason;
   }
  }
 

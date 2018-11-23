@@ -23,20 +23,28 @@ module.exports = {
   }
 };
 
-ipcRenderer.on('bug-report', async (event, data) => {
+ipcRenderer.on('bug-report', (event, data) => {
   console.log('[Bug Report] Sending one..');
 
   try {
-    const d = await rp({
-      method: 'POST',
-      uri: 'https://manaflux-server.herokuapp.com/reports/v1',
-      body: console.dir(3, {...data, summonerId: Mana.user.getSummonerId(), summonerName: Mana.user.getDisplayName() }),
-      json: true
-    });
+    const logsPath = LoggingHandler.end();
+    LoggingHandler.start();
 
-    if (d.message && d.error) UI.error(d.message);
-    else if (d.error) throw UI.error(Error(d.error));
-    else if (d.statusCode === 200) UI.success(i18n.__('bug-report-sent'));
+    let logs = '';
+    require('fs').createReadStream(logsPath)
+    .on('data', chunk => logs += chunk)
+    .on('end', async () => {
+      const d = await UI.indicator(await rp({
+        method: 'POST',
+        uri: 'https://manaflux-server.herokuapp.com/reports/v1',
+        body: { ...data, summonerId: Mana.user.getSummonerId(), summonerName: Mana.user.getDisplayName(), gameVersion: Mana.gameClient.fullVersion, version: Mana.version, logs },
+        json: true
+      }), 'bug-report-sending-status');
+
+      if (d.message && d.error) UI.error(d.message);
+      else if (d.error) throw UI.error(Error(d.error));
+      else if (d.statusCode === 200) UI.success(i18n.__('bug-report-sent'));
+    });
   }
   catch(err) {
     UI.error(err);

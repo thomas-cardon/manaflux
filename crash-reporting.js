@@ -1,5 +1,6 @@
 const { crashReporter } = require('electron');
 
+global.crashReporter = crashReporter;
 crashReporter.start({
   productName: 'Manaflux',
   companyName: 'Ryzzzen/manaflux',

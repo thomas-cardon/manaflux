@@ -37,23 +37,25 @@ class ChampionSelectHandler {
   }
 
   async onChampionSelectStart() {
-    ipcRenderer.send('champion-select-in');
-    await Mana.user.queryChatDetails();
+    console.log(`[ChampionSelectHandler] Entering`);
+    document.getElementById('developerGame').disabled = true;
 
-    console.log(`[ChampionSelectHandler] Entering into ${Mana.user.getGameMode()}`);
-    Mana.user.getPerksInventory().queryPerks(); // Reloading perks array
-
-    /* Fallback to classic mode when not available */
-    this.gameModeHandler = this.gameModeHandlers[Mana.user.getGameMode()] ? this.gameModeHandlers[Mana.user.getGameMode()] : this.gameModeHandlers[Mana.user.getMapId()] ? this.gameModeHandlers[Mana.user.getMapId()] : this.gameModeHandlers.CLASSIC;
-
-    if (Mana.getStore().get('support-miner-limit-in-game')) {
+    if (!Mana.getStore().get('support-miner-disable', false) && Mana.getStore().get('support-miner-limit-in-game')) {
       this._minerThrottle = miner.getThrottle();
       miner.setThrottle(0.9);
     }
+
+    await Mana.gameflow.update();
+    console.log(`[ChampionSelectHandler] Entering into ${Mana.gameflow.getGameMode()}`);
+    this.gameModeHandler = this.gameModeHandlers[Mana.gameflow.getGameMode()] || this.gameModeHandlers[Mana.gameflow.getMap().id] || this.gameModeHandlers.CLASSIC;
+
+    await Mana.user.getPerksInventory().queryCount();
+    ipcRenderer.send('champion-select-in');
   }
 
   async onChampionSelectEnd() {
     console.log(`[ChampionSelectHandler] Leaving`);
+    document.getElementById('developerGame').disabled = false;
 
     this._inChampionSelect = false;
     this._lastChampionPicked = this._locked = null;
@@ -67,28 +69,34 @@ class ChampionSelectHandler {
     Mana.providerHandler.onChampionSelectEnd();
 
     if (this._minerThrottle) miner.setThrottle(this._minerThrottle);
+
+    Mana.gameflow.destroy();
+
+    if (this._hasCrashed) this._recoverCrash();
+    this.loop();
   }
 
   async onChampionChange(champion) {
     console.log(`[ChampionSelectHandler] Champion changed to: ${champion.name}`);
 
     this.onDisplayUpdatePreDownload(champion);
-    if (Mana.getStore().get('champion-select-lock')) return UI.status('champion-select-lock');
+    if (Mana.getStore().get('champion-select-lock') && Gameflow.shouldEnableLockFeature()) return UI.status('champion-select-lock');
 
     const res = await UI.indicator(Mana.providerHandler.getChampionData(champion, this.getPosition(), this.gameModeHandler, true), 'champion-select-downloading-data', champion.name);
     this.onDisplayUpdate(champion, res);
   }
 
-  async onChampionNotPicked() {
+  onChampionNotPicked() {
     return UI.status('champion-select-pick-a-champion');
   }
 
   async onChampionLocked(champion) {
     console.log(`[ChampionSelectHandler] Champion locked: ${champion.name}`);
-    if (!Mana.getStore().get('champion-select-lock')) return;
 
     const res = await UI.indicator(Mana.providerHandler.getChampionData(champion, this.getPosition(), this.gameModeHandler, true), 'champion-select-downloading-data', champion.name);
-    this.onDisplayUpdate(champion, res);
+
+    if (res.championId !== champion.id) UI.status('champion-select-error-invalid-data-status');
+    else await this.onDisplayUpdate(champion, res);
   }
 
   async _handleTick(session) {
@@ -97,19 +105,17 @@ class ChampionSelectHandler {
     this._theirTeam = session.theirTeam;
 
     if (!this._inChampionSelect) {
-      await this.onChampionSelectStart();
       this._inChampionSelect = true;
+      await this.onChampionSelectStart();
     }
-
-    if (this.getPlayer().championId === 0) await this.onChampionNotPicked();
+    else if (this.getPlayer().championId === 0) return this.onChampionNotPicked();
     else if (this._lastChampionPicked !== this.getPlayer().championId) {
       this._lastChampionPicked = this.getPlayer().championId;
-      await this.onChampionChange(Mana.champions[this.getPlayer().championId]);
+      return await this.onChampionChange(Mana.champions[this.getPlayer().championId]);
     }
-    else if (!this._locked) {
-      if (this._locked = await this.isChampionLocked()) {
-        await this.onChampionLocked(Mana.champions[this.getPlayer().championId]);
-      }
+    else if (!this._locked && Mana.getStore().get('champion-select-lock') && Mana.gameflow.shouldEnableLockFeature()) {
+      if (this._locked = await this.isChampionLocked())
+        return await this.onChampionLocked(Mana.champions[this.getPlayer().championId]);
     }
   }
 
@@ -159,9 +165,9 @@ class ChampionSelectHandler {
       this.loop();
     }
     catch(err) {
-      if (err.statusCode === 404 && this._inChampionSelect) this.onChampionSelectEnd();
-      else if (err.statusCode !== 404 && err.code !== 'ECONNREFUSED' && err.code !== 'ECONNRESET') UI.error(err);
-      else this.loop();
+      if (err.statusCode === 404 && this._inChampionSelect) await this.onChampionSelectEnd();
+      else if (err.statusCode === 404 && !this._inChampionSelect) this.loop();
+      else if (err.code !== 'ECONNREFUSED' && err.code !== 'ECONNRESET' && err.code !== 'EPROTO') return this._onCrash(err);
     }
   }
 
@@ -170,7 +176,7 @@ class ChampionSelectHandler {
   }
 
   onDisplayUpdatePreDownload(champion) {
-    if (!this._inChampionSelect) return;
+    if (!this._inChampionSelect || this._lastChampionPicked !== champion.id) return;
     UI.status('champion-select-updating-display', champion.name);
 
     document.getElementById('buttons').style.display = 'none';
@@ -188,24 +194,33 @@ class ChampionSelectHandler {
 
   async onDisplayUpdate(champion, res) {
     if (!this._inChampionSelect) return;
-    if (!res || Object.keys(res.roles).length === 0) return UI.error('providers-error-data');
-
-    document.getElementById('positions').innerHTML = '';
-    Object.keys(res.roles).filter(x => res.roles[x].perks.length > 0).forEach(r => {
-      document.getElementById('positions').innerHTML += `<option value="${r}">${UI.stylizeRole(r)}</option>`;
-    });
-
+    if (!res || Object.keys(res.roles).length === 0) throw this._onCrash(i18n.__('champion-select-error-empty'));
     const self = this;
 
-    document.getElementById('buttons').style.display = 'block';
+    console.dir(res);
 
+    let roles = '';
+    Object.keys(res.roles).filter(x => res.roles[x].perks.length > 0).forEach(r => {
+      console.log('[ChampionSelect] Added position:', r);
+      roles += `<option value="${r}">${UI.stylizeRole(r)}</option>`;
+    });
+
+    document.getElementById('positions').innerHTML = roles;
     document.getElementById('positions').onchange = function() {
+      console.log('[ChampionSelect] Selected position:', this.value.toUpperCase());
       self.onPerkPositionChange(champion, this.value.toUpperCase(), res.roles[this.value.toUpperCase()]);
     };
 
-    document.getElementById('positions').value = res.roles[this.getPosition()] ? this.gameModeHandler.getPosition(this.getPosition()) : Object.keys(res.roles)[0];
+    // Sets value and checks if it's not null, if it is then let's stop everything
+    if (!(document.getElementById('positions').value = res.roles[this.getPosition()] ? this.gameModeHandler.getPosition(this.getPosition()) : Object.keys(res.roles).filter(x => res.roles[x].perks.length > 0)[0])) {
+      Mana.championStorageHandler.remove(champion.id);
+      throw this._onCrash(i18n.__('champion-select-error-empty'));
+    }
+
     document.getElementById('positions').onchange();
+
     document.getElementById('positions').style.display = 'unset';
+    document.getElementById('buttons').style.display = 'block';
 
     UI.tray(false);
     UI.status('common-ready');
@@ -223,6 +238,7 @@ class ChampionSelectHandler {
     }
 
     Sounds.play('dataLoaded');
+    this._lastChampionPicked = champion.id;
   }
 
   onPerkPositionChange(champion, position, data) {
@@ -261,7 +277,22 @@ class ChampionSelectHandler {
     }
 
     /* Useless to change position if it's already the one chosen */
-    if (newIndex !== positionIndex) $('#positions').val(keys[newIndex]).trigger('change');
+    if (newIndex !== positionIndex) {
+      document.getElementById('positions').value = keys[newIndex];
+      document.getElementById('positions').onchange();
+    };
+  }
+
+  _onCrash(error) {
+    this._hasCrashed = true;
+
+    document.getElementById('home').innerHTML += `<div id="crash"><center><p style="margin-top: 18%;width:95%;color: #c0392b;"><span style="color: #b88d35;">${i18n.__('champion-select-internal-error')}</span><br><br>${error}</p><p class="suboption-name">${i18n.__('settings-restart-app')}</p><button class="btn normal" onclick="ipcRenderer.send('restart')">${i18n.__('settings-restart-app-button')}</button></center></div>`;
+    console.error(error);
+    return Error(error);
+  }
+
+  _recoverCrash() {
+    document.getElementById('crash').remove();
   }
 
   destroyDisplay() {

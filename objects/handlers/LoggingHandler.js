@@ -21,14 +21,7 @@ function LoggingHandler(level) {
   this.isRenderer = !process || typeof process === 'undefined' || !process.type || process.type === 'renderer';
   this.ipc = this.isRenderer ? ipcRenderer : require('electron').ipcMain;
 
-  if (!this.isRenderer) {
-    this.stream = fs.createWriteStream(path.resolve(require('electron').app.getPath('logs'), new Date().toString().slice(0, 24).replace(/:/g, '-') + '.txt'));
-    this.stream.write(`----------[ Log file level ${this.level} ]----------\n`);
-    this.stream.write(`Electron v${process.versions.electron}\n`);
-    this.stream.write(`NodeJS v${process.versions.node}\n`);
-    this.stream.write(`Chrome v${process.versions.chrome}\n`);
-    this.stream.write('----------------------------------------\n');
-  }
+  if (!this.isRenderer) this.start();
 
   const self = this;
   console.log = function(level = 0, ...args) {
@@ -84,7 +77,7 @@ function LoggingHandler(level) {
     c.log.call(console, `[${self.isRenderer ? 'Renderer' : 'Main'}] [${self._getTimestamp()}] Error`);
     c.error.apply(console, arguments);
 
-    self.send.call(self, level, 'error', x);
+    self.send.call(self, level, 'error', x.toString());
 
     return x;
   };
@@ -99,6 +92,38 @@ function LoggingHandler(level) {
     this.ipc.on('logging-end', e => e.returnValue = self.end());
   }
 }
+
+
+LoggingHandler.prototype.start = function() {
+  if (this.isRenderer) return this.ipc.sendSync('logging-start');
+
+  this.stream = fs.createWriteStream(this._path = path.resolve(require('electron').app.getPath('logs'), new Date().toString().slice(0, 24).replace(/:/g, '-') + '.txt'));
+  this.stream.write(`----------[ Log file level ${this.level} ]----------\n`);
+  this.stream.write(`Electron v${process.versions.electron}\n`);
+  this.stream.write(`NodeJS v${process.versions.node}\n`);
+  this.stream.write(`Chrome v${process.versions.chrome}\n`);
+  this.stream.write('----------------------------------------\n');
+
+  return this._path;
+}
+
+LoggingHandler.prototype.end = function() {
+  if (this.isRenderer) return this.ipc.sendSync('logging-end');
+
+  if (this.stream) {
+    this.stream.end();
+    this.stream = null;
+
+    console.log(`----------[ Log file warning ]----------\n`);
+    console.log(`Stopped saving logs in file`);
+    console.log('Path: ', this._path);
+    console.log(`----------[ Log file warning ]----------\n`);
+
+    return this._path;
+  }
+
+  return false;
+};
 
 LoggingHandler.prototype.onMessageCallback = function(t, arg) {
   if (!arg.msg || arg.msg.length === 0) return;
@@ -139,28 +164,11 @@ LoggingHandler.prototype._ensureDir = function(path) {
   })
 };
 
-LoggingHandler.prototype.start = function() {
-  if (this.isRenderer) return this.ipc.sendSync('logging-start');
-  else this.stream = fs.createWriteStream(path.resolve(require('electron').app.getPath('logs'), new Date().toString().slice(0, 24).replace(/:/g, '-') + '.txt'));
-
-  return true;
-};
-
-LoggingHandler.prototype.end = function() {
-  if (this.stream) {
-    this.stream.end();
-    this.stream = null;
-    return true;
-  }
-
-  return this.ipc.sendSync('logging-end');
-};
-
 LoggingHandler.prototype.disable = function() {
   console.log('LoggingHandler now redirects to console.');
   LoggingHandler.prototype.log = console.log;
   LoggingHandler.prototype.dir = console.dir;
   LoggingHandler.prototype.error = console.error;
-
 }
+
 module.exports = LoggingHandler;

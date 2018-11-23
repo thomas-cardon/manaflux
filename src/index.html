@@ -3,6 +3,7 @@
   <title>Manaflux</title>
   <meta charset="utf-8">
   <meta name="author" content="Ryzzzen">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' file:; script-src 'self' 'unsafe-inline' file: https://manaflux-server.herokuapp.com; style-src 'self' 'unsafe-inline' file: https://fonts.googleapis.com/; img-src *; media-src 'self' file:; font-src *; worker-src * blob: file:; connect-src wss:">
   <link rel="stylesheet" href="assets/css/manaflux.css">
   <link rel="stylesheet" href="assets/css/components/button.css">
   <link rel="stylesheet" href="assets/css/components/input.css">
@@ -21,8 +22,9 @@
   <link rel="stylesheet" href="assets/css/components/statistics.css">
   <link rel="stylesheet" href="vendor/alertify.min.css"/>
   <link rel="stylesheet" href="vendor/alertify.rtl.min.css"/>
+  <link rel="stylesheet" href="vendor/animate.css">
   <link rel="stylesheet" href="vendor/jquery-ui.min.css">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link crossorigin href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
   <video id="smokeAnimation" style="z-index: -30; position: absolute; display: none;" loop><source src="assets/video/smoke.webm" type="video/webm">
@@ -45,10 +47,10 @@
   </div>
   <div class="content">
     <p class="status" data-i18n="status-loading"></p>
-    <p class="version"></p>
+    <p class="version" id="version"></p>
     <div id="dots"></div>
     <!-- BEGIN SECTIONS -->
-    <div data-tabid="home" data-tabn=0 class="tabcontent center" style="display: block;">
+    <div id="home" data-tabid="home" data-tabn=0 class="tabcontent center" style="display: block;">
       <div class="title">
         <h1 id="dev">MANAFLUX</h1>
         <img src="assets/img/underline.png" draggable="false">
@@ -217,6 +219,11 @@
         <button class="btn normal" data-custom-component="reset-settings" data-i18n="reset-settings-button"></button>
       </div>
       <div class="option">
+        <p class="suboption-name" data-i18n="settings-restart-app"></p>
+        <button class="btn normal" onclick="ipcRenderer.send('restart')" data-i18n="settings-restart-app-button"></button>
+      </div>
+      <hr style="margin-left: -7%;">
+      <div class="option">
         <p class="suboption-name" data-i18n="settings-logs-clear"></p>
         <button class="btn normal" data-custom-component="settings-logs-clear" data-i18n="common-clear"></button>
       </div>
@@ -229,8 +236,28 @@
       <p class="option-name" data-i18n="category-advanced"></p>
       <div class="option">
         <p class="suboption-name" data-i18n="providers-order"></p>
-        <ul class="sortable" data-settings-key="providers-order" data-settings-default="flux,championgg,leagueofgraphs,opgg,metasrc,lolflavor" data-settings-merge-list-if-missing-value="true" data-settings-remove-if-missing-value="true">
+        <ul id="providersOrder" class="sortable" data-custom-component="providers-order">
+          <p style="color: rgba(230, 33, 66, 0.7);margin: 0 2px;">Loading</p>
         </ul>
+      </div>
+      <div class="option">
+        <p class="suboption-name" data-i18n="providers-downloader"></p>
+        <button class="btn normal" data-custom-component="providers-downloader" data-i18n="common-run" disabled></button>
+      </div>
+      <div class="option">
+        <p class="suboption-name" data-i18n="champion-select-test-game"></p>
+        <button id="developerGame" class="btn normal" data-custom-component="developer-game" data-i18n="common-run"></button>
+      </div>
+      <div class="option">
+        <p class="suboption-name" data-i18n="settings-i18n-change"></p>
+        <select data-settings-key="language" data-custom-component="settings-i18n" class="dropdown">
+          <option value="en">English</option>
+          <option value="fr">Français</option>
+          <option value="it">Italiano</option>
+          <option value="ru">русский</option>
+          <option value="pl">Polski</option>
+          <option value="pt-br">Português brasileiro</option>
+        </select>
       </div>
       <div class="option">
         <p class="suboption-name" data-i18n="fixes-perks-editor"></p>
@@ -240,7 +267,7 @@
         </div>
       </div>
     </div>
-    <div data-tabid="settings" data-tabn=5 class="tabcontent" style="display: none; margin-left: 9%;">
+    <div data-tabid="settings" data-tabn=4 class="tabcontent" style="display: none; margin-left: 9%;">
       <p class="option-name" data-i18n="category-support"></p>
       <p data-i18n="support" style="color: #a09b8c;font-size: 14px;max-width: 90%;"></p>
       <p data-i18n="support-miner-cant-be-enabled" style="position: absolute;bottom: -110px;color: #b33939;width: 90%;margin-left: 6px;" data-custom-component="miner-security" data-miner=""></p>
@@ -262,7 +289,7 @@
       <div class="option">
         <p class="suboption-name" data-i18n="support-miner-disable"></p>
         <div class="options checkboxContainer">
-          <input type="checkbox" id="support-miner-disable" data-settings-key="support-miner-disable" data-custom-component="miner-disabler" data-settings-default=true data-miner="" />
+          <input type="checkbox" id="support-miner-disable" data-settings-key="support-miner-disable" data-settings-default="true" data-custom-component="miner-disabler" data-miner="" />
           <label data-i18n="common-disable"></label>
         </div>
       </div>
@@ -278,7 +305,7 @@
     <div data-tabid="update" data-tabn=0 class="tabcontent" style="display: none; margin-left: 9%;">
       <p data-i18n="update-available" id="updateAvailableText"></p>
       <div id="updateStatus">
-        <p id="version">VX.X.X</p>
+        <p id="updateVersion">VX.X.X</p>
         <span id="updateRollout">You're part of the 100% of users who received the update</span>
       </div>
       <div class="textcontainer" id="release-notes">
@@ -293,8 +320,8 @@
     <source id="soundEngineSource" type="audio/ogg" />
   </audio>
   <script>
-  if (!localStorage['machineId'])
-  localStorage.setItem('machineId', require('node-machine-id').machineIdSync());
+    if (!localStorage['machineId'])
+    localStorage.setItem('machineId', require('node-machine-id').machineIdSync());
   </script>
   <script src="vendor/jquery-3.3.1.min.js" onload="window.$ = window.jQuery = module.exports;"></script>
   <script src="vendor/jquery-ui.min.js"></script>
@@ -306,6 +333,8 @@
   </script>
   <script src="assets/js/ui.js"></script>
   <script src="assets/js/ui/sounds.js"></script>
+  <script src="assets/js/ui/settings.js"></script>
+  <script src="assets/js/ui/custom-components.js"></script>
   <script>
   window.eval = global.eval = () => console.warn(i18n.__('security-eval'));
   require('../crash-reporting.js');
@@ -320,8 +349,6 @@
   global.Mana = new (require('../objects/Mana'))(ipcRenderer);
   </script>
   <script src="assets/js/ui/i18n.js"></script>
-  <script src="assets/js/ui/settings.js"></script>
-  <script src="assets/js/ui/custom-components.js"></script>
   <script src="assets/js/ui/update.js"></script>
   <script src="assets/js/ui/tab-handler.js"></script>
 </body>
