@@ -12,7 +12,3 @@ UI.loadCustomComponents = function(Mana) {
     else d.call(el, Mana);
   }
 }
-
-for (const el of document.querySelectorAll('[data-custom-component]')) {
-  UI.loadCustomComponent(el);
-}
