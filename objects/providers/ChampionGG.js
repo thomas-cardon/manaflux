@@ -74,10 +74,8 @@ class ChampionGGProvider extends Provider {
   /**
    * Scrapes item sets from a Champion.gg page
    * @param {cheerio} $ - The cheerio object
-   * @param {object} champion - A champion object, from Mana.champions
-   * @param {string} position - Limited to: TOP, JUNGLE, MIDDLE, ADC, SUPPORT
    */
-  scrapePerks($, champion, position) {
+  scrapePerks($) {
     let pages = [{ suffixName: `(HW%)`, selectedPerkIds: [] }, { suffixName: `(MF)`, selectedPerkIds: [] }];
 
     $("img[src*='perk-images']", $("div[class^=Slot__LeftSide]")).each(function(index) {
