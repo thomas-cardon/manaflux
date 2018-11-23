@@ -9,7 +9,7 @@ class OPGGProvider extends Provider {
   }
 
   convertOPGGPosition(pos) {
-    if (!pos) return pos;
+    if (!pos) return;
 
     switch(pos.toLowerCase()) {
       case 'mid':
