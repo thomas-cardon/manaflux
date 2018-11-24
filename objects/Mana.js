@@ -52,6 +52,8 @@ class Mana {
 
     this.championStorageHandler = new (require('./handlers/ChampionStorageHandler'))();
     this.championSelectHandler = new (require('./handlers/ChampionSelectHandler'))();
+    this.statisticsHandler = new (require('./handlers/StatisticsHandler'))();
+
     this.providerHandler = new (require('./handlers/ProviderHandler'))(this.devMode);
 
     this.gameflow = require('./riot/leagueoflegends/Gameflow');
@@ -87,6 +89,7 @@ class Mana {
     $('.version').text(`V${this.version} - V${this.gameClient.branch}`);
 
     await this.championStorageHandler.load();
+    await this.statisticsHandler.load();
 
     if (this.getStore().get('lastBranchSeen') !== this.gameClient.branch) {
       this.championStorageHandler.clear();
