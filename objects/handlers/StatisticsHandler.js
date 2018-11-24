@@ -1,4 +1,18 @@
+const Store = require('electron-store');
+
 class StatisticsHandler {
+  constructor() {
+    this.store = new Store({ name: 'statistics' });
+  }
+
+  async load() {
+    if (this.store.size === 0)
+      await UI.indicator(this.getStatisticsData(), 'statistics-loading');
+  }
+
+  async getStatisticsData() {
+    console.log(2, '[ProviderHandler] Downloading global statistics');
+  }
 
   display(champion, data, position) {
     data = {
