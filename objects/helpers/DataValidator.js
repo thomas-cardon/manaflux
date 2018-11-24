@@ -50,34 +50,51 @@ class DataValidator {
     delete data.region;
   }
 
+  /*
+  * Ensure every rune is at its slot, that styles are the good ones, creates page names, etc.
+  */
   onPerkPagesCheck(array, champion, role, preseason) {
-    array = array.filter(x => x.selectedPerkIds && x.selectedPerkIds.length >= 6 && !this._hasDuplicates(x.selectedPerkIds));
+    array = array.filter(x => x.selectedPerkIds && x.selectedPerkIds.length >= 6);
+    console.dir(array);
 
     if (Mana.preseason)
-      UI.success(i18n.__('preseason-perks'));
+    UI.success(i18n.__('preseason-perks'));
 
-    array.forEach((page, index) => { /* Recreates primaryStyleId or subStyleId based on perks if it's missing */
-      page.name = `${page.provider ? Mana.providerHandler.getProvider(page.provider).getCondensedName() : 'XXX'}${index + 1} ${champion.name} > ${UI.stylizeRole(role)}${page.suffixName ? ' ' + page.suffixName : ''}`;
+    array.forEach((page, index) => {
+      const provider = Mana.providerHandler.getProvider(page.provider);
+      console.log(3, 'Old page');
+      console.dir(3, page);
+
+      console.log(`[DataValidator] Validating perk pages from ${provider.name}, for ${champion.name} - ${role}`);
+
+      page.name = `${page.provider ? provider.getCondensedName() : 'XXX'}${index + 1} ${champion.name} > ${UI.stylizeRole(role)}${page.suffixName ? ' ' + page.suffixName : ''}`;
 
       page.primaryStyleId = page.primaryStyleId || Mana.gameClient.findPerkStyleByPerkId(page.selectedPerkIds[0]).id;
       page.subStyleId = page.subStyleId || Mana.gameClient.findPerkStyleByPerkId(page.selectedPerkIds[4]).id;
 
+      page.selectedPerkIds = page.selectedPerkIds.filter(x => !isNaN(x)).map(x => parseInt(x));
+
       const primaryStyle = Mana.gameClient.styles.find(x => x.id === page.primaryStyleId);
+      const subStyle = Mana.gameClient.styles.find(x => x.id === page.subStyleId);
+
       if (page.selectedPerkIds.length === 6 && Mana.preseason) {
         console.log('[DataValidator] Looks like it\'s preseason and it\'s time to fix missing things...');
         page.selectedPerkIds = page.selectedPerkIds.concat(primaryStyle.defaultPerks.slice(-3));
       }
 
       page.selectedPerkIds.forEach((id, index) => {
-        if (index > 3 && !primaryStyle.defaultStatModsPerSubStyle.find(x => x.id == page.subStyleId).perks.includes(id)) {
-          console.log('[DataValidator] Perk mod isn\'t supposed to be at this slot. Using a generic one.');
-          id = primaryStyle.defaultStatModsPerSubStyle.find(x => x.id == page.subStyleId).perks[0];
+        console.log(`index: ${index} for id ${id}`);
+
+        if (index > 5 && !primaryStyle.defaultStatModsPerSubStyle.find(x => x.id == page.subStyleId).perks.includes(id)) {
+          console.log(`[DataValidator] Perk mod #${id} isn\'t supposed to be at the slot ${index}. Replacing with generic: ${id = primaryStyle.defaultStatModsPerSubStyle.find(x => x.id == page.subStyleId).perks[index % 6]}.`);
         }
-        else if (index <= 6 && !primaryStyle.slots[index].perks.includes(id)) {
-          console.log('[DataValidator] Perk ID isn\'t supposed to be at this slot. Using a generic one.');
-          id = primaryStyle.slots[index].perks[0];
+        else if (index <= 5 && !(index > 3 ? subStyle : primaryStyle).slots[index].perks.includes(id)) {
+          console.log(`[DataValidator] Perk #${id} isn\'t supposed to be at the slot ${index}. Replacing with generic: ${id = primaryStyle.slots[index].perks[0]}.`);
         }
       });
+
+      console.log(3, 'New page');
+      console.dir(3, page);
     });
 
     return array;
