@@ -44,7 +44,7 @@ class LeagueofGraphsProvider extends Provider {
       rp({ uri: `${this.base}/runes/${champion.key}${position ? '/' + position : ''}`.toLowerCase(), transform: body => cheerio.load(body) }),
       Mana.getStore().get('item-sets-enable') ? rp({ uri: `${this.base}/items/${champion.key}${position ? '/' + position : ''}`.toLowerCase(), transform: body => cheerio.load(body) }) : Promise.resolve(),
       Mana.getStore().get('summoner-spells') ? rp({ uri: `${this.base}/spells/${champion.key}${position ? '/' + position : ''}`.toLowerCase(), transform: body => cheerio.load(body) }) : Promise.resolve(),
-      Mana.getStore().get('statistics') ? rp({ uri: `${this.base}/statistics/${champion.key}${position ? '/' + position : ''}`.toLowerCase(), transform: body => cheerio.load(body) }) : Promise.resolve(),
+      Mana.getStore().get('statistics') && false ? rp({ uri: `${this.base}/stats/${champion.key}${position ? '/' + position : ''}`.toLowerCase(), transform: body => cheerio.load(body) }) : Promise.resolve(),
       rp({ uri: `${this.base}/skills-orders/${champion.key}${position ? '/' + position : ''}`.toLowerCase(), transform: body => cheerio.load(body) })
     ]);
 
