@@ -52,7 +52,7 @@ class LeagueofGraphsProvider extends Provider {
 
     const itemsets = Mana.getStore().get('item-sets-enable') ? this.scrapeItemSets(data[1], champion, position, this.scrapeSkillOrder(data[data.length - 1])) : [];
     const summonerspells = Mana.getStore().get('summoner-spells') ? this.scrapeSummonerSpells(data[2], champion) : [];
-    const statistics = Mana.getStore().get('statistics') ? {} : {};
+    const statistics = Mana.getStore().get('statistics') ? this.scrapeStatistics(data[3]) : {};
 
     return { perks, itemsets, summonerspells, statistics, gameMode };
   }
@@ -158,6 +158,64 @@ class LeagueofGraphsProvider extends Provider {
     itemset.addBlocks(...blocks);
     itemset.addBlock(new Block().setType({ i18n: 'item-sets-block-consumables' }).addItem(2003).addItem(2138).addItem(2139).addItem(2140));
     return [itemset];
+  }
+
+  /**
+   * Scrapes statistics from a League of Graphs page
+   * @param {cheerio} $ - The cheerio object
+   */
+  scrapeStatistics($) {
+    let data = { stats: { roles: {} }, matchups: { counters: {}, synergies: {} } };
+
+    $('#mainContent > .row').eq(0).each(function(index) {
+      let statsVar;
+
+      switch(index) {
+        case 0:
+          statsVar = 'playrate';
+          break;
+        case 1:
+          statsVar = 'winrate';
+          break;
+        case 2:
+          statsVar = 'banrate';
+          break;
+        case 3:
+          statsVar = 'mainrate';
+          break;
+      }
+
+      data.stats[statsVar] = { avg: $(this).find('.pie-chart').text().trim() };
+    });
+
+
+    $('#mainContent > div:nth-child(2) > div:nth-child(2)').find('table').find('tr').slice(1).each(function(index) {
+      data.stats.roles[this.convertLOGPosition($(this).children().eq(0).text().trim()).toUpperCase()] = {
+        playrate: { avg: $(this).children().eq(1).text().trim().slice(0, 5) },
+        winrate: { avg: $(this).children().eq(2).text().trim().slice(0, 5) }
+      };
+    });
+
+    const kda = $('#mainContent > div:nth-child(2) > div:nth-child(2) > div.box.box-padding.number-only-chart.text-center > div.number').text().trim().replace(/(\r\n\t|\n|\r\t| )/gm,'').split('/');
+
+    data.stats.k = { avg: kda[0] };
+    data.stats.d = { avg: kda[1] };
+    data.stats.a = { avg: kda[2] };
+
+    return data;
+  }
+
+  convertLOGPosition(pos) {
+    if (!pos) return;
+
+    switch(pos.toLowerCase()) {
+      case 'jungler':
+        return 'jungle';
+      case 'mid':
+        return 'middle';
+      default:
+        return pos.toLowerCase();
+    }
   }
 
   getCondensedName() {
