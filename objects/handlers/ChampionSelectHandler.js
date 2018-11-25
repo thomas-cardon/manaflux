@@ -195,6 +195,8 @@ class ChampionSelectHandler {
   async onDisplayUpdate(champion, res) {
     if (!this._inChampionSelect) return;
     if (!res || Object.keys(res.roles).length === 0) throw this._onCrash(i18n.__('champion-select-error-empty'));
+    else if (this._hasCrashed) this._recoverCrash();
+
     const self = this;
 
     console.dir(res);
@@ -288,7 +290,7 @@ class ChampionSelectHandler {
 
     document.getElementById('home').innerHTML += `<div id="crash"><center><p style="margin-top: 18%;width:95%;color: #c0392b;"><span style="color: #b88d35;">${i18n.__('champion-select-internal-error')}</span><br><br>${error}</p><p class="suboption-name">${i18n.__('settings-restart-app')}</p><button class="btn normal" onclick="ipcRenderer.send('restart')">${i18n.__('settings-restart-app-button')}</button></center></div>`;
     console.error(error);
-    
+
     return Error(error);
   }
 
