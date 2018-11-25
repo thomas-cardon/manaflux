@@ -69,13 +69,13 @@ class DataValidator {
 
       page.name = `${page.provider ? provider.getCondensedName() : 'XXX'}${index + 1} ${champion.name} > ${UI.stylizeRole(role)}${page.suffixName ? ' ' + page.suffixName : ''}`;
 
-      page.primaryStyleId = page.primaryStyleId || Mana.gameClient.findPerkStyleByPerkId(page.selectedPerkIds[0]).id;
-      page.subStyleId = page.subStyleId || Mana.gameClient.findPerkStyleByPerkId(page.selectedPerkIds[4]).id;
+      page.primaryStyleId = parseInt(page.primaryStyleId || Mana.gameClient.findPerkStyleByPerkId(page.selectedPerkIds[0]).id);
+      page.subStyleId = parseInt(page.subStyleId || Mana.gameClient.findPerkStyleByPerkId(page.selectedPerkIds[4]).id);
 
       page.selectedPerkIds = page.selectedPerkIds.filter(x => !isNaN(x)).map(x => parseInt(x));
 
-      const primaryStyle = Mana.gameClient.styles.find(x => x.id === page.primaryStyleId);
-      const subStyle = Mana.gameClient.styles.find(x => x.id === page.subStyleId);
+      const primaryStyle = Mana.gameClient.styles.find(x => x.id == page.primaryStyleId);
+      const subStyle = Mana.gameClient.styles.find(x => x.id == page.subStyleId);
 
       if (page.selectedPerkIds.length === 6 && Mana.preseason) {
         console.log('[DataValidator] Looks like it\'s preseason and it\'s time to fix missing things...');
@@ -88,8 +88,11 @@ class DataValidator {
         if (index > 5 && !primaryStyle.defaultStatModsPerSubStyle.find(x => x.id == page.subStyleId).perks.includes(id)) {
           console.log(`[DataValidator] Perk mod #${id} isn\'t supposed to be at the slot ${index}. Replacing with generic: ${id = primaryStyle.defaultStatModsPerSubStyle.find(x => x.id == page.subStyleId).perks[index % 6]}.`);
         }
-        else if (index <= 5 && !(index > 3 ? subStyle : primaryStyle).slots[index].perks.includes(id)) {
-          console.log(`[DataValidator] Perk #${id} isn\'t supposed to be at the slot ${index}. Replacing with generic: ${id = primaryStyle.slots[index].perks[0]}.`);
+        else if (index < 5 && !(index > 3 ? subStyle : primaryStyle).slots[(index % 4) + (index > 3 ? 1 : 0)].perks.includes(id)) {
+          console.dir((index > 3 ? subStyle : primaryStyle));
+          console.dir((index > 3 ? subStyle : primaryStyle).slots[(index % 4) + (index > 3 ? 1 : 0)].perks);
+
+          console.log(`[DataValidator] Perk #${id} isn\'t supposed to be at the slot ${index % 4}. Replacing with generic: ${id = (index > 3 ? subStyle : primaryStyle).slots[(index % 4) + (index > 3 ? 1 : 0)].perks[0]}.`);
         }
       });
 
