@@ -39,7 +39,8 @@ class ProviderHandler {
     }
 
     /* 2/5 - Downloading */
-    const providers = providerList || Mana.getStore().get('providers-order', Object.keys(this.providers)).filter(x => gameModeHandler.getProviders() === null || gameModeHandler.getProviders().includes(x)).filter(x => this.isProviderEnabled(x));
+    let providers = providerList || Mana.getStore().get('providers-order', Object.keys(this.providers)).filter(x => this.isProviderEnabled(x));
+    if (gameModeHandler.getProviders() !== null) providers = providers.filter(x => gameModeHandler.getProviders() === null || gameModeHandler.getProviders().includes(x));
 
     for (let provider of providers) {
       provider = this.providers[provider];
