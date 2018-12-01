@@ -88,12 +88,6 @@ class DataValidator {
         if (index > 5 && !primaryStyle.defaultStatModsPerSubStyle.find(x => x.id == page.subStyleId).perks.includes(id)) {
           console.log(`[DataValidator] Perk mod #${id} isn\'t supposed to be at the slot ${index}. Replacing with generic: ${id = primaryStyle.defaultStatModsPerSubStyle.find(x => x.id == page.subStyleId).perks[index % 6]}.`);
         }
-        else if (index < 5 && !(index > 3 ? subStyle : primaryStyle).slots[(index % 4) + (index > 3 ? 1 : 0)].perks.includes(id)) {
-          console.dir((index > 3 ? subStyle : primaryStyle));
-          console.dir((index > 3 ? subStyle : primaryStyle).slots[(index % 4) + (index > 3 ? 1 : 0)].perks);
-
-          console.log(`[DataValidator] Perk #${id} isn\'t supposed to be at the slot ${index % 4}. Replacing with generic: ${id = (index > 3 ? subStyle : primaryStyle).slots[(index % 4) + (index > 3 ? 1 : 0)].perks[0]}.`);
-        }
       });
 
       console.log(3, 'New page');
