@@ -85,9 +85,8 @@ class DataValidator {
       page.selectedPerkIds.forEach((id, index) => {
         console.log(`index: ${index} for id ${id}`);
 
-        if (index > 5 && !primaryStyle.defaultStatModsPerSubStyle.find(x => x.id == page.subStyleId).perks.includes(id)) {
+        if (index > 5 && !primaryStyle.defaultStatModsPerSubStyle.find(x => x.id == page.subStyleId).perks.includes(id))
           console.log(`[DataValidator] Perk mod #${id} isn\'t supposed to be at the slot ${index}. Replacing with generic: ${id = primaryStyle.defaultStatModsPerSubStyle.find(x => x.id == page.subStyleId).perks[index % 6]}.`);
-        }
       });
 
       console.log(3, 'New page');
