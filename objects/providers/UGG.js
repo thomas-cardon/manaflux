@@ -57,7 +57,7 @@ class UGGProvider extends Provider {
         perks: 0,
         summonerspells: 1,
         skillorder: 4,
-        statShards: 8
+        shards: 8
       },
       skillorder: {
         games: 0,
@@ -75,7 +75,7 @@ class UGGProvider extends Provider {
         won: 1,
         mainPerk: 2,
         subPerk: 3,
-        perks: 4
+        stats: 4
       },
       shards: {
         games: 0,
@@ -109,16 +109,14 @@ class UGGProvider extends Provider {
   * @param {object} x - The data object
   */
   scrapePerks(x) {
-    console.dir(x);
-
     let page = {};
 
     const perksData = x[this.u.stats.perks];
-    const shardsData = x[this.u.shards.stats].map(str => parseInt(str, 10));
+    const shardsData = x[this.u.stats.shards][this.u.shards.stats].map(str => parseInt(str, 10));
 
     page.primaryStyleId = perksData[this.u.perks.mainPerk];
     page.subStyleId = perksData[this.u.perks.subPerk];
-    page.selectedPerkIds = perksData[this.u.perks.perks];
+    page.selectedPerkIds = perksData[this.u.perks.stats].concat(shardsData);
 
     return page;
   }
