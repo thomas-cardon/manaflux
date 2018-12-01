@@ -58,7 +58,7 @@ class LeagueofGraphsProvider extends Provider {
   }
 
   /**
-   * Scrapes item sets from a League of Graphs page
+   * Scrapes perks from a League of Graphs page
    * @param {cheerio} $ - The cheerio object
    */
   scrapePerks($) {
