@@ -11,6 +11,7 @@ class ProviderHandler {
       leagueofgraphs: new (require('../providers/LeagueofGraphs'))(),
       lolflavor: new (require('../providers/LoLFlavor'))(),
       metasrc: new (require('../providers/METAsrc'))(),
+      ugg: new (require('../providers/UGG'))(),
       flux: new (require('../providers/Flux'))()
     };
   }
