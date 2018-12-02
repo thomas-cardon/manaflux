@@ -27,11 +27,15 @@ class GameClient {
     return d;
   }
 
+  findSummonerSpellByName(name) {
+    return Object.values(Mana.summonerspells).find(spell => spell.name === name);
+  }
+
   async getChampionSummary(d = {}) {
     const championSummaryData = JSON.parse(await rp(Mana.base + 'lol-game-data/assets/v1/champion-summary.json'));
 
     for (let champion of championSummaryData)
-      d[champion.id] = { id: champion.id, key: champion.alias, name: champion.name, img: 'http://localhost:3681' + champion.squarePortraitPath };
+      d[champion.id] = { id: champion.id, key: champion.alias, name: champion.name, img: 'http://localhost:' + Mana.assetsProxy.port + champion.squarePortraitPath };
 
     return d;
   }
@@ -40,28 +44,28 @@ class GameClient {
     return JSON.parse(await rp(Mana.base + 'riotclient/get_region_locale'));
   }
 
-  async downloadDDragonRealm() {
-    return this.realm = JSON.parse(await rp(`https://ddragon.leagueoflegends.com/realms/${this.region}.json`));
-  }
+  async queryPerks() {
+    const perksData = JSON.parse(await rp(Mana.base + 'lol-game-data/assets/v1/perks.json')), stylesData = JSON.parse(await rp(Mana.base + 'lol-game-data/assets/v1/perkstyles.json'));
 
-  async getPerks() {
-    return JSON.parse(await rp(`http://ddragon.leagueoflegends.com/cdn/${this.realm.v}/data/${this.locale || this.realm.l}/runesReforged.json`));
+    const perks = {};
+    perksData.forEach(x => perks[x.id] = x);
+
+    this.perks = perks;
+
+    this.styles = this.preseason ? stylesData.styles : stylesData;
   }
 
   findPerkByImage(img) {
-    for (const style of this.perks)
-      for (const slot of style.slots)
-        for (const perk of slot.runes)
-          if (perk.icon.toLowerCase() === img.toLowerCase()) return perk;
+    return Object.values(this.perks).find(x => x.iconPath.toLowerCase().includes(img.toLowerCase()));
   }
 
-  findSummonerSpellByName(name) {
-    for (const spell of Object.values(Mana.summonerspells))
-      if (spell.name == name) return spell;
+  findPerkStyleByImage(img) {
+    return this.styles.find(x => x.iconPath.toLowerCase().includes(img.toLowerCase()));
   }
+
 
   findPerkStyleByPerkId(id) {
-    return Mana.gameClient.perks.find(x => x.slots.some(y => y.runes.some(z => z.id === parseInt(id))));
+    return this.styles.find(x => x.slots.some(y => y.perks.some(z => z === parseInt(id))));
   }
 
   async load() {
@@ -69,13 +73,17 @@ class GameClient {
 
     this.region = r.region.toLowerCase();
     this.locale = r.locale;
+    this.language = r.webLanguage;
 
-    await this.downloadDDragonRealm();
     let x = await this.getSystemBuilds();
 
     this.branch = x.branch;
     this.fullVersion = x.version;
-    this.perks = await this.getPerks();
+
+    this.preseason = parseFloat(this.fullVersion.slice(0, 4)) >= 8.23;
+    await this.queryPerks();
+
+    return this.preseason;
   }
  }
 

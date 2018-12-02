@@ -1,11 +1,12 @@
 {
   "name": "manaflux",
-  "version": "2.0.1",
+  "version": "2.1.9",
   "description": "Manaflux downloads automatically your runes, itemsets, and summonerspells and injects them to your League client seamlessly!",
   "main": "main.js",
   "scripts": {
     "build": "build --win",
-    "ship": "build --win --ia32 --x64 -p always"
+    "ship": "build --win --ia32 --x64 -p always",
+    "test": "mocha ./tests"
   },
   "keywords": [
     "League of Legends",
@@ -22,17 +23,23 @@
   },
   "license": "CC0-1.0",
   "devDependencies": {
-    "electron": "^3.0.5",
-    "electron-builder": "^20.17.1"
+    "@types/mocha": "^5.2.5",
+    "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
+    "electron": "^3.0.9",
+    "electron-builder": "^20.36.2",
+    "electron-chromedriver": "^4.0.0-beta.1",
+    "mocha": "^5.2.0",
+    "spectron": "^5.0.0"
   },
   "dependencies": {
-    "@sentry/electron": "^0.8.1",
     "cheerio": "^1.0.0-rc.2",
     "chokidar": "^2.0.4",
     "electron-store": "^2.0.0",
     "electron-sudo": "^4.0.12",
-    "electron-updater": "^2.22.1",
-    "request": "^2.87.0",
+    "electron-updater": "^4.0.0",
+    "node-machine-id": "^1.1.10",
+    "request": "^2.88.0",
     "request-promise-native": "^1.0.5"
   },
   "repository": "https://github.com/Ryzzzen/manaflux",

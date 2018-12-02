@@ -1,5 +1,6 @@
 const rp = require('request-promise-native');
 const DataValidator = new (require('../helpers/DataValidator'))();
+const EventEmitter = require('events');
 
 class ProviderHandler {
   constructor() {
@@ -10,6 +11,7 @@ class ProviderHandler {
       leagueofgraphs: new (require('../providers/LeagueofGraphs'))(),
       lolflavor: new (require('../providers/LoLFlavor'))(),
       metasrc: new (require('../providers/METAsrc'))(),
+      ugg: new (require('../providers/UGG'))(),
       flux: new (require('../providers/Flux'))()
     };
   }
@@ -18,25 +20,30 @@ class ProviderHandler {
     return this.providers[x];
   }
 
-  async getChampionData(champion, preferredPosition, gameModeHandler, cache, providerList) {
-    const gameMode = gameModeHandler.getGameMode() || 'CLASSIC';
+  isProviderEnabled(x) {
+    return Mana.getStore().get('providers-order-' + x.id, true);
+  }
+
+  async getChampionData(champion, preferredPosition, gameModeHandler, cache, providerList, bulkDownloadMode) {
+    console.log(2, '[ProviderHandler] Downloading data for', champion.name);
+    const gameMode = bulkDownloadMode ? gameModeHandler.getGameMode() : Mana.gameflow.getGameMode();
 
     /* 1/5 - Storage Checking */
-    if (Mana.getStore().has(`data.${champion.id}`) && cache) {
-      console.log(2, `[ProviderHandler] Using local storage`);
+    let data = await Mana.championStorageHandler.get(champion.id);
+    if (data && cache) {
+      if (!bulkDownloadMode && (data.roles[preferredPosition || Object.keys(data.roles)[0]]).gameMode === gameMode) {
+        console.log(2, `[ProviderHandler] Using local storage`);
 
-      const data = Mana.getStore().get(`data.${champion.id}`);
-      DataValidator.onDataDownloaded(data, champion, gameMode);
-
-      return data;
+        DataValidator.onDataDownloaded(data, champion);
+        return data;
+      }
     }
 
     /* 2/5 - Downloading */
-    const providers = providerList || Mana.getStore().get('providers-order', Object.keys(this.providers)).filter(x => gameModeHandler.getProviders() === null || gameModeHandler.getProviders().includes(x));
-    providers.unshift(...providers.splice(providers.indexOf('flux'), 1));
-    providers.push(providers.splice(providers.indexOf('lolflavor'), 1)[0])
+    let providers = providerList || Mana.getStore().get('providers-order', Object.keys(this.providers)).filter(x => this.isProviderEnabled(x));
+    if (gameModeHandler.getProviders() !== null) providers = providers.filter(x => gameModeHandler.getProviders() === null || gameModeHandler.getProviders().includes(x));
 
-    let data;
+    console.log('[ProviderHandler] Using providers: ', providers.map(x => this.providers[x].name).join(' => '));
 
     for (let provider of providers) {
       provider = this.providers[provider];
@@ -70,7 +77,7 @@ class ProviderHandler {
     }
 
     /* 3/5 - Validate */
-    data = DataValidator.onDataDownloaded(data, champion, gameMode);
+    data = DataValidator.onDataDownloaded(data, champion);
 
     /* 4/5 - Saving to offline cache
        5/5 - Uploading to online cache */
@@ -81,19 +88,27 @@ class ProviderHandler {
   /**
    * Runs tasks when champion select ends
    */
-  onChampionSelectEnd(cache = this._cache, flux = this.providers.flux) {
-    setTimeout(function() {
-      UI.loading(true);
+  async onChampionSelectEnd(cache = this._cache, flux = this.providers.flux) {
+    var i = cache.length;
 
-      cache.forEach(data => {
-        DataValidator.onDataUpload(data);
-        Mana.getStore().set(`data.${data.championId}`, data);
+    while (i--) {
+      if (!cache[i]) {
+        cache.splice(i, 1);
+        continue;
+      }
 
-        UI.indicator(flux.upload(data), 'providers-flux-uploading');
-      });
+      if (!cache[i].flux) {
+        DataValidator.onDataUpload(cache[i]);
+        await UI.indicator(flux.upload(cache[i]), 'providers-flux-uploading');
+      }
 
-      cache = [];
-    }, 3000);
+      DataValidator.onDataStore(cache[i]);
+
+      await Mana.championStorageHandler.update(cache[i].championId, x => this._merge(cache[i], x));
+      cache.splice(i, 1);
+    }
+
+    await Mana.championStorageHandler.save();
   }
 
   /**
@@ -102,15 +117,20 @@ class ProviderHandler {
    * @param {object} y - The object to copy properties from
    */
   _merge(x, y) {
+    if (!x) return y;
+    else if (!y) return x;
+
     for (const [name, role] of Object.entries(y.roles)) {
       if (!x.roles[name]) x.roles[name] = role;
       else {
         for (const [k, v] of Object.entries(role)) {
           if (!x.roles[name][k]) x.roles[name][k] = v;
-          else if (Array.isArray(x.roles[name][k])) x.roles[name][k] = x.roles[name][k].concat(v);
+          else if (Array.isArray(x.roles[name][k])) x.roles[name][k] = x.roles[name][k].concat(v).filter((x, pos, self) => self.indexOf(x) === pos);
         }
       }
     }
+
+    return x;
   }
 }
 

@@ -19,7 +19,7 @@
   margin-top: 30px;
 }
 
-#updateStatus > p#version {
+#updateStatus > p#updateVersion {
   color: #c03546;
 }
 

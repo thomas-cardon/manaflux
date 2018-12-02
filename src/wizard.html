@@ -70,6 +70,8 @@
         if (exists) ipcRenderer.send('lcu-set-path', leaguePath);
       });
     });
+
+    document.querySelector('.btn.tab').click();
   })();
 
   function _exists(path) {

@@ -10,7 +10,7 @@ function i18n(x) {
       this._language = JSON.parse(fs.readFileSync(path.join(__dirname, '/locales/',  this._locale + '.json'), 'utf8'));
   }
   catch(err) {
-    log.error(0, err);
+    console.error(err);
   }
 
   if (process && process.type === 'renderer')

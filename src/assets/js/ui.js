@@ -1,12 +1,15 @@
-const { captureException } = require('@sentry/electron');
 var UI = {};
 
-UI.stylizeRole = (role = 'unknown') => {
+UI.stylize = UI.stylizeRole = (role = 'unknown') => {
   switch(role.toLowerCase()) {
     case 'aram':
       return 'ARAM';
     case 'adc':
       return 'ADC';
+    case 'twisted_treeline':
+      return '3vs3';
+    case 'classic':
+      return '5vs5';
     default:
       return role.charAt(0).toUpperCase() + role.slice(1).toLowerCase();
   }
@@ -35,7 +38,7 @@ UI.loading = async (toggle = document.getElementById('loading').style.display ==
 */
 let s, id;
 UI.status = (...args) => {
-  let x = i18n.__.call(i18n, ...args.slice(args[0].then ? 1 : 0));
+  let x = i18n.__.call(i18n, ...args.slice(args[0].then ? 1 : 0)).slice(0, 42);
 
   if (args[0].then)
     return new Promise((resolve, reject) => {
@@ -81,7 +84,6 @@ UI.error = function(...args) {
   if (args[0] instanceof Error) {
     console.error(args[0]);
 
-    captureException(args[0]);
     alertify.notify(args[0].toString(), 'error', 10, () => $('#warning').hide());
     return args[0];
   }
@@ -129,23 +131,30 @@ $.fn.disableManualButton = function(disable) {
 }
 
 /* Hextech Animation Handler */
-UI.enableHextechAnimation = function(champion, primaryStyleId = 'white') {
-	$('.championPortrait > #hextechAnimationBackground').attr('src', 'assets/img/vfx-' + primaryStyleId + '.png');
-	$('.championPortrait > #champion')
-	.attr('src', champion.img);
+UI.enableHextechAnimation = function(champion = Mana.champions[-1], primaryStyleId = 'white') {
+	document.querySelector('.championPortrait > #hextechAnimationBackground').setAttribute('src', 'assets/img/vfx-' + primaryStyleId + '.png');
+  document.querySelector('.championPortrait > #champion').setAttribute('src', champion.img);
 
-  if (Mana.getStore().get('ui-animations-enable')) $('.championPortrait > #champion').on('load', () => $(".title").animate({ "margin-top": "55%" }, 700, "linear", () => $('.championPortrait').show()));
+  if (Mana.getStore().get('ui-animations-enable'))
+    document.querySelector('.championPortrait > #champion').onload = function() {
+      document.querySelector('.title').classList.remove('animated', 'fadeInDown');
+      document.querySelector('.title').classList.add('animated', 'fadeOutDown');
+      document.querySelector('.championPortrait').style.display = 'block';
+    };
   else {
-    $(".title").hide();
-    $('.championPortrait').show();
+    document.querySelector('.title').style.display = 'none';
+    document.querySelector('.championPortrait').style.display = 'block';
   }
 }
 
 UI.disableHextechAnimation = () => {
-	$('.championPortrait').hide();
+  document.querySelector('.championPortrait').style.display = 'none';
 
-	if (Mana.getStore().get('ui-animations-enable')) $(".title").animate({ "margin-top": "0%" }, 700, "linear");
-  else $(".title").show();
+	if (Mana.getStore().get('ui-animations-enable')) {
+    document.querySelector('.title').classList.remove('animated', 'fadeOutDown');
+    document.querySelector('.title').classList.add('animated', 'fadeInDown');
+  }
+  else document.querySelector('.title').style.display = 'block';
 }
 
 function getReadableFileSizeString(fileSizeInBytes) {

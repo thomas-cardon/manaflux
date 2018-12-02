@@ -1,0 +1,85 @@
+<html>
+<head>
+  <title>Downloader</title>
+  <meta charset="utf-8">
+  <meta name="author" content="Ryzzzen">
+  <link rel="stylesheet" href="assets/css/manaflux.css">
+  <link rel="stylesheet" href="assets/css/components/button.css">
+  <link rel="stylesheet" href="assets/css/components/settings.css">
+  <link rel="stylesheet" href="assets/css/components/loading.css">
+  <link rel="stylesheet" href="assets/css/components/warning.css">
+  <link rel="stylesheet" href="assets/css/components/status.css">
+  <link rel="stylesheet" href="assets/css/components/version.css">
+  <link rel="stylesheet" href="assets/css/components/input.css">
+  <link rel="stylesheet" href="assets/css/components/progress.css">
+  <link rel="stylesheet" href="assets/css/downloader.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body style="background: linear-gradient(rgba(125, 185, 232, 0) -1%, rgba(50, 96, 122, 0) 65%, rgba(10, 49, 64, 0.8) 100%), url(./assets/img/themes/default-bg.jpg) no-repeat;">
+  <img src="assets/img/warning.png" id="warning" draggable="false" style="display: none;">
+  <img src="assets/img/components/loading.gif" id="loading"></img>
+  <div class="tab-container">
+    <div class="controls">
+      <button type="button" class="btn control" onclick="remote.getCurrentWindow().close();"><i class="material-icons icon">clear</i></button>
+    </div>
+  </div>
+  <div class="content">
+    <center>
+      <h2 class="title" data-i18n="providers-downloader"></h2>
+      <p id="note" data-i18n="providers-downloader-note"></p>
+      <div class="textcontainer" id="text">
+      </div>
+      <progress id="download"></progress>
+    </center>
+  </div>
+  <script src="vendor/jquery-3.3.1.min.js" onload="window.$ = window.jQuery = module.exports;"></script>
+  <script>
+  window.eval = global.eval = function () { throw new Error(i18n.__('eval')) };
+  require('../crash-reporting.js');
+
+  const { ipcRenderer, remote } = require('electron');
+  const fs = require('fs'), path = require('path');
+  const { dialog } = remote;
+
+  process.on('unhandledRejection', (reason, p) => console.log(3, `Unhandled rejection at: ${p}, reason: ${reason}`));
+  process.on('uncaughtException', console.error);
+
+  global.i18n = new (require('../objects/i18n'));
+
+  ipcRenderer.once('champions-length', (event, length) => {
+    document.getElementById('download').max = length;
+  });
+
+  ipcRenderer.on('champion-download', (event, d) => {
+    document.getElementById('download').setAttribute('data-label', i18n.__('providers-downloader-downloading', d.name, UI.stylize(d.gameMode)));
+    document.getElementById('text').innerHTML += `${d.name} (${UI.stylize(d.gameMode)})<br>`;
+  });
+
+  ipcRenderer.on('champion-downloaded', (event, n = 1) => {
+    document.getElementById('download').value += n;
+  });
+
+  ipcRenderer.on('download-done', (event, name) => {
+    document.getElementById('download').setAttribute('data-label', i18n.__('providers-downloader-done', document.getElementById('download').value = document.getElementById('download').max));
+  });
+
+  ipcRenderer.on('flux-download', () => {
+    document.getElementById('download').setAttribute('data-label', i18n.__('providers-downloader-flux'));
+  });
+
+  ipcRenderer.on('flux-download-done', () => {
+    document.getElementById('download').setAttribute('data-label', '...');
+    document.getElementById('download').value = 0;
+  });
+
+  ipcRenderer.on('champion-treated-flux', (event, name) => {
+    document.getElementById('text').innerHTML += `${name} (Flu.x)<br>`;
+    document.getElementById('download').value++;
+  });
+
+  </script>
+  <script src="assets/js/ui.js"></script>
+  <script src="assets/js/ui/i18n.js"></script>
+  <script src="assets/js/ui/tab-handler.js"></script>
+</body>
+</html>

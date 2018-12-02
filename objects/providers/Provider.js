@@ -23,6 +23,11 @@ class Provider {
     return x[position] && x[position].perks ? x[position].perks : {};
   }
 
+  // WIP
+  _ensureSkillOrderCharacters(x) {
+    return x;
+  }
+
   getCondensedName() {
     return this.id.slice(0, 3).toUpperCase();
   }

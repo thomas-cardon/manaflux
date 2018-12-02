@@ -36,8 +36,7 @@ class ChampionGGProvider extends Provider {
         console.log(`[ProviderHandler] [Champion.GG] Something happened while gathering data (${position.name})`);
 
         if (err.toString().includes('Data is outdated')) {
-          console.log(`[ProviderHandler] [Champion.GG] Skipping provider`);
-          return null;
+          throw UI.error('providers-error-outdated', this.name);
         }
         else console.error(err);
       }
@@ -69,25 +68,26 @@ class ChampionGGProvider extends Provider {
 
     let perks = this.scrapePerks($, champion, position);
 
-    return { perks, summonerspells, itemsets, availablePositions, position: position.toUpperCase() };
+    return { perks, summonerspells, itemsets, availablePositions, position: position.toUpperCase(), gameMode };
   }
 
   /**
    * Scrapes item sets from a Champion.gg page
    * @param {cheerio} $ - The cheerio object
-   * @param {object} champion - A champion object, from Mana.champions
-   * @param {string} position - Limited to: TOP, JUNGLE, MIDDLE, ADC, SUPPORT
    */
-  scrapePerks($, champion, position) {
+  scrapePerks($) {
     let pages = [{ suffixName: `(HW%)`, selectedPerkIds: [] }, { suffixName: `(MF)`, selectedPerkIds: [] }];
 
-    $("img[src*='perk-images']", $("div[class^=Slot__LeftSide]")).each(function(index) {
-      let page = Math.trunc(index / 8), perk = $(this).attr("src").slice(38);
-      if (index % 8 === 0) pages[page].primaryStyleId = Mana.gameClient.perks.find(x => x.icon === perk).id;
-      else if (index % 8 === 5) pages[page].subStyleId = Mana.gameClient.perks.find(x => x.icon === perk).id;
+    $("img[src*='perk-images'], img[src*='rune-shards']", $("div[class^=Slot__LeftSide]")).each(function(index) {
+      let page = Math.trunc(index / 11), perk = $(this).attr('src').slice(38);
+
+      if (index % 11 === 0) pages[page].primaryStyleId = Mana.gameClient.findPerkStyleByImage(perk).id;
+      else if (index % 11 === 5) pages[page].subStyleId = Mana.gameClient.findPerkStyleByImage(perk).id;
+      else if (index % 11 > 7) pages[page].selectedPerkIds.push($(this).attr('src').slice(-8, -4));
       else pages[page].selectedPerkIds.push(Mana.gameClient.findPerkByImage(perk).id);
     });
 
+    console.dir(pages);
     return pages;
   }
 

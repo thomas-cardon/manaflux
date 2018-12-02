@@ -1,6 +1,6 @@
 module.exports = {
   userConnected: async function(e) {
-    this.max = await Mana.user.getPerksInventory().getCount() || 2;
+    this.max = await Mana.user.getPerksInventory().queryCount() || 2;
 
     if (this.value > this.max) {
       Mana.getStore().set('perks-max', this.max)

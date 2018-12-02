@@ -4,6 +4,18 @@ progress {
   border-image: linear-gradient(to top, #785B28 0%, #C89C3C 55%, #C8A355 71%, #C8AA6E 100%);
   border-image-slice: 1;
   -webkit-appearance: none;
+  text-align: center;
+  position: relative;
+}
+
+progress:before {
+  position: absolute;
+  top: 12%;
+  left: 0;
+  right: 0;
+  content: attr(data-label);
+  font-size: 0.8em;
+  color: #c19b49;
 }
 
 progress::-webkit-progress-bar {
@@ -12,6 +24,10 @@ progress::-webkit-progress-bar {
 
 progress[value]::-webkit-progress-value {
   background-color: #2d98da;
+}
+
+progress.unknown-state[value]::-webkit-progress-value {
+  background-color: #f9ca24;
 }
 
 @keyframes animation {
