@@ -14,12 +14,12 @@ class RemoteConnectionHandler {
 
     this._server = polka()
       .use(log)
-      .get('/heartbeat', (req, res) => {
-        res.end('true');
-      })
       .get('/summoner', (req, res) => {
         res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({summonerName: Mana.user.getDisplayName()}));
+        res.end(JSON.stringify({ summonerName: Mana.user.getDisplayName() }));
+      })
+      .post('/phone-token', (req, res) => {
+
       })
       .listen(4500, err => {
         if (err) throw err;
