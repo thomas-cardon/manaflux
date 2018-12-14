@@ -1,4 +1,4 @@
-const polka = require('polka');
+const polka = require('polka'), rp = require('request-promise-native');
 const os = require('os');
 
 class RemoteConnectionHandler {
@@ -19,7 +19,16 @@ class RemoteConnectionHandler {
         res.end(JSON.stringify({ summonerName: Mana.user.getDisplayName() }));
       })
       .post('/phone-token', (req, res) => {
-
+        console.log('Phone token handled: ' + req.body);
+        
+        rp.post({
+          method: 'POST',
+          uri: 'https://manaflux-server.herokuapp.com/v1/phone/update-token',
+          body: req.body
+        }).then(() => {
+          res.writeHead(200, { 'Content-Type': 'text/html' });
+          res.end('OK');
+        }).catch(console.error);
       })
       .listen(4500, err => {
         if (err) throw err;
