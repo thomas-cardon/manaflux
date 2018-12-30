@@ -1,3 +1,4 @@
+const os = require('os');
 const QRCode = require('qrcode');
 
 module.exports = {
