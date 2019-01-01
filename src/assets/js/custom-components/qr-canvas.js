@@ -1,6 +1,5 @@
 const os = require('os');
 const QRCode = require('qrcode');
-const os = require('os');
 
 module.exports = {
   clientLoaded: function() {
