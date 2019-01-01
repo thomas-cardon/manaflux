@@ -12,23 +12,35 @@ class RemoteConnectionHandler {
       next();
     }
 
+    function handle( req, res, next ) {
+      var data = '';
+      req.on( 'data', function( chunk ) {
+        data += chunk;
+      });
+      req.on( 'end', function() {
+        req.rawBody = data;
+        console.log('Phone token handled: ' + req.rawBody);
+        rp.post({
+          method: 'POST',
+          uri: 'https://manaflux-server.herokuapp.com/v1/phone/update-token',
+          body: req.rawBody
+        }).then(() => {
+          res.writeHead(200, { 'Content-Type': 'text/html' });
+          res.end('OK');
+        }).catch(console.error);        
+        next();
+      });
+    }
+
     this._server = polka()
       .use(log)
+      .use(handle)
       .get('/summoner', (req, res) => {
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ summonerName: Mana.user.getDisplayName() }));
       })
-      .post('/phone-token', (req, res) => {
-        console.log('Phone token handled: ' + req.body);
-        
-        rp.post({
-          method: 'POST',
-          uri: 'https://manaflux-server.herokuapp.com/v1/phone/update-token',
-          body: req.body
-        }).then(() => {
-          res.writeHead(200, { 'Content-Type': 'text/html' });
-          res.end('OK');
-        }).catch(console.error);
+      .post('/phone-token', (req, res) => {        
+        console.log("[RemoteConnectionHandler] New token");
       })
       .listen(4500, err => {
         if (err) throw err;
