@@ -90,6 +90,10 @@ class OPGGProvider extends Provider {
       pages[Math.trunc(index / 6)].selectedPerkIds.push(parseInt($(this).attr('src').slice(-8, -4)));
     });
 
+    $('.fragment__summary').find('img').slice(0, 6).each(function(index) {
+      pages[index > 2 ? 1 : 0].selectedPerkIds.push(parseInt($(this).attr('src').slice(-8, -4)));
+    })
+
     return pages;
   }
 

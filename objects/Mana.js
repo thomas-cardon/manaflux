@@ -54,6 +54,8 @@ class Mana {
     this.championSelectHandler = new (require('./handlers/ChampionSelectHandler'))();
     this.providerHandler = new (require('./handlers/ProviderHandler'))(this.devMode);
 
+    this.gameflow = require('./riot/leagueoflegends/Gameflow');
+
     UI.loadSettings(this);
     UI.loadCustomComponents(this);
 
@@ -79,12 +81,13 @@ class Mana {
     this.assetsProxy.load();
     this.remoteConnectionHandler.start();
 
-    const data = await UI.indicator(Promise.all([this.gameClient.load(), this.gameClient.getChampionSummary(), this.gameClient.getSummonerSpells()]), 'status-loading-resources');
+    const data = await UI.indicator(Promise.all([this.gameClient.load(), this.gameClient.getChampionSummary(), this.gameClient.getSummonerSpells(), require('request-promise-native')('https://manaflux-server.herokuapp.com/api/alerts/v1')]), 'status-loading-resources');
 
-    this.preseason = parseFloat(this.gameClient.fullVersion.slice(0, 4)) >= 8.23;
+    this.preseason = data[0];
     this.champions = data[1];
     this.summonerspells = data[2];
 
+    this._alert(data[3]);
     $('.version').text(`V${this.version} - V${this.gameClient.branch}`);
 
     await this.championStorageHandler.load();
@@ -100,7 +103,8 @@ class Mana {
     ipcRenderer.send('lcu-preload-done');
   }
 
-  async onLeagueUserConnected(data) {
+  onLeagueUserConnected(data) {
+    if (this.user && this.user.getSummonerId() === data.summonerId) return;
     UI.status('league-client-connection');
 
     this.user = new (require('./User'))(data);
@@ -109,6 +113,9 @@ class Mana {
     document.querySelectorAll('[data-custom-component]').forEach(x => x.dispatchEvent(new Event('userConnected')));
 
     this.championSelectHandler.loop();
+
+    require('request-promise-native')(`https://manaflux-server.herokuapp.com/api/alerts/v1?v=${this.version}&summoner=${this.user.getSummonerId()}`).then(x => this._alert(x)).catch(err => console.error(err));
+
     UI.status('champion-select-waiting');
   }
 
@@ -130,6 +137,11 @@ class Mana {
 
   getStore() {
     return this._store;
+  }
+
+  _alert(message, repeat) {
+    if (!repeat && this._lastMessage === message) return;
+    alertify.warning(this._lastMessage = message);
   }
 }
 

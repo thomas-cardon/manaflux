@@ -126,7 +126,7 @@
   color: #f0e6d2;
 }
 
-@keyframes flash {
+@keyframes buttonFlash {
   0% {
     color: #CDBE91;
   }
@@ -137,7 +137,7 @@
 }
 
 .tab.flash {
-  animation: flash 0.3s alternate infinite;
+  animation: buttonFlash 0.3s alternate infinite;
 }
 
 .btn.tab:disabled {

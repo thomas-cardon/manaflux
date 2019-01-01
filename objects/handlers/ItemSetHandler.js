@@ -4,8 +4,10 @@ const { ItemSet, Block } = require('../ItemSet');
 class ItemSetHandler {
 
   static parse(key, obj, ...metadata) {
+    if (obj instanceof ItemSet) return obj;
+
     let set = new ItemSet(key, ...metadata);
-    set._data = obj;
+    set._data = obj._data || obj;
 
     for (let i = 0; i < set._data.blocks.length; i++) {
       if (!set._data.blocks[i].items) continue;

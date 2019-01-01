@@ -24,7 +24,7 @@ class GameAssetsProxy {
 
   load() {
     this._server = http.createServer(this.onRequest);
-    this.port = parseInt(Math.random() * (3699 - 3600) + 3600);
+    this.port = parseInt(Math.random() * (3680 - 3670) + 3670);
 
     this._server.listen(this.port, 'localhost', (err) => {
       if (err) UI.error(err);

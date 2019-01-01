@@ -11,6 +11,7 @@ class ProviderHandler {
       leagueofgraphs: new (require('../providers/LeagueofGraphs'))(),
       lolflavor: new (require('../providers/LoLFlavor'))(),
       metasrc: new (require('../providers/METAsrc'))(),
+      ugg: new (require('../providers/UGG'))(),
       flux: new (require('../providers/Flux'))()
     };
   }
@@ -24,13 +25,13 @@ class ProviderHandler {
   }
 
   async getChampionData(champion, preferredPosition, gameModeHandler, cache, providerList, bulkDownloadMode) {
-    const gameMode = gameModeHandler.getGameMode() || 'CLASSIC';
+    console.log(2, '[ProviderHandler] Downloading data for', champion.name);
+    const gameMode = bulkDownloadMode ? gameModeHandler.getGameMode() : Mana.gameflow.getGameMode();
 
     /* 1/5 - Storage Checking */
-
     let data = await Mana.championStorageHandler.get(champion.id);
     if (data && cache) {
-      if (!bulkDownloadMode && (data.roles[preferredPosition] || Object.values(data.roles)[0].gameMode === gameMode)) {
+      if (!bulkDownloadMode && (data.roles[preferredPosition || Object.keys(data.roles)[0]]).gameMode === gameMode) {
         console.log(2, `[ProviderHandler] Using local storage`);
 
         DataValidator.onDataDownloaded(data, champion);
@@ -39,7 +40,10 @@ class ProviderHandler {
     }
 
     /* 2/5 - Downloading */
-    const providers = providerList || Mana.getStore().get('providers-order', Object.keys(this.providers)).filter(x => gameModeHandler.getProviders() === null || gameModeHandler.getProviders().includes(x)).filter(x => this.isProviderEnabled(x));
+    let providers = providerList || Mana.getStore().get('providers-order', Object.keys(this.providers)).filter(x => this.isProviderEnabled(x));
+    if (gameModeHandler.getProviders() !== null) providers = providers.filter(x => gameModeHandler.getProviders() === null || gameModeHandler.getProviders().includes(x));
+
+    console.log('[ProviderHandler] Using providers: ', providers.map(x => this.providers[x].name).join(' => '));
 
     for (let provider of providers) {
       provider = this.providers[provider];

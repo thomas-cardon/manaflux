@@ -16,17 +16,9 @@ class DataValidator {
     });
   }
 
-  onDataDownloaded(d, champion) {
-    if (!d) return null;
-
-    console.log('[DataValidator] Copying required properties for Flu.x');
-    let data = { ...d };
-
+  onDataDownloaded(data, champion) {
+    if (!data) return null;
     data.championId = champion.id;
-    data.gameVersion = Mana.gameClient.branch;
-
-    data.version = Mana.version;
-    data.region = Mana.gameClient.region;
 
     for (const [roleName, role] of Object.entries(data.roles)) {
       role.perks = this.onPerkPagesCheck(role.perks, champion, roleName);
@@ -36,7 +28,17 @@ class DataValidator {
     return data;
   }
 
-  onDataUpload(data) {
+  onDataUpload(d) {
+    if (!d) return null;
+
+    console.log('[DataValidator] Copying required properties for Flu.x');
+    let data = { ...d };
+
+    data.gameVersion = Mana.gameClient.branch;
+
+    data.version = Mana.version;
+    data.region = Mana.gameClient.region;
+
     for (const [roleName, role] of Object.entries(data.roles)) {
       role.perks.forEach(x => delete x.name);
       role.itemsets = role.itemsets.map(x => x._data ? x.build(false, false) : ItemSetHandler.parse(Mana.champions[data.championId].key, x, x.provider).build(false, false));
@@ -50,21 +52,72 @@ class DataValidator {
     delete data.region;
   }
 
+  /*
+  * Ensure every rune is at its slot, that styles are the good ones, creates page names, etc.
+  */
   onPerkPagesCheck(array, champion, role, preseason) {
-    array = array.filter(x => x.selectedPerkIds && x.selectedPerkIds.length >= 6 && !this._hasDuplicates(x.selectedPerkIds));
+    array = array.filter(x => x.selectedPerkIds && x.selectedPerkIds.length >= 6);
 
-    if (Mana.preseason)
-      UI.success(i18n.__('preseason-perks'));
+    for (let i = 0; i < array.length; i++) {
+      const provider = Mana.providerHandler.getProvider(array[i].provider);
+      const page = array[i];
 
-    array.forEach((page, index) => { /* Recreates primaryStyleId or subStyleId based on perks if it's missing */
-      page.name = `${page.provider ? Mana.providerHandler.getProvider(page.provider).getCondensedName() : 'XXX'}${index + 1} ${champion.name} > ${UI.stylizeRole(role)}${page.suffixName ? ' ' + page.suffixName : ''}`;
+      console.log(3, 'Old page');
+      console.dir(3, page);
 
-      page.primaryStyleId = page.primaryStyleId || Mana.gameClient.findPerkStyleByPerkId(page.selectedPerkIds[0]).id;
-      page.subStyleId = page.subStyleId || Mana.gameClient.findPerkStyleByPerkId(page.selectedPerkIds[4]).id;
+      console.log(`[DataValidator] Validating perk pages from ${provider.name}, for ${champion.name} - ${role}`);
 
-      if (page.selectedPerkIds.length <= 9 && Mana.preseason)
-        page.selectedPerkIds = page.selectedPerkIds.concat([5008, 5002, 5001]);
-    });
+      page.name = `${page.provider ? provider.getCondensedName() : 'XXX'}${i + 1} ${champion.name} > ${UI.stylizeRole(role)}${page.suffixName ? ' ' + page.suffixName : ''}`;
+
+      page.primaryStyleId = parseInt(page.primaryStyleId || Mana.gameClient.findPerkStyleByPerkId(page.selectedPerkIds[0]).id);
+      page.subStyleId = parseInt(page.subStyleId || Mana.gameClient.findPerkStyleByPerkId(page.selectedPerkIds[4]).id);
+
+      page.selectedPerkIds = page.selectedPerkIds.filter(x => !isNaN(x)).map(x => parseInt(x));
+
+      const primaryStyle = Mana.gameClient.styles.find(x => x.id == page.primaryStyleId), subStyle = Mana.gameClient.styles.find(x => x.id == page.subStyleId);
+
+      if (page.selectedPerkIds.length < 9)
+        page.selectedPerkIds = page.selectedPerkIds.concat(primaryStyle.defaultPerks.slice(-3)).slice(0, 9);
+
+      let rowIndexes = [];
+      for (let ii = 0; ii < array[i].selectedPerkIds.length; ii++) {
+        const style = ii > 3 ? subStyle : primaryStyle, id = array[i].selectedPerkIds[ii];
+
+        if (ii > 5 && !primaryStyle.defaultStatModsPerSubStyle.find(x => x.id == array[i].subStyleId).perks.includes(id))
+          console.log(`[DataValidator] Perk mod #${id} isn\'t supposed to be at the slot ${ii}. Replacing with generic: ${array[i].selectedPerkIds[ii] = primaryStyle.defaultStatModsPerSubStyle.find(x => x.id == array[i].subStyleId).perks[ii % 6]}.`);
+        else if (ii < 5) {
+          if (ii > 3) {
+            const availablePerks = [...style.slots.slice(1, 4).map(x => x.perks)];
+            let rowIndex = availablePerks.findIndex(x => x.includes(id));
+
+            if (rowIndex === -1 || rowIndexes.includes(rowIndex)) {
+              let newPerk;
+              while (!newPerk || array[i].selectedPerkIds.includes(newPerk)) {
+                rowIndex = [0, 1, 2].filter(x => !rowIndexes.includes(x))[0];
+                newPerk = availablePerks[rowIndex][Math.floor(Math.random() * (availablePerks[rowIndex].length - 0 + 1)) + 0];
+              }
+
+              console.log(`[DataValidator] Perk #${id} isn\'t supposed to be at the slot ${ii}. Replacing with generic: ${array[i].selectedPerkIds[ii] = newPerk}.`);
+            }
+
+            rowIndexes.push(rowIndex);
+          }
+          else if (!style.slots[ii].perks.includes(id)) {
+            const availablePerks = style.slots[ii].perks;
+
+            let newPerk;
+            while (!newPerk || array[i].selectedPerkIds.includes(newPerk)) {
+              newPerk = availablePerks[Math.floor(Math.random() * (availablePerks.length - 0 + 1)) + 0];
+            }
+
+            console.log(`[DataValidator] Perk #${id} isn\'t supposed to be at the slot ${ii}. Replacing with generic: ${array[i].selectedPerkIds[ii] = newPerk}.`);
+          }
+        }
+      }
+
+      console.log(3, 'New page');
+      console.dir(3, array[i]);
+    }
 
     return array;
   }
@@ -73,7 +126,7 @@ class DataValidator {
     let indexes = {};
 
     return array.map((x, index) => {
-      if (!x._data) x = ItemSetHandler.parse(champion.key, x, x.provider);
+      x = ItemSetHandler.parse(champion.key, x, x.provider);
       indexes[x._data.provider || 'XXX'] = indexes[x._data.provider || 'XXX'] + 1 || 1;
 
       x._data.title = `${x._data.provider ? Mana.providerHandler.getProvider(x._data.provider).getCondensedName() : 'XXX'}${indexes[x._data.provider || 'XXX']} ${champion.name} > ${UI.stylizeRole(role)}`;

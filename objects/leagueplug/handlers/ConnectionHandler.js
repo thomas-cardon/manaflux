@@ -22,7 +22,7 @@ class ConnectionHandler extends EventEmitter {
           timer(cb, 500);
           self.emit('logged-off');
         }).catch(err => {
-          if (err.code !== 'ECONNREFUSED') return console.error(err);
+          if (err.code !== 'ECONNREFUSED' && !err.toString().includes('Couldn\'t get port')) return console.error(err);
 
           timer(cb, 500);
           self.emit('logged-off');
@@ -34,8 +34,10 @@ class ConnectionHandler extends EventEmitter {
     return new Promise(resolve => timer(data => resolve(data)));
   }
 
-  _checkSession(port = this._lockfile.port) {
-    const token = this.getAuthenticationToken();
+  _checkSession() {
+    if (!this._lockfile || !this._lockfile.port) return Promise.reject(Error('Couldn\'t get port'));
+    
+    const token = this.getAuthenticationToken(), port = this._lockfile.port;
     return new Promise((resolve, reject) => {
       require('https').get({
         host: '127.0.0.1',

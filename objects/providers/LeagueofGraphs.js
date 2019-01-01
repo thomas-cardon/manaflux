@@ -5,6 +5,7 @@ const Provider = require('./Provider');
 class LeagueofGraphsProvider extends Provider {
   constructor() {
     super('leagueofgraphs', 'League of Graphs');
+
     this.base = 'https://www.leagueofgraphs.com/champions';
   }
 
@@ -23,7 +24,7 @@ class LeagueofGraphsProvider extends Provider {
     }
     else {
       for (let x of ['JUNGLE', 'MIDDLE', 'TOP', 'ADC', 'SUPPORT']) {
-        console.log(2, `[ProviderHandler] [LOG] Gathering data (${x})`);
+        console.log(2, `[ProviderHandler] [League of Graphs] Gathering data (${x})`);
 
         try {
           data.roles[x] = await this._scrape(champion, x, gameMode);
@@ -39,32 +40,28 @@ class LeagueofGraphsProvider extends Provider {
   }
 
   async _scrape(champion, position, gameMode) {
-    let promises = [rp(`${this.base}/runes/${champion.key}${position ? '/' + position : ''}`.toLowerCase())];
+    const data = await Promise.all([
+      rp({ uri: `${this.base}/runes/${champion.key}${position ? '/' + position : ''}`.toLowerCase(), transform: body => cheerio.load(body) }),
+      Mana.getStore().get('item-sets-enable') ? rp({ uri: `${this.base}/items/${champion.key}${position ? '/' + position : ''}`.toLowerCase(), transform: body => cheerio.load(body) }) : Promise.resolve(),
+      Mana.getStore().get('summoner-spells') ? rp({ uri: `${this.base}/spells/${champion.key}${position ? '/' + position : ''}`.toLowerCase(), transform: body => cheerio.load(body) }) : Promise.resolve(),
+      Mana.getStore().get('statistics') && false ? rp({ uri: `${this.base}/stats/${champion.key}${position ? '/' + position : ''}`.toLowerCase(), transform: body => cheerio.load(body) }) : Promise.resolve(),
+      rp({ uri: `${this.base}/skills-orders/${champion.key}${position ? '/' + position : ''}`.toLowerCase(), transform: body => cheerio.load(body) })
+    ]);
 
-    promises.push(Mana.getStore().get('item-sets-enable') ? rp(`${this.base}/items/${champion.key}${position ? '/' + position : ''}`.toLowerCase()) : Promise.resolve());
-    promises.push(Mana.getStore().get('summoner-spells') ? rp(`${this.base}/spells/${champion.key}${position ? '/' + position : ''}`.toLowerCase()) : Promise.resolve());
-    promises.push(Mana.getStore().get('statistics') ? rp(`${this.base}/stats/${champion.key}${position ? '/' + position : ''}`.toLowerCase()) : Promise.resolve());
-    promises.push(rp(`${this.base}/skills-orders/${champion.key}${position ? '/' + position : ''}`.toLowerCase()));
+    const perks = this.scrapePerks(data[0]);
 
-    const data = await Promise.all(promises);
-
-    const $perks = cheerio.load(data[0]);
-    const perks = this.scrapePerks($perks, champion, position);
-
-    const itemsets = Mana.getStore().get('item-sets-enable') ? this.scrapeItemSets(cheerio.load(data[1]), champion, position, this.scrapeSkillOrder(cheerio.load(data[data.length - 1]))) : [];
-    const summonerspells = Mana.getStore().get('summoner-spells') ? this.scrapeSummonerSpells(cheerio.load(data[2]), champion) : [];
+    const itemsets = Mana.getStore().get('item-sets-enable') ? this.scrapeItemSets(data[1], champion, position, this.scrapeSkillOrder(data[data.length - 1])) : [];
+    const summonerspells = Mana.getStore().get('summoner-spells') ? this.scrapeSummonerSpells(data[2], champion) : [];
     const statistics = Mana.getStore().get('statistics') ? {} : {};
 
     return { perks, itemsets, summonerspells, statistics, gameMode };
   }
 
   /**
-   * Scrapes item sets from a League of Graphs page
+   * Scrapes perks from a League of Graphs page
    * @param {cheerio} $ - The cheerio object
-   * @param {object} champion - A champion object, from Mana.champions
-   * @param {string} position - Limited to: TOP, JUNGLE, MIDDLE, ADC, SUPPORT
    */
-  scrapePerks($, champion, position) {
+  scrapePerks($) {
     let pages = [{ selectedPerkIds: [] }, { selectedPerkIds: [] }];
 
     for (let page in pages) {
@@ -78,10 +75,13 @@ class LeagueofGraphsProvider extends Provider {
         }
 
         const perks = $(this).find("img[src^='//cdn.leagueofgraphs.com/img/perks/']").toArray().sort((a, b) => parseFloat($(a).css('opacity')) - parseFloat($(b).css('opacity')));
-        pages[page].selectedPerkIds.push(parseInt(perks[perks.length - 1].attribs.src.slice(-8, -4)));
-      });
 
-      pages[page].selectedPerkIds.pop();
+        if (4 < index && index < 7) {
+          if (perks.every(x => parseFloat(x.attribs.style.slice(x.attribs.style.lastIndexOf(' ') + 1)) > 0.5))
+            pages[page].selectedPerkIds.push(parseInt(perks[perks.length - 1].attribs.src.slice(-8, -4)));
+        }
+        else pages[page].selectedPerkIds.push(parseInt(perks[perks.length - 1].attribs.src.slice(-8, -4)));
+      });
     }
 
     return pages;
@@ -92,9 +92,14 @@ class LeagueofGraphsProvider extends Provider {
    * @param {cheerio} $ - The cheerio object
    */
   scrapeSummonerSpells($) {
-    // TODO: find a way to dynamically find a summoner spell ID without slowing down Manaflux
-    // (and that finds one that exists)
-    return [];
+    if (Mana.gameClient.locale !== 'en_GB' && Mana.gameClient.locale !== 'en_US') return console.log(2, `[ProviderHandler] [League of Graphs] Summoner spells are not supported because you're not using the english language in League`);
+
+    let summoners = [];
+    $('table').find('td > span').each(function(index) {
+      summoners.push($(this).text().trim().split(' - ').map(y => Object.values(Mana.summonerspells).find(z => z.name === y)));
+    });
+
+    return summoners;
   }
 
   /**

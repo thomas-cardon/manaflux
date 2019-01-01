@@ -52,7 +52,7 @@ class GameClient {
 
     this.perks = perks;
 
-    this.styles = Mana.preseason ? stylesData.styles : stylesData;
+    this.styles = this.preseason ? stylesData.styles : stylesData;
   }
 
   findPerkByImage(img) {
@@ -73,12 +73,17 @@ class GameClient {
 
     this.region = r.region.toLowerCase();
     this.locale = r.locale;
+    this.language = r.webLanguage;
 
-    await this.queryPerks();
     let x = await this.getSystemBuilds();
 
     this.branch = x.branch;
     this.fullVersion = x.version;
+
+    this.preseason = parseFloat(this.fullVersion.slice(0, 4)) >= 8.23;
+    await this.queryPerks();
+
+    return this.preseason;
   }
  }
 

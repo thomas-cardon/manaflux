@@ -17,18 +17,6 @@ class User extends Summoner {
     });
   }
 
-  getGameMode() {
-    return this._chatDetails.lol.gameMode;
-  }
-
-  getMapId() {
-    return this._chatDetails.lol.mapId;
-  }
-
-  async queryChatDetails() {
-    return this._chatDetails = JSON.parse(await rp(Mana.base + 'lol-chat/v1/me'));
-  }
-
   getPerksInventory() {
     return this._perksInventory;
   }

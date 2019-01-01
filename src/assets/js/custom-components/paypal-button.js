@@ -6,7 +6,7 @@ module.exports = {
 
     let win = new BrowserWindow({ title: i18n.__('support-paypal-button'), parent: require('electron').remote.getCurrentWindow(), webPreferences: { nodeIntegration: false }, width: 730, height: 730, icon: __dirname + '/build/icon.' + (process.platform === 'win32' ? 'ico' : 'png'), maximizable: false, resizable: true, modal: true, show: false });
 
-    win.loadURL('https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=PHVX8CV7YU9QU');
+    win.loadURL('https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=PHVX8CV7YU9QU&lc=' + i18n._locale);
     win.setMenu(null);
 
     win.once('ready-to-show', () => win.show());

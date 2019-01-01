@@ -18,7 +18,14 @@ class FluxProvider extends Provider {
       if (data.statusCode === 404) throw Error(`Flu.x: Data not found`);
       else throw Error(`Flu.x error: ${data.statusCode} - ${data.message} (${data.error})`);
     }
-    else if (data && data.roles) return data;
+    else if (data && data.roles) {
+      Object.values(data.roles).forEach(x => {
+        x.summonerspells = x.summonerspells.map(y => y.spells);
+        x.summonerspells = [].concat(...x.summonerspells);
+      });
+
+      return data;
+    }
     else throw Error('Unexpected error');
   }
 
