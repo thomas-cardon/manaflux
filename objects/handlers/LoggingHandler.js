@@ -97,12 +97,11 @@ function LoggingHandler(level) {
 LoggingHandler.prototype.start = function() {
   if (this.isRenderer) return this.ipc.sendSync('logging-start');
 
-  var dir = '/home/' + require("os").userInfo().username + '/.config/manaflux/logs';
+  this._folder = require('electron').app.getPath('logs') || `${require('electron').app.getPath('userData')}/logs`;
+  if (!fs.existsSync(this._folder)) fs.mkdirSync(this._folder);
 
-  if (!fs.existsSync(dir)){
-      fs.mkdirSync(dir);
-  }
-
+  this._path = path.resolve(this._folder, new Date().toString().slice(0, 24).replace(/:/g, '-') + '.txt');
+  this.stream = fs.createWriteStream(this._path);
 
   this.stream = fs.createWriteStream(this._path = path.resolve(dir, new Date().toString().slice(0, 24).replace(/:/g, '-') + '.txt'));
   this.stream.write(`----------[ Log file level ${this.level} ]----------\n`);
