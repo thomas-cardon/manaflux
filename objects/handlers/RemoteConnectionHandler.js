@@ -20,7 +20,7 @@ class RemoteConnectionHandler {
       .use(log)
       .get('/summoner', (req, res) => {
         res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ summonerName: Mana.user.getDisplayName() }));
+        res.end(JSON.stringify({ summonerName: Mana.user.getDisplayName(), summonerLevel: Mana.user.getSummonerLevel()}));
       })
       .post('/phone-token', (req, res, next) => {
         var data = '';
