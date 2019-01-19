@@ -94,7 +94,7 @@ class UGGProvider extends Provider {
       Mana.getStore().set('UGGOverviewVersion', versions.latest.overview);
     }
 
-    const data = await rp({ uri: `https://stats.u.gg/lol/${this.apiVersion}/overview/${Mana.getStore().get('lastUpdatedUGGVersion')}/ranked_solo_5x5/${champion.id}/${Mana.getStore().get('UGGOverviewVersion')}.json`, json: true });
+    const data = await rp({ uri: `https://stats2.u.gg/lol/${this.apiVersion}/overview/${Mana.getStore().get('lastUpdatedUGGVersion')}/ranked_solo_5x5/${champion.id}/${Mana.getStore().get('UGGOverviewVersion')}.json`, json: true });
     const d = this.scrape(data);
 
     return { roles: d };
