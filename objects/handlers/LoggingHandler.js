@@ -103,7 +103,7 @@ LoggingHandler.prototype.start = function() {
   this._path = path.resolve(this._folder, new Date().toString().slice(0, 24).replace(/:/g, '-') + '.txt');
   this.stream = fs.createWriteStream(this._path);
 
-  this.stream = fs.createWriteStream(this._path = path.resolve(dir, new Date().toString().slice(0, 24).replace(/:/g, '-') + '.txt'));
+  this.stream = fs.createWriteStream(this._path = path.resolve(this._folder, new Date().toString().slice(0, 24).replace(/:/g, '-') + '.txt'));
   this.stream.write(`----------[ Log file level ${this.level} ]----------\n`);
   this.stream.write(`Electron v${process.versions.electron}\n`);
   this.stream.write(`NodeJS v${process.versions.node}\n`);
