@@ -6,40 +6,36 @@ class RemoteConnectionHandler {
     this.address = this._queryAddress();
   }
 
+  log(req, res, next) {
+    console.log(`[RemoteConnectionHandler] > ${req.url}`);
+    next();
+  }
+
   async start() {
-    function log(req, res, next) {
-      console.log(`[RemoteConnectionHandler] > ${req.url}`);
-      next();
-    }
-
-    function handle( req, res, next ) {
-
-    }
-
     this._server = polka()
-      .use(log)
-      .get('/summoner', (req, res) => {
+      .use(this.log)
+      .get('/api/v1/heartbeat', (req, res) => {
         res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ summonerName: Mana.user.getDisplayName(), summonerLevel: Mana.user.getSummonerLevel()}));
+        res.end(JSON.stringify({ success: true, inChampionSelect: Mana.championSelectHandler._inChampionSelect }));
       })
-      .post('/phone-token', (req, res, next) => {
-        var data = '';
-        req.on('data', function( chunk ) {
-          data += chunk;
-        });
-        req.on('end', function() {
-          req.rawBody = data;
-          console.log('Phone token handled: ' + req.rawBody);
-          rp.post({
-            method: 'POST',
-            uri: 'https://manaflux-server.herokuapp.com/v1/phone/update-token',
-            body: req.rawBody
-          }).then(() => {
-            res.writeHead(200, { 'Content-Type': 'text/html' });
-            res.end('OK');
-          }).catch(console.error);
-          next();
-        });
+      .get('/api/v1/summoner', (req, res) => {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+
+        if (Mana.user)
+          res.end(JSON.stringify({ success: true, summonerName: Mana.user.getDisplayName(), summonerLevel: Mana.user.getSummonerLevel() }));
+        else res.end(JSON.stringify({ success: false, errorCode: 'SUMMONER_NOT_CONNECTED', error: 'Summoner is not connected' }));
+      })
+      .post('/api/v1/actions/rune-pages/:id', (req, res) => {
+        if (!Mana.championSelectHandler._inChampionSelect) res.end({ success: false, errorCode: 'NOT_IN_CHAMPION_SELECT', error: 'Not in Champion Select' });
+
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: true }));
+      })
+      .post('/api/v1/actions/summoner-spells/:id', (req, res) => {
+        if (!Mana.championSelectHandler._inChampionSelect) res.end({ success: false, errorCode: 'NOT_IN_CHAMPION_SELECT', error: 'Not in Champion Select' });
+
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: true }));
       })
       .listen(4500, err => {
         if (err) throw err;
