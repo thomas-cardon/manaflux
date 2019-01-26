@@ -266,8 +266,7 @@ class ChampionSelectHandler {
     if (document.getElementById('positions').style.display === 'none') return;
     console.log(2, `[Shortcuts] Selecting ${next ? 'next' : 'previous'} position..`);
 
-    const keys = Array.from(document.getElementById('positions').childNodes).map(x => x.value);
-    let i = keys.length, positionIndex = keys.indexOf(document.getElementById('positions').value);
+    let i = document.getElementById('positions').childNodes.length, positionIndex = document.getElementById('positions').selectedIndex;
     let newIndex = positionIndex;
 
     if (next) {
@@ -281,7 +280,7 @@ class ChampionSelectHandler {
 
     /* Useless to change position if it's already the one chosen */
     if (newIndex !== positionIndex) {
-      document.getElementById('positions').value = keys[newIndex];
+      document.getElementById('positions').selectedIndex = newIndex;
       document.getElementById('positions').onchange();
     };
   }
