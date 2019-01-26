@@ -25,16 +25,32 @@ class RemoteConnectionHandler {
           res.end(JSON.stringify({ success: true, summonerName: Mana.user.getDisplayName(), summonerLevel: Mana.user.getSummonerLevel() }));
         else res.end(JSON.stringify({ success: false, errorCode: 'SUMMONER_NOT_CONNECTED', error: 'Summoner is not connected' }));
       })
-      .post('/api/v1/actions/rune-pages/:id', (req, res) => {
+      .get('/api/v1/actions/positions', (req, res) => {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+
         if (!Mana.championSelectHandler._inChampionSelect) res.end({ success: false, errorCode: 'NOT_IN_CHAMPION_SELECT', error: 'Not in Champion Select' });
 
+        res.end({ success: true, positions: Array.from(document.getElementById('positions').childNodes).map(x => x.value) });
+      })
+      .post('/api/v1/actions/positions/:id', (req, res) => {
         res.writeHead(200, { 'Content-Type': 'application/json' });
+        if (!Mana.championSelectHandler._inChampionSelect) res.end({ success: false, errorCode: 'NOT_IN_CHAMPION_SELECT', error: 'Not in Champion Select' });
+
+        document.getElementById('positions').selectedIndex = req.params.id;
+        document.getElementById('positions').onchange();
+
         res.end(JSON.stringify({ success: true }));
       })
-      .post('/api/v1/actions/summoner-spells/:id', (req, res) => {
+      .post('/api/v1/actions/summoner-spells/load', (req, res) => {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
         if (!Mana.championSelectHandler._inChampionSelect) res.end({ success: false, errorCode: 'NOT_IN_CHAMPION_SELECT', error: 'Not in Champion Select' });
 
+        res.end(JSON.stringify({ success: true }));
+      })
+      .post('/api/v1/actions/runes/load', (req, res) => {
         res.writeHead(200, { 'Content-Type': 'application/json' });
+        if (!Mana.championSelectHandler._inChampionSelect) res.end({ success: false, errorCode: 'NOT_IN_CHAMPION_SELECT', error: 'Not in Champion Select' });
+
         res.end(JSON.stringify({ success: true }));
       })
       .listen(4500, err => {
