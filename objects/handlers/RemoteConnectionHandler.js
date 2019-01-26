@@ -6,29 +6,35 @@ class RemoteConnectionHandler {
     this.address = this._queryAddress();
   }
 
-  log(req, res, next) {
-    var auth = req.headers['authorization'];
-    var list = Mana.getStore().get('auth-token');
-    if(req.path == '/phone-auth') return next();
-    if (!auth) {
+  auth(req, res, next) {
+    let list = Mana.getStore().get('authentified-devices', {});
+
+    if (req.path.startsWith('/api/v1/authentify')) next();
+    else if (!req.headers['authorization']) {
       console.log(`[RemoteConnectionHandler] Unauthorized > ${req.url}`);
-      res.writeHead(401, { 'Content-Type': 'text/html' });
-      res.end('Unauthorized');
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ success: false, errorCode: 'UNAUTHORIZED', error: 'You are not authorized' }));
     } else {
-      if (list.includes(auth)) {
+      if (list[req.connection.remoteAddress]) {
         console.log(`[RemoteConnectionHandler] > ${req.url}`);
         next();
       } else {
         console.log(`[RemoteConnectionHandler] Forbidden > ${req.url}`);
-        res.writeHead(403, { 'Content-Type': 'text/html' });
-        res.end('Forbidden');
+        res.writeHead(403, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: false, errorCode: 'UNAUTHORIZED', error: 'You are not authorized' }));
       }
     }
   }
 
   async start() {
     this._server = polka()
-      .use(this.log)
+      .use(this.auth)
+      .post('/api/v1/authentify/:deviceType/:name', (req, res) => {
+        Mana.getStore().set('authentified-devices.' + req.connection.remoteAddress.replace(/\./g, '-'), { deviceType: req.params.deviceType || 'UNKNOWN', deviceName: req.params.name || 'UNKNOWN' });
+
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: true, authentified: true }));
+      })
       .get('/api/v1/heartbeat', (req, res) => {
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ success: true, inChampionSelect: Mana.championSelectHandler._inChampionSelect }));
