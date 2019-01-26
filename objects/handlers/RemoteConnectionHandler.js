@@ -7,8 +7,23 @@ class RemoteConnectionHandler {
   }
 
   log(req, res, next) {
-    console.log(`[RemoteConnectionHandler] > ${req.url}`);
-    next();
+    var auth = req.headers['authorization'];
+    var list = Mana.getStore().get('auth-token');
+    if(req.path == '/phone-auth') return next();
+    if (!auth) {
+      console.log(`[RemoteConnectionHandler] Unauthorized > ${req.url}`);
+      res.writeHead(401, { 'Content-Type': 'text/html' });
+      res.end('Unauthorized');
+    } else {
+      if (list.includes(auth)) {
+        console.log(`[RemoteConnectionHandler] > ${req.url}`);
+        next();
+      } else {
+        console.log(`[RemoteConnectionHandler] Forbidden > ${req.url}`);
+        res.writeHead(403, { 'Content-Type': 'text/html' });
+        res.end('Forbidden');
+      }
+    }
   }
 
   async start() {
