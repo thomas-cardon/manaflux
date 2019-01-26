@@ -23,8 +23,8 @@ class PathHandler {
   async findLeaguePath() {
     console.log(2, '[PathHandler] Trying to find path.');
 
-    for (const x of ['C:\\Riot Games\\League of Legends\\', '/Applications/League of Legends.app/Contents/LoL/', ]) {
-      if (await this._exists(path.resolve(x + '\\LeagueClient.' + (process.platform === 'win32' ? 'exe' : 'app'))))
+    for (const x of ['C:\\Riot Games\\League of Legends\\', '/Applications/League of Legends.app/Contents/LoL/']) {
+      if (await this._exists(path.resolve(x + '\\LeagueClient.' + this.getExtensionByPlatform(process.platform))))
         return x;
     }
 
@@ -34,19 +34,28 @@ class PathHandler {
     return leaguePath;
   }
 
-  /* TODO: Support for OS X - Linux */
+  getExtensionByPlatform(platform) {
+    switch(platform) {
+      case 'darwin':
+      return 'app';
+    }
+
+    return 'exe';
+  }
+
+  /* Supports Windows only, as League of Legends support is for now unofficial on Linux. Support for OS X may come later. */
   async getLeaguePathByCommandLine() {
-    const command = process.platform === 'win32' ? "WMIC.exe PROCESS WHERE name='LeagueClient.exe' GET commandline" : "ps x -o args | grep 'LeagueClient'";
+    if (process.platform !== 'win32') return Promise.resolve(false);
 
     return new Promise((resolve, reject) => {
-      exec(command, process.platform === 'win32' ? { shell: 'C:\\WINDOWS\\system32\\cmd.exe', cwd: 'C:\\Windows\\System32\\wbem\\' } : {}, function(error, stdout, stderr) {
+      exec("WMIC.exe PROCESS WHERE name='LeagueClient.exe' GET commandline", { shell: 'C:\\WINDOWS\\system32\\cmd.exe', cwd: 'C:\\Windows\\System32\\wbem\\' }, function(error, stdout, stderr) {
         if (error) return reject(console.error(3, error));
 
         console.dir(3, stdout);
         const matches = stdout.match(/[^"]+?(?=RADS)/gm);
 
         if (!matches || matches.length === 0) resolve(false);
-        else resolve(console.log(3, matches[0]));
+        else resolve(matches[0]);
       });
     });
   }
