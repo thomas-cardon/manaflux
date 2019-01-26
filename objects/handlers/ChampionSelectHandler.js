@@ -3,6 +3,7 @@ const ItemSetHandler = require('./ItemSetHandler');
 
 class ChampionSelectHandler {
   constructor() {
+    this._inChampionSelect = false;
     this.gameModeHandlers = {
       CLASSIC: {
         getGameMode: () => 'CLASSIC',
