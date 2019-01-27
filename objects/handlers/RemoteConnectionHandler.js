@@ -15,7 +15,7 @@ class RemoteConnectionHandler {
       res.writeHead(401, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ success: false, errorCode: 'UNAUTHORIZED', error: 'You are not authorized' }));
     } else {
-      if (list[req.connection.remoteAddress]) {
+      if (list[req.connection.remoteAddress.split(":").pop().replace(/\./g, '-')]) {
         console.log(`[RemoteConnectionHandler] > ${req.url}`);
         next();
       } else {
@@ -30,7 +30,7 @@ class RemoteConnectionHandler {
     this._server = polka()
       .use(this.auth)
       .post('/api/v1/authentify/:deviceType/:name', (req, res) => {
-        Mana.getStore().set('authentified-devices.' + req.connection.remoteAddress.replace(/\./g, '-'), { deviceType: req.params.deviceType || 'UNKNOWN', deviceName: req.params.name || 'UNKNOWN' });
+        Mana.getStore().set('authentified-devices.' + req.connection.remoteAddress.split(":").pop().replace(/\./g, '-'), { deviceType: req.params.deviceType || 'UNKNOWN', deviceName: req.params.name || 'UNKNOWN' });
 
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ success: true, authentified: true }));
