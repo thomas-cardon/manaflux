@@ -49,13 +49,13 @@ class RemoteConnectionHandler {
       .get('/api/v1/actions/positions', (req, res) => {
         res.writeHead(200, { 'Content-Type': 'application/json' });
 
-        if (!Mana.championSelectHandler._inChampionSelect) res.end({ success: false, errorCode: 'NOT_IN_CHAMPION_SELECT', error: 'Not in Champion Select' });
+        if (!Mana.championSelectHandler._inChampionSelect) res.end(JSON.stringify({ success: false, errorCode: 'NOT_IN_CHAMPION_SELECT', error: 'Not in Champion Select' }));
 
-        res.end({ success: true, positions: Array.from(document.getElementById('positions').childNodes).map(x => x.value) });
+        res.end(JSON.stringify({ success: true, positions: Array.from(document.getElementById('positions').childNodes).map(x => x.value) }));
       })
       .post('/api/v1/actions/positions/:id', (req, res) => {
         res.writeHead(200, { 'Content-Type': 'application/json' });
-        if (!Mana.championSelectHandler._inChampionSelect) res.end({ success: false, errorCode: 'NOT_IN_CHAMPION_SELECT', error: 'Not in Champion Select' });
+        if (!Mana.championSelectHandler._inChampionSelect) res.end(JSON.stringify({ success: false, errorCode: 'NOT_IN_CHAMPION_SELECT', error: 'Not in Champion Select' }));
 
         document.getElementById('positions').selectedIndex = req.params.id;
         document.getElementById('positions').onchange();
@@ -64,13 +64,13 @@ class RemoteConnectionHandler {
       })
       .post('/api/v1/actions/summoner-spells/load', (req, res) => {
         res.writeHead(200, { 'Content-Type': 'application/json' });
-        if (!Mana.championSelectHandler._inChampionSelect) res.end({ success: false, errorCode: 'NOT_IN_CHAMPION_SELECT', error: 'Not in Champion Select' });
+        if (!Mana.championSelectHandler._inChampionSelect) res.end(JSON.stringify({ success: false, errorCode: 'NOT_IN_CHAMPION_SELECT', error: 'Not in Champion Select' }));
 
         res.end(JSON.stringify({ success: true }));
       })
       .post('/api/v1/actions/runes/load', (req, res) => {
         res.writeHead(200, { 'Content-Type': 'application/json' });
-        if (!Mana.championSelectHandler._inChampionSelect) res.end({ success: false, errorCode: 'NOT_IN_CHAMPION_SELECT', error: 'Not in Champion Select' });
+        if (!Mana.championSelectHandler._inChampionSelect) res.end(JSON.stringify({ success: false, errorCode: 'NOT_IN_CHAMPION_SELECT', error: 'Not in Champion Select' }));
 
         res.end(JSON.stringify({ success: true }));
       })
