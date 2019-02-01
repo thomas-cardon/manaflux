@@ -53,6 +53,13 @@ class RemoteConnectionHandler {
 
         res.end(JSON.stringify({ success: true, positions: Array.from(document.getElementById('positions').childNodes).map(x => x.value) }));
       })
+      .get('/api/v1/actions/current-champion', (req, res) => {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+
+        if (!Mana.championSelectHandler._inChampionSelect) res.end(JSON.stringify({ success: false, errorCode: 'NOT_IN_CHAMPION_SELECT', error: 'Not in Champion Select' }));
+
+        res.end(JSON.stringify({ success: true, championName: Mana.champions[Mana.championSelectHandler.getPlayer().championId].name, championId: Mana.championSelectHandler.getPlayer().championId }));
+      })
       .post('/api/v1/actions/positions/:id', (req, res) => {
         res.writeHead(200, { 'Content-Type': 'application/json' });
         if (!Mana.championSelectHandler._inChampionSelect) res.end(JSON.stringify({ success: false, errorCode: 'NOT_IN_CHAMPION_SELECT', error: 'Not in Champion Select' }));
