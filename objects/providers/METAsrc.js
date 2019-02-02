@@ -77,7 +77,7 @@ class METAsrcProvider extends Provider {
     let summonerspells = [];
 
     $('img[src*="/img/spell"]').slice(0, 2).each(function(index) {
-      const key = $(this).attr('src').slice($(this).attr('src').lastIndexOf('/') + 1, -4));
+      const key = $(this).attr('src').slice($(this).attr('src').lastIndexOf('/') + 1, -4);
 
       if (Mana.summonerspells[key])
         summonerspells.push(Mana.summonerspells[key]);
