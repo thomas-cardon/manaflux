@@ -14,7 +14,7 @@ class METAsrcProvider extends Provider {
 
     let data = { roles: { [d.position]: d } };
 
-    if (gameMode === 'ARAM' || gameMode === 'TWISTED_TREELINE') {
+    if (['ARAM', 'TWISTED_TREELINE', 'URF'].includes(gameMode)) {
       delete data.roles[gameMode].position;
       return data;
     }
@@ -126,6 +126,8 @@ class METAsrcProvider extends Provider {
         return '5v5';
         case 'twisted_treeline':
         return '3v3';
+        case 'urf':
+        return 'arurf';
         default:
         return '5v5';
       }

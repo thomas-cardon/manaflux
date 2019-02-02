@@ -25,6 +25,11 @@ class ChampionSelectHandler {
         getPosition: pos => null,
         getProviders: () => ['metasrc', 'lolflavor', 'leagueofgraphs']
       },
+      URF: {
+        getGameMode: () => 'URF',
+        getPosition: pos => null,
+        getProviders: () => ['metasrc']
+      },
       '10': {
         getGameMode: () => 'TWISTED_TREELINE',
         getPosition: pos => null,
