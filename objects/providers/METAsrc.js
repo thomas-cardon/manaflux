@@ -74,13 +74,16 @@ class METAsrcProvider extends Provider {
    * @param {cheerio} $ - The cheerio object
    */
   scrapeSummonerSpells($) {
-    /*let summonerspells = [];
+    let summonerspells = [];
 
     $('img[src*="/img/spell"]').slice(0, 2).each(function(index) {
-      summonerspells.push(Mana.gameClient.findSummonerSpellByName($(this).attr('src').slice($(this).attr('src').lastIndexOf('/') + 1, -4)));
-    });*/
-    // TODO: find a way to dynamically find a summoner spell ID without slowing down Manaflux
-    return [];
+      const key = $(this).attr('src').slice($(this).attr('src').lastIndexOf('/') + 1, -4));
+
+      if (Mana.summonerspells[key])
+        summonerspells.push(Mana.summonerspells[key]);
+    });
+
+    return summonerspells;
   }
 
   /**
@@ -88,7 +91,7 @@ class METAsrcProvider extends Provider {
    * @param {cheerio} $ - The cheerio object
    */
   scrapeSkillOrder($) {
-    return null; //skillorder;
+    return null;
   }
 
   /**

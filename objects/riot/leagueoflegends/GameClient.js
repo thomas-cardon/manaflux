@@ -26,7 +26,7 @@ class GameClient {
 
     return d;
   }
-
+  
   findSummonerSpellByName(name) {
     return Object.values(Mana.summonerspells).find(spell => spell.name === name);
   }
