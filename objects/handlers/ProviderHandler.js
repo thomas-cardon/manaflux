@@ -29,7 +29,7 @@ class ProviderHandler {
     const gameMode = bulkDownloadMode ? gameModeHandler.getGameMode() : Mana.gameflow.getGameMode();
 
     /* 1/5 - Storage Checking */
-    let data = await Mana.gameClient.championstorageHandler.get(champion.id);
+    let data = await Mana.championStorageHandler.get(champion.id);
     if (data && cache) {
       if (!bulkDownloadMode && (data.roles[preferredPosition || Object.keys(data.roles)[0]]).gameMode === gameMode) {
         console.log(2, `[ProviderHandler] Using local storage`);
@@ -104,11 +104,11 @@ class ProviderHandler {
 
       DataValidator.onDataStore(cache[i]);
 
-      await Mana.gameClient.championstorageHandler.update(cache[i].championId, x => this._merge(cache[i], x));
+      await Mana.championStorageHandler.update(cache[i].championId, x => this._merge(cache[i], x));
       cache.splice(i, 1);
     }
 
-    await Mana.gameClient.championstorageHandler.save();
+    await Mana.championStorageHandler.save();
   }
 
   /**
