@@ -76,9 +76,6 @@ class DataValidator {
 
       const primaryStyle = Mana.gameClient.styles.find(x => x.id == page.primaryStyleId), subStyle = Mana.gameClient.styles.find(x => x.id == page.subStyleId);
 
-      if (page.selectedPerkIds.length < 9)
-        page.selectedPerkIds = page.selectedPerkIds.concat(primaryStyle.defaultPerks.slice(-3)).slice(0, 9);
-
       let rowIndexes = [];
       for (let ii = 0; ii < array[i].selectedPerkIds.length; ii++) {
         const style = ii > 3 ? subStyle : primaryStyle, id = array[i].selectedPerkIds[ii];
@@ -135,25 +132,26 @@ class DataValidator {
   }
 
   validatePerkShards(page) {
-    if (page.selectedPerkIds.length < 9)
-      console.log(`[DataValidator] Perk shards >> can't validate #${page.id}: perks length isn't 9`);
-    else
-      console.log(`[DataValidator] Perk shards >> validating #${page.id}`);
+    console.log(`[DataValidator] Perk shards >> validating "${page.name}"`);
 
-    const defaultShards = Mana.gameClient.styles.find(x => x.id == page.primaryStyleId).slots.slice(-3).map(x => x.perks);
-    let shards = page.selectedPerkIds.slice(-3);
+    const primaryStyle = Mana.gameClient.styles.find(x => x.id == page.primaryStyleId);
 
-    for (let i = 0; i < shards.length; i++) {
-      if (!defaultShards[i].includes(shards[i])) {
-        console.log(`[DataValidator] Perk shards >> mod #${shards[i]} can't be included at slot ${i}, replacing with random one`);
-        console.log(`[DataValidator] Perk shards >> Selected #${shards[i] = defaultShards[i][Math.floor(Math.random() * defaultShards[i].length)]}`);
+    if (page.selectedPerkIds.length >= 6 && page.selectedPerkIds.length < 9)
+      page.selectedPerkIds = page.selectedPerkIds.concat(primaryStyle.defaultPerks.slice(-(9 - page.selectedPerkIds.length)));
+    else if (page.selectedPerkIds.length !== 9) console.log(`[DataValidator] Perk shards >> can't validate #${page.id}: perks length isn't 9 or at least above 6`);
+    else {
+      const defaultShards = primaryStyle.slots.slice(-3).map(x => x.perks);
+      let shards = page.selectedPerkIds.slice(-3);
+
+      for (let i = 0; i < shards.length; i++) {
+        if (!defaultShards[i].includes(shards[i])) {
+          console.log(`[DataValidator] Perk shards >> mod #${shards[i]} can't be included at slot ${i}, replacing with random one`);
+          console.log(`[DataValidator] Perk shards >> Selected #${shards[i] = defaultShards[i][Math.floor(Math.random() * defaultShards[i].length)]}`);
+        }
       }
+
+      page.selectedPerkIds = page.selectedPerkIds.slice(0, -3).concat(shards);
     }
-
-    page.selectedPerkIds = page.selectedPerkIds.slice(0, -3).concat(shards);
-
-    console.dir(shards);
-    console.dir(page);
   }
 
   _hasDuplicates(array) {
