@@ -37,7 +37,7 @@ class RemoteConnectionHandler {
       })
       .get('/api/v1/heartbeat', (req, res) => {
         res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ success: true, inChampionSelect: Mana.championSelectHandler._inChampionSelect }));
+        res.end(JSON.stringify({ success: true, inChampionSelect: Mana.championSelectHandler._inChampionSelect, ...Mana.champions[Mana.championSelectHandler._inChampionSelect ? Mana.championSelectHandler.getPlayer().championId : -1] }));
       })
       .get('/api/v1/summoner', (req, res) => {
         res.writeHead(200, { 'Content-Type': 'application/json' });
