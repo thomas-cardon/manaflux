@@ -68,6 +68,24 @@ class RemoteConnectionHandler {
 
         res.end(JSON.stringify({ success: true }));
       })
+      .get('/api/v1/actions/summoner-spells', (req, res) => {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+
+        if (Mana.user)
+          res.end(JSON.stringify({ success: true, summonerSpells: Object.values(Mana.gameClient.summonerSpells) }));
+        else res.end(JSON.stringify({ success: false, errorCode: 'SUMMONER_NOT_CONNECTED', error: 'Summoner is not connected' }));
+      })
+      .post('/api/v1/actions/summoner-spells', async (req, res) => {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        let spells = req.body.slice(',');
+
+        if (!Mana.championSelectHandler._inChampionSelect) res.end(JSON.stringify({ success: false, errorCode: 'NOT_IN_CHAMPION_SELECT', error: 'Not in Champion Select' }));
+        else if (spells.length === 2) {
+          await Mana.user.updateSummonerSpells(spells);
+          res.end(JSON.stringify({ success: true }));
+        }
+        else res.end(JSON.stringify({ success: false, errorCode: 'MISSING_SUMMONER_SPELLS', error: 'Two summoner spells are needed.' }));
+      })
       .post('/api/v1/actions/runes/load', (req, res) => {
         res.writeHead(200, { 'Content-Type': 'application/json' });
         if (!Mana.championSelectHandler._inChampionSelect) res.end(JSON.stringify({ success: false, errorCode: 'NOT_IN_CHAMPION_SELECT', error: 'Not in Champion Select' }));
