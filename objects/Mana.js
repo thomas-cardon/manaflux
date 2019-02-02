@@ -78,11 +78,9 @@ class Mana {
 
     this.assetsProxy.load();
 
-    const data = await UI.indicator(Promise.all([this.gameClient.load(), this.gameClient.getChampionSummary(), this.gameClient.getSummonerSpells(), require('request-promise-native')('https://manaflux-server.herokuapp.com/api/alerts/v1')]), 'status-loading-resources');
+    const data = await UI.indicator(Promise.all([this.gameClient.load(), this.gameClient.queryChampionSummary(), this.gameClient.querySummonerSpells(), require('request-promise-native')('https://manaflux-server.herokuapp.com/api/alerts/v1')]), 'status-loading-resources');
 
     this.preseason = data[0];
-    this.champions = data[1];
-    this.summonerspells = data[2];
 
     this._alert(data[3]);
     $('.version').text(`V${this.version} - V${this.gameClient.branch}`);

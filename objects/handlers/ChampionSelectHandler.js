@@ -116,11 +116,11 @@ class ChampionSelectHandler {
     else if (this.getPlayer().championId === 0) return this.onChampionNotPicked();
     else if (this._lastChampionPicked !== this.getPlayer().championId) {
       this._lastChampionPicked = this.getPlayer().championId;
-      return await this.onChampionChange(Mana.champions[this.getPlayer().championId]);
+      return await this.onChampionChange(Mana.gameClient.champions[this.getPlayer().championId]);
     }
     else if (!this._locked && Mana.getStore().get('champion-select-lock') && Mana.gameflow.shouldEnableLockFeature()) {
       if (this._locked = await this.isChampionLocked())
-        return await this.onChampionLocked(Mana.champions[this.getPlayer().championId]);
+        return await this.onChampionLocked(Mana.gameClient.champions[this.getPlayer().championId]);
     }
   }
 
@@ -220,7 +220,7 @@ class ChampionSelectHandler {
 
     // Sets value and checks if it's not null, if it is then let's stop everything
     if (!(document.getElementById('positions').value = res.roles[this.getPosition()] ? this.gameModeHandler.getPosition(this.getPosition()) : Object.keys(res.roles).filter(x => res.roles[x].perks.length > 0)[0])) {
-      Mana.championStorageHandler.remove(champion.id);
+      Mana.gameClient.championstorageHandler.remove(champion.id);
       throw this._onCrash(i18n.__('champion-select-error-empty'));
     }
 

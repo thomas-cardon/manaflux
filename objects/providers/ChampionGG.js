@@ -100,7 +100,7 @@ class ChampionGGProvider extends Provider {
     let summonerspells = [];
 
     $('.summoner-wrapper > a > img').each(function(index) {
-      const summoner = Mana.summonerspells[$(this).attr('src').slice(51, -4)];
+      const summoner = Mana.gameClient.summonerSpells[$(this).attr('src').slice(51, -4)];
 
       if (!summoner) return;
       if (summoner.gameModes.includes(gameMode)) summonerspells.push(summoner.id);
@@ -141,7 +141,7 @@ class ChampionGGProvider extends Provider {
   /**
    * Scrapes item sets from a Champion.gg page
    * @param {cheerio} $ - The cheerio object
-   * @param {object} champion - A champion object, from Mana.champions
+   * @param {object} champion - A champion object, from Mana.gameClient.champions
    * @param {string} position - Limited to: TOP, JUNGLE, MIDDLE, ADC, SUPPORT
    * @param {object} skillorder
    */

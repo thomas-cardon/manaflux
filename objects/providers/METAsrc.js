@@ -79,8 +79,8 @@ class METAsrcProvider extends Provider {
     $('img[src*="/img/spell"]').slice(0, 2).each(function(index) {
       const key = $(this).attr('src').slice($(this).attr('src').lastIndexOf('/') + 1, -4);
 
-      if (Mana.summonerspells[key])
-        summonerspells.push(Mana.summonerspells[key]);
+      if (Mana.gameClient.summonerSpells[key])
+        summonerspells.push(Mana.gameClient.summonerSpells[key]);
     });
 
     return summonerspells;
@@ -97,7 +97,7 @@ class METAsrcProvider extends Provider {
   /**
    * Scrapes item sets from a METAsrc page
    * @param {cheerio} $ - The cheerio object
-   * @param {object} champion - A champion object, from Mana.champions
+   * @param {object} champion - A champion object, from Mana.gameClient.champions
    * @param {string} position - Limited to: TOP, JUNGLE, MIDDLE, ADC, SUPPORT
    * @param {object} skillorder
    */

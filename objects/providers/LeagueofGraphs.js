@@ -96,7 +96,7 @@ class LeagueofGraphsProvider extends Provider {
 
     let summoners = [];
     $('table').find('td > span').each(function(index) {
-      summoners.push($(this).text().trim().split(' - ').map(y => Object.values(Mana.summonerspells).find(z => z.name === y)));
+      summoners.push($(this).text().trim().split(' - ').map(y => Object.values(Mana.gameClient.summonerSpells).find(z => z.name === y)));
     });
 
     return summoners;
@@ -121,7 +121,7 @@ class LeagueofGraphsProvider extends Provider {
   /**
    * Scrapes item sets from a League of Graphs page
    * @param {cheerio} $ - The cheerio object
-   * @param {object} champion - A champion object, from Mana.champions
+   * @param {object} champion - A champion object, from Mana.gameClient.champions
    * @param {string} position - Limited to: TOP, JUNGLE, MIDDLE, ADC, SUPPORT
    * @param {object} skillorder
    */

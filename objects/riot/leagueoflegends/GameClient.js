@@ -8,7 +8,7 @@ class GameClient {
     return JSON.parse(await rp(Mana.base + 'system/v1/builds'));
   }
 
-  async getSummonerSpells(d = {}) {
+  async querySummonerSpells(d = {}) {
     const summonerSpellData = JSON.parse(await rp(Mana.base + 'lol-game-data/assets/v1/summoner-spells.json'));
 
     for (let spell of summonerSpellData) {
@@ -24,20 +24,20 @@ class GameClient {
         d['SummonerDot'] = d[key];
     }
 
-    return d;
-  }
-  
-  findSummonerSpellByName(name) {
-    return Object.values(Mana.summonerspells).find(spell => spell.name === name);
+    return this.summonerSpells = d;
   }
 
-  async getChampionSummary(d = {}) {
+  findSummonerSpellByName(name) {
+    return Object.values(Mana.gameClient.summonerSpells).find(spell => spell.name === name);
+  }
+
+  async queryChampionSummary(d = {}) {
     const championSummaryData = JSON.parse(await rp(Mana.base + 'lol-game-data/assets/v1/champion-summary.json'));
 
     for (let champion of championSummaryData)
       d[champion.id] = { id: champion.id, key: champion.alias, name: champion.name, img: 'http://localhost:' + Mana.assetsProxy.port + champion.squarePortraitPath };
 
-    return d;
+    return this.champions = d;
   }
 
   async getRegionAndLocale() {
