@@ -135,6 +135,8 @@ UI.enableHextechAnimation = function(champion = Mana.gameClient.champions[-1], p
 	document.querySelector('.championPortrait > #hextechAnimationBackground').setAttribute('src', 'assets/img/vfx-' + primaryStyleId + '.png');
   document.querySelector('.championPortrait > #champion').setAttribute('src', champion.img);
 
+  document.getElementById('championName').innerHTML = champion.name;
+
   if (Mana.getStore().get('ui-animations-enable'))
     document.querySelector('.championPortrait > #champion').onload = function() {
       document.querySelector('.title').classList.remove('animated', 'fadeInDown');

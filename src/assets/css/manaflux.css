@@ -97,6 +97,14 @@ body {
   will-change: transform;
 }
 
+#championName {
+  font-size: 25px;
+  color: #b71540;
+  margin-top: -17%;
+  margin-left: 2%;
+  text-align: center;
+}
+
 .title {
   text-align: center;
 }
