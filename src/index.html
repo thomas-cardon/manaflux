@@ -277,8 +277,14 @@
       </div>
     </div>
     <div data-tabid="settings" data-tabn=5 class="tabcontent" style="display: none; margin-left: 9%;">
-      <p class="option-name" data-i18n="category-android-app"></p>
-      <p data-i18n="android-app-note" style="color: #c0392b;"></p>
+      <p class="option-name" data-i18n="category-mobile-app"></p>
+      <p data-i18n="mobile-app-note" style="color: #c0392b;"></p>
+      <div class="option" style="position: absolute;margin-top: 44%;margin-left: 31%;">
+        <div class="options checkboxContainer">
+          <input type="checkbox" id="mobile-app-disable" data-settings-key="mobile-app-disabled" data-settings-default="true" data-custom-component="miner-disabler" data-miner="">
+          <label data-i18n="common-disable" for="mobile-app-disable">Désactiver</label>
+        </div>
+      </div>
       <div id="qr-canvas" class="option">
         <img id="qrcode-frame" src="http://raw.communitydragon.org/8.20/plugins/rcp-fe-lol-loot/global/default/assets/border_images/permanent.png">
         <canvas id="qrcode" data-custom-component="qr-canvas" style=""></canvas>
