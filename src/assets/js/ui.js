@@ -131,7 +131,7 @@ $.fn.disableManualButton = function(disable) {
 }
 
 /* Hextech Animation Handler */
-UI.enableHextechAnimation = function(champion = Mana.champions[-1], primaryStyleId = 'white') {
+UI.enableHextechAnimation = function(champion = Mana.gameClient.champions[-1], primaryStyleId = 'white') {
 	document.querySelector('.championPortrait > #hextechAnimationBackground').setAttribute('src', 'assets/img/vfx-' + primaryStyleId + '.png');
   document.querySelector('.championPortrait > #champion').setAttribute('src', champion.img);
 
