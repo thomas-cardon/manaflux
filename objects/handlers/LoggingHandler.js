@@ -97,7 +97,7 @@ function LoggingHandler(level) {
 LoggingHandler.prototype.start = function() {
   if (this.isRenderer) return this.ipc.sendSync('logging-start');
 
-  this._folder = require('electron').app.getPath('logs') || `${require('electron').app.getPath('userData')}/logs`;
+  this._folder = process.platform === 'linux' ? `${require('electron').app.getPath('userData')}/logs` : `${require('electron').app.getPath('logs')}`;
   if (!fs.existsSync(this._folder)) fs.mkdirSync(this._folder);
 
   this._path = path.resolve(this._folder, new Date().toString().slice(0, 24).replace(/:/g, '-') + '.txt');
