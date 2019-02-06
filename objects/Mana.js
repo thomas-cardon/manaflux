@@ -62,7 +62,7 @@ class Mana {
 
     UI.loadSettings(this);
     UI.loadCustomComponents(this);
-    UI.dots.load();
+    UI.tabs.load();
 
     if (!this.getStore().get('league-client-path'))
       require('../objects/Wizard')(this.devMode).on('closed', () => {

@@ -3,7 +3,8 @@ UI.dots = {
 	isEnabled: document.getElementById('dots') !== null
 };
 
-UI.dots.load = function() {
+UI.tabs = {};
+UI.tabs.load = function() {
 	document.querySelectorAll('.tabcontent').forEach(tab => {
 		const title = tab.getAttribute('data-tabtitle');
 		const isDisabled = tab.hasAttribute('data-disabled');
@@ -16,6 +17,22 @@ UI.dots.load = function() {
 			else elem.style.display = !isDisabled ? 'block' : 'none';
 		});
 	});
+}
+
+UI.tabs.enable = function(tabId, tabN) {
+	const tab = document.querySelector(`.tabcontent[data-tabid="${tabId}"][data-tabn="${tabN}"]`);
+	tab.setAttribute('data-disabled', true);
+
+	const info = document.querySelector(`.tabcontent[data-tabid="${tabId}"][data-tabn="${tabN}"] > .tab-info`).style.display = 'none';
+	const data = document.querySelector(`.tabcontent[data-tabid="${tabId}"][data-tabn="${tabN}"] > .tab-activable`).style.display = 'block';
+}
+
+UI.tabs.disable = function(tabId, tabN) {
+	const tab = document.querySelector(`.tabcontent[data-tabid="${tabId}"][data-tabn="${tabN}"]`);
+	tab.setAttribute('data-disabled', false);
+
+	const info = document.querySelector(`.tabcontent[data-tabid="${tabId}"][data-tabn="${tabN}"] > .tab-info`).style.display = 'block';
+	const data = document.querySelector(`.tabcontent[data-tabid="${tabId}"][data-tabn="${tabN}"] > .tab-activable`).style.display = 'none';
 }
 
 UI.dots.onClickEvent = function(dot, tabId, i) {
