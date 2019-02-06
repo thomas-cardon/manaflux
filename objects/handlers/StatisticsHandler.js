@@ -14,48 +14,49 @@ class StatisticsHandler {
     console.log(2, '[ProviderHandler] Downloading global statistics');
   }
 
-  display(champion, data, position) {
-    data = {
-      stats: {
-        winrate: { avg: '42.68%', rolePlacement: '49/49', patchChange: '-2' },
-        playrate: { avg: '0.22%', rolePlacement: '48/49', patchChange: '-1' },
-        banrate: { avg: '0.08%', rolePlacement: '37/49', patchChange: '+5' },
-        k: { avg: '6.20', rolePlacement: '49/49', patchChange: '-2' },
-        d: { avg: '6.94', rolePlacement: '49/49', patchChange: '-2' },
-        a: { avg: '8.29', rolePlacement: '49/49', patchChange: '-2' },
-        overall: { rolePlacement: '7/49', patchChange: '+5' }
-      },
-      matchups: {
-        counters: {
-          1: { games: 1989, wr: 17, position: 'MIDDLE' },
-          2: { games: 1320, wr: 39, position: 'MIDDLE' },
-          3: { games: 1874, wr: 41.90, position: 'MIDDLE' },
-          4: { games: 1989, wr: 44.90, position: 'MIDDLE' },
-          5: { games: 1320, wr: 44.55, position: 'MIDDLE' },
-          6: { games: 1874, wr: 44.95, position: 'MIDDLE' },
-          7: { games: 1989, wr: 45.95, position: 'MIDDLE' },
-          8: { games: 1320, wr: 46.95, position: 'MIDDLE' },
-          9: { games: 1874, wr: 47.95, position: 'MIDDLE' },
-          10: { games: 1989, wr: 48.95, position: 'MIDDLE' },
-          11: { games: 1320, wr: 49.95, position: 'MIDDLE' },
-          12: { games: 1874, wr: 50.95, position: 'SUPPORT', link: 'https://champion.gg/champion/Alistar/Support' }
+  display(champion = Mana.gameClient.champions[1], data, position) {
+    if (!data)
+      data = {
+        stats: {
+          winrate: { avg: '42.68%', rolePlacement: '49/49', patchChange: '-2' },
+          playrate: { avg: '0.22%', rolePlacement: '48/49', patchChange: '-1' },
+          banrate: { avg: '0.08%', rolePlacement: '37/49', patchChange: '+5' },
+          k: { avg: '6.20', rolePlacement: '49/49', patchChange: '-2' },
+          d: { avg: '6.94', rolePlacement: '49/49', patchChange: '-2' },
+          a: { avg: '8.29', rolePlacement: '49/49', patchChange: '-2' },
+          overall: { rolePlacement: '7/49', patchChange: '+5' }
         },
-        synergies: {
-          1: { games: 1989, wr: 17, position: 'MIDDLE' },
-          2: { games: 1320, wr: 39, position: 'MIDDLE' },
-          3: { games: 1874, wr: 41.90, position: 'MIDDLE' },
-          4: { games: 1989, wr: 44.90, position: 'MIDDLE' },
-          5: { games: 1320, wr: 44.55, position: 'MIDDLE' },
-          6: { games: 1874, wr: 44.95, position: 'MIDDLE' },
-          7: { games: 1989, wr: 45.95, position: 'MIDDLE' },
-          8: { games: 1320, wr: 46.95, position: 'MIDDLE' },
-          9: { games: 1874, wr: 47.95, position: 'MIDDLE' },
-          10: { games: 1989, wr: 48.95, position: 'MIDDLE' },
-          11: { games: 1320, wr: 49.95, position: 'MIDDLE' },
-          12: { games: 1874, wr: 50.95, position: 'SUPPORT', link: 'https://champion.gg/champion/Alistar/Support' }
+        matchups: {
+          counters: {
+            1: { games: 1989, wr: 17, position: 'MIDDLE' },
+            2: { games: 1320, wr: 39, position: 'MIDDLE' },
+            3: { games: 1874, wr: 41.90, position: 'MIDDLE' },
+            4: { games: 1989, wr: 44.90, position: 'MIDDLE' },
+            5: { games: 1320, wr: 44.55, position: 'MIDDLE' },
+            6: { games: 1874, wr: 44.95, position: 'MIDDLE' },
+            7: { games: 1989, wr: 45.95, position: 'MIDDLE' },
+            8: { games: 1320, wr: 46.95, position: 'MIDDLE' },
+            9: { games: 1874, wr: 47.95, position: 'MIDDLE' },
+            10: { games: 1989, wr: 48.95, position: 'MIDDLE' },
+            11: { games: 1320, wr: 49.95, position: 'MIDDLE' },
+            12: { games: 1874, wr: 50.95, position: 'SUPPORT', link: 'https://champion.gg/champion/Alistar/Support' }
+          },
+          synergies: {
+            1: { games: 1989, wr: 17, position: 'MIDDLE' },
+            2: { games: 1320, wr: 39, position: 'MIDDLE' },
+            3: { games: 1874, wr: 41.90, position: 'MIDDLE' },
+            4: { games: 1989, wr: 44.90, position: 'MIDDLE' },
+            5: { games: 1320, wr: 44.55, position: 'MIDDLE' },
+            6: { games: 1874, wr: 44.95, position: 'MIDDLE' },
+            7: { games: 1989, wr: 45.95, position: 'MIDDLE' },
+            8: { games: 1320, wr: 46.95, position: 'MIDDLE' },
+            9: { games: 1874, wr: 47.95, position: 'MIDDLE' },
+            10: { games: 1989, wr: 48.95, position: 'MIDDLE' },
+            11: { games: 1320, wr: 49.95, position: 'MIDDLE' },
+            12: { games: 1874, wr: 50.95, position: 'SUPPORT', link: 'https://champion.gg/champion/Alistar/Support' }
+          }
         }
-      }
-    };
+      };
 
     if (Mana.getStore().get('statistics')) this.displayStatistics(champion, data);
     else UI.disableTab(document.getElementById('statistics'));
@@ -67,7 +68,7 @@ class StatisticsHandler {
     let content = document.getElementById('statistics'), html = `
     <div class="statistics-portrait">
       <img id="champion" src="${champion.img}">
-      <img id="hextechAnimationBackground" data-custom-component="hextech-background" onload="UI.loadCustomComponent(this)" src="assets/img/vfx-white.png">
+      <img id="hextechAnimationBackground" data-custom-component="hextech-background" src="assets/img/vfx-white.png">
       <p id="statistics-champion-name">${champion.name}<br>${UI.stylizeRole(data.position)}</p>
     </div>
     <p style="text-align: left;">
@@ -100,7 +101,7 @@ class StatisticsHandler {
 
     for (const [key, value] of vsPlus) {
       html += `<div class="matchup matchup-left">
-        <img src="${Mana.champions[key].img}" />
+        <img src="${Mana.gameClient.champions[key].img}" />
         <div class="champion-data">
           <span style="color: #dcdde1;">${i18n.__('statistics-games', value.games)}</span>
           <progress class="matchup-progress matchup-progress-counter" id="progress-vs-${key}" max="100" value="${value.wr}" data-label="${value.wr}%">
@@ -115,7 +116,7 @@ class StatisticsHandler {
           <span style="color: #dcdde1;">${i18n.__('statistics-games', value.games)}</span>
           <progress class="matchup-progress matchup-progress-synergy" id="progress-vs-${key}" max="100" value="${value.wr}" data-label="${value.wr}%"></progress>
         </div>
-        <img src="${Mana.champions[key].img}" />
+        <img src="${Mana.gameClient.champions[key].img}" />
       </div>`;
     }
 
