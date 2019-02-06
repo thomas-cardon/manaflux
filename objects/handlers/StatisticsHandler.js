@@ -72,10 +72,10 @@ class StatisticsHandler {
       <p id="statistics-champion-name">${champion.name}<br>${UI.stylizeRole(data.position)}</p>
     </div>
     <p style="text-align: left;">
-      <span style="color: #ffff;">${i18n.__('statistics-stats-generic-name')}</span>
-      <span style="position: absolute; left: 150px; color: #e58e26;">${i18n.__('statistics-stats-generic-avg')}</span>
-      <span style="position: absolute; left: 250px; color: #38ada9;">${i18n.__('statistics-stats-generic-role-placement')}</span>
-      <span style="position: absolute; left: 400px; color: #78e08f;">(${i18n.__('statistics-stats-generic-patch-change')})</span>
+      <span style="color: #ffff;">${i18n.__('statistics-header-stat')}</span>
+      <span style="position: absolute; left: 150px; color: #e58e26;">${i18n.__('statistics-header-avg')}</span>
+      <span style="position: absolute; left: 250px; color: #38ada9;">${i18n.__('statistics-header-role-placement')}</span>
+      <span style="position: absolute; left: 400px; color: #78e08f;">(${i18n.__('statistics-header-patch-change')})</span>
     </p>`;
 
     for (const [key, value] of Object.entries(data.stats)) {
