@@ -14,7 +14,7 @@ class METAsrcProvider extends Provider {
 
     let data = { roles: { [d.position]: d } };
 
-    if (gameMode === 'ARAM' || gameMode === 'TWISTED_TREELINE') {
+    if (['ARAM', 'TWISTED_TREELINE', 'URF'].includes(gameMode)) {
       delete data.roles[gameMode].position;
       return data;
     }
@@ -74,13 +74,16 @@ class METAsrcProvider extends Provider {
    * @param {cheerio} $ - The cheerio object
    */
   scrapeSummonerSpells($) {
-    /*let summonerspells = [];
+    let summonerspells = [];
 
     $('img[src*="/img/spell"]').slice(0, 2).each(function(index) {
-      summonerspells.push(Mana.gameClient.findSummonerSpellByName($(this).attr('src').slice($(this).attr('src').lastIndexOf('/') + 1, -4)));
-    });*/
-    // TODO: find a way to dynamically find a summoner spell ID without slowing down Manaflux
-    return [];
+      const key = $(this).attr('src').slice($(this).attr('src').lastIndexOf('/') + 1, -4);
+
+      if (Mana.gameClient.summonerSpells[key])
+        summonerspells.push(Mana.gameClient.summonerSpells[key]);
+    });
+
+    return summonerspells;
   }
 
   /**
@@ -88,13 +91,13 @@ class METAsrcProvider extends Provider {
    * @param {cheerio} $ - The cheerio object
    */
   scrapeSkillOrder($) {
-    return null; //skillorder;
+    return null;
   }
 
   /**
    * Scrapes item sets from a METAsrc page
    * @param {cheerio} $ - The cheerio object
-   * @param {object} champion - A champion object, from Mana.champions
+   * @param {object} champion - A champion object, from Mana.gameClient.champions
    * @param {string} position - Limited to: TOP, JUNGLE, MIDDLE, ADC, SUPPORT
    * @param {object} skillorder
    */
@@ -126,6 +129,8 @@ class METAsrcProvider extends Provider {
         return '5v5';
         case 'twisted_treeline':
         return '3v3';
+        case 'urf':
+        return 'arurf';
         default:
         return '5v5';
       }

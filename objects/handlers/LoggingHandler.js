@@ -97,7 +97,13 @@ function LoggingHandler(level) {
 LoggingHandler.prototype.start = function() {
   if (this.isRenderer) return this.ipc.sendSync('logging-start');
 
-  this.stream = fs.createWriteStream(this._path = path.resolve(require('electron').app.getPath('logs'), new Date().toString().slice(0, 24).replace(/:/g, '-') + '.txt'));
+  this._folder = process.platform === 'linux' ? `${require('electron').app.getPath('userData')}/logs` : `${require('electron').app.getPath('logs')}`;
+  if (!fs.existsSync(this._folder)) fs.mkdirSync(this._folder);
+
+  this._path = path.resolve(this._folder, new Date().toString().slice(0, 24).replace(/:/g, '-') + '.txt');
+  this.stream = fs.createWriteStream(this._path);
+
+  this.stream = fs.createWriteStream(this._path = path.resolve(this._folder, new Date().toString().slice(0, 24).replace(/:/g, '-') + '.txt'));
   this.stream.write(`----------[ Log file level ${this.level} ]----------\n`);
   this.stream.write(`Electron v${process.versions.electron}\n`);
   this.stream.write(`NodeJS v${process.versions.node}\n`);

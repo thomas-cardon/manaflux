@@ -61,7 +61,7 @@
       if (!leaguePath || leaguePath.length === 0) return;
       leaguePath = leaguePath[0];
 
-      _exists(path.resolve(leaguePath + '\\LeagueClient.' + (process.platform === 'win32' ? 'exe' : 'app')))
+      _exists(path.resolve(path.join(leaguePath, 'LeagueClient.') + (process.platform === 'darwin' ? 'app' : 'exe')))
       .then(exists => {
         document.getElementById('leaguePath').value = exists ? leaguePath : i18n.__('league-client-path-wrong');
         document.getElementById('league-client-path').style.color = exists ? '#cdbe91' : '#b33939';

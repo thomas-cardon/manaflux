@@ -44,7 +44,7 @@ class LeagueofGraphsProvider extends Provider {
       rp({ uri: `${this.base}/runes/${champion.key}${position ? '/' + position : ''}`.toLowerCase(), transform: body => cheerio.load(body) }),
       Mana.getStore().get('item-sets-enable') ? rp({ uri: `${this.base}/items/${champion.key}${position ? '/' + position : ''}`.toLowerCase(), transform: body => cheerio.load(body) }) : Promise.resolve(),
       Mana.getStore().get('summoner-spells') ? rp({ uri: `${this.base}/spells/${champion.key}${position ? '/' + position : ''}`.toLowerCase(), transform: body => cheerio.load(body) }) : Promise.resolve(),
-      Mana.getStore().get('statistics') ? rp({ uri: `${this.base}/statistics/${champion.key}${position ? '/' + position : ''}`.toLowerCase(), transform: body => cheerio.load(body) }) : Promise.resolve(),
+      Mana.getStore().get('statistics') && false ? rp({ uri: `${this.base}/stats/${champion.key}${position ? '/' + position : ''}`.toLowerCase(), transform: body => cheerio.load(body) }) : Promise.resolve(),
       rp({ uri: `${this.base}/skills-orders/${champion.key}${position ? '/' + position : ''}`.toLowerCase(), transform: body => cheerio.load(body) })
     ]);
 
@@ -58,7 +58,7 @@ class LeagueofGraphsProvider extends Provider {
   }
 
   /**
-   * Scrapes item sets from a League of Graphs page
+   * Scrapes perks from a League of Graphs page
    * @param {cheerio} $ - The cheerio object
    */
   scrapePerks($) {
@@ -92,11 +92,14 @@ class LeagueofGraphsProvider extends Provider {
    * @param {cheerio} $ - The cheerio object
    */
   scrapeSummonerSpells($) {
-    if (Mana.gameClient.locale !== 'en_GB' && Mana.gameClient.locale !== 'en_US') return console.log(2, `[ProviderHandler] [League of Graphs] Summoner spells are not supported because you're not using the english language in League`);
+    if (Mana.gameClient.locale !== 'en_GB' && Mana.gameClient.locale !== 'en_US') {
+      console.log(2, `[ProviderHandler] [League of Graphs] Summoner spells are not supported because you're not using the english language in League`);
+      return [];
+    }
 
     let summoners = [];
     $('table').find('td > span').each(function(index) {
-      summoners.push($(this).text().trim().split(' - ').map(y => Object.values(Mana.summonerspells).find(z => z.name === y)));
+      summoners.push($(this).text().trim().split(' - ').map(y => Object.values(Mana.gameClient.summonerSpells).find(z => z.name === y)));
     });
 
     return summoners;
@@ -121,7 +124,7 @@ class LeagueofGraphsProvider extends Provider {
   /**
    * Scrapes item sets from a League of Graphs page
    * @param {cheerio} $ - The cheerio object
-   * @param {object} champion - A champion object, from Mana.champions
+   * @param {object} champion - A champion object, from Mana.gameClient.champions
    * @param {string} position - Limited to: TOP, JUNGLE, MIDDLE, ADC, SUPPORT
    * @param {object} skillorder
    */

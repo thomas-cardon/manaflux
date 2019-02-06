@@ -1,6 +1,6 @@
 {
   "name": "manaflux",
-  "version": "2.1.6",
+  "version": "2.2.2",
   "description": "Manaflux downloads automatically your runes, itemsets, and summonerspells and injects them to your League client seamlessly!",
   "main": "main.js",
   "scripts": {
@@ -46,7 +46,7 @@
   "build": {
     "appId": "com.github.ryzzzen.manaflux",
     "productName": "Manaflux",
-    "copyright": "Copyright © 2018 Ryzzzen",
+    "copyright": "Copyright © 2019 Ryzzzen",
     "files": [
       "**/*",
       "build/icon.*",

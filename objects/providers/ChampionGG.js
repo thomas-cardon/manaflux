@@ -78,13 +78,16 @@ class ChampionGGProvider extends Provider {
   scrapePerks($) {
     let pages = [{ suffixName: `(HW%)`, selectedPerkIds: [] }, { suffixName: `(MF)`, selectedPerkIds: [] }];
 
-    $("img[src*='perk-images']", $("div[class^=Slot__LeftSide]")).each(function(index) {
-      let page = Math.trunc(index / 8), perk = $(this).attr("src").slice(38);
-      if (index % 8 === 0) pages[page].primaryStyleId = Mana.gameClient.findPerkStyleByImage(perk).id;
-      else if (index % 8 === 5) pages[page].subStyleId = Mana.gameClient.findPerkStyleByImage(perk).id;
+    $("img[src*='perk-images'], img[src*='rune-shards']", $("div[class^=Slot__LeftSide]")).each(function(index) {
+      let page = Math.trunc(index / 11), perk = $(this).attr('src').slice(38);
+
+      if (index % 11 === 0) pages[page].primaryStyleId = Mana.gameClient.findPerkStyleByImage(perk).id;
+      else if (index % 11 === 5) pages[page].subStyleId = Mana.gameClient.findPerkStyleByImage(perk).id;
+      else if (index % 11 > 7) pages[page].selectedPerkIds.push($(this).attr('src').slice(-8, -4));
       else pages[page].selectedPerkIds.push(Mana.gameClient.findPerkByImage(perk).id);
     });
 
+    console.dir(pages);
     return pages;
   }
 
@@ -97,7 +100,7 @@ class ChampionGGProvider extends Provider {
     let summonerspells = [];
 
     $('.summoner-wrapper > a > img').each(function(index) {
-      const summoner = Mana.summonerspells[$(this).attr('src').slice(51, -4)];
+      const summoner = Mana.gameClient.summonerSpells[$(this).attr('src').slice(51, -4)];
 
       if (!summoner) return;
       if (summoner.gameModes.includes(gameMode)) summonerspells.push(summoner.id);
@@ -138,7 +141,7 @@ class ChampionGGProvider extends Provider {
   /**
    * Scrapes item sets from a Champion.gg page
    * @param {cheerio} $ - The cheerio object
-   * @param {object} champion - A champion object, from Mana.champions
+   * @param {object} champion - A champion object, from Mana.gameClient.champions
    * @param {string} position - Limited to: TOP, JUNGLE, MIDDLE, ADC, SUPPORT
    * @param {object} skillorder
    */

@@ -50,6 +50,8 @@ class Mana {
     this.gameClient = new (require('./riot/leagueoflegends/GameClient'))();
     this.assetsProxy = new (require('./riot/leagueoflegends/GameAssetsProxy'))();
 
+    this.alertHandler = new (require('./handlers/AlertHandler'))();
+    
     this.championStorageHandler = new (require('./handlers/ChampionStorageHandler'))();
     this.championSelectHandler = new (require('./handlers/ChampionSelectHandler'))();
     this.statisticsHandler = new (require('./handlers/StatisticsHandler'))();
@@ -80,12 +82,9 @@ class Mana {
 
     this.assetsProxy.load();
 
-    const data = await UI.indicator(Promise.all([this.gameClient.load(), this.gameClient.getChampionSummary(), this.gameClient.getSummonerSpells()]), 'status-loading-resources');
+    const data = await UI.indicator(Promise.all([this.gameClient.load(), this.gameClient.queryChampionSummary(), this.gameClient.querySummonerSpells()]), 'status-loading-resources');
 
     this.preseason = data[0];
-    this.champions = data[1];
-    this.summonerspells = data[2];
-
     $('.version').text(`V${this.version} - V${this.gameClient.branch}`);
 
     await this.championStorageHandler.load();
@@ -99,12 +98,13 @@ class Mana {
     this.getStore().set('lastBranchSeen', this.gameClient.branch);
     document.querySelectorAll('[data-custom-component]').forEach(x => x.dispatchEvent(new Event('clientLoaded')));
 
+    this.alertHandler.load();
+
     ipcRenderer.send('lcu-preload-done');
   }
 
   onLeagueUserConnected(data) {
     if (this.user && this.user.getSummonerId() === data.summonerId) return;
-
     UI.status('league-client-connection');
 
     this.user = new (require('./User'))(data);
@@ -114,6 +114,8 @@ class Mana {
 
     this.championSelectHandler.loop();
     UI.status('champion-select-waiting');
+
+    this.alertHandler.login();
   }
 
   onLeagueDisconnect() {

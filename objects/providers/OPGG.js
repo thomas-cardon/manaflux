@@ -75,7 +75,7 @@ class OPGGProvider extends Provider {
   /**
    * Scrapes item sets from a OP.GG page
    * @param {cheerio} $ - The cheerio object
-   * @param {object} champion - A champion object, from Mana.champions
+   * @param {object} champion - A champion object, from Mana.gameClient.champions
    * @param {string} position - Limited to: TOP, JUNGLE, MIDDLE, ADC, SUPPORT
    */
   scrapePerks($, champion, position) {
@@ -106,7 +106,7 @@ class OPGGProvider extends Provider {
     let summonerspells = [];
 
     $("img[src^='//opgg-static.akamaized.net/images/lol/spell/Summoner']").slice(0, 2).each(function(index) {
-      const summoner = Mana.summonerspells[$(this).attr('src').slice(45, -19)];
+      const summoner = Mana.gameClient.summonerSpells[$(this).attr('src').slice(45, -19)];
 
       if (!summoner) return;
       if (summoner.gameModes.includes(gameMode)) summonerspells.push(summoner.id);
@@ -133,7 +133,7 @@ class OPGGProvider extends Provider {
   /**
    * Scrapes item sets from a OP.GG page
    * @param {cheerio} $ - The cheerio object
-   * @param {object} champion - A champion object, from Mana.champions
+   * @param {object} champion - A champion object, from Mana.gameClient.champions
    * @param {string} position - Limited to: TOP, JUNGLE, MIDDLE, ADC, SUPPORT
    * @param {object} skillorder
    */
