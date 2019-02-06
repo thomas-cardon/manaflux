@@ -52,7 +52,8 @@
 
 .matchup > img {
   width: 64px;
-  border-radius: 50%;
+  border-radius: 50px;
+  border: 2px solid #ffb142;
 }
 
 .matchup-progress {
