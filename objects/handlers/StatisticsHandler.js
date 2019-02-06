@@ -12,9 +12,24 @@ class StatisticsHandler {
 
   async getStatisticsData() {
     console.log(2, '[ProviderHandler] Downloading global statistics');
+
+    document.querySelector('#matchup > .tab-activable').innerHTML = '';
   }
 
   onChampionSelectEnd() {
+    document.querySelector('#matchup > .tab-activable').innerHTML = '';
+    document.querySelector('#statistics > .tab-activable').innerHTML = `<div class="statistics-portrait">
+ <img id="champion">
+ <img id="hextechAnimationBackground" data-custom-component="hextech-background" src="assets/img/vfx-white.png">
+ <p id="statistics-champion-name"></p>
+ </div>
+ <p style="text-align: left;">
+ <span style="color: #ffff;" data-i18n="statistics-header-stat"></span>
+ <span style="position: absolute; left: 150px; color: #e58e26;" data-i18n="statistics-header-avg"></span>
+ <span style="position: absolute; left: 250px; color: #38ada9;" data-i18n="statistics-header-role-placement"></span>
+ <span style="position: absolute; left: 400px; color: #78e08f;" data-i18n="statistics-header-patch-change"></span>
+ </p>`;
+ 
     UI.tabs.disable('home', 1);
     UI.tabs.disable('home', 2);
   }

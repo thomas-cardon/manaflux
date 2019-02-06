@@ -16,8 +16,8 @@
   height: 64px;
   z-index: 0;
   position: absolute;
-  top: 120px;
-  left: 56px;
+  top: 125px;
+  left: 68px;
   border-radius: 120px;
 }
 
@@ -25,8 +25,8 @@
   z-index: 1;
   width: 128px;
   position: absolute;
-  top: 85px;
-  left: 25px;
+  top: 90px;
+  left: 35px;
 }
 
 #statistics-champion-name {

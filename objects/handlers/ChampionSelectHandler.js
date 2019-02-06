@@ -72,6 +72,7 @@ class ChampionSelectHandler {
     this.destroyDisplay();
 
     Mana.providerHandler.onChampionSelectEnd();
+    Mana.statisticsHandler.onChampionSelectEnd();
 
     if (this._minerThrottle) miner.setThrottle(this._minerThrottle);
 
