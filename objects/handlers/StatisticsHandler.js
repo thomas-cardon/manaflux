@@ -65,18 +65,10 @@ class StatisticsHandler {
   }
 
   displayStatistics(champion, data) {
-    let content = document.getElementById('statistics'), html = `
-    <div class="statistics-portrait">
-      <img id="champion" src="${champion.img}">
-      <img id="hextechAnimationBackground" data-custom-component="hextech-background" src="assets/img/vfx-white.png">
-      <p id="statistics-champion-name">${champion.name}<br>${UI.stylizeRole(data.position)}</p>
-    </div>
-    <p style="text-align: left;">
-      <span style="color: #ffff;">${i18n.__('statistics-header-stat')}</span>
-      <span style="position: absolute; left: 150px; color: #e58e26;">${i18n.__('statistics-header-avg')}</span>
-      <span style="position: absolute; left: 250px; color: #38ada9;">${i18n.__('statistics-header-role-placement')}</span>
-      <span style="position: absolute; left: 400px; color: #78e08f;">(${i18n.__('statistics-header-patch-change')})</span>
-    </p>`;
+    let content = document.getElementById('statistics'), html = ``;
+
+    document.getElementById('statistics-champion-name').innerHTML = `${champion.name}<br>${UI.stylizeRole(data.position)}`;
+    document.querySelector('#statistics > .statistics-portrait > #champion').src = champion.img;
 
     for (const [key, value] of Object.entries(data.stats)) {
       if (key === 'overall') continue;
@@ -89,7 +81,7 @@ class StatisticsHandler {
       </p>`;
     }
 
-    content.innerHTML = html;
+    content.innerHTML += html;
   }
 
   displayMatchups(champion, data) {
