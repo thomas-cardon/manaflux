@@ -14,6 +14,11 @@ class StatisticsHandler {
     console.log(2, '[ProviderHandler] Downloading global statistics');
   }
 
+  onChampionSelectEnd() {
+    UI.tabs.disable('home', 1);
+    UI.tabs.disable('home', 2);
+  }
+
   display(champion = Mana.gameClient.champions[1], data, position) {
     if (!data)
       data = {
@@ -65,10 +70,10 @@ class StatisticsHandler {
   }
 
   displayStatistics(champion, data) {
-    let content = document.getElementById('statistics'), html = ``;
+    let content = document.querySelector('#statistics > .tab-activable'), html = ``;
 
     document.getElementById('statistics-champion-name').innerHTML = `${champion.name}<br>${UI.stylizeRole(data.position)}`;
-    document.querySelector('#statistics > .statistics-portrait > #champion').src = champion.img;
+    document.querySelector('#statistics > .tab-activable > .statistics-portrait > #champion').src = champion.img;
 
     for (const [key, value] of Object.entries(data.stats)) {
       if (key === 'overall') continue;
@@ -82,10 +87,11 @@ class StatisticsHandler {
     }
 
     content.innerHTML += html;
+    UI.tabs.enable('home', 2);
   }
 
   displayMatchups(champion, data) {
-    let content = document.getElementById('matchup'), html = `<div class="matchup-list" id="counters"><p style="color: #ffb142;font-size: 21px;margin: -3% 0 3%;">${i18n.__('statistics-counter-you')}</p>`;
+    let content = document.querySelector('#matchup > .tab-activable'), html = `<div class="matchup-list" id="counters"><p style="color: #ffb142;font-size: 21px;margin: -3% 0 3%;">${i18n.__('statistics-counter-you')}</p>`;
 
     let length = Object.keys(data.matchups.counters).length;
     let sorted = Object.entries(data.matchups.counters).sort((a, b) => b[1].wr - a[1].wr);
@@ -113,6 +119,7 @@ class StatisticsHandler {
     }
 
     content.innerHTML = html + '</div>';
+    UI.tabs.enable('home', 1);
   }
 }
 
