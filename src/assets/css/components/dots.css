@@ -21,6 +21,7 @@
 #dots {
   top: 80px;
   position: absolute;
+  z-index: 500;
 }
 
 #dots > * {
