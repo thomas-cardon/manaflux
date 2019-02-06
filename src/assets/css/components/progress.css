@@ -10,7 +10,7 @@ progress {
 
 progress:before {
   position: absolute;
-  top: 12%;
+  top: -22%;
   left: 0;
   right: 0;
   content: attr(data-label);
