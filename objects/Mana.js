@@ -52,6 +52,8 @@ class Mana {
     this.assetsProxy = new (require('./riot/leagueoflegends/GameAssetsProxy'))();
     this.remoteConnectionHandler = new (require('./handlers/RemoteConnectionHandler'))();
 
+    this.alertHandler = new (require('./handlers/AlertHandler'))();
+    
     this.championStorageHandler = new (require('./handlers/ChampionStorageHandler'))();
     this.championSelectHandler = new (require('./handlers/ChampionSelectHandler'))();
     this.providerHandler = new (require('./handlers/ProviderHandler'))(this.devMode);
@@ -80,13 +82,9 @@ class Mana {
 
     this.assetsProxy.load();
 
-    const data = await UI.indicator(Promise.all([this.gameClient.load(), this.gameClient.getChampionSummary(), this.gameClient.getSummonerSpells(), require('request-promise-native')('https://manaflux-server.herokuapp.com/api/alerts/v1')]), 'status-loading-resources');
+    const data = await UI.indicator(Promise.all([this.gameClient.load(), this.gameClient.queryChampionSummary(), this.gameClient.querySummonerSpells()]), 'status-loading-resources');
 
     this.preseason = data[0];
-    this.champions = data[1];
-    this.summonerspells = data[2];
-
-    this._alert(data[3]);
     $('.version').text(`V${this.version} - V${this.gameClient.branch}`);
 
     await this.championStorageHandler.load();
@@ -98,6 +96,8 @@ class Mana {
 
     this.getStore().set('lastBranchSeen', this.gameClient.branch);
     document.querySelectorAll('[data-custom-component]').forEach(x => x.dispatchEvent(new Event('clientLoaded')));
+
+    this.alertHandler.load();
 
     ipcRenderer.send('lcu-preload-done');
   }
@@ -112,10 +112,9 @@ class Mana {
     document.querySelectorAll('[data-custom-component]').forEach(x => x.dispatchEvent(new Event('userConnected')));
 
     this.championSelectHandler.loop();
-
-    require('request-promise-native')(`https://manaflux-server.herokuapp.com/api/alerts/v1?v=${this.version}&summoner=${this.user.getSummonerId()}`).then(x => this._alert(x)).catch(err => console.error(err));
-
     UI.status('champion-select-waiting');
+
+    this.alertHandler.login();
   }
 
   onLeagueDisconnect() {
@@ -136,11 +135,6 @@ class Mana {
 
   getStore() {
     return this._store;
-  }
-
-  _alert(message, repeat) {
-    if (!repeat && this._lastMessage === message) return;
-    alertify.warning(this._lastMessage = message);
   }
 }
 

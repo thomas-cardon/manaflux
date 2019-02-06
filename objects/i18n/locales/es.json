@@ -127,7 +127,6 @@
   "summoner-spells-priority-flash-d": "En la D",
   "summoner-spells-priority-flash-f": "En la F",
   "support": "Manaflux es gratuito, de código abierto y siempre lo será. Mantener Flu.x pronto me costará dinero, y me gustaría conseguir un certificado (para prevenir que los antivirus bloqueen mi software), ¡e incluso una licencia de Google Play para publicar una app en Android de Manaflux! ¡Aún si no puedes ayudar, puedes activar la minería de criptomonedas para ayudarme sin pagar!",
-  "support-miner-cant-be-enabled": "El minado está desactivado. Por tanto, hemos ocultado las opciones relacionadas.",
   "support-miner-cpu-threads": "Hilos de CPU",
   "support-miner-cpu-usage": "Uso de CPU",
   "support-miner-disable": "Desactivar minado",

@@ -92,11 +92,14 @@ class LeagueofGraphsProvider extends Provider {
    * @param {cheerio} $ - The cheerio object
    */
   scrapeSummonerSpells($) {
-    if (Mana.gameClient.locale !== 'en_GB' && Mana.gameClient.locale !== 'en_US') return console.log(2, `[ProviderHandler] [League of Graphs] Summoner spells are not supported because you're not using the english language in League`);
+    if (Mana.gameClient.locale !== 'en_GB' && Mana.gameClient.locale !== 'en_US') {
+      console.log(2, `[ProviderHandler] [League of Graphs] Summoner spells are not supported because you're not using the english language in League`);
+      return [];
+    }
 
     let summoners = [];
     $('table').find('td > span').each(function(index) {
-      summoners.push($(this).text().trim().split(' - ').map(y => Object.values(Mana.summonerspells).find(z => z.name === y)));
+      summoners.push($(this).text().trim().split(' - ').map(y => Object.values(Mana.gameClient.summonerSpells).find(z => z.name === y)));
     });
 
     return summoners;
@@ -121,7 +124,7 @@ class LeagueofGraphsProvider extends Provider {
   /**
    * Scrapes item sets from a League of Graphs page
    * @param {cheerio} $ - The cheerio object
-   * @param {object} champion - A champion object, from Mana.champions
+   * @param {object} champion - A champion object, from Mana.gameClient.champions
    * @param {string} position - Limited to: TOP, JUNGLE, MIDDLE, ADC, SUPPORT
    * @param {object} skillorder
    */

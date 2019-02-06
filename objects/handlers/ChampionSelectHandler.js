@@ -26,6 +26,11 @@ class ChampionSelectHandler {
         getPosition: pos => null,
         getProviders: () => ['metasrc', 'lolflavor', 'leagueofgraphs']
       },
+      URF: {
+        getGameMode: () => 'URF',
+        getPosition: pos => null,
+        getProviders: () => ['metasrc']
+      },
       '10': {
         getGameMode: () => 'TWISTED_TREELINE',
         getPosition: pos => null,
@@ -112,11 +117,11 @@ class ChampionSelectHandler {
     else if (this.getPlayer().championId === 0) return this.onChampionNotPicked();
     else if (this._lastChampionPicked !== this.getPlayer().championId) {
       this._lastChampionPicked = this.getPlayer().championId;
-      return await this.onChampionChange(Mana.champions[this.getPlayer().championId]);
+      return await this.onChampionChange(Mana.gameClient.champions[this.getPlayer().championId]);
     }
     else if (!this._locked && Mana.getStore().get('champion-select-lock') && Mana.gameflow.shouldEnableLockFeature()) {
       if (this._locked = await this.isChampionLocked())
-        return await this.onChampionLocked(Mana.champions[this.getPlayer().championId]);
+        return await this.onChampionLocked(Mana.gameClient.champions[this.getPlayer().championId]);
     }
   }
 

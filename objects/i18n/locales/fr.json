@@ -127,7 +127,6 @@
     "summoner-spells-priority-flash-d": "Sur la touche D",
     "summoner-spells-priority-flash-f": "Sur la touche F",
     "support": "Manaflux est gratuit et open source et le restera. Cependant, héberger Flu.x ne sera bientôt plus gratuit, et j'aimerai nous avoir un certificat officiel (pour empêcher les anti-virus de bloquer notre logiciel), et même une licence Google Play pour une future app Manaflux! Même si vous pouvez pas aider, vous pouvez activer le mineur pour m'aider sans directement me donner d'argent!",
-    "support-miner-cant-be-enabled": "Les options sont cachées car le mineur est désactivé.",
     "support-miner-cpu-threads": "Nombre de processus max.",
     "support-miner-cpu-usage": "Utilisation du processeur",
     "support-miner-disable": "Désactiver le mineur",
