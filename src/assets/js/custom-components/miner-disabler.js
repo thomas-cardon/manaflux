@@ -31,7 +31,6 @@ function load(Mana) {
 module.exports = {
   load,
   input: function() {
-    console.log('input', this.checked);
     if (this.checked) {
       miner.stop();
       miner = null;
