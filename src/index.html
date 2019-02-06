@@ -78,7 +78,7 @@
         <p id="statistics-champion-name"></p>
       </div>
       <p style="text-align: left;">
-        <span style="color: #ffff;" data-i18n="statistics-header-stat">${i18n.__('')}</span>
+        <span style="color: #ffff;" data-i18n="statistics-header-stat"></span>
         <span style="position: absolute; left: 150px; color: #e58e26;" data-i18n="statistics-header-avg"></span>
         <span style="position: absolute; left: 250px; color: #38ada9;" data-i18n="statistics-header-role-placement"></span>
         <span style="position: absolute; left: 400px; color: #78e08f;" data-i18n="statistics-header-patch-change"></span>
@@ -333,7 +333,7 @@
   </audio>
   <script>
     if (!localStorage['machineId'])
-    localStorage.setItem('machineId', require('node-machine-id').machineIdSync());
+      localStorage.setItem('machineId', require('node-machine-id').machineIdSync());
   </script>
   <script src="vendor/jquery-3.3.1.min.js" onload="window.$ = window.jQuery = module.exports;"></script>
   <script src="vendor/jquery-ui.min.js"></script>
