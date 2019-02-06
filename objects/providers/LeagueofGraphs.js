@@ -92,7 +92,10 @@ class LeagueofGraphsProvider extends Provider {
    * @param {cheerio} $ - The cheerio object
    */
   scrapeSummonerSpells($) {
-    if (Mana.gameClient.locale !== 'en_GB' && Mana.gameClient.locale !== 'en_US') return console.log(2, `[ProviderHandler] [League of Graphs] Summoner spells are not supported because you're not using the english language in League`);
+    if (Mana.gameClient.locale !== 'en_GB' && Mana.gameClient.locale !== 'en_US') {
+      console.log(2, `[ProviderHandler] [League of Graphs] Summoner spells are not supported because you're not using the english language in League`);
+      return [];
+    }
 
     let summoners = [];
     $('table').find('td > span').each(function(index) {
