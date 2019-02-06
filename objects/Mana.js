@@ -51,7 +51,7 @@ class Mana {
     this.assetsProxy = new (require('./riot/leagueoflegends/GameAssetsProxy'))();
 
     this.alertHandler = new (require('./handlers/AlertHandler'))();
-    
+
     this.championStorageHandler = new (require('./handlers/ChampionStorageHandler'))();
     this.championSelectHandler = new (require('./handlers/ChampionSelectHandler'))();
     this.statisticsHandler = new (require('./handlers/StatisticsHandler'))();
@@ -119,7 +119,9 @@ class Mana {
   }
 
   onLeagueDisconnect() {
-    this.user.connected = false;
+    if (this.user)
+      this.user.connected = false;
+
     this.assetsProxy.stop();
 
     global._devChampionSelect = () => console.log(`[${i18n.__('error')}] ${i18n.__('developer-game-start-error')}\n${i18n.__('league-client-disconnected')}`);
