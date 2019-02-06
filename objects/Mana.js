@@ -48,7 +48,9 @@ class Mana {
 
   async load() {
     this.gameClient = new (require('./riot/leagueoflegends/GameClient'))();
+
     this.assetsProxy = new (require('./riot/leagueoflegends/GameAssetsProxy'))();
+    this.remoteConnectionHandler = new (require('./handlers/RemoteConnectionHandler'))();
 
     this.championStorageHandler = new (require('./handlers/ChampionStorageHandler'))();
     this.championSelectHandler = new (require('./handlers/ChampionSelectHandler'))();
@@ -76,10 +78,7 @@ class Mana {
     document.getElementById('connection').style.display = 'none';
     UI.status('status-please-login');
 
-    this.remoteConnectionHandler = new (require('./handlers/RemoteConnectionHandler'))();
-
     this.assetsProxy.load();
-    this.remoteConnectionHandler.start();
 
     const data = await UI.indicator(Promise.all([this.gameClient.load(), this.gameClient.getChampionSummary(), this.gameClient.getSummonerSpells(), require('request-promise-native')('https://manaflux-server.herokuapp.com/api/alerts/v1')]), 'status-loading-resources');
 

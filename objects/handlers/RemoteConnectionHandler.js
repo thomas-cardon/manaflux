@@ -26,7 +26,7 @@ class RemoteConnectionHandler {
     }
   }
 
-  async start() {
+  start() {
     this._server = polka()
       .use(this.auth)
       .post('/api/v1/authentify/:deviceType/:name', (req, res) => {
@@ -98,8 +98,10 @@ class RemoteConnectionHandler {
       });
   }
 
-  async stop() {
-
+  stop() {
+    if (!this._server) return;
+    this._server.server.close();
+    delete this._server;
   }
 
   _queryAddress() {
