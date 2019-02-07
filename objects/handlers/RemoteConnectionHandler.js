@@ -79,7 +79,7 @@ class RemoteConnectionHandler {
       })
       .post('/api/v1/me/actions/summoner-spells', async (req, res) => {
         res.writeHead(200, { 'Content-Type': 'application/json' });
-        let spells = req.body.slice(',');
+        let spells = req.body.slice(',').map(x => parseInt(x));
 
         if (!Mana.championSelectHandler._inChampionSelect) res.end(JSON.stringify({ success: false, errorCode: 'NOT_IN_CHAMPION_SELECT', error: 'Not in Champion Select' }));
         else if (spells.length === 2) {
