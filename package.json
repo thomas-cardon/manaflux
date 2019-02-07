@@ -35,6 +35,7 @@
   "dependencies": {
     "cheerio": "^1.0.0-rc.2",
     "chokidar": "^2.0.4",
+    "co-body": "^6.0.0",
     "electron-store": "^2.0.0",
     "electron-sudo": "^4.0.12",
     "electron-updater": "^4.0.0",
