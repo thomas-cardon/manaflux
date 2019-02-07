@@ -1,4 +1,6 @@
 const polka = require('polka'), rp = require('request-promise-native');
+const parse = require('co-body');
+
 const os = require('os');
 
 class RemoteConnectionHandler {
@@ -79,14 +81,18 @@ class RemoteConnectionHandler {
       })
       .post('/api/v1/me/actions/summoner-spells', async (req, res) => {
         res.writeHead(200, { 'Content-Type': 'application/json' });
-        let spells = req.body.slice(',').map(x => parseInt(x));
 
         if (!Mana.championSelectHandler._inChampionSelect) res.end(JSON.stringify({ success: false, errorCode: 'NOT_IN_CHAMPION_SELECT', error: 'Not in Champion Select' }));
-        else if (spells.length === 2) {
-          await Mana.user.updateSummonerSpells(spells);
-          res.end(JSON.stringify({ success: true }));
+        else {
+          const spells = (await parse.text(req)).split(',').map(x => parseInt(x));
+          console.log('Remote >> Summoner spells selected:', spells.map(x => Object.values(Mana.gameClient.summonerSpells).find(y => y.id === x).name).join(', '));
+
+          if (spells.length === 2) {
+            await Mana.user.updateSummonerSpells(spells);
+            res.end(JSON.stringify({ success: true }));
+          }
+          else res.end(JSON.stringify({ success: false, errorCode: 'MISSING_SUMMONER_SPELLS', error: 'Two summoner spells are needed.' }));
         }
-        else res.end(JSON.stringify({ success: false, errorCode: 'MISSING_SUMMONER_SPELLS', error: 'Two summoner spells are needed.' }));
       })
       .post('/api/v1/me/actions/runes/load', (req, res) => {
         res.writeHead(200, { 'Content-Type': 'application/json' });
