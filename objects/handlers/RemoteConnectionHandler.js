@@ -9,7 +9,7 @@ class RemoteConnectionHandler {
   auth(req, res, next) {
     let list = Mana.getStore().get('authentified-devices', {});
 
-    if (req.path.startsWith('/api/v1/authentify')) next();
+    if (req.path.startsWith('/api/v1/public') || req.path.startsWith('/api/v1/authentify')) next();
     else if (!req.headers['authorization']) {
       console.log(`[RemoteConnectionHandler] Unauthorized > ${req.url}`);
       res.writeHead(401, { 'Content-Type': 'application/json' });
@@ -35,25 +35,25 @@ class RemoteConnectionHandler {
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ success: true, authentified: true }));
       })
-      .get('/api/v1/heartbeat', (req, res) => {
+      .get('/api/v1/me/heartbeat', (req, res) => {
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ success: true, inChampionSelect: Mana.championSelectHandler._inChampionSelect, ...Mana.gameClient.champions[Mana.championSelectHandler._inChampionSelect ? Mana.championSelectHandler.getPlayer().championId : -1] }));
       })
-      .get('/api/v1/summoner', (req, res) => {
+      .get('/api/v1/me/summoner', (req, res) => {
         res.writeHead(200, { 'Content-Type': 'application/json' });
 
         if (Mana.user)
           res.end(JSON.stringify({ success: true, summonerName: Mana.user.getDisplayName(), summonerLevel: Mana.user.getSummonerLevel() }));
         else res.end(JSON.stringify({ success: false, errorCode: 'SUMMONER_NOT_CONNECTED', error: 'Summoner is not connected' }));
       })
-      .get('/api/v1/actions/positions', (req, res) => {
+      .get('/api/v1/me/positions', (req, res) => {
         res.writeHead(200, { 'Content-Type': 'application/json' });
 
         if (!Mana.championSelectHandler._inChampionSelect) res.end(JSON.stringify({ success: false, errorCode: 'NOT_IN_CHAMPION_SELECT', error: 'Not in Champion Select' }));
 
         res.end(JSON.stringify({ success: true, positions: Array.from(document.getElementById('positions').childNodes).map(x => x.value) }));
       })
-      .post('/api/v1/actions/positions/:id', (req, res) => {
+      .post('/api/v1/me/actions/positions/:id', (req, res) => {
         res.writeHead(200, { 'Content-Type': 'application/json' });
         if (!Mana.championSelectHandler._inChampionSelect) res.end(JSON.stringify({ success: false, errorCode: 'NOT_IN_CHAMPION_SELECT', error: 'Not in Champion Select' }));
 
@@ -62,13 +62,13 @@ class RemoteConnectionHandler {
 
         res.end(JSON.stringify({ success: true }));
       })
-      .post('/api/v1/actions/summoner-spells/load', (req, res) => {
+      .post('/api/v1/me/actions/summoner-spells/load', (req, res) => {
         res.writeHead(200, { 'Content-Type': 'application/json' });
         if (!Mana.championSelectHandler._inChampionSelect) res.end(JSON.stringify({ success: false, errorCode: 'NOT_IN_CHAMPION_SELECT', error: 'Not in Champion Select' }));
 
         res.end(JSON.stringify({ success: true }));
       })
-      .get('/api/v1/actions/summoner-spells', (req, res) => {
+      .get('/api/v1/public/summoner-spells', (req, res) => {
         res.writeHead(200, { 'Content-Type': 'application/json' });
 
         if (Mana.championSelectHandler._inChampionSelect)
@@ -77,7 +77,7 @@ class RemoteConnectionHandler {
           res.end(JSON.stringify({ success: true, summonerSpells: Object.values(Mana.gameClient.summonerSpells) }));
         else res.end(JSON.stringify({ success: false, errorCode: 'SUMMONER_NOT_CONNECTED', error: 'Summoner is not connected' }));
       })
-      .post('/api/v1/actions/summoner-spells', async (req, res) => {
+      .post('/api/v1/me/actions/summoner-spells', async (req, res) => {
         res.writeHead(200, { 'Content-Type': 'application/json' });
         let spells = req.body.slice(',');
 
@@ -88,7 +88,7 @@ class RemoteConnectionHandler {
         }
         else res.end(JSON.stringify({ success: false, errorCode: 'MISSING_SUMMONER_SPELLS', error: 'Two summoner spells are needed.' }));
       })
-      .post('/api/v1/actions/runes/load', (req, res) => {
+      .post('/api/v1/me/actions/runes/load', (req, res) => {
         res.writeHead(200, { 'Content-Type': 'application/json' });
         if (!Mana.championSelectHandler._inChampionSelect) res.end(JSON.stringify({ success: false, errorCode: 'NOT_IN_CHAMPION_SELECT', error: 'Not in Champion Select' }));
 
