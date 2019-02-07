@@ -112,7 +112,7 @@ class UGGProvider extends Provider {
     let page = {};
 
     const perksData = x[this.u.stats.perks];
-    const shardsData = x[this.u.stats.shards][this.u.shards.stats].map(str => parseInt(str, 10));
+    const shardsData = x[this.u.stats.shards][this.u.shards.stats].map(str => parseInt(str));
 
     page.primaryStyleId = perksData[this.u.perks.mainPerk];
     page.subStyleId = perksData[this.u.perks.subPerk];
