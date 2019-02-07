@@ -32,7 +32,8 @@ class RemoteConnectionHandler {
     this._server = polka()
       .use(this.auth)
       .post('/api/v1/authentify/:deviceType/:name', (req, res) => {
-        Mana.getStore().set('authentified-devices.' + req.connection.remoteAddress.split(":").pop().replace(/\./g, '-'), { deviceType: req.params.deviceType || 'UNKNOWN', deviceName: req.params.name || 'UNKNOWN' });
+        Mana.getStore().set('authentified-devices.' + req.connection.remoteAddress.split(":").pop().replace(/\./g, '-'), { deviceType: req.params.deviceType, deviceName: req.params.name });
+        console.log('Remote >> Authentified:', req.params.name, `(${req.params.deviceType})`);
 
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ success: true, authentified: true }));
@@ -58,6 +59,7 @@ class RemoteConnectionHandler {
       .post('/api/v1/me/actions/positions/:id', (req, res) => {
         res.writeHead(200, { 'Content-Type': 'application/json' });
         if (!Mana.championSelectHandler._inChampionSelect) res.end(JSON.stringify({ success: false, errorCode: 'NOT_IN_CHAMPION_SELECT', error: 'Not in Champion Select' }));
+        console.log('Remote >> Loading position', req.params.id);
 
         document.getElementById('positions').selectedIndex = req.params.id;
         document.getElementById('positions').onchange();
@@ -67,6 +69,7 @@ class RemoteConnectionHandler {
       .post('/api/v1/me/actions/summoner-spells/load', (req, res) => {
         res.writeHead(200, { 'Content-Type': 'application/json' });
         if (!Mana.championSelectHandler._inChampionSelect) res.end(JSON.stringify({ success: false, errorCode: 'NOT_IN_CHAMPION_SELECT', error: 'Not in Champion Select' }));
+        console.log('Remote >> Loading summoner spells');
 
         res.end(JSON.stringify({ success: true }));
       })
@@ -97,6 +100,7 @@ class RemoteConnectionHandler {
       .post('/api/v1/me/actions/runes/load', (req, res) => {
         res.writeHead(200, { 'Content-Type': 'application/json' });
         if (!Mana.championSelectHandler._inChampionSelect) res.end(JSON.stringify({ success: false, errorCode: 'NOT_IN_CHAMPION_SELECT', error: 'Not in Champion Select' }));
+        console.log('Remote >> Loading runes');
 
         res.end(JSON.stringify({ success: true }));
       })
