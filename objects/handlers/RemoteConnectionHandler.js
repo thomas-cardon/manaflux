@@ -71,7 +71,9 @@ class RemoteConnectionHandler {
       .get('/api/v1/actions/summoner-spells', (req, res) => {
         res.writeHead(200, { 'Content-Type': 'application/json' });
 
-        if (Mana.user)
+        if (Mana.championSelectHandler._inChampionSelect)
+          res.end(JSON.stringify({ success: true, summonerSpells: Object.values(Mana.gameClient.summonerSpells).filter(x => x.gameModes.includes(Mana.gameflow.getGameMode())) }));
+        else if (Mana.user)
           res.end(JSON.stringify({ success: true, summonerSpells: Object.values(Mana.gameClient.summonerSpells) }));
         else res.end(JSON.stringify({ success: false, errorCode: 'SUMMONER_NOT_CONNECTED', error: 'Summoner is not connected' }));
       })
