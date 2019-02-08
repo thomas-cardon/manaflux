@@ -18,7 +18,7 @@ class GameClient {
       if (x.startsWith('Summoner')) key = "Summoner" + (x.charAt(8).toUpperCase() + x.slice(9));
       else if ([30, 31, 33, 34, 35, 36, 39].includes(spell.id)) continue;
 
-      d[key] = { id: spell.id, key, name: spell.name, gameModes: spell.gameModes };
+      d[key] = { id: spell.id, key, name: spell.name, gameModes: spell.gameModes, path: spell.iconPath };
 
       if (spell.id === 14)
         d['SummonerDot'] = d[key];
