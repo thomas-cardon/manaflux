@@ -35,7 +35,7 @@ class ChampionSelectInterface {
     // Sets value and checks if it's not null, if it is then let's stop everything
     if (!(document.getElementById('positions').value = res.roles[this.getPosition()] ? this.gameModeHandler.getPosition(this.getPosition()) : Object.keys(res.roles).filter(x => res.roles[x].perks.length > 0)[0])) {
       Mana.championStorageHandler.remove(champion.id);
-      throw this._onCrash(i18n.__('champion-select-error-empty'));
+      //throw UI.themes.crashes.onCrash(i18n.__('champion-select-error-empty'));
     }
 
     document.getElementById('positions').onchange();
