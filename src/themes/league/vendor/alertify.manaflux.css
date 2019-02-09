@@ -1,0 +1,8 @@
+.alertify-notifier .ajs-message {
+  background: rgba(30, 35, 40, 0.9) !important;
+  border-image: linear-gradient(to top, #695625 0%, #A9852D 23%, #B88D35 93%, #C8AA6E 100%) 1 !important;
+  border: 1px solid transparent;
+
+  color: #fff;
+  text-align: center;
+}

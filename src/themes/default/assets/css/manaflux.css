@@ -1,0 +1,17 @@
+.title {
+  text-align: center;
+}
+
+h1 {
+  font-weight: 100;
+  font-size: 59px;
+  margin-bottom: 5px;
+}
+
+#nav {
+  -webkit-app-region: drag;
+}
+
+#nav > .item, .menu {
+  -webkit-app-region: no-drag;
+}
