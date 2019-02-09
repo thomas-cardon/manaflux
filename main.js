@@ -35,7 +35,7 @@ else {
 function createWindow () {
   win = new BrowserWindow({ width: 600, height: 600, frame: false, icon: __dirname + '/build/icon.' + (process.platform === 'win32' ? 'ico' : 'png'), backgroundColor: '#000A13', maximizable: false, resizable: false, show: false });
 
-  win.loadURL(`file://${__dirname}/src/index.html`);
+  win.loadURL(`file://${__dirname}/src/themes/default/index.html`);
   win.setMenu(null);
 
   win.once('ready-to-show', () => !tray ? win.show() : null);
