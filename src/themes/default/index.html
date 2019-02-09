@@ -291,11 +291,14 @@
   const LoggingHandler = new (require(path.join(remote.app.getAppPath(), 'objects/handlers/LoggingHandler')))(3);
   </script>
   <script src="vendor/semantic/semantic.min.js"></script>
-  <script src="assets/js/ui.js"></script>
-  <script src="assets/js/ui/sounds.js"></script>
-  <script src="assets/js/ui/settings.js"></script>
-  <script src="assets/js/ui/custom-components.js"></script>
+  <script src="../../rendering/ui.js"></script>
+  <script src="../../rendering/themes.js"></script>
+  <script src="../../rendering/sounds.js"></script>
+  <script src="../../rendering/settings.js"></script>
+  <script src="../../rendering/custom-components.js"></script>
   <script>
+  UI.themes.interfaces = { championSelect: require('./assets/js/interfaces/ChampionSelectInterface') }
+
   window.eval = global.eval = () => console.warn(i18n.__('security-eval'));
   require(path.join(remote.app.getAppPath(), '/crash-reporting.js'));
 
@@ -308,8 +311,8 @@
 
   global.Mana = new (require(path.join(remote.app.getAppPath(), '/objects/Mana')))(ipcRenderer);
   </script>
-  <script src="assets/js/ui/i18n.js"></script>
-  <script src="assets/js/ui/update.js"></script>
-  <script src="assets/js/ui/tab-handler.js"></script>
+  <script src="../../rendering/i18n.js"></script>
+  <script src="../../rendering/update.js"></script>
+  <script src="../../rendering/tab-handler.js"></script>
 </body>
 </html>
