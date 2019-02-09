@@ -28,7 +28,7 @@
   <link crossorigin href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
-  <div id="nav" class="ui inverted menu visible" style="border-radius: 0 !important;">
+  <div id="nav" class="ui menu visible" style="border-radius: 0 !important;">
     <div class="header item">Manaflux</div>
     <div class="active item btn tab" data-tabid="home" data-i18n="ui-menu-home"></div>
     <a class="item btn tab" data-tabid="settings" data-i18n="ui-menu-settings"></a>
@@ -36,6 +36,9 @@
       <a class="item btn tab" data-tabid="update" data-i18n="ui-menu-update"></a>
     </div>
   </div>
+  <img src="assets/img/warning.png" id="warning" draggable="false" style="display: none;">
+  <img src="assets/img/components/loading.gif" id="loading"></img>
+  <img src="assets/img/components/connection-img.png" id="connection"></img>
   <div class="ui container">
     <p class="status" data-i18n="status-loading"></p>
     <p class="version" id="version"></p>
@@ -46,9 +49,9 @@
         <img src="assets/img/underline.png" draggable="false">
       </div>
       <div id="buttons" style="display: none;">
-        <select style="display: none; margin-bottom: -14px;" id="positions" class="ui dropdown"></select>
-        <button type="button" class="ui large button" data-i18n="summoner-spells-load-button" id="loadSummonerSpells"></button>
-        <button type="button" class="ui large button" data-i18n="perks-load-button" id="loadRunes"></button>
+        <select style="display: none; margin-bottom: -14px;" id="positions" class="ui inverted dropdown"></select>
+        <button type="button" class="ui inverted large button" data-i18n="summoner-spells-load-button" id="loadSummonerSpells"></button>
+        <button type="button" class="ui inverted large button" data-i18n="perks-load-button" id="loadRunes"></button>
       </div>
       <div class="championPortrait" style="display: none;">
         <img id="champion">

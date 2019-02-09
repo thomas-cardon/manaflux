@@ -4,15 +4,14 @@
   left: 15px;
   cursor: default;
   margin: 0px;
-  color: #2c3e50;
-  font-size: 20px;
-  opacity: 0.8;
+  color: #a09b8c;
+  opacity: 0.5;
   transition: opacity .1s ease-in-out;
   text-decoration: none;
 }
 
 .status:hover {
   opacity: 1;
-  color: #34495e;
+  color: #dfe6e9;
   text-decoration: none;
 }

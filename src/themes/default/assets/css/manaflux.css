@@ -6,6 +6,11 @@ h1 {
   font-weight: 100;
   font-size: 59px;
   margin-bottom: 5px;
+  color: #dfe6e9;
+}
+
+body {
+  background-color: #1B1C1D;
 }
 
 #nav {
