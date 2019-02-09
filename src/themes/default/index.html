@@ -3,7 +3,7 @@
   <title>Manaflux</title>
   <meta charset="utf-8">
   <meta name="author" content="Ryzzzen">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self' file:; script-src 'self' 'unsafe-inline' file: https://manaflux-server.herokuapp.com; style-src 'self' 'unsafe-inline' file: https://fonts.googleapis.com/; img-src *; media-src 'self' file:; font-src *; worker-src * blob: file:; connect-src wss:">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' file:; script-src 'self' 'unsafe-inline' file: https://manaflux-server.herokuapp.com; style-src 'self' 'unsafe-inline' file: https://fonts.googleapis.com/; img-src *; media-src 'self' file:; font-src * 'self' data:; worker-src * blob: file:; connect-src wss:">
   <link rel="stylesheet" href="vendor/semantic/semantic.min.css">
   <link rel="stylesheet" href="assets/css/manaflux.css">
   <link rel="stylesheet" href="assets/css/components/button.css">
@@ -20,6 +20,7 @@
   <link rel="stylesheet" href="assets/css/components/status.css">
   <link rel="stylesheet" href="assets/css/components/connection-icon.css">
   <link rel="stylesheet" href="assets/css/components/version.css">
+  <link rel="stylesheet" href="assets/css/components/champion.css">
   <link rel="stylesheet" href="vendor/alertify.min.css"/>
   <link rel="stylesheet" href="vendor/alertify.rtl.min.css"/>
   <link rel="stylesheet" href="vendor/alertify.manaflux.css"/>
@@ -53,10 +54,9 @@
         <button type="button" class="ui inverted large button" data-i18n="summoner-spells-load-button" id="loadSummonerSpells"></button>
         <button type="button" class="ui inverted large button" data-i18n="perks-load-button" id="loadRunes"></button>
       </div>
-      <div class="championPortrait" style="display: none;">
-        <img id="champion">
-        <img id="hextechAnimationBackground" data-custom-component="hextech-background">
-        <p id="championName"></p>
+      <div class="champion-portrait" style="display: none;">
+        <img id="champion" class="ui small circular image">
+        <p id="name"></p>
       </div>
     </div>
     <div data-tabid="settings" data-tabn=0 class="tabcontent" style="display: none; margin-left: 9%;">
@@ -133,20 +133,6 @@
         <p class="suboption-name" data-i18n="ui-animations"></p>
         <div class="options float-left checkboxContainer">
           <input type="checkbox" data-settings-key="ui-animations-enable" data-settings-default="false" class="center-area" />
-          <label data-i18n="common-enable"></label>
-        </div>
-      </div>
-      <div class="option" style="width: 15%;">
-        <p class="suboption-name" data-i18n="ui-gradient"></p>
-        <div class="options float-left checkboxContainer">
-          <input type="checkbox" data-settings-key="ui-gradient" data-settings-default="true" class="center-area" data-custom-component="ui-gradient" />
-          <label data-i18n="common-enable"></label>
-        </div>
-      </div>
-      <div class="option" style="width: 14%;">
-        <p class="suboption-name" data-i18n="ui-animations-smoke"></p>
-        <div class="options float-left checkboxContainer">
-          <input type="checkbox" data-settings-key='ui-animations-smoke' data-settings-default="true" class="center-area" data-custom-component="ui-animations-smoke" />
           <label data-i18n="common-enable"></label>
         </div>
       </div>

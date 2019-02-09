@@ -132,25 +132,23 @@ $.fn.disableManualButton = function(disable) {
 
 /* Hextech Animation Handler */
 UI.enableHextechAnimation = function(champion = Mana.gameClient.champions[-1], primaryStyleId = 'white') {
-	document.querySelector('.championPortrait > #hextechAnimationBackground').setAttribute('src', 'assets/img/vfx-' + primaryStyleId + '.png');
-  document.querySelector('.championPortrait > #champion').setAttribute('src', champion.img);
-
-  document.getElementById('championName').innerHTML = champion.name;
+  document.querySelector('.champion-portrait > #champion').setAttribute('src', champion.img);
+  document.querySelector('.champion-portrait > #name').innerHTML = champion.name;
 
   if (Mana.getStore().get('ui-animations-enable'))
-    document.querySelector('.championPortrait > #champion').onload = function() {
+    document.querySelector('.champion-portrait > #champion').onload = function() {
       document.querySelector('.title').classList.remove('animated', 'fadeInDown');
       document.querySelector('.title').classList.add('animated', 'fadeOutDown');
-      document.querySelector('.championPortrait').style.display = 'block';
+      document.querySelector('.champion-portrait').style.display = 'block';
     };
   else {
     document.querySelector('.title').style.display = 'none';
-    document.querySelector('.championPortrait').style.display = 'block';
+    document.querySelector('.champion-portrait').style.display = 'block';
   }
 }
 
 UI.disableHextechAnimation = () => {
-  document.querySelector('.championPortrait').style.display = 'none';
+  document.querySelector('.champion-portrait').style.display = 'none';
 
 	if (Mana.getStore().get('ui-animations-enable')) {
     document.querySelector('.title').classList.remove('animated', 'fadeOutDown');

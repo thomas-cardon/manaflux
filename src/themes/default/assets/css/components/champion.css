@@ -1,0 +1,18 @@
+.champion-portrait {
+  display: block;
+  width: 128px;
+  position: absolute;
+  top: 130px;
+  margin-left: 38%;
+}
+
+.champion-portrait > img#champion {
+  width: 128px;
+  height: 128px;
+}
+
+.champion-portrait > #name {
+  font-size: 30px;
+  color: #f0e6d2;
+  text-align: center;
+}
