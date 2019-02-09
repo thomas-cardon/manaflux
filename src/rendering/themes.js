@@ -1,0 +1,3 @@
+UI.themes = {
+  interfaces: {}
+};
