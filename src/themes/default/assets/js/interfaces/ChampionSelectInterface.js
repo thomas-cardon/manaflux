@@ -17,10 +17,9 @@ class ChampionSelectInterface {
     $('#loadRunes, #loadSummonerSpells').disableManualButton(true);
 
     UI.enableHextechAnimation(champion);
-    document.querySelector('button[data-tabid]').click();
   }
 
-  onChampionDataDownloaded(champion, positions, data) {
+  onChampionDataDownloaded(champion, positions, data, self = this) {
     let positionsHTML = '';
     positions.forEach(r => {
       console.log('[ChampionSelect] Added position:', r);
@@ -32,11 +31,12 @@ class ChampionSelectInterface {
       self.onPositionChange(champion, this.value.toUpperCase(), data[this.value.toUpperCase()]);
     };
 
+    /*
     // Sets value and checks if it's not null, if it is then let's stop everything
     if (!(document.getElementById('positions').value = res.roles[this.getPosition()] ? this.gameModeHandler.getPosition(this.getPosition()) : Object.keys(res.roles).filter(x => res.roles[x].perks.length > 0)[0])) {
       Mana.championStorageHandler.remove(champion.id);
-      //throw UI.themes.crashes.onCrash(i18n.__('champion-select-error-empty'));
-    }
+      //throw UI.themes.interfaces.crashes.onCrash(i18n.__('champion-select-error-empty'));
+    }*/
 
     document.getElementById('positions').onchange();
 

@@ -185,7 +185,7 @@ class ChampionSelectHandler {
     UI.status('champion-select-updating-display', champion.name);
 
     /* UI call */
-    UI.themes.championSelect.onChampionChange(champion);
+    UI.themes.interfaces.championSelect.onChampionChange(champion);
     /* End of the UI call */
 
     UI.status('common-ready', champion.name);
@@ -198,7 +198,7 @@ class ChampionSelectHandler {
 
     /* UI call */
     const positions = Object.keys(res.roles).filter(x => res.roles[x].perks.length > 0);
-    UI.themes.championSelect.onChampionDataDownloaded(champion, positions, res.roles);
+    UI.themes.interfaces.championSelect.onChampionDataDownloaded(champion, positions, res.roles);
     /* End of the UI call */
 
     UI.tray(false);
@@ -256,7 +256,7 @@ class ChampionSelectHandler {
     }
 
     /* Useless to change position if it's already the one chosen */
-    if (newIndex !== positionIndex) UI.themes.championSelect.onPositionChange(keys[newIndex]);
+    if (newIndex !== positionIndex) UI.themes.interfaces.championSelect.onPositionChange(keys[newIndex]);
   }
 
   _onCrash(error) {
