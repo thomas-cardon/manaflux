@@ -184,15 +184,9 @@ class ChampionSelectHandler {
     if (!this._inChampionSelect || this._lastChampionPicked !== champion.id) return;
     UI.status('champion-select-updating-display', champion.name);
 
-    document.getElementById('buttons').style.display = 'none';
-    while (document.getElementById('positions').firstChild) {
-      document.getElementById('positions').removeChild(document.getElementById('positions').firstChild);
-    }
-
-    $('#loadRunes, #loadSummonerSpells').disableManualButton(true);
-
-    UI.enableHextechAnimation(champion);
-    document.querySelector('button[data-tabid]').click();
+    /* UI call */
+    UI.themes.championSelect.onChampionChange(champion);
+    /* End of the UI call */
 
     UI.status('common-ready', champion.name);
   }
@@ -202,39 +196,17 @@ class ChampionSelectHandler {
     if (!res || Object.keys(res.roles).length === 0) throw this._onCrash(i18n.__('champion-select-error-empty'));
     else if (this._hasCrashed) this._recoverCrash();
 
-    const self = this;
-
-    console.dir(res);
-
-    let roles = '';
-    Object.keys(res.roles).filter(x => res.roles[x].perks.length > 0).forEach(r => {
-      console.log('[ChampionSelect] Added position:', r);
-      roles += `<option value="${r}">${UI.stylizeRole(r)}</option>`;
-    });
-
-    document.getElementById('positions').innerHTML = roles;
-    document.getElementById('positions').onchange = function() {
-      console.log('[ChampionSelect] Selected position:', this.value.toUpperCase());
-      self.onPerkPositionChange(champion, this.value.toUpperCase(), res.roles[this.value.toUpperCase()]);
-    };
-
-    // Sets value and checks if it's not null, if it is then let's stop everything
-    if (!(document.getElementById('positions').value = res.roles[this.getPosition()] ? this.gameModeHandler.getPosition(this.getPosition()) : Object.keys(res.roles).filter(x => res.roles[x].perks.length > 0)[0])) {
-      Mana.championStorageHandler.remove(champion.id);
-      throw this._onCrash(i18n.__('champion-select-error-empty'));
-    }
-
-    document.getElementById('positions').onchange();
-
-    document.getElementById('positions').style.display = 'unset';
-    document.getElementById('buttons').style.display = 'block';
+    /* UI call */
+    const positions = Object.keys(res.roles).filter(x => res.roles[x].perks.length > 0);
+    UI.themes.championSelect.onChampionDataDownloaded(champion, positions, res.roles);
+    /* End of the UI call */
 
     UI.tray(false);
     UI.status('common-ready');
 
     if (Mana.getStore().get('item-sets-enable')) {
       try {
-        /* Delete ItemSets before downloading */
+        /* Delete ItemSets before saving them */
         await UI.indicator(ItemSetHandler.deleteItemSets(await UI.indicator(ItemSetHandler.getItemSetsByChampionKey(champion.key), 'item-sets-collecting-champion', champion.name)), 'item-sets-deleting');
         await UI.indicator(Promise.all([].concat(...Object.values(res.roles).map(r => r.itemsets.map(x => x.save())))), 'item-sets-save-status', champion.name);
       }
@@ -284,10 +256,7 @@ class ChampionSelectHandler {
     }
 
     /* Useless to change position if it's already the one chosen */
-    if (newIndex !== positionIndex) {
-      document.getElementById('positions').value = keys[newIndex];
-      document.getElementById('positions').onchange();
-    };
+    if (newIndex !== positionIndex) UI.themes.championSelect.onPositionChange(keys[newIndex]);
   }
 
   _onCrash(error) {
