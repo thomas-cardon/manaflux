@@ -98,12 +98,16 @@ class ProviderHandler {
       }
 
       if (!cache[i].flux) {
-        DataValidator.onDataUpload(cache[i]);
+        let data = DataValidator.onDataUpload(cache[i]);
 
         try {
-          await UI.indicator(flux.upload(cache[i]), 'providers-flux-uploading');
+          console.log('Flu.x >> Upload');
+          await UI.indicator(flux.upload(data), 'providers-flux-uploading');
+          console.log('Flu.x >> Upload done!');
         }
         catch(err) {
+          console.log('Flu.x >> Upload error');
+
           console.error(err);
           UI.status('providers-flux-upload-error');
         }

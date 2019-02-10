@@ -44,13 +44,16 @@ class DataValidator {
       role.perks.forEach(x => delete x.name);
       role.itemsets = role.itemsets.map(x => x._data ? x.build(false, false) : ItemSetHandler.parse(Mana.gameClient.champions[data.championId].key, x, x.provider).build(false, false));
     }
+
+    console.dir(data);
+    return data;
   }
 
   onDataStore(data) {
     delete data.gameVersion;
+    delete data.gameRegion;
 
     delete data.version;
-    delete data.region;
   }
 
   /*
