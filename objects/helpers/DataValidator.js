@@ -23,6 +23,7 @@ class DataValidator {
     for (const [roleName, role] of Object.entries(data.roles)) {
       role.perks = this.onPerkPagesCheck(role.perks, champion, roleName);
       role.itemsets = this.onItemSetsCheck(role.itemsets, champion, roleName);
+      role.summonerspells = this.validateSummonerSpells(role.summonerspells);
     }
 
     return data;
@@ -152,6 +153,18 @@ class DataValidator {
 
       page.selectedPerkIds = page.selectedPerkIds.slice(0, -3).concat(shards);
     }
+  }
+
+  validateSummonerSpells(data) {
+    console.log(`[DataValidator] Summoner Spells >> Validating Summoner Spells`);
+    data = [].concat(...data.filter(x => Array.isArray(x)), [...data.filter(x => !Array.isArray(x))]);
+
+    let ids = Object.values(Mana.gameClient.summonerSpells).map(x => x.id);
+    data = data.filter(x => ids.includes(x));
+
+    console.log(`[DataValidator] Summoner Spells >> Done: ${data.length} spells validated`);
+
+    return data;
   }
 
   _hasDuplicates(array) {
