@@ -73,6 +73,13 @@ class RemoteConnectionHandler {
 
         res.end(JSON.stringify({ success: true }));
       })
+      .get('/api/v1/me/summoner-spells', (req, res) => {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+
+        if (!Mana.championSelectHandler._inChampionSelect)
+          res.end(JSON.stringify({ success: false, errorCode: 'NOT_IN_CHAMPION_SELECT', error: 'Not in Champion Select' }));
+        else res.end(JSON.stringify({ success: true, spells: [Mana.championSelectHandler.getPlayer().spell1Id, Mana.championSelectHandler.getPlayer().spell2Id] }));
+      })
       .get('/api/v1/public/summoner-spells', (req, res) => {
         res.writeHead(200, { 'Content-Type': 'application/json' });
 
