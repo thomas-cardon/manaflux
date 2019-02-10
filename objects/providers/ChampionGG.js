@@ -97,18 +97,19 @@ class ChampionGGProvider extends Provider {
    * @param {string} gameMode - A gamemode, from League Client, such as CLASSIC, ARAM, etc.
    */
   scrapeSummonerSpells($, gameMode) {
-    let summonerspells = [];
+    let summonerSpells = [];
 
     $('.summoner-wrapper > a > img').each(function(index) {
       const summoner = Mana.gameClient.summonerSpells[$(this).attr('src').slice(51, -4)];
 
       if (!summoner) return;
-      if (summoner.gameModes.includes(gameMode)) summonerspells.push(summoner.id);
+      if (summoner.gameModes.includes(gameMode)) summonerSpells.push(summoner.id);
 
-      if (index >= 1 && summonerspells.length === 2) return false;
+      if (index >= 1 && summonerSpells.length === 2) return false;
     });
 
-    return summonerspells;
+    console.dir(summonerSpells);
+    return summonerSpells;
   }
 
   /**
