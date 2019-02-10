@@ -99,7 +99,7 @@ class LeagueofGraphsProvider extends Provider {
 
     let summoners = [];
     $('table').find('td > span').each(function(index) {
-      summoners.push($(this).text().trim().split(' - ').map(y => Object.values(Mana.gameClient.summonerSpells).find(z => z.name === y)));
+      summoners.push($(this).text().trim().split(' - ').map(y => Object.values(Mana.gameClient.summonerSpells).find(z => z.name === y).id));
     });
 
     return summoners;
