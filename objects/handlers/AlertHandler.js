@@ -20,7 +20,7 @@ class AlertHandler {
     const alerts = Mana.getStore().get('alerts', []);
 
     try {
-      let messages = await rp({ uri: `https://manaflux-server.herokuapp.com/api/alerts/v2?v=${this.version}${summonerId ? '&summoner=' + summonerId : ''}`, json: true });
+      let messages = await rp({ uri: `https://manaflux-server.herokuapp.com/api/alerts/v2?v=${Mana.version}${summonerId ? '&summoner=' + summonerId : ''}`, json: true });
       console.dir(messages);
 
       messages.filter(x => !alerts.includes(x._id)).forEach(x => {
