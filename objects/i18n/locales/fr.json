@@ -98,6 +98,7 @@
     "providers-error-outdated": "%s: les données ne sont pas à jour pour le dernier patch",
     "providers-error-perks": "Could not gather runes for %s (%s)",
     "providers-flux-uploading": "Téléversement des données vers Flu.x",
+    "providers-flux-upload-error": "Une erreur est survenue lors du téléversement",
     "providers-order": "Ordre des fournisseurs",
     "providers-skipped": "%s à été sauté à cause d'une méthode manquante: #%s",
     "reset-settings-button": "Réinitialiser",

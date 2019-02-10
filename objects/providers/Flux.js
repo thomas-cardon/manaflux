@@ -46,7 +46,7 @@ class FluxProvider extends Provider {
    * @param {object} data - The data that contains perks, summonerspells etc
    */
   async upload(data) {
-    if (Object.values(data.roles).some(x => Array.isArray(x) && x.length === 0)) return console.log(2, 'Upload cancelled: missing data');
+    if (Object.values(data.roles).some(x => Array.isArray(x) && x.length === 0)) return console.log(2, '[Flu.x] Upload cancelled: missing data');
     if (data.flux) return;
 
     return await rp({
