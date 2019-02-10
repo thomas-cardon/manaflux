@@ -29,12 +29,21 @@
   <link crossorigin href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
-  <div id="nav" class="ui menu visible" style="border-radius: 0 !important;">
+  <div id="nav" class="ui secondary menu visible" style="border-radius: 0 !important;background-color: #f1f2f6;">
     <div class="header item">Manaflux</div>
     <div class="active item btn tab" data-tabid="home" data-i18n="ui-menu-home"></div>
     <a class="item btn tab" data-tabid="settings" data-i18n="ui-menu-settings"></a>
     <div class="right menu">
       <a class="item btn tab" data-tabid="update" data-i18n="ui-menu-update"></a>
+      <a class="item" data-custom-component="bug-reports" disabled>
+        <i class="large comment alternate outline icon"></i>
+      </a>
+      <a class="item" onclick="remote.getCurrentWindow().minimize();">
+        <i class="large window minimize icon"></i>
+      </a>
+      <a class="item" onclick="remote.getCurrentWindow().close();">
+        <i class="large close icon"></i>
+      </a>
     </div>
   </div>
   <img src="assets/img/warning.png" id="warning" draggable="false" style="display: none;">
