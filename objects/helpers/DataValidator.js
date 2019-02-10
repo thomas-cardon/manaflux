@@ -36,9 +36,9 @@ class DataValidator {
     let data = { ...d };
 
     data.gameVersion = Mana.gameClient.branch;
+    data.gameRegion = Mana.gameClient.region;
 
     data.version = Mana.version;
-    data.region = Mana.gameClient.region;
 
     for (const [roleName, role] of Object.entries(data.roles)) {
       role.perks.forEach(x => delete x.name);
