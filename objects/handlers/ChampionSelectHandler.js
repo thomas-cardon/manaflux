@@ -172,7 +172,7 @@ class ChampionSelectHandler {
     catch(err) {
       if (err.statusCode === 404 && this._inChampionSelect) await this.onChampionSelectEnd();
       else if (err.statusCode === 404 && !this._inChampionSelect) this.loop();
-      else if (err.code !== 'ECONNREFUSED' && err.code !== 'ECONNRESET' && err.code !== 'EPROTO') return this._onCrash(err);
+      else if (err.cause.code !== 'ECONNREFUSED' && err.cause.code !== 'ECONNRESET' && err.cause.code !== 'EPROTO') return this._onCrash(err);
     }
   }
 
