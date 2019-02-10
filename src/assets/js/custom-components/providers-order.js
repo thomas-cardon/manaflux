@@ -1,5 +1,8 @@
 module.exports = function(Mana) {
-  const values = Object.values(Mana.providerHandler.providers);
+  if (!Mana.getStore().has('providers-order'))
+    Mana.getStore().set('providers-order', Object.keys(Mana.providerHandler.providers).sort((a, b) => ['flux', 'championgg'].includes(b)));
+
+  const values = Mana.getStore().get('providers-order');
 
   function toggle() {
     if (this.style.opacity === '0.35') {
@@ -15,8 +18,9 @@ module.exports = function(Mana) {
   }
 
   let list = '';
+
   for (let i = 0; i < values.length; i++)
-  list += `<li class="ui-state-default sortable-button" value="${values[i].id}" style="${Mana.getStore().get('providers-order-' + values[i].id, true) ? 'opacity: 1' : 'opacity: .35'}">${values[i].name}</li>`;
+    list += `<li class="ui-state-default sortable-button" value="${values[i].id}" style="${Mana.getStore().get('providers-order-' + values[i], true) ? 'opacity: 1' : 'opacity: .35'}">${Mana.providerHandler.providers[values[i]].name}</li>`;
 
   this.innerHTML = list;
   this.childNodes.forEach(x => x.addEventListener("dblclick", toggle));
