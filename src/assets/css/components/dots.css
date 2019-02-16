@@ -27,3 +27,18 @@
   display: inline-block;
   margin: 0 5px;
 }
+
+.side {
+  z-index: 9999999;
+  background: linear-gradient(to left, #785B28 0%, #C89C3C 55%, #C8A355 71%, #C8AA6E 100%);
+  width: 4%;
+  position: fixed;
+  height: 100%;
+  opacity: 0.4;
+  visibility: hidden;
+}
+
+.side-right {
+  background: linear-gradient(to right, #785B28 0%, #C89C3C 55%, #C8A355 71%, #C8AA6E 100%);
+  right: 0;
+}
