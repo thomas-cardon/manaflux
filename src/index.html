@@ -19,6 +19,7 @@
   <link rel="stylesheet" href="assets/css/components/status.css">
   <link rel="stylesheet" href="assets/css/components/connection-icon.css">
   <link rel="stylesheet" href="assets/css/components/version.css">
+  <link rel="stylesheet" href="assets/css/components/tooltip.css">
   <link rel="stylesheet" href="vendor/alertify.min.css"/>
   <link rel="stylesheet" href="vendor/alertify.rtl.min.css"/>
   <link rel="stylesheet" href="vendor/alertify.manaflux.css"/>
@@ -180,11 +181,11 @@
     </div>
     <div data-tabid="settings" data-tabn=2 class="tabcontent" style="display: none; margin-left: 9%;">
       <p class="option-name" data-i18n="category-advanced"></p>
-      <div class="option">
+      <div class="option" data-tippy-content="ui-tooltips-league-path">
         <p class="suboption-name" data-i18n="league-client-path"></p>
         <input type="text" data-settings-key="league-client-path" class="center-area" data-custom-component="league-client-path" disabled />
       </div>
-      <div class="option">
+      <div class="option" data-tippy-content="ui-tooltips-empty-cache">
         <p class="suboption-name" data-i18n="empty-cache-settings-option"></p>
         <button class="btn normal" data-custom-component="empty-cache" data-i18n="empty-cache-button"></button>
       </div>
@@ -208,13 +209,13 @@
     </div>
     <div data-tabid="settings" data-tabn=3 class="tabcontent" style="display: none; margin-left: 9%;">
       <p class="option-name" data-i18n="category-advanced"></p>
-      <div class="option">
+      <div class="option" data-tippy-content="ui-tooltips-providers-order">
         <p class="suboption-name" data-i18n="providers-order"></p>
         <ul id="providersOrder" class="sortable" data-custom-component="providers-order">
           <p style="color: rgba(230, 33, 66, 0.7);margin: 0 2px;">Loading</p>
         </ul>
       </div>
-      <div class="option" data-tippy-content="Can download every champion before you even enter Champion Select!">
+      <div class="option" data-tippy-content="ui-tooltips-providers-downloader">
         <p class="suboption-name" data-i18n="providers-downloader"></p>
         <button class="btn normal" data-custom-component="providers-downloader" data-i18n="common-run" disabled></button>
       </div>
