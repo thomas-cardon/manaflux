@@ -51,7 +51,7 @@ class Mana {
     this.assetsProxy = new (require('./riot/leagueoflegends/GameAssetsProxy'))();
 
     this.alertHandler = new (require('./handlers/AlertHandler'))();
-    
+
     this.championStorageHandler = new (require('./handlers/ChampionStorageHandler'))();
     this.championSelectHandler = new (require('./handlers/ChampionSelectHandler'))();
     this.providerHandler = new (require('./handlers/ProviderHandler'))(this.devMode);

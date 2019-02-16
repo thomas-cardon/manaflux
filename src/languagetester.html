@@ -50,7 +50,7 @@
   process.on('uncaughtException', console.error);
 
   const log = new (require('../objects/handlers/LoggingHandler'))(3);
-  global.i18n = new (require('../objects/i18n'));
+  global.i18n = new (require('../objects/i18n'))(null, true);
 
 
   const languages = i18n.getLanguages();
