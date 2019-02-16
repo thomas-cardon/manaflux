@@ -1,0 +1,12 @@
+.tippy-tooltip.manaflux-theme {
+  background-color: rgba(30, 35, 40, 0.5);
+  width: 70%;
+}
+
+.tippy-tooltip.manaflux-theme[data-animatefill] {
+  background-color: transparent;
+}
+
+.tippy-tooltip.manaflux-theme .tippy-backdrop {
+  background-color: manaflux;
+}

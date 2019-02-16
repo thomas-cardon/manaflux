@@ -4,7 +4,7 @@ UI.tooltips = {
   load: function() {
     document.querySelectorAll('[data-tippy-content]').forEach(x => {
       x.setAttribute('data-tippy-content', i18n.__(x.getAttribute('data-tippy-content')));
-      tippy(x);
+      tippy(x, { theme: 'manaflux' });
     });
   }
 }
