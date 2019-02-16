@@ -52,5 +52,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		});
 	});
 
-	setTimeout(() => document.querySelector('.btn.tab').click(), 100);
+	setTimeout(() => {
+		if (document.querySelector('.btn.tab')) document.querySelector('.btn.tab').click();
+	}, 100);
 });
