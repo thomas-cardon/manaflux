@@ -30,9 +30,6 @@
 <body>
   <video id="smokeAnimation" style="z-index: -30; position: absolute; display: none;" loop><source src="assets/video/smoke.webm" type="video/webm">
   </video>
-  <img src="assets/img/warning.png" id="warning" draggable="false" style="display: none;">
-  <img src="assets/img/components/loading.gif" id="loading"></img>
-  <img src="assets/img/components/connection-img.png" id="connection"></img>
   <div class="tab-container">
     <img src="assets/img/selected.png" id="selected" draggable="false">
     <div class="tab">
@@ -49,8 +46,6 @@
   <div class="side side-left"></div>
   <div class="side side-right"></div>
   <div class="content">
-    <p class="status" data-i18n="status-loading"></p>
-    <p class="version" id="version"></p>
     <div id="dots"></div>
     <!-- BEGIN SECTIONS -->
     <div id="home" data-tabid="home" data-tabn=0 class="tabcontent center" style="display: block;">
@@ -292,6 +287,13 @@
     </div>
     <!-- END SECTIONS -->
   </div>
+  <footer>
+    <span class="status" data-i18n="status-loading"></span>
+    <img src="assets/img/warning.png" id="warning" draggable="false" style="display: none;">
+    <img src="assets/img/components/loading.gif" id="loading" style="display: inline-block;">
+    <img src="assets/img/components/connection-img.png" id="connection">
+    <p class="version" id="version"></p>
+  </footer>
   <audio id="soundEngine" autoplay>
     <source id="soundEngineSource" type="audio/ogg" />
   </audio>

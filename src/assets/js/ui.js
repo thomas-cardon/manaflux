@@ -21,13 +21,13 @@ UI.stylize = UI.stylizeRole = (role = 'unknown') => {
 */
 UI.loading = async (toggle = document.getElementById('loading').style.display === 'none') => {
   if (toggle.then) {
-    document.getElementById('loading').style.display = 'block';
+    document.getElementById('loading').style.display = 'inline-block';
     const x = await toggle;
     document.getElementById('loading').style.display = 'none';
     return x;
   }
 
-  return toggle ? document.getElementById('loading').style.display = 'block' : document.getElementById('loading').style.display = 'none';
+  return toggle ? document.getElementById('loading').style.display = 'inline-block' : document.getElementById('loading').style.display = 'none';
 }
 
 /**

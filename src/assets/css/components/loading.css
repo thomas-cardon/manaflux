@@ -1,7 +1,4 @@
 #loading {
-  position: fixed;
   width: 4%;
-  bottom: 35px;
-  right: 13px;
-  z-index: 5;
+  margin: 0px 10px -6px 0px;
 }
