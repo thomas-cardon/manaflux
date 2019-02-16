@@ -53,12 +53,12 @@
   global.i18n = new (require('../objects/i18n'));
 
 
-  const list = i18n.getLanguagesList(), data = i18n.getLanguages();
-  list.forEach(x => $('#languages').append(`<option value="${x}">${x}</option>`));
+  const languages = i18n.getLanguages();
+  Object.keys(languages).forEach(x => $('#languages').append(`<option value="${x}">${x}</option>`));
 
   function test() {
     const language = document.getElementById('languages').value;
-    const lines = [Object.keys(data[language]).filter(y => i18n._default[y] ? false : true), Object.keys(i18n._default).filter(y => data[language][y] ? false : true)];
+    const lines = [Object.keys(languages[language]).filter(y => i18n._default[y] ? false : true), Object.keys(i18n._default).filter(y => languages[language][y] ? false : true)];
 
     $('#text').children().remove();
     $('#text')
