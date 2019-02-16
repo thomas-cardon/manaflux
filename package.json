@@ -40,7 +40,8 @@
     "electron-updater": "^4.0.0",
     "node-machine-id": "^1.1.10",
     "request": "^2.88.0",
-    "request-promise-native": "^1.0.5"
+    "request-promise-native": "^1.0.5",
+    "tippy.js": "^4.0.1"
   },
   "repository": "https://github.com/Ryzzzen/manaflux",
   "build": {
