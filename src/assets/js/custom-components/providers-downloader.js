@@ -18,25 +18,27 @@ module.exports = {
 
     win.once('ready-to-show', () => win.show());
     win.once('show', async () => {
-      const champions = Object.values(Mana.champions).filter(x => x.id !== -1);
+      const champions = Object.values(Mana.gameClient.champions).filter(x => x.id !== -1);
+      console.log('Providers downloader >>', champions.length, 'to load!');
+
       win.webContents.send('champions-length', champions.length);
 
       let minRoles = Mana.getStore().get('champion-select-min-roles', 2);
       Mana.getStore().set('champion-select-min-roles', 5);
 
       try {
-        console.log('[Downloader] Started downloading Flu.x database');
+        console.log('Providers downloader >> Downloading from Flu.x');
         win.webContents.send('flux-download');
 
         const data = await Mana.providerHandler.providers.flux.bulkDownloadQuery();
 
         for (let championId in data) {
-          if (!Mana.champions[championId]) continue;
+          if (!Mana.gameClient.champions[championId]) continue;
 
-          console.log(`[Downloader] Treating ${Mana.champions[championId].name}`);
+          console.log(`[Downloader] Treating ${Mana.gameClient.champions[championId].name}`);
           Mana.providerHandler._cache.push(data[championId]);
 
-          win.webContents.send('champion-treated-flux', Mana.champions[championId].name);
+          win.webContents.send('champion-treated-flux', Mana.gameClient.champions[championId].name);
         }
 
         win.webContents.send('flux-download-done');
