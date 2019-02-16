@@ -214,7 +214,7 @@
           <p style="color: rgba(230, 33, 66, 0.7);margin: 0 2px;">Loading</p>
         </ul>
       </div>
-      <div class="option">
+      <div class="option" data-tippy-content="Can download every champion before you even enter Champion Select!">
         <p class="suboption-name" data-i18n="providers-downloader"></p>
         <button class="btn normal" data-custom-component="providers-downloader" data-i18n="common-run" disabled></button>
       </div>
@@ -308,6 +308,7 @@
   <script src="assets/js/ui/sounds.js"></script>
   <script src="assets/js/ui/settings.js"></script>
   <script src="assets/js/ui/custom-components.js"></script>
+  <script src="assets/js/ui/tooltips.js"></script>
   <script>
   window.eval = global.eval = () => console.warn(i18n.__('security-eval'));
   require('../crash-reporting.js');
