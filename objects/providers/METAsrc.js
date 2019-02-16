@@ -80,10 +80,10 @@ class METAsrcProvider extends Provider {
       const key = $(this).attr('src').slice($(this).attr('src').lastIndexOf('/') + 1, -4);
 
       if (Mana.gameClient.summonerSpells[key])
-        summonerspells.push(Mana.gameClient.summonerSpells[key]);
+        summonerSpells.push(Mana.gameClient.summonerSpells[key]);
     });
 
-    return summonerspells;
+    return summonerSpells;
   }
 
   /**
