@@ -83,7 +83,6 @@ class DataValidator {
       let rowIndexes = [];
       for (let ii = 0; ii < page.selectedPerkIds.length; ii++) {
         const style = ii > 3 ? subStyle : primaryStyle, id = page.selectedPerkIds[ii];
-
         if (ii < 5) {
           if (ii > 3) {
             const availablePerks = [...style.slots.slice(1, 4).map(x => x.perks)];
