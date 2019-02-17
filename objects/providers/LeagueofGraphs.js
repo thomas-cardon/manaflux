@@ -60,12 +60,13 @@ class LeagueofGraphsProvider extends Provider {
 
     const perks = $('.perksTableOverview').find($('img[src^="//cdn.leagueofgraphs.com/img/perks/"]')).toArray().filter(x => $(x).parent().css('opacity') == 1);
 
-    /* Perks styles */
-    for (let i = 0; i < perks.length; i++) {
+    console.dir(perks);
+
+    perks.forEach((x, i) => {
       if (i === 0 || i === 5)
-        page[index === 0 ? 'primaryStyleId' : 'subStyleId'] = parseInt($(this).attr('src').slice(-8, -4));
-      else page.selectedPerkIds.push(parseInt($(this).attr('src').slice(-8, -4)));
-    }
+        page[index === 0 ? 'primaryStyleId' : 'subStyleId'] = parseInt($(x).attr('src').slice(-8, -4));
+      else page.selectedPerkIds.push(parseInt($(x).attr('src').slice(-8, -4)));
+    });
 
     return [page];
   }
@@ -101,8 +102,11 @@ class LeagueofGraphsProvider extends Provider {
   scrapeItemSets($, champion, position, skillorder) {
     let itemset = new ItemSet(champion.key, position, this.id).setTitle(`LOG ${champion.name} - ${position}`);
     let blocks = [
-      new Block().setType({ i18n: 'item-sets-block-starter-skill-order', arguments: [skillorder] })
-      new Block().setType({ i18n: 'item-sets-block-core-build-wr', arguments: [$('#mainContent > div > div:nth-child(1) > a:nth-child(3) > div > div.row.margin-bottom > div.medium-13.columns').children('.figures').text().trim().split('%').map(x => x.replace(/[^0-9.]/g, ""))[1]] }),
+      new Block().setType({ i18n: 'item-sets-block-starter-skill-order', arguments: [skillorder] }),
+      new Block().setType({
+        i18n: 'item-sets-block-core-build-wr',
+        arguments: [$('#mainContent > div > div:nth-child(1) > a:nth-child(3) > div > div.row.margin-bottom > div.medium-13.columns').children('.figures').text().trim().split('%').map(x => x.replace(/[^0-9.]/g, ""))[1]]
+      }),
       new Block().setType({ i18n: 'item-sets-block-endgame' }),
       new Block().setType({ i18n: 'item-sets-block-boots' })
     ];
