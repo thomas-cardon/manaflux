@@ -2,8 +2,8 @@
 <html lang="{{ site.lang | default: "en-US" }}">
   <head>
     <meta charset="UTF-8">
+    {% seo %}
 
-{% seo %}
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#157878">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -20,7 +20,9 @@
       <h1 class="project-name">{{ site.title | default: site.github.repository_name }}</h1>
       <h2 class="project-tagline">{{ site.description | default: site.github.project_tagline }}</h2>
       <div>
-        <a href="{{ site.github.latest_release.assets[1].browser_download_url }}" class="btn download" target="_blank">Download for Windows</a>
+        {% for asset in site.github.latest_release.assets %}
+          <a href="{{ asset.browser_download_url }}" title="Download {{ site.github.latest_release.name }}" class="btn download" target="_blank">{{ site.github.latest_release.name }}</a>
+        {% endfor %}
         <a href="{{ site.github.latest_release.html_url }}" class="btn" target="_blank">Latest Release Notes</a>
         <a href="https://discord.gg/JrPVnFy" class="btn" target="_blank">Discord Channel</a>
         {% if site.github.is_project_page %}
