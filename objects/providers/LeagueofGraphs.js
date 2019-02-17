@@ -11,28 +11,24 @@ class LeagueofGraphsProvider extends Provider {
 
   async getData(champion, preferredPosition, gameMode) {
     let data = { roles: {} };
+    let roles = gameMode === 'ARAM' ? ['ARAM'] : ['JUNGLE', 'MIDDLE', 'TOP', 'ADC', 'SUPPORT'];
 
-    if (gameMode === 'ARAM') {
+    if (gameMode !== 'ARAM') {
+      if (preferredPosition)
+        roles = roles.sort((a, b) => b === preferredPosition)
+
+      roles = roles.slice(0, parseInt(Mana.getStore().get('champion-select-min-roles', 5)));
+    }
+
+    for (let x of roles) {
+      console.log(2, `[ProviderHandler] [League of Graphs] Gathering data (${x})`);
+
       try {
-        console.log(2, `[ProviderHandler] [LOG] Gathering data (ARAM)`);
-        data.roles.ARAM = await this._scrape(champion, preferredPosition, gameMode);
+        data.roles[x] = await this._scrape(champion, x, gameMode);
       }
       catch(err) {
-        console.log(`[ProviderHandler] [League of Graphs] Something happened while gathering data (ARAM)`);
+        console.log(`[ProviderHandler] [League of Graphs] Something happened while gathering data (${x})`);
         console.error(err);
-      }
-    }
-    else {
-      for (let x of ['JUNGLE', 'MIDDLE', 'TOP', 'ADC', 'SUPPORT']) {
-        console.log(2, `[ProviderHandler] [League of Graphs] Gathering data (${x})`);
-
-        try {
-          data.roles[x] = await this._scrape(champion, x, gameMode);
-        }
-        catch(err) {
-          console.log(`[ProviderHandler] [League of Graphs] Something happened while gathering data (${x})`);
-          console.error(err);
-        }
       }
     }
 
@@ -58,13 +54,12 @@ class LeagueofGraphsProvider extends Provider {
   scrapePerks($, role) {
     let page = { suffixName: `(${UI.stylize(role)})`, selectedPerkIds: [] };
 
-    const perks = $('.perksTableOverview').find($('img[src^="//cdn.leagueofgraphs.com/img/perks/"]')).toArray().filter(x => $(x).parent().css('opacity') == 1);
-    console.dir(perks);
+    $('.perksTableOverview').find('tr').each(function(i, elem) {
+      let images = $(this).find('img[src^="//cdn.leagueofgraphs.com/img/perks/"]').toArray().filter(x => $(x.parentNode).css('opacity') != 0.2);
 
-    perks.forEach((x, i) => {
       if (i === 0 || i === 5)
-        page[index === 0 ? 'primaryStyleId' : 'subStyleId'] = parseInt($(x).attr('src').slice(-8, -4));
-      else page.selectedPerkIds.push(parseInt($(x).attr('src').slice(-8, -4)));
+        page[i === 0 ? 'primaryStyleId' : 'subStyleId'] = images[0].attribs.src.slice(-8, -4);
+      else if (images.length > 0) page.selectedPerkIds.push(images[0].attribs.src.slice(-8, -4));
     });
 
     return [page];
@@ -80,7 +75,7 @@ class LeagueofGraphsProvider extends Provider {
       return [];
     }
 
-    return $('h3:contains(Summoner Spells)').parent().find('img').toArray().filter(x => Object.values(Mana.gameClient.summonerSpells).find(z => z.name === x.alt)).map(x => Object.values(Mana.gameClient.summonerSpells).find(z => z.name === x.alt).id);
+    return $('h3:contains(Summoner Spells)').parent().find('img').toArray().filter(x => Object.values(Mana.gameClient.summonerSpells).find(z => z.name === x.attribs.alt)).map(x => Object.values(Mana.gameClient.summonerSpells).find(z => z.name === x.attribs.alt).id);
   }
 
   /**
@@ -88,7 +83,7 @@ class LeagueofGraphsProvider extends Provider {
    * @param {cheerio} $ - The cheerio object
    */
   scrapeSkillOrder($) {
-    return $('h3:contains(Skill Orders)').parent().find('.championSpellLetter').toArray().map(x => i18n.__('key-' + x.outerText)).join(' => ');
+    return $('h3:contains(Skill Orders)').parent().find('.championSpellLetter').toArray().map(x => i18n.__('key-' + $(x).text().trim())).join(' => ');
   }
 
   /**
