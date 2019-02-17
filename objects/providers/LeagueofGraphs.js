@@ -13,12 +13,8 @@ class LeagueofGraphsProvider extends Provider {
     let data = { roles: {} };
     let roles = gameMode === 'ARAM' ? ['ARAM'] : ['JUNGLE', 'MIDDLE', 'TOP', 'ADC', 'SUPPORT'];
 
-    if (gameMode !== 'ARAM') {
-      if (preferredPosition)
-        roles = roles.sort((a, b) => b === preferredPosition)
-
-      roles = roles.slice(0, parseInt(Mana.getStore().get('champion-select-min-roles', 5)));
-    }
+    if (gameMode !== 'ARAM' && preferredPosition)
+      roles = roles.sort((a, b) => b === preferredPosition)
 
     for (let x of roles) {
       console.log(2, `[ProviderHandler] [League of Graphs] Gathering data (${x})`);
