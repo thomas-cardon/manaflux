@@ -42,7 +42,7 @@ class LeagueofGraphsProvider extends Provider {
   async _scrape(champion, position, gameMode) {
     const data = await rp({ uri: `${this.base}/overview/${champion.key}${position ? '/' + position : ''}/${gameMode === 'ARAM' ? 'aram' : ''}`.toLowerCase(), transform: body => cheerio.load(body) });
 
-    const perks = this.scrapePerks(data);
+    const perks = this.scrapePerks(data, position);
 
     const itemsets = Mana.getStore().get('item-sets-enable') ? this.scrapeItemSets(data, champion, position, this.scrapeSkillOrder(data)) : [];
     const summonerspells = Mana.getStore().get('summoner-spells') ? this.scrapeSummonerSpells(data, champion) : [];
@@ -55,8 +55,8 @@ class LeagueofGraphsProvider extends Provider {
    * Scrapes perks from a League of Graphs page
    * @param {cheerio} $ - The cheerio object
    */
-  scrapePerks($) {
-    let page = { selectedPerkIds: [] };
+  scrapePerks($, role) {
+    let page = { suffixName: `(${UI.stylize(role)})`, selectedPerkIds: [] };
 
     const perks = $('.perksTableOverview').find($('img[src^="//cdn.leagueofgraphs.com/img/perks/"]')).toArray().filter(x => $(x).parent().css('opacity') == 1);
 
