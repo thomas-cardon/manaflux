@@ -59,7 +59,6 @@ class LeagueofGraphsProvider extends Provider {
     let page = { suffixName: `(${UI.stylize(role)})`, selectedPerkIds: [] };
 
     const perks = $('.perksTableOverview').find($('img[src^="//cdn.leagueofgraphs.com/img/perks/"]')).toArray().filter(x => $(x).parent().css('opacity') == 1);
-
     console.dir(perks);
 
     perks.forEach((x, i) => {
@@ -81,7 +80,7 @@ class LeagueofGraphsProvider extends Provider {
       return [];
     }
 
-    return $('h3:contains(Summoner Spells)').parent().find('img').toArray().map(x => Object.values(Mana.gameClient.summonerSpells).find(z => z.name === x.alt).id);
+    return $('h3:contains(Summoner Spells)').parent().find('img').toArray().filter(x => Object.values(Mana.gameClient.summonerSpells).find(z => z.name === x.alt)).map(x => Object.values(Mana.gameClient.summonerSpells).find(z => z.name === x.alt).id);
   }
 
   /**
