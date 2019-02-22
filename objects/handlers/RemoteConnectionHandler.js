@@ -42,7 +42,7 @@ class RemoteConnectionHandler {
         res.writeHead(200, { 'Content-Type': 'application/json' });
 		if (Mana.user)
           res.end(JSON.stringify({ success: true, inChampionSelect: Mana.championSelectHandler._inChampionSelect, ...Mana.gameClient.champions[Mana.championSelectHandler._inChampionSelect ? Mana.championSelectHandler.getPlayer().championId : -1] }));
-        else res.end(JSON.stringify({ success: false, errorCode: 'SUMMONER_NOT_CONNECTED', error: 'Summoner is not connected' }));
+        else res.end(JSON.stringify({ success: false, inChampionSelect: false, errorCode: 'SUMMONER_NOT_CONNECTED', error: 'Summoner is not connected' }));
 	  })
       .get('/api/v1/me/summoner', (req, res) => {
         res.writeHead(200, { 'Content-Type': 'application/json' });
