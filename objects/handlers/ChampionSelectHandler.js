@@ -173,7 +173,7 @@ class ChampionSelectHandler {
     catch(err) {
       if (err.statusCode === 404 && this._inChampionSelect) await this.onChampionSelectEnd();
       else if (err.statusCode === 404 && !this._inChampionSelect) this.loop();
-      else if (err.code !== 'ECONNREFUSED' && err.code !== 'ECONNRESET' && err.code !== 'EPROTO') return this._onCrash(err);
+      else if (err.cause.code !== 'ECONNREFUSED' && err.cause.code !== 'ECONNRESET' && err.cause.code !== 'EPROTO') return this._onCrash(err);
     }
   }
 
@@ -292,6 +292,7 @@ class ChampionSelectHandler {
 
   _onCrash(error) {
     this._hasCrashed = true;
+    UI.tray(false);
 
     document.getElementById('home').innerHTML += `<div id="crash"><center><p style="margin-top: 18%;width:95%;color: #c0392b;"><span style="color: #b88d35;">${i18n.__('champion-select-internal-error')}</span><br><br>${error}</p><p class="suboption-name">${i18n.__('settings-restart-app')}</p><button class="btn normal" onclick="ipcRenderer.send('restart')">${i18n.__('settings-restart-app-button')}</button></center></div>`;
     console.error(error);

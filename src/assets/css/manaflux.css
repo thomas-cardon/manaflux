@@ -22,6 +22,20 @@ body {
   user-select: none;
 }
 
+footer {
+  width: 100%;
+  height: 5%;
+
+  left: 20px;
+  bottom: 20px;
+  position: fixed;
+  z-index: 9999999;
+}
+
+footer > * {
+  margin: 0 10px -6px 0;
+}
+
 #buttons {
   position: fixed;
   bottom: 50px;

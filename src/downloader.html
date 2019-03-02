@@ -47,32 +47,42 @@
   global.i18n = new (require('../objects/i18n'));
 
   ipcRenderer.once('champions-length', (event, length) => {
+    console.log(`Received ${length} champions`);
     document.getElementById('download').max = length;
   });
 
   ipcRenderer.on('champion-download', (event, d) => {
+    console.log(`Downloading ${d.name} (${UI.stylize(d.gameMode)})`);
+
     document.getElementById('download').setAttribute('data-label', i18n.__('providers-downloader-downloading', d.name, UI.stylize(d.gameMode)));
     document.getElementById('text').innerHTML += `${d.name} (${UI.stylize(d.gameMode)})<br>`;
   });
 
   ipcRenderer.on('champion-downloaded', (event, n = 1) => {
+    console.log(`Download finished`);
     document.getElementById('download').value += n;
   });
 
   ipcRenderer.on('download-done', (event, name) => {
+    console.log(`Download done`);
     document.getElementById('download').setAttribute('data-label', i18n.__('providers-downloader-done', document.getElementById('download').value = document.getElementById('download').max));
   });
 
   ipcRenderer.on('flux-download', () => {
+    console.log(`Downloading data from Flu.x`);
     document.getElementById('download').setAttribute('data-label', i18n.__('providers-downloader-flux'));
   });
 
   ipcRenderer.on('flux-download-done', () => {
+    console.log(`Download finished`);
+
     document.getElementById('download').setAttribute('data-label', '...');
     document.getElementById('download').value = 0;
   });
 
   ipcRenderer.on('champion-treated-flux', (event, name) => {
+    console.log(`Download treated by Flu.x: ${name}`);
+
     document.getElementById('text').innerHTML += `${name} (Flu.x)<br>`;
     document.getElementById('download').value++;
   });

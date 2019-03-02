@@ -18,6 +18,7 @@ label {
   margin: 0px 10px 5px 5px;
   width: 42%;
   float: left;
+  outline: none;
 }
 
 .support-option {

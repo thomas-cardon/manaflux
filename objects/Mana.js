@@ -10,7 +10,7 @@ class Mana {
     UI.loading(true);
 
     this.devMode = ipcRenderer.sendSync('is-dev');
-    document.getElementById('version').innerhTML = `V${this.version = app.getVersion() + (!require('electron').remote.app.isPackaged ? '-BUILD' : '')}`;
+    document.getElementById('version').innerHTML = `V${this.version = app.getVersion() + (!require('electron').remote.app.isPackaged ? '-BUILD' : '')}`;
 
     this._store = new Store();
 
@@ -53,7 +53,7 @@ class Mana {
     this.remoteConnectionHandler = new (require('./handlers/RemoteConnectionHandler'))();
 
     this.alertHandler = new (require('./handlers/AlertHandler'))();
-    
+
     this.championStorageHandler = new (require('./handlers/ChampionStorageHandler'))();
     this.championSelectHandler = new (require('./handlers/ChampionSelectHandler'))();
     this.providerHandler = new (require('./handlers/ProviderHandler'))(this.devMode);

@@ -47,11 +47,10 @@ class OPGGProvider extends Provider {
   }
 
   _scrape(html, champion, gameMode, position, firstScrape) {
-    let $ = cheerio.load(html);
-
-    const convertOPGGPosition = this.convertOPGGPosition;
+    let $ = cheerio.load(html), convertOPGGPosition = this.convertOPGGPosition;
 
     if ($('.champion-stats-header-version').text().trim().slice(-4) != Mana.gameClient.branch) UI.error('providers-error-outdated', this.name);
+    if ($('.WorkingTitle').text().trim().startsWith('Maintenance')) UI.error('providers-error-offline', this.name);
 
     position = $('li.champion-stats-header__position.champion-stats-header__position--active').data('position') ? this.convertOPGGPosition($('li.champion-stats-header__position.champion-stats-header__position--active').data('position')).toUpperCase() : position;
     const availablePositions = [];
@@ -103,18 +102,16 @@ class OPGGProvider extends Provider {
    * @param {string} gameMode - A gamemode, from League Client, such as CLASSIC, ARAM, etc.
    */
   scrapeSummonerSpells($, gameMode) {
-    let summonerspells = [];
+    let summonerSpells = [];
 
     $("img[src^='//opgg-static.akamaized.net/images/lol/spell/Summoner']").slice(0, 2).each(function(index) {
-      const summoner = Mana.gameClient.summonerSpells[$(this).attr('src').slice(45, -19)];
+      const summoner = Mana.gameClient.summonerSpells[$(this).attr('src').slice(45, -29)];
 
       if (!summoner) return;
-      if (summoner.gameModes.includes(gameMode)) summonerspells.push(summoner.id);
-
-      if (index >= 1 && summonerspells.length === 2) return false;
+      if (summoner.gameModes.includes(gameMode)) summonerSpells.push(summoner.id);
     });
 
-    return summonerspells;
+    return summonerSpells;
   }
 
   /**

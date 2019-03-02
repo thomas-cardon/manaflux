@@ -1,9 +1,9 @@
 #connection {
-  position: fixed;
+  position: relative;
+  bottom: -6px;
   width: 6%;
-  bottom: 5px;
-  left: 120px;
-  z-index: 5;
+
+  display: inline-block;
   animation: 1s infinite alternate flickerbrightness;
 }
 

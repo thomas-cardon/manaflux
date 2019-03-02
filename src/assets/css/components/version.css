@@ -1,13 +1,13 @@
 .version {
-  position: fixed;
-  bottom: 15px;
-  right: 15px;
+  float: right;
   cursor: default;
-  margin: 0px;
   color: #a09b8c;
   opacity: 0.5;
   transition: opacity .1s ease-in-out;
   text-decoration: none;
+  bottom: -15px;
+  right: 15px;
+  position: relative;
 }
 
 .version:hover {
