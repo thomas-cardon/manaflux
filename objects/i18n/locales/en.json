@@ -54,6 +54,7 @@
   "champion-select-waiting": "Waiting for Champion Select",
   "champion-select-lock-button": "Download when you locked your champion",
   "champion-select-lock": "Lock your champion!",
+  "champion-select-none": "None",
   "champion-select-downloading-data": "Downloading data for %s",
   "champion-select-updating-display": "Updating display for %s",
   "champion-select-hide": "Hide when out of Champion Select",

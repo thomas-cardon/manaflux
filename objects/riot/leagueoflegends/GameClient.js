@@ -33,8 +33,9 @@ class GameClient {
 
   async queryChampionSummary(d = {}) {
     const championSummaryData = JSON.parse(await rp(Mana.base + 'lol-game-data/assets/v1/champion-summary.json'));
-
-    for (let champion of championSummaryData)
+    d[-1] = { id: -1, key: 'None', name: i18n.__('champion-select-none'), img: 'http://localhost:' + Mana.assetsProxy.port + '/lol-game-data/assets/v1/champion-icons/-1.png' };
+    
+	for (let champion of championSummaryData)
       d[champion.id] = { id: champion.id, key: champion.alias, name: champion.name, img: 'http://localhost:' + Mana.assetsProxy.port + champion.squarePortraitPath };
 
     return this.champions = d;
