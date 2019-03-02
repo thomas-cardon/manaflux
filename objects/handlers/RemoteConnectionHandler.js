@@ -41,7 +41,7 @@ class RemoteConnectionHandler {
       .get('/api/v1/me/heartbeat', (req, res) => {
         res.writeHead(200, { 'Content-Type': 'application/json' });
 		if (Mana.user)
-          res.end(JSON.stringify({ success: true, inChampionSelect: Mana.championSelectHandler._inChampionSelect, ...Mana.gameClient.champions[Mana.championSelectHandler._inChampionSelect ? Mana.championSelectHandler.getPlayer().championId : -1] }));
+          res.end(JSON.stringify({ success: true, inChampionSelect: Mana.championSelectHandler._inChampionSelect, ...Mana.gameClient.champions[this.getChampionId()] }));
         else res.end(JSON.stringify({ success: false, inChampionSelect: false, errorCode: 'SUMMONER_NOT_CONNECTED', error: 'Summoner is not connected' }));
 	  })
       .get('/api/v1/me/summoner', (req, res) => {
@@ -124,7 +124,15 @@ class RemoteConnectionHandler {
     this._server.server.close();
     delete this._server;
   }
-
+  
+  getChampionId() {
+	  if(Mana.championSelectHandler._inChampionSelect) {
+		  if(Mana.championSelectHandler.getPlayer().championId === undefined) {
+            return Mana.championSelectHandler.getPlayer().championId;
+		  }
+	  }
+	  return -1;
+  }
   _queryAddress() {
     const interfaces = os.networkInterfaces();
 
