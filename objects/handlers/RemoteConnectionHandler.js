@@ -127,7 +127,7 @@ class RemoteConnectionHandler {
   
   getChampionId() {
 	  if(Mana.championSelectHandler._inChampionSelect) {
-		  if(Mana.championSelectHandler.getPlayer().championId === undefined) {
+		  if(Mana.championSelectHandler.getPlayer().championId !== undefined) {
             return Mana.championSelectHandler.getPlayer().championId;
 		  }
 	  }
