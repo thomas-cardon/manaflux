@@ -124,14 +124,9 @@ class RemoteConnectionHandler {
     this._server.server.close();
     delete this._server;
   }
-  
+
   getChampionId() {
-	  if(Mana.championSelectHandler._inChampionSelect) {
-		  if(Mana.championSelectHandler.getPlayer().championId !== undefined) {
-            return Mana.championSelectHandler.getPlayer().championId;
-		  }
-	  }
-	  return -1;
+	  return Mana.championSelectHandler._inChampionSelect && Mana.championSelectHandler.getPlayer().championId !== undefined ? Mana.championSelectHandler.getPlayer().championId : -1;
   }
   _queryAddress() {
     const interfaces = os.networkInterfaces();
