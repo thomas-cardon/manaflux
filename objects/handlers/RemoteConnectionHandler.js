@@ -128,6 +128,7 @@ class RemoteConnectionHandler {
   getChampionId() {
 	  return Mana.championSelectHandler._inChampionSelect && Mana.championSelectHandler.getPlayer().championId !== undefined ? Mana.championSelectHandler.getPlayer().championId : -1;
   }
+  
   _queryAddress() {
     const interfaces = os.networkInterfaces();
 

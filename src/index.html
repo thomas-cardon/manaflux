@@ -331,8 +331,9 @@
   <script src="assets/js/ui/custom-components.js"></script>
   <script src="assets/js/ui/tooltips.js"></script>
   <script>
+  require('../objects/crash-reporter');
+
   window.eval = global.eval = () => console.warn(i18n.__('security-eval'));
-  require('../crash-reporting.js');
 
   process.on('unhandledRejection', (reason, p) => console.log(0, `Unhandled rejection at: ${p}, reason: ${reason}`));
   process.on('uncaughtException', console.error);
