@@ -100,7 +100,7 @@ class Mana {
     const data = await UI.indicator(Promise.all([this.gameClient.load(), this.gameClient.queryChampionSummary(), this.gameClient.querySummonerSpells()]), 'status-loading-resources');
 
     this.preseason = data[0];
-    $('.version').text(`V${this.version} - V${this.gameClient.branch}`);
+    $('.version').text(`V${this.version} - V${this.gameClient.version}`);
 
     await this.championStorageHandler.load();
 

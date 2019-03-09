@@ -80,6 +80,8 @@ class GameClient {
     this.branch = x.branch;
     this.fullVersion = x.version;
 
+    this.version = this.fullVersion.slice(0, this.fullVersion.indexOf('.', 2));
+
     this.preseason = parseFloat(this.fullVersion.slice(0, 4)) >= 8.23;
     await this.queryPerks();
 
