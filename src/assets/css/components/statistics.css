@@ -54,6 +54,7 @@
   width: 64px;
   border-radius: 50px;
   border: 2px solid #ffb142;
+  -webkit-app-region: no-drag;
 }
 
 .matchup-progress {
