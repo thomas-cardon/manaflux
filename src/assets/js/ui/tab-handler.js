@@ -1,6 +1,15 @@
 /* Tab Handler */
 UI.dots = {
-	isEnabled: document.getElementById('dots') !== null
+	isEnabled: document.getElementById('dots') !== null,
+	hidden: [],
+	hideFor: tabId => {
+		UI.dots.hidden.push(tabId);
+		document.getElementById('dots').style.display = 'none';
+	},
+	showFor: tabId => {
+		UI.dots.hidden.splice(UI.dots.hidden.indexOf(tabId), 1);
+		document.getElementById('dots').style.display = 'block';
+	}
 };
 
 UI.tabs = {};
@@ -38,6 +47,10 @@ UI.tabs.disable = function(tabId, tabN) {
 UI.dots.onClickEvent = function(dot, tabId, i) {
 	document.querySelectorAll('.tabcontent').forEach(x => x.style.display = 'none');
 	document.querySelector(`.tabcontent[data-tabid="${tabId}"][data-tabn="${i}"]`).style.display = 'block';
+
+	if (UI.dots.hidden.includes(tabId))
+		document.getElementById('dots').style.display = 'none';
+	else document.getElementById('dots').style.display = 'block';
 
 	if (!UI.dots.isEnabled || !dot) return;
 

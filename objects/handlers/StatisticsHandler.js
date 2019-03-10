@@ -1,20 +1,9 @@
-const Store = require('electron-store');
-
 class StatisticsHandler {
   constructor() {
-    this.store = new Store({ name: 'statistics' });
+    UI.dots.hideFor('home');
   }
 
-  async load() {
-    if (this.store.size === 0)
-      await UI.indicator(this.getStatisticsData(), 'statistics-loading');
-  }
-
-  async getStatisticsData() {
-    console.log(2, '[ProviderHandler] Downloading global statistics');
-
-    document.querySelector('#matchup > .tab-activable').innerHTML = '';
-  }
+  load() {}
 
   onChampionSelectEnd() {
     document.querySelector('#matchup > .tab-activable').innerHTML = '';
@@ -32,6 +21,8 @@ class StatisticsHandler {
 
     UI.tabs.disable('home', 1);
     UI.tabs.disable('home', 2);
+
+    UI.dots.hideFor('home');
   }
 
   display(champion = Mana.gameClient.champions[1], data, position) {
@@ -82,6 +73,8 @@ class StatisticsHandler {
     else UI.disableTab(document.getElementById('statistics'));
     if (Mana.getStore().get('matchups')) this.displayMatchups(champion, data);
     else UI.disableTab(document.getElementById('matchup'));
+
+    UI.dots.showFor('home');
   }
 
   displayStatistics(champion, data) {
