@@ -14,13 +14,16 @@ class LeagueofGraphsProvider extends Provider {
     let roles = gameMode === 'ARAM' ? ['ARAM'] : ['JUNGLE', 'MIDDLE', 'TOP', 'ADC', 'SUPPORT'];
 
     if (gameMode !== 'ARAM' && preferredPosition)
-      roles = roles.sort((a, b) => b === preferredPosition)
+    roles = roles.sort((a, b) => b === preferredPosition)
+
+    /* This is a variable that doesn't change between roles */
+    let matchups = await rp({ uri: `${this.base}/counters/${champion.key}`.toLowerCase(), transform: body => cheerio.load(body) });
 
     for (let x of roles) {
       console.log(2, `[ProviderHandler] [League of Graphs] Gathering data (${x})`);
 
       try {
-        data.roles[x] = await this._scrape(champion, x, gameMode);
+        data.roles[x] = await this._scrape(champion, x, gameMode, matchups);
       }
       catch(err) {
         console.log(`[ProviderHandler] [League of Graphs] Something happened while gathering data (${x})`);
@@ -31,22 +34,27 @@ class LeagueofGraphsProvider extends Provider {
     return data;
   }
 
-  async _scrape(champion, position, gameMode) {
+  async _scrape(champion, position, gameMode, matchups) {
     const data = await rp({ uri: `${this.base}/overview/${champion.key}${position ? '/' + position : ''}/${gameMode === 'ARAM' ? 'aram' : ''}`.toLowerCase(), transform: body => cheerio.load(body) });
 
     const perks = this.scrapePerks(data, position);
 
     const itemsets = Mana.getStore().get('item-sets-enable') ? this.scrapeItemSets(data, champion, position, this.scrapeSkillOrder(data)) : [];
     const summonerspells = Mana.getStore().get('summoner-spells') ? this.scrapeSummonerSpells(data, champion) : [];
-    const statistics = Mana.getStore().get('statistics') ? {} : {};
+
+    let statistics = {};
+    if (Mana.getStore().get('statistics')) {
+      let stats = await rp({ uri: `${this.base}/stats/${champion.key}${position ? '/' + position : ''}/${gameMode === 'ARAM' ? 'aram' : ''}`.toLowerCase(), transform: body => cheerio.load(body) });
+      statistics = this.scrapeStatistics(stats, matchups);
+    }
 
     return { perks, itemsets, summonerspells, statistics, gameMode };
   }
 
   /**
-   * Scrapes perks from a League of Graphs page
-   * @param {cheerio} $ - The cheerio object
-   */
+  * Scrapes perks from a League of Graphs page
+  * @param {cheerio} $ - The cheerio object
+  */
   scrapePerks($, role) {
     let page = { suffixName: `(${UI.stylize(role)})`, selectedPerkIds: [] };
 
@@ -54,7 +62,7 @@ class LeagueofGraphsProvider extends Provider {
       let images = $(this).find('img[src^="//cdn.leagueofgraphs.com/img/perks/"]').toArray().filter(x => $(x.parentNode).css('opacity') != 0.2);
 
       if (i === 0 || i === 5)
-        page[i === 0 ? 'primaryStyleId' : 'subStyleId'] = images[0].attribs.src.slice(-8, -4);
+      page[i === 0 ? 'primaryStyleId' : 'subStyleId'] = images[0].attribs.src.slice(-8, -4);
       else if (images.length > 0) page.selectedPerkIds.push(images[0].attribs.src.slice(-8, -4));
     });
 
@@ -62,9 +70,9 @@ class LeagueofGraphsProvider extends Provider {
   }
 
   /**
-   * Scrapes summoner spells from a League of Graphs page
-   * @param {cheerio} $ - The cheerio object
-   */
+  * Scrapes summoner spells from a League of Graphs page
+  * @param {cheerio} $ - The cheerio object
+  */
   scrapeSummonerSpells($) {
     if (Mana.gameClient.locale !== 'en_GB' && Mana.gameClient.locale !== 'en_US') {
       console.log(2, `[ProviderHandler] [League of Graphs] Summoner spells are not supported because you're not using the english language in League`);
@@ -75,20 +83,20 @@ class LeagueofGraphsProvider extends Provider {
   }
 
   /**
-   * Scrapes skill order from a League of Graphs page
-   * @param {cheerio} $ - The cheerio object
-   */
+  * Scrapes skill order from a League of Graphs page
+  * @param {cheerio} $ - The cheerio object
+  */
   scrapeSkillOrder($) {
     return $('h3:contains(Skill Orders)').parent().find('.championSpellLetter').toArray().map(x => i18n.__('key-' + $(x).text().trim())).join(' => ');
   }
 
   /**
-   * Scrapes item sets from a League of Graphs page
-   * @param {cheerio} $ - The cheerio object
-   * @param {object} champion - A champion object, from Mana.gameClient.champions
-   * @param {string} position - Limited to: TOP, JUNGLE, MIDDLE, ADC, SUPPORT
-   * @param {object} skillorder
-   */
+  * Scrapes item sets from a League of Graphs page
+  * @param {cheerio} $ - The cheerio object
+  * @param {object} champion - A champion object, from Mana.gameClient.champions
+  * @param {string} position - Limited to: TOP, JUNGLE, MIDDLE, ADC, SUPPORT
+  * @param {object} skillorder
+  */
   scrapeItemSets($, champion, position, skillorder) {
     let itemset = new ItemSet(champion.key, position, this.id).setTitle(`LOG ${champion.name} - ${position}`);
     let blocks = [
@@ -115,46 +123,70 @@ class LeagueofGraphsProvider extends Provider {
   }
 
   /**
-   * Scrapes statistics from a League of Graphs page
-   * @param {cheerio} $ - The cheerio object
-   */
-  scrapeStatistics($) {
+  * Scrapes statistics from a League of Graphs page
+  * @param {cheerio} $ - The cheerio object
+  */
+  scrapeStatistics($s, $m, convertLOGPosition = this.convertLOGPosition) {
     let data = { stats: { roles: {} }, matchups: { counters: {}, synergies: {} } };
 
-    $('#mainContent > .row').eq(0).each(function(index) {
+    /* Stats */
+    $s('#mainContent > .row').eq(0).children().each(function(index) {
       let statsVar;
 
       switch(index) {
         case 0:
-          statsVar = 'playrate';
-          break;
+        statsVar = 'playrate';
+        break;
         case 1:
-          statsVar = 'winrate';
-          break;
+        statsVar = 'winrate';
+        break;
         case 2:
-          statsVar = 'banrate';
-          break;
+        statsVar = 'banrate';
+        break;
         case 3:
-          statsVar = 'mainrate';
-          break;
+        statsVar = 'mainrate';
+        break;
       }
 
-      data.stats[statsVar] = { avg: $(this).find('.pie-chart').text().trim() };
+      data.stats[statsVar] = { avg: $s(this).find('.pie-chart').text().trim() };
     });
 
 
-    $('#mainContent > div:nth-child(2) > div:nth-child(2)').find('table').find('tr').slice(1).each(function(index) {
-      data.stats.roles[this.convertLOGPosition($(this).children().eq(0).text().trim()).toUpperCase()] = {
-        playrate: { avg: $(this).children().eq(1).text().trim().slice(0, 5) },
-        winrate: { avg: $(this).children().eq(2).text().trim().slice(0, 5) }
+    $s('#mainContent > div:nth-child(2) > div:nth-child(2)').find('table').find('tr').slice(1).each(function(index) {
+      data.stats.roles[convertLOGPosition($s(this).children().eq(0).text().trim()).toUpperCase()] = {
+        playrate: { avg: $s(this).children().eq(1).text().trim().slice(0, 5) },
+        winrate: { avg: $s(this).children().eq(2).text().trim().slice(0, 5) }
       };
     });
 
-    const kda = $('#mainContent > div:nth-child(2) > div:nth-child(2) > div.box.box-padding.number-only-chart.text-center > div.number').text().trim().replace(/(\r\n\t|\n|\r\t| )/gm,'').split('/');
+    const kda = $s('#mainContent > div:nth-child(2) > div:nth-child(2) > div.box.box-padding.number-only-chart.text-center > div.number').text().trim().replace(/(\r\n\t|\n|\r\t| )/gm,'').split('/');
 
     data.stats.k = { avg: kda[0] };
     data.stats.d = { avg: kda[1] };
     data.stats.a = { avg: kda[2] };
+
+    /* Matchups */
+    $m('.box.box-padding').each(function(index) {
+      let type;
+      switch(index) {
+        case 0:
+        type = 'synergies';
+        break;
+        default:
+        type = 'counters';
+        break;
+      }
+
+      $m(this).find('tr').slice(1).each(function(index) {
+        let key = $m(this).find('a').attr('href').slice($m(this).find('a').attr('href').lastIndexOf('/') + 1);
+        let position = convertLOGPosition($m(this).find('i').text()).toUpperCase();
+        let percentage = parseFloat($m(this).find('.percentage').eq(0).text());
+
+        console.dir(parseFloat(data.stats.winrate));
+
+        data.matchups[type][Object.values(Mana.gameClient.champions).find(x => x.key.toLowerCase() === key)] = { wr: (parseFloat(data.stats.winrate) || 50) + percentage, position };
+      });
+    });
 
     return data;
   }
@@ -164,11 +196,11 @@ class LeagueofGraphsProvider extends Provider {
 
     switch(pos.toLowerCase()) {
       case 'jungler':
-        return 'jungle';
+      return 'jungle';
       case 'mid':
-        return 'middle';
+      return 'middle';
       default:
-        return pos.toLowerCase();
+      return pos.toLowerCase();
     }
   }
 
