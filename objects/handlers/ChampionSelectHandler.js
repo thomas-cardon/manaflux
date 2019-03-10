@@ -174,7 +174,8 @@ class ChampionSelectHandler {
     catch(err) {
       if (err.statusCode === 404 && this._inChampionSelect) await this.onChampionSelectEnd();
       else if (err.statusCode === 404 && !this._inChampionSelect) this.loop();
-      else if (err.cause.code !== 'ECONNREFUSED' && err.cause.code !== 'ECONNRESET' && err.cause.code !== 'EPROTO') return this._onCrash(err);
+      else if (err.cause && err.cause.code !== 'ECONNREFUSED' && err.cause.code !== 'ECONNRESET' && err.cause.code !== 'EPROTO') return this._onCrash(err);
+      else console.error(err);
     }
   }
 
@@ -218,6 +219,18 @@ class ChampionSelectHandler {
     document.getElementById('positions').onchange = function() {
       console.log('[ChampionSelect] Selected position:', this.value.toUpperCase());
       self.onPerkPositionChange(champion, this.value.toUpperCase(), res.roles[this.value.toUpperCase()]);
+
+      if (Mana.getStore().get('statistics')) {
+        let position = res.roles[this.value.toUpperCase()].statistics ? this.value.toUpperCase() : Object.keys(res.roles).find(x => res.roles[x].statistics);
+        console.log(position);
+
+        if (position)
+          Mana.statisticsHandler.display(champion, res.roles[position].statistics, position);
+        else {
+          UI.tabs.disable('home', 1);
+          UI.tabs.disable('home', 2);
+        }
+      }
     };
 
     // Sets value and checks if it's not null, if it is then let's stop everything
