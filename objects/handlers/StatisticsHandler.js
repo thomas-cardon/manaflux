@@ -95,9 +95,9 @@ class StatisticsHandler {
 
       html += `<p style="text-align: left;">
         <span style="color: #ffff;">${i18n.__('statistics-stats-' + key)}</span>
-        <span style="position: absolute; left: 150px; color: #e58e26;">${value.avg}</span>
-        <span style="position: absolute; left: 250px; color: #38ada9;">${value.rolePlacement}</span>
-        <span style="position: absolute; left: 400px; color: #78e08f;">(${value.patchChange})</span>
+        <span style="position: absolute; left: 150px; color: #e58e26;">${value.avg || i18n.__('statistics-no-data')}</span>
+        <span style="position: absolute; left: 250px; color: #38ada9;">${value.rolePlacement || i18n.__('statistics-no-data')}</span>
+        <span style="position: absolute; left: 400px; color: #78e08f;">(${value.patchChange || i18n.__('statistics-no-data')})</span>
       </p>`;
     }
 
@@ -106,27 +106,42 @@ class StatisticsHandler {
   }
 
   displayMatchups(champion, data) {
-    let content = document.querySelector('#matchup > .tab-activable'), html = `<div class="matchup-list" id="counters"><p style="color: #ffb142;font-size: 21px;margin: -3% 0 3%;">${i18n.__('statistics-counter-you')}</p>`;
+    let content = document.querySelector('#matchup > .tab-activable'), html = `<div class="matchup-list list-left">`;
 
-    let length = Object.keys(data.matchups.counters).length;
-    let sorted = Object.entries(data.matchups.counters).sort((a, b) => b[1].wr - a[1].wr);
-    let vsPlus = sorted.slice(0, length / 2), vsMinus = sorted.slice(length / 2).sort((a, b) => a[1].wr - b[1].wr);
+    let vs2, vs1, type = 'synergy';
 
-    for (const [id, value] of vsPlus) {
+    if (Mana.getStore().get('statistics-data-preferences', 0) == 1 || !data.matchups.synergies) {
+      let sorted = Object.entries(data.matchups.counters).sort((a, b) => a[1].wr - b[1].wr);
+      let length = sorted.length >= 12 ? 12 : sorted.length;
+
+      vs1 = sorted.slice(0, length / 2);
+      vs2 = sorted.slice(length / 2, length).sort((a, b) => b[1].wr - a[1].wr);
+
+      type = 'counter-them';
+      html += `<p style="color: #b33939;font-size: 21px;margin: -3% 0 3%;">${i18n.__('statistics-counter-you')}</p>`;
+    }
+    else {
+      vs1 = Object.entries(data.matchups.counters).sort((a, b) => a[1].wr - b[1].wr).slice(0, 6);
+      vs2 = Object.entries(data.matchups.synergy).sort((a, b) => b[1].wr - a[1].wr).slice(0, 6);
+
+      html += `<p style="color: #b33939;font-size: 21px;margin: -3% 0 3%;">${i18n.__('statistics-counters')}</p>`;
+    }
+
+    for (const [id, value] of vs1) {
       html += `<div class="matchup matchup-left">
         <img src="${Mana.gameClient.champions[id].img}" />
         <div class="champion-data">
-          <span style="color: #dcdde1;">${i18n.__('statistics-games', value.games)}</span>
+          <span style="color: #dcdde1;">${value.games ? i18n.__('statistics-games', value.games) : i18n.__('statistics-no-data')}</span>
           <progress class="matchup-progress matchup-progress-counter" id="progress-vs-${id}" max="100" value="${value.wr}" data-label="${value.wr}%">
           </progress>
         </div>
       </div>`;
     }
-    html += `</div><div class="matchup-list" id="synergies"><p style="color: #b33939;font-size: 21px;margin: -3% 0 3%;">${i18n.__('statistics-counter-them')}</p>`;
-    for (const [id, value] of vsMinus) {
+    html += `</div><div class="matchup-list list-right" id="${type}"><p style="color: #${type === 'synergy' ? '27ae60' : 'ffb142'};font-size: 21px;margin: -3% 0 3%;">${i18n.__('statistics-' + type)}</p>`;
+    for (const [id, value] of vs2) {
       html += `<div class="matchup matchup-right">
         <div class="champion-data">
-          <span style="color: #dcdde1;">${i18n.__('statistics-games', value.games)}</span>
+          <span style="color: #dcdde1;">${value.games ? i18n.__('statistics-games', value.games) : i18n.__('statistics-no-data')}</span>
           <progress class="matchup-progress matchup-progress-synergy" id="progress-vs-${id}" max="100" value="${value.wr}" data-label="${value.wr}%"></progress>
         </div>
         <img src="${Mana.gameClient.champions[id].img}" />
@@ -134,6 +149,10 @@ class StatisticsHandler {
     }
 
     content.innerHTML = html + '</div>';
+
+    /* Tooltips */
+    tippy(document.querySelector('.matchup.matchup-left > .champion-data > progress'), { content: i18n.__('statistics-tooltips-winrate', champion.name, Mana.gameClient.champions[vs1[0][0]].name) });
+
     UI.tabs.enable('home', 1);
   }
 }
