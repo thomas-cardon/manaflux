@@ -77,7 +77,7 @@ class Mana {
     else ipcRenderer.send('lcu-connection', this.getStore().get('league-client-path'));
 
     this.featureCheck('mobile-app').then(x => {
-      if (!x) document.querySelector('[data-tabid="settings"][data-tabn="4"]').innerHTML = '<center><p style="color: #c0392b;">This tab is disabled for now. Check back soon!</p></center>';
+      if (!x) document.querySelector('[data-tabid="settings"][data-tabn="5"]').innerHTML = '<center><p style="color: #c0392b;">This tab is disabled for now. Check back soon!</p></center>';
     })
   }
 
