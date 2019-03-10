@@ -177,14 +177,23 @@ class LeagueofGraphsProvider extends Provider {
         break;
       }
 
-      $m(this).find('tr').slice(1).each(function(index) {
-        let key = $m(this).find('a').attr('href').slice($m(this).find('a').attr('href').lastIndexOf('/') + 1);
+      $m(this).find('tr > td > a').parent().parent().each(function(index) {
+        if (!$m(this).find('a').length === 0)
+        return;
+
+        let championKey = $m(this).find('a')[0].attribs.href.slice($m(this).find('a')[0].attribs.href.lastIndexOf('/') + 1);
+        let championId = Object.values(Mana.gameClient.champions).find(x => x.key.toLowerCase() === championKey);
+
+        if (!championId)
+          return;
+        else championId = championId.id;
+
         let position = convertLOGPosition($m(this).find('i').text()).toUpperCase();
         let percentage = parseFloat($m(this).find('.percentage').eq(0).text());
 
-        console.dir(parseFloat(data.stats.winrate));
+        console.dir(parseFloat(data.stats.winrate.avg));
 
-        data.matchups[type][Object.values(Mana.gameClient.champions).find(x => x.key.toLowerCase() === key)] = { wr: (parseFloat(data.stats.winrate) || 50) + percentage, position };
+        data.matchups[type][championId] = { wr: (parseFloat(data.stats.winrate.avg) || 50) + percentage, position };
       });
     });
 
@@ -199,6 +208,8 @@ class LeagueofGraphsProvider extends Provider {
       return 'jungle';
       case 'mid':
       return 'middle';
+      case 'ad carry':
+      return 'adc';
       default:
       return pos.toLowerCase();
     }
