@@ -93,12 +93,12 @@
   width: 45%;
 }
 
-.matchup-list#counters {
+.matchup-list.list-left {
   float: left;
   margin-left: 5%;
 }
 
-.matchup-list#synergies {
+.matchup-list.list-right {
   float: right;
   margin-right: 5%;
 }
