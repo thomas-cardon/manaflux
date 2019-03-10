@@ -29,7 +29,7 @@ class ChampionSelectHandler {
       URF: {
         getGameMode: () => 'URF',
         getPosition: pos => null,
-        getProviders: () => ['metasrc']
+        getProviders: () => ['opgg_urf', 'metasrc']
       },
       '10': {
         getGameMode: () => 'TWISTED_TREELINE',
