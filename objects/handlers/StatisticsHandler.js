@@ -29,7 +29,7 @@ class StatisticsHandler {
  <span style="position: absolute; left: 250px; color: #38ada9;" data-i18n="statistics-header-role-placement"></span>
  <span style="position: absolute; left: 400px; color: #78e08f;" data-i18n="statistics-header-patch-change"></span>
  </p>`;
- 
+
     UI.tabs.disable('home', 1);
     UI.tabs.disable('home', 2);
   }
@@ -112,24 +112,24 @@ class StatisticsHandler {
     let sorted = Object.entries(data.matchups.counters).sort((a, b) => b[1].wr - a[1].wr);
     let vsPlus = sorted.slice(0, length / 2), vsMinus = sorted.slice(length / 2).sort((a, b) => a[1].wr - b[1].wr);
 
-    for (const [key, value] of vsPlus) {
+    for (const [id, value] of vsPlus) {
       html += `<div class="matchup matchup-left">
-        <img src="${Mana.gameClient.champions[key].img}" />
+        <img src="${Mana.gameClient.champions[id].img}" />
         <div class="champion-data">
           <span style="color: #dcdde1;">${i18n.__('statistics-games', value.games)}</span>
-          <progress class="matchup-progress matchup-progress-counter" id="progress-vs-${key}" max="100" value="${value.wr}" data-label="${value.wr}%">
+          <progress class="matchup-progress matchup-progress-counter" id="progress-vs-${id}" max="100" value="${value.wr}" data-label="${value.wr}%">
           </progress>
         </div>
       </div>`;
     }
     html += `</div><div class="matchup-list" id="synergies"><p style="color: #b33939;font-size: 21px;margin: -3% 0 3%;">${i18n.__('statistics-counter-them')}</p>`;
-    for (const [key, value] of vsMinus) {
+    for (const [id, value] of vsMinus) {
       html += `<div class="matchup matchup-right">
         <div class="champion-data">
           <span style="color: #dcdde1;">${i18n.__('statistics-games', value.games)}</span>
-          <progress class="matchup-progress matchup-progress-synergy" id="progress-vs-${key}" max="100" value="${value.wr}" data-label="${value.wr}%"></progress>
+          <progress class="matchup-progress matchup-progress-synergy" id="progress-vs-${id}" max="100" value="${value.wr}" data-label="${value.wr}%"></progress>
         </div>
-        <img src="${Mana.gameClient.champions[key].img}" />
+        <img src="${Mana.gameClient.champions[id].img}" />
       </div>`;
     }
 
