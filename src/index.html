@@ -231,34 +231,6 @@
     </div>
     <div data-tabid="settings" data-tabn=3 class="tabcontent" style="display: none; margin-left: 9%;">
       <p class="option-name" data-i18n="category-advanced"></p>
-      <div class="option" data-tippy-content="ui-tooltips-league-path">
-        <p class="suboption-name" data-i18n="league-client-path"></p>
-        <input type="text" data-settings-key="league-client-path" class="center-area" data-custom-component="league-client-path" disabled />
-      </div>
-      <div class="option" data-tippy-content="ui-tooltips-empty-cache">
-        <p class="suboption-name" data-i18n="empty-cache-settings-option"></p>
-        <button class="btn normal" data-custom-component="empty-cache" data-i18n="empty-cache-button"></button>
-      </div>
-      <div class="option">
-        <p class="suboption-name" data-i18n="reset-settings-settings-option"></p>
-        <button class="btn normal" data-custom-component="reset-settings" data-i18n="reset-settings-button"></button>
-      </div>
-      <div class="option">
-        <p class="suboption-name" data-i18n="settings-restart-app"></p>
-        <button class="btn normal" onclick="ipcRenderer.send('restart')" data-i18n="settings-restart-app-button"></button>
-      </div>
-      <hr class="break" />
-      <div class="option">
-        <p class="suboption-name" data-i18n="settings-logs-clear"></p>
-        <button class="btn normal" data-custom-component="settings-logs-clear" data-i18n="common-clear"></button>
-      </div>
-      <div class="option">
-        <p class="suboption-name" data-i18n="settings-logs-open-folder"></p>
-        <button class="btn normal" data-custom-component="settings-logs-open" data-i18n="common-open"></button>
-      </div>
-    </div>
-    <div data-tabid="settings" data-tabn=4 class="tabcontent" style="display: none; margin-left: 9%;">
-      <p class="option-name" data-i18n="category-advanced"></p>
       <div class="option" data-tippy-content="ui-tooltips-providers-order">
         <p class="suboption-name" data-i18n="providers-order"></p>
         <ul id="providersOrder" class="sortable" data-custom-component="providers-order">
@@ -291,6 +263,21 @@
           <input type="checkbox" data-settings-key="fixes-perks-editor" data-settings-default="true" class="center-area" />
           <label data-i18n="common-enable"></label>
         </div>
+      </div>
+    </div>
+    <div data-tabid="settings" data-tabn=4 class="tabcontent" style="display: none; margin-left: 9%;">
+      <p class="option-name" data-i18n="category-mobile-app"></p>
+      <p data-i18n="mobile-app-note" style="color: #c0392b;"></p>
+      <p id="remote-ip-address" style="color: #fdcb6e; position: absolute; margin: 43% 0 0 25%;"></p>
+      <div class="option" style="position: absolute;margin-top: 46%;margin-left: 31%;">
+        <div class="options checkboxContainer">
+          <input type="checkbox" id="mobile-app-disable" data-settings-key="mobile-app-disabled" data-settings-default="true" data-custom-component="mobile-app-disabler">
+          <label data-i18n="common-disable" for="mobile-app-disable">Désactiver</label>
+        </div>
+      </div>
+      <div id="qr-canvas" class="option">
+        <img id="qrcode-frame" src="assets/img/components/border.png">
+        <canvas id="qrcode"></canvas>
       </div>
     </div>
     <div data-tabid="settings" data-tabn=5 class="tabcontent" style="display: none; margin-left: 9%;">
