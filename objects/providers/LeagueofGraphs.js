@@ -127,7 +127,7 @@ class LeagueofGraphsProvider extends Provider {
   * @param {cheerio} $ - The cheerio object
   */
   scrapeStatistics($s, $m, convertLOGPosition = this.convertLOGPosition) {
-    let data = { stats: { roles: {} }, matchups: { counters: {}, synergies: {} } };
+    let data = { stats: { roles: {} }, matchups: { counters: {}, synergy: {} } };
 
     /* Stats */
     $s('#mainContent > .row').eq(0).children().each(function(index) {
@@ -170,7 +170,7 @@ class LeagueofGraphsProvider extends Provider {
       let type;
       switch(index) {
         case 0:
-        type = 'synergies';
+        type = 'synergy';
         break;
         default:
         type = 'counters';
@@ -193,7 +193,7 @@ class LeagueofGraphsProvider extends Provider {
 
         console.dir(parseFloat(data.stats.winrate.avg));
 
-        data.matchups[type][championId] = { wr: (parseFloat(data.stats.winrate.avg) || 50) + percentage, position };
+        data.matchups[type][championId] = { wr: ((parseFloat(data.stats.winrate.avg) || 50) + percentage).toPrecision(4), position };
       });
     });
 
