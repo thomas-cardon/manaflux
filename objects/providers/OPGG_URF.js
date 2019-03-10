@@ -2,82 +2,41 @@ const rp = require('request-promise-native'), cheerio = require('cheerio');
 const { ItemSet, Block } = require('../ItemSet');
 const Provider = require('./Provider');
 
-class OPGGProvider extends Provider {
+class OPGG_URFProvider extends Provider {
   constructor() {
-    super('opgg', 'OP.GG');
-    this.base = 'https://www.op.gg';
+    super('opgg_urf', 'OP.GG (URF!)');
+    this.base = 'https://www.op.gg/urf';
   }
 
-  convertOPGGPosition(pos) {
-    if (!pos) return;
+  async getData(champion, gameMode) {
+    if (gameMode !== 'URF') throw Error('[Providers] OP.GG URF >> Can\'t be called on a different gamemode than URF!');
 
-    switch(pos.toLowerCase()) {
-      case 'mid':
-        return 'middle';
-      case 'bot':
-        return 'adc';
-      default:
-        return pos.toLowerCase();
-    }
+    const res = await rp({ uri: `${this.base}/${champion.key}/statistics`, transform: body => cheerio.load(body) });
+    const d = this._scrape(res, champion, gameMode);
+
+    return { roles: { [gameMode]: d } };
   }
 
-  async getData(champion, preferredPosition, gameMode) {
-    const res = await rp(`${this.base}/champion/${champion.key}/statistics${preferredPosition ? '/' + this.convertOPGGPosition(preferredPosition) : ''}`);
-    const d = this._scrape(res, champion, gameMode, preferredPosition, true);
-
-    let data = { roles: { [d.position]: d } };
-
-    for (const position of d.availablePositions) {
-      console.log(2, `[ProviderHandler] [OP.GG] Gathering data (${position.name})`);
-
-      try {
-        data.roles[position.name] = this._scrape(await rp(position.link), champion, gameMode, position.name);
-        delete data.roles[position.name].position;
-      }
-      catch(err) {
-        console.log(`[ProviderHandler] [OP.GG] Something happened while gathering data (${position.name})`);
-        console.error(err);
-      }
-    }
-
-    delete data.roles[d.position].availablePositions;
-    delete data.roles[d.position].position;
-
-    return data;
-  }
-
-  _scrape(html, champion, gameMode, position, firstScrape) {
-    let $ = cheerio.load(html), convertOPGGPosition = this.convertOPGGPosition;
-
+  _scrape($, champion, gameMode) {
     if ($('.champion-stats-header-version').text().trim().slice(-4) != Mana.gameClient.branch) UI.error('providers-error-outdated', this.name);
     if ($('.WorkingTitle').text().trim().startsWith('Maintenance')) UI.error('providers-error-offline', this.name);
 
-    position = $('li.champion-stats-header__position.champion-stats-header__position--active').data('position') ? this.convertOPGGPosition($('li.champion-stats-header__position.champion-stats-header__position--active').data('position')).toUpperCase() : position;
-    const availablePositions = [];
-
-    if (firstScrape) {
-      $('[data-position] > a').each(function(index) {
-        availablePositions.push({ name: convertOPGGPosition($(this).parent().data('position')).toUpperCase(), link: 'https://op.gg' + $(this).attr('href') });
-      });
-    }
-
-    const summonerspells = this.scrapeSummonerSpells($);
+    const summonerspells = this.scrapeSummonerSpells($, gameMode);
 
     const skillorder = this.scrapeSkillOrder($);
-    const itemsets = this.scrapeItemSets($, champion, position.charAt(0) + position.slice(1).toLowerCase(), skillorder);
+    const itemsets = this.scrapeItemSets($, champion, gameMode, skillorder);
 
-    const perks = this.scrapePerks($, champion, position);
+    const perks = this.scrapePerks($, champion);
 
-    return { perks, summonerspells, itemsets, availablePositions, position: position.toUpperCase(), gameMode };
+    return { perks, summonerspells, itemsets };
   }
 
   /**
    * Scrapes item sets from a OP.GG page
    * @param {cheerio} $ - The cheerio object
    * @param {object} champion - A champion object, from Mana.gameClient.champions
-   * @param {string} position - Limited to: TOP, JUNGLE, MIDDLE, ADC, SUPPORT
    */
-  scrapePerks($, champion, position) {
+  scrapePerks($, champion) {
     let pages = [{ selectedPerkIds: [] }, { selectedPerkIds: [] }];
 
     $('.perk-page').find('img.perk-page__image.tip').slice(0, 4).each(function(index) {
@@ -131,13 +90,12 @@ class OPGGProvider extends Provider {
    * Scrapes item sets from a OP.GG page
    * @param {cheerio} $ - The cheerio object
    * @param {object} champion - A champion object, from Mana.gameClient.champions
-   * @param {string} position - Limited to: TOP, JUNGLE, MIDDLE, ADC, SUPPORT
    * @param {object} skillorder
    */
-  scrapeItemSets($, champion, position, skillorder) {
+  scrapeItemSets($, champion, gameMode, skillorder) {
     const itemrows = $('.champion-overview__table').eq(1).find('.champion-overview__row');
 
-    let itemset = new ItemSet(champion.key, position, this.id);
+    let itemset = new ItemSet(champion.key, gameMode, this.id);
     let boots = new Block().setType({ i18n: 'item-sets-block-boots' });
 
     /* Block Starter */
@@ -179,4 +137,4 @@ class OPGGProvider extends Provider {
   }
 }
 
-module.exports = OPGGProvider;
+module.exports = OPGG_URFProvider;

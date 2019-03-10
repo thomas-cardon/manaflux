@@ -1,37 +1,44 @@
 module.exports = function(Mana) {
-  const values = Object.values(Mana.providerHandler.providers);
+  if (!Mana.getStore().has('providers-order'))
+    Mana.getStore().set('providers-order', Object.keys(Mana.providerHandler.providers).sort((a, b) => ['flux', 'championgg'].includes(b)));
+
+  let enabled = Mana.getStore().get('providers-order');
+  let disabled = Object.keys(Mana.providerHandler.providers).filter(x => !Mana.getStore().get('providers-order').includes(x));
 
   function toggle() {
     if (this.style.opacity === '0.35') {
       this.style.opacity = 1;
-      Mana.getStore().set('providers-order-' + this.getAttribute('value'), true);
-      console.log(2, `[Providers order] Enabled: ${this.getAttribute('value')}`);
+
+      Mana.getStore().set('providers-order', [...Mana.getStore().get('providers-order'), this.id]);
+      console.log(2, `[Providers order] Enabled: ${this.id}`);
     }
     else {
       this.style.opacity = '.35';
-      Mana.getStore().set('providers-order-' + this.getAttribute('value'), false);
-      console.log(2, `[Providers order] Disabled: ${this.getAttribute('value')}`);
+
+      Mana.getStore().set('providers-order', Mana.getStore().get('providers-order').filter(x => x !== this.id));
+      console.log(2, `[Providers order] Disabled: ${this.id}`);
     }
   }
 
   let list = '';
-  for (let i = 0; i < values.length; i++)
-  list += `<li class="ui-state-default sortable-button" value="${values[i].id}" style="${Mana.getStore().get('providers-order-' + values[i].id, true) ? 'opacity: 1' : 'opacity: .35'}">${values[i].name}</li>`;
+
+  for (let i = 0; i < enabled.length; i++)
+    list += `<li class="ui-state-default sortable-button" id="${enabled[i]}" style="opacity: 1">${Mana.providerHandler.providers[enabled[i]].name}</li>`;
+
+  for (let i = 0; i < disabled.length; i++)
+    list += `<li class="ui-state-default sortable-button" id="${disabled[i]}" style="opacity: .35">${Mana.providerHandler.providers[disabled[i]].name}</li>`;
 
   this.innerHTML = list;
-  this.childNodes.forEach(x => x.addEventListener("dblclick", toggle));
+  Array.from(this.children).forEach(x => x.addEventListener('click', toggle));
 
   $(this).css('list-style', 'disc inside').sortable({
     update: function(event, ui) {
       if (ui.item.css('opacity') === '0.35') return $('#providersOrder').sortable('cancel');
 
-      let array = [];
-      $(this).children().each(function() {
-        array.push($(this).attr('value'));
-      });
+      let array = Array.from(document.querySelector('#providersOrder').children).filter(x => x.style.opacity == 1).map(x => x.id);
 
       Mana.getStore().set('providers-order', array);
-      console.log(2, `[Providers order] Changed value to: ${array}`);
+      console.log(2, '[Providers Order] Changed value to:', array);
 
       Sounds.play('checkboxClick');
     }

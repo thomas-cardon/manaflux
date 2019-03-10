@@ -1,6 +1,4 @@
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-
-const EventEmitter = require('events');
 const { dialog, app } = require('electron').remote;
 
 const Store = require('electron-store');
@@ -10,12 +8,12 @@ class Mana {
     UI.loading(true);
 
     this.devMode = ipcRenderer.sendSync('is-dev');
-    document.getElementById('version').innerhTML = `V${this.version = app.getVersion() + (!require('electron').remote.app.isPackaged ? '-BUILD' : '')}`;
+    document.getElementById('version').innerHTML = `V${this.version = app.getVersion() + (!require('electron').remote.app.isPackaged ? '-BUILD' : '')}`;
 
     this._store = new Store();
 
     if (!this.getStore().has('language'))
-      this.getStore().set('language', require('electron').remote.app.getLocale().toLowerCase());
+    this.getStore().set('language', require('electron').remote.app.getLocale().toLowerCase());
 
     global.i18n = new (require('./i18n'))(this.getStore().get('language'));
 
@@ -48,7 +46,9 @@ class Mana {
 
   async load() {
     this.gameClient = new (require('./riot/leagueoflegends/GameClient'))();
+
     this.assetsProxy = new (require('./riot/leagueoflegends/GameAssetsProxy'))();
+    this.remoteConnectionHandler = new (require('./handlers/RemoteConnectionHandler'))();
 
     this.alertHandler = new (require('./handlers/AlertHandler'))();
 
@@ -65,17 +65,34 @@ class Mana {
     UI.tabs.load();
 
     if (!this.getStore().get('league-client-path'))
-      require('../objects/Wizard')(this.devMode).on('closed', () => {
-        const path = ipcRenderer.sendSync('lcu-get-path');
-        console.log('[UI] Wizard has been closed');
+    require('../objects/Wizard')(this.devMode).on('closed', () => {
+      const path = ipcRenderer.sendSync('lcu-get-path');
+      console.log('[UI] Wizard has been closed');
 
-        ipcRenderer.send('lcu-connection', path);
-        this.getStore().set('league-client-path', path);
+      ipcRenderer.send('lcu-connection', path);
+      this.getStore().set('league-client-path', path);
 
-        document.getElementById('league-client-path').dispatchEvent(new Event('leaguePathChange'));
-      });
+      document.getElementById('league-client-path').dispatchEvent(new Event('leaguePathChange'));
+    });
     else ipcRenderer.send('lcu-connection', this.getStore().get('league-client-path'));
-}
+
+    this.featureCheck('mobile-app').then(x => {
+      if (!x) document.querySelector('[data-tabid="settings"][data-tabn="4"]').innerHTML = '<center><p style="color: #c0392b;">This tab is disabled for now. Check back soon!</p></center>';
+    })
+  }
+
+  async featureCheck(id) {
+    try {
+      let req = await require('request-promise-native')(`https://manaflux-server.herokuapp.com/api/features/v1/${id}`);
+      return req.enabled;
+    }
+    catch(err) {
+      console.log('Feature Checker >> Couldn\'t check!');
+      console.error(err);
+    }
+
+    return false;
+  }
 
   async onLeagueStart() {
     document.getElementById('connection').style.display = 'none';
@@ -86,7 +103,7 @@ class Mana {
     const data = await UI.indicator(Promise.all([this.gameClient.load(), this.gameClient.queryChampionSummary(), this.gameClient.querySummonerSpells()]), 'status-loading-resources');
 
     this.preseason = data[0];
-    $('.version').text(`V${this.version} - V${this.gameClient.branch}`);
+    $('.version').text(`V${this.version} - V${this.gameClient.version}`);
 
     await this.championStorageHandler.load();
     await this.statisticsHandler.load();

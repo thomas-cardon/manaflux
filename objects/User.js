@@ -23,6 +23,8 @@ class User extends Summoner {
 
   async updateSummonerSpells(spells) {
     if (!spells || spells.length < 2) throw Error('Summoner spells are empty');
+    if (!Mana.championSelectHandler._inChampionSelect) throw Error('You have to be in Champion Select!');
+
     spells = this.sortSummonerSpells(spells);
 
     return await rp({

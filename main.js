@@ -10,7 +10,7 @@ const { autoUpdater } = require('electron-updater');
 
 const LeaguePlug = require('./objects/leagueplug');
 
-require('./crash-reporting.js');
+require('./objects/crash-reporter');
 
 let connector = new LeaguePlug();
 let win, tray;

@@ -18,7 +18,7 @@ class GameClient {
       if (x.startsWith('Summoner')) key = "Summoner" + (x.charAt(8).toUpperCase() + x.slice(9));
       else if ([30, 31, 33, 34, 35, 36, 39].includes(spell.id)) continue;
 
-      d[key] = { id: spell.id, key, name: spell.name, gameModes: spell.gameModes };
+      d[key] = { id: spell.id, key, name: spell.name, gameModes: spell.gameModes, path: Mana.assetsProxy.port + spell.iconPath };
 
       if (spell.id === 14)
         d['SummonerDot'] = d[key];
@@ -33,8 +33,8 @@ class GameClient {
 
   async queryChampionSummary(d = {}) {
     const championSummaryData = JSON.parse(await rp(Mana.base + 'lol-game-data/assets/v1/champion-summary.json'));
-
-    for (let champion of championSummaryData)
+    d[-1] = { id: -1, key: 'None', name: i18n.__('champion-select-none'), img: 'http://localhost:' + Mana.assetsProxy.port + '/lol-game-data/assets/v1/champion-icons/-1.png' };
+	for (let champion of championSummaryData)
       d[champion.id] = { id: champion.id, key: champion.alias, name: champion.name, img: 'http://localhost:' + Mana.assetsProxy.port + champion.squarePortraitPath };
 
     return this.champions = d;
@@ -79,6 +79,8 @@ class GameClient {
 
     this.branch = x.branch;
     this.fullVersion = x.version;
+
+    this.version = this.fullVersion.slice(0, this.fullVersion.indexOf('.', 2));
 
     this.preseason = parseFloat(this.fullVersion.slice(0, 4)) >= 8.23;
     await this.queryPerks();

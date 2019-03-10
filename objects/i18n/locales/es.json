@@ -169,5 +169,5 @@
   "update-button-install": "Instalar actualización",
   "update-staged-rollout": "Perteneces al %s de usuarios que han recibido la actualización",
   "wizard-help-one": "Si no sabes lo que es, pulsa %s o haz click",
-  "wizard-help-two": "para encontrar la carpeta automáticamente",
+  "wizard-help-two": "para encontrar la carpeta automáticamente"
 }

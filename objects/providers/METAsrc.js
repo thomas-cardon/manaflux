@@ -74,16 +74,16 @@ class METAsrcProvider extends Provider {
    * @param {cheerio} $ - The cheerio object
    */
   scrapeSummonerSpells($) {
-    let summonerspells = [];
+    let summonerSpells = [];
 
     $('img[src*="/img/spell"]').slice(0, 2).each(function(index) {
       const key = $(this).attr('src').slice($(this).attr('src').lastIndexOf('/') + 1, -4);
 
       if (Mana.gameClient.summonerSpells[key])
-        summonerspells.push(Mana.gameClient.summonerSpells[key]);
+        summonerSpells.push(Mana.gameClient.summonerSpells[key]);
     });
 
-    return summonerspells;
+    return summonerSpells;
   }
 
   /**

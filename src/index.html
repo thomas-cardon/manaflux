@@ -13,13 +13,14 @@
   <link rel="stylesheet" href="assets/css/components/hr.css">
   <link rel="stylesheet" href="assets/css/components/progress.css">
   <link rel="stylesheet" href="assets/css/components/settings.css">
+  <link rel="stylesheet" href="assets/css/components/qrcode.css">
   <link rel="stylesheet" href="assets/css/components/update.css">
   <link rel="stylesheet" href="assets/css/components/loading.css">
-  <link rel="stylesheet" href="assets/css/components/warning.css">
   <link rel="stylesheet" href="assets/css/components/status.css">
   <link rel="stylesheet" href="assets/css/components/connection-icon.css">
   <link rel="stylesheet" href="assets/css/components/version.css">
   <link rel="stylesheet" href="assets/css/components/statistics.css">
+  <link rel="stylesheet" href="assets/css/components/tooltip.css">
   <link rel="stylesheet" href="vendor/alertify.min.css"/>
   <link rel="stylesheet" href="vendor/alertify.rtl.min.css"/>
   <link rel="stylesheet" href="vendor/alertify.manaflux.css"/>
@@ -30,9 +31,6 @@
 <body>
   <video id="smokeAnimation" style="z-index: -30; position: absolute; display: none;" loop><source src="assets/video/smoke.webm" type="video/webm">
   </video>
-  <img src="assets/img/warning.png" id="warning" draggable="false" style="display: none;">
-  <img src="assets/img/components/loading.gif" id="loading"></img>
-  <img src="assets/img/components/connection-img.png" id="connection"></img>
   <div class="tab-container">
     <img src="assets/img/selected.png" id="selected" draggable="false">
     <div class="tab">
@@ -46,9 +44,9 @@
       <button type="button" class="btn control" onclick="remote.getCurrentWindow().close();"><i class="material-icons icon">clear</i></button>
     </div>
   </div>
+  <div class="side side-left"></div>
+  <div class="side side-right"></div>
   <div class="content">
-    <p class="status" data-i18n="status-loading"></p>
-    <p class="version" id="version"></p>
     <div id="dots"></div>
     <!-- BEGIN SECTIONS -->
     <div id="home" data-tabid="home" data-tabn=0 class="tabcontent center" style="display: block;">
@@ -100,7 +98,7 @@
     </div>
     <div data-tabid="settings" data-tabn=0 class="tabcontent" style="display: none; margin-left: 9%;">
       <p class="option-name" data-i18n="category-perks"></p>
-      <div class="option">
+      <div class="option" data-tippy-content="ui-tooltips-max-perks">
         <p class="suboption-name" data-i18n="perks-max"></p>
         <input type="number" data-custom-component="perks-max" data-settings-key="perks-max" data-settings-default="2" class="center-area" min="1" step="1"  disabled/>
       </div>
@@ -165,9 +163,9 @@
     </div>
     <div data-tabid="settings" data-tabn=2 class="tabcontent" style="display: none; margin-left: 9%;">
       <p class="option-name" data-i18n="category-misc"></p>
-      <div class="option">
+      <div class="option" data-tippy-content="ui-tooltips-min-roles">
         <p class="suboption-name" data-i18n="champion-select-min-roles"></p>
-        <input type="number" data-settings-key="champion-select-min-roles" data-settings-default="2" class="center-area" min="1" max="5" step="1" />
+        <input type="number" data-settings-key="champion-select-min-roles" data-settings-default="5" class="center-area" min="1" step="1" />
       </div>
       <div class="option">
         <p class="suboption-name" data-i18n="champion-select-lock-button"></p>
@@ -233,11 +231,11 @@
     </div>
     <div data-tabid="settings" data-tabn=3 class="tabcontent" style="display: none; margin-left: 9%;">
       <p class="option-name" data-i18n="category-advanced"></p>
-      <div class="option">
+      <div class="option" data-tippy-content="ui-tooltips-league-path">
         <p class="suboption-name" data-i18n="league-client-path"></p>
         <input type="text" data-settings-key="league-client-path" class="center-area" data-custom-component="league-client-path" disabled />
       </div>
-      <div class="option">
+      <div class="option" data-tippy-content="ui-tooltips-empty-cache">
         <p class="suboption-name" data-i18n="empty-cache-settings-option"></p>
         <button class="btn normal" data-custom-component="empty-cache" data-i18n="empty-cache-button"></button>
       </div>
@@ -261,24 +259,25 @@
     </div>
     <div data-tabid="settings" data-tabn=4 class="tabcontent" style="display: none; margin-left: 9%;">
       <p class="option-name" data-i18n="category-advanced"></p>
-      <div class="option">
+      <div class="option" data-tippy-content="ui-tooltips-providers-order">
         <p class="suboption-name" data-i18n="providers-order"></p>
         <ul id="providersOrder" class="sortable" data-custom-component="providers-order">
           <p style="color: rgba(230, 33, 66, 0.7);margin: 0 2px;">Loading</p>
         </ul>
       </div>
-      <div class="option">
+      <div class="option" data-tippy-content="ui-tooltips-providers-downloader">
         <p class="suboption-name" data-i18n="providers-downloader"></p>
         <button class="btn normal" data-custom-component="providers-downloader" data-i18n="common-run" disabled></button>
       </div>
       <div class="option">
         <p class="suboption-name" data-i18n="champion-select-test-game"></p>
-        <button id="developerGame" class="btn normal" data-custom-component="developer-game" data-i18n="common-run"></button>
+        <button id="developerGame" class="btn normal" data-custom-component="developer-game" data-i18n="common-run" disabled></button>
       </div>
       <div class="option">
         <p class="suboption-name" data-i18n="settings-i18n-change"></p>
         <select data-settings-key="language" data-custom-component="settings-i18n" class="dropdown">
           <option value="en">English</option>
+          <option value="es">Español</option>
           <option value="fr">Français</option>
           <option value="it">Italiano</option>
           <option value="ru">русский</option>
@@ -342,6 +341,13 @@
     </div>
     <!-- END SECTIONS -->
   </div>
+  <footer>
+    <span class="status" data-i18n="status-loading"></span>
+    <img src="assets/img/warning.png" id="warning" draggable="false" style="display: none;">
+    <img src="assets/img/components/loading.gif" id="loading" style="display: inline-block;">
+    <img src="assets/img/components/connection-img.png" id="connection">
+    <p class="version" id="version"></p>
+  </footer>
   <audio id="soundEngine" autoplay>
     <source id="soundEngineSource" type="audio/ogg" />
   </audio>
@@ -362,9 +368,11 @@
   <script src="assets/js/ui/sounds.js"></script>
   <script src="assets/js/ui/settings.js"></script>
   <script src="assets/js/ui/custom-components.js"></script>
+  <script src="assets/js/ui/tooltips.js"></script>
   <script>
+  require('../objects/crash-reporter');
+
   window.eval = global.eval = () => console.warn(i18n.__('security-eval'));
-  require('../crash-reporting.js');
 
   process.on('unhandledRejection', (reason, p) => console.log(0, `Unhandled rejection at: ${p}, reason: ${reason}`));
   process.on('uncaughtException', console.error);

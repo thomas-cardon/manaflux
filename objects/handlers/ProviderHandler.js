@@ -8,6 +8,7 @@ class ProviderHandler {
     this.providers = {
       championgg: new (require('../providers/ChampionGG'))(),
       opgg: new (require('../providers/OPGG'))(),
+      opgg_urf: new (require('../providers/OPGG_URF'))(),
       leagueofgraphs: new (require('../providers/LeagueofGraphs'))(),
       lolflavor: new (require('../providers/LoLFlavor'))(),
       metasrc: new (require('../providers/METAsrc'))(),
@@ -98,8 +99,19 @@ class ProviderHandler {
       }
 
       if (!cache[i].flux) {
-        DataValidator.onDataUpload(cache[i]);
-        await UI.indicator(flux.upload(cache[i]), 'providers-flux-uploading');
+        let data = DataValidator.onDataUpload(cache[i]);
+
+        try {
+          console.log('Flu.x >> Upload');
+          await UI.indicator(flux.upload(data), 'providers-flux-uploading');
+          console.log('Flu.x >> Upload done!');
+        }
+        catch(err) {
+          console.log('Flu.x >> Upload error');
+
+          console.error(err);
+          UI.status('providers-flux-upload-error');
+        }
       }
 
       DataValidator.onDataStore(cache[i]);
