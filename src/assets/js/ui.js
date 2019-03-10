@@ -159,6 +159,21 @@ UI.disableHextechAnimation = () => {
   else document.querySelector('.title').style.display = 'block';
 }
 
+/* Animate.css animation helper function */
+UI.animateCSS = function(element, animationName, callback) {
+    const node = typeof element === 'string' ? document.querySelector(element) : element;
+    node.classList.add('animated', animationName);
+
+    function handleAnimationEnd() {
+        node.classList.remove('animated', animationName);
+        node.removeEventListener('animationend', handleAnimationEnd);
+
+        if (typeof callback === 'function') callback();
+    }
+
+    node.addEventListener('animationend', handleAnimationEnd);
+}
+
 function getReadableFileSizeString(fileSizeInBytes) {
     var i = -1;
     var byteUnits = [' kB', ' MB', ' GB', ' TB', 'PB', 'EB', 'ZB', 'YB'];
