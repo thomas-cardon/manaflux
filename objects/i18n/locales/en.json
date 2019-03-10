@@ -146,6 +146,7 @@
     "statistics-stats-d": "Deaths",
     "statistics-stats-a": "Assists",
     "statistics-tooltips-winrate": "This shows the win rate of %s against %s.",
+    "statistics-tooltips-preferences": "Select if you prefer to have synergy data when available, or counters.",
     "summoner-spells": "Summoner Spells",
     "summoner-spells-load-button": "LOAD SUMMONER SPELLS",
     "summoner-spells-loading": "Loading summoner spells for %s (%s)",

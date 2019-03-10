@@ -140,6 +140,8 @@
   "statistics-stats-k": "Kills",
   "statistics-stats-d": "Morts",
   "statistics-stats-a": "Assists",
+  "statistics-tooltips-winrate": "Cette barre montre le taux de victoire de %s contre %s.",
+  "statistics-tooltips-preferences": "Sélectionnez si vous préférez avoir les données de synergies si possible, ou celles de contres.",
   "summoner-spells": "Sorts d'invocateur",
   "summoner-spells-load-button": "CHARGER SORTS D'INVOCATEUR",
   "summoner-spells-loading": "Chargement des sorts d'invocateur",
