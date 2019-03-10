@@ -35,7 +35,7 @@ module.exports = function(Mana) {
     update: function(event, ui) {
       if (ui.item.css('opacity') === '0.35') return $('#providersOrder').sortable('cancel');
 
-      let array = Array.from(document.querySelector('#providersOrder').children).filter(x => x.style.opacity === 1).map(x => x.id);
+      let array = Array.from(document.querySelector('#providersOrder').children).filter(x => x.style.opacity == 1).map(x => x.id);
 
       Mana.getStore().set('providers-order', array);
       console.log(2, '[Providers Order] Changed value to:', array);
