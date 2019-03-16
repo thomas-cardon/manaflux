@@ -9,7 +9,10 @@ ipcRenderer.on('update-available', async (event, data) => {
 	console.log('[Update] Available! version: ' + data.version);
 
 	document.getElementById('updateVersion').innerHTML = `Version ${data.version}`;
-	document.getElementById('updateRollout').innerHTML = i18n.__('update-staged-rollout', (data.stagingPercentage || 100) + '%');
+
+	if (!data.stagingPercentage || data.stagingPercentage === 100) document.getElementById('updateRollout').style.display = 'none';
+	else document.getElementById('updateRollout').innerHTML = i18n.__('update-staged-rollout', (data.stagingPercentage || 100) + '%');
+	
 	document.getElementById('updateSize').innerHTML = getReadableFileSizeString(data.files[0].size);
 
 	let text = '', changelogs = {};
