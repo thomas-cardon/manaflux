@@ -8,7 +8,9 @@ class Mana {
     UI.loading(true);
 
     this.devMode = ipcRenderer.sendSync('is-dev');
+
     document.getElementById('version').innerHTML = `V${this.version = app.getVersion() + (!require('electron').remote.app.isPackaged ? '-BUILD' : '')}`;
+    console.log('Mana >> Starting backend, version:', document.getElementById('version').innerHTML);
 
     this._store = new Store();
 
@@ -108,12 +110,12 @@ class Mana {
     await this.championStorageHandler.load();
     await this.statisticsHandler.load();
 
-    if (this.getStore().get('lastBranchSeen') !== this.gameClient.branch) {
+    if (this.getStore().get('lastVersionSeen') !== this.gameClient.version) {
       this.championStorageHandler.clear();
       require('./handlers/ItemSetHandler').getItemSets().then(x => require('./handlers/ItemSetHandler').deleteItemSets(x)).catch(UI.error);
     }
 
-    this.getStore().set('lastBranchSeen', this.gameClient.branch);
+    this.getStore().set('lastVersionSeen', this.gameClient.version);
     document.querySelectorAll('[data-custom-component]').forEach(x => x.dispatchEvent(new Event('clientLoaded')));
 
     this.alertHandler.load();

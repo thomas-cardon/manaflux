@@ -100,7 +100,7 @@ class UGGProvider extends Provider {
     return { roles: d };
   }
 
-  formatToUGGVersion(ver = Mana.gameClient.branch) {
+  formatToUGGVersion(ver = Mana.gameClient.version) {
     return ver.split('.').splice(0, 2).join('_');
   }
 

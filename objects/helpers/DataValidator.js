@@ -35,7 +35,7 @@ class DataValidator {
     console.log('[DataValidator] Copying required properties for Flu.x');
     let data = { ...d };
 
-    data.gameVersion = Mana.gameClient.branch;
+    data.gameVersion = Mana.gameClient.version;
     data.gameRegion = Mana.gameClient.region;
 
     data.version = Mana.version;

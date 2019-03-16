@@ -49,7 +49,7 @@ class OPGGProvider extends Provider {
   _scrape(html, champion, gameMode, position, firstScrape) {
     let $ = cheerio.load(html), convertOPGGPosition = this.convertOPGGPosition;
 
-    if ($('.champion-stats-header-version').text().trim().slice(-4) != Mana.gameClient.branch) UI.error('providers-error-outdated', this.name);
+    if ($('.champion-stats-header-version').text().trim().slice(-4) != Mana.gameClient.version) UI.error('providers-error-outdated', this.name);
     if ($('.WorkingTitle').text().trim().startsWith('Maintenance')) UI.error('providers-error-offline', this.name);
 
     position = $('li.champion-stats-header__position.champion-stats-header__position--active').data('position') ? this.convertOPGGPosition($('li.champion-stats-header__position.champion-stats-header__position--active').data('position')).toUpperCase() : position;

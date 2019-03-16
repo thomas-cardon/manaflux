@@ -18,7 +18,7 @@ class OPGG_URFProvider extends Provider {
   }
 
   _scrape($, champion, gameMode) {
-    if ($('.champion-stats-header-version').text().trim().slice(-4) != Mana.gameClient.branch) UI.error('providers-error-outdated', this.name);
+    if ($('.champion-stats-header-version').text().trim().slice(-4) != Mana.gameClient.version) UI.error('providers-error-outdated', this.name);
     if ($('.WorkingTitle').text().trim().startsWith('Maintenance')) UI.error('providers-error-offline', this.name);
 
     const summonerspells = this.scrapeSummonerSpells($, gameMode);
