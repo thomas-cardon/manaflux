@@ -40,13 +40,14 @@ class RemoteConnectionHandler {
       })
       .get('/api/v1/me/heartbeat', (req, res) => {
         res.writeHead(200, { 'Content-Type': 'application/json' });
+
 		if (Mana.user)
           res.end(JSON.stringify({ success: true, inChampionSelect: Mana.championSelectHandler._inChampionSelect, ...Mana.gameClient.champions[this.getChampionId()] }));
         else res.end(JSON.stringify({ success: false, inChampionSelect: false, errorCode: 'SUMMONER_NOT_CONNECTED', error: 'Summoner is not connected' }));
 	  })
       .get('/api/v1/me/summoner', (req, res) => {
         res.writeHead(200, { 'Content-Type': 'application/json' });
-
+		
         if (Mana.user)
           res.end(JSON.stringify({ success: true, summonerName: Mana.user.getDisplayName(), summonerLevel: Mana.user.getSummonerLevel() }));
         else res.end(JSON.stringify({ success: false, errorCode: 'SUMMONER_NOT_CONNECTED', error: 'Summoner is not connected' }));
@@ -126,7 +127,7 @@ class RemoteConnectionHandler {
   }
 
   getChampionId() {
-	  return Mana.championSelectHandler._inChampionSelect && Mana.championSelectHandler.getPlayer().championId !== undefined ? Mana.championSelectHandler.getPlayer().championId : -1;
+	  return Mana.championSelectHandler._inChampionSelect && Mana.championSelectHandler.getPlayer().championId !== undefined ? (Mana.championSelectHandler.getPlayer().championId !== 0 ? Mana.championSelectHandler.getPlayer().championId : -1) : -1;
   }
   
   _queryAddress() {
