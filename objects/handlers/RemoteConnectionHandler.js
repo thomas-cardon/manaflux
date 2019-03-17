@@ -49,7 +49,7 @@ class RemoteConnectionHandler {
         res.writeHead(200, { 'Content-Type': 'application/json' });
 		
         if (Mana.user)
-          res.end(JSON.stringify({ success: true, summonerName: Mana.user.getDisplayName(), summonerLevel: Mana.user.getSummonerLevel() }));
+          res.end(JSON.stringify({ success: true, summonerName: Mana.user.getDisplayName(), summonerLevel: Mana.user.getSummonerLevel(), summonerIcon: 'http://localhost:' + Mana.assetsProxy.port + `/lol-game-data/assets/v1/profile-icons/${Mana.user.getProfileIconId()}.jpg` }));
         else res.end(JSON.stringify({ success: false, errorCode: 'SUMMONER_NOT_CONNECTED', error: 'Summoner is not connected' }));
       })
       .get('/api/v1/me/positions', (req, res) => {
