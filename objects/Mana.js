@@ -81,6 +81,8 @@ class Mana {
   }
 
   async featureCheck(id) {
+    if (this.devMode) return true;
+
     try {
       let req = await require('request-promise-native')(`https://manaflux-server.herokuapp.com/api/features/v1/${id}`);
       return req.enabled;
