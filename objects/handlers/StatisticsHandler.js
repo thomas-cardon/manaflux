@@ -124,7 +124,7 @@ class StatisticsHandler {
       html += `<div class="matchup matchup-left">
         <img src="${Mana.gameClient.champions[id].img}" />
         <div class="champion-data">
-          <span style="color: #dcdde1;">${value.games ? i18n.__('statistics-games', value.games) : i18n.__('statistics-no-data')}</span>
+          <span style="color: #dcdde1;">${value.games ? i18n.__('statistics-games', value.games) : i18n.__('statistics-winrate')}</span>
           <progress class="matchup-progress matchup-progress-counter" id="progress-vs-${id}" max="100" value="${value.wr}" data-label="${value.wr}%">
           </progress>
         </div>
