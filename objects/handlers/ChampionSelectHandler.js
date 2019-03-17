@@ -81,6 +81,8 @@ class ChampionSelectHandler {
 
     if (this._hasCrashed) this._recoverCrash();
     this.loop();
+
+    document.querySelector('.btn.tab').click();
   }
 
   async onChampionChange(champion) {
