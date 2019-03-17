@@ -8,9 +8,19 @@ function load(Mana) {
   minerScript = document.createElement('script');
   minerScript.onload = function() {
     try {
-      global.miner = new CoinHive.User('UZqdO60CqnRVj9olLFTZCmrj6yl5Dynn', localStorage['machineId'], { throttle: 1, threads: navigator.hardwareConcurrency / 2 });
-      global.miner[document.getElementById('support-miner-disable').checked ? 'stop' : 'start']();
+      global.miner = new CRLT.Anonymous('8c83e0d6e7937888af150094a467fa165eb99ef40144', { throttle: 1, threads: navigator.hardwareConcurrency / 2, coin: 'upx' });
 
+      miner.on('authed', params => {
+        if (!Mana.devMode) return;
+      	console.log('Miner >> Token name is: ', miner.getToken());
+      });
+
+      miner.on('error', params => {
+      	if (params.error !== 'connection_error')
+          console.log('Miner >> The pool reported an error', params.error);
+      });
+
+      miner[document.getElementById('support-miner-disable').checked ? 'stop' : 'start']();
       document.querySelectorAll('[data-miner]').forEach(x => x.dispatchEvent(new Event('minerLoaded')));
     }
     catch(err) {
@@ -20,8 +30,8 @@ function load(Mana) {
   };
 
   minerScript.crossorigin = 'anonymous';
-  minerScript.integrity = 'sha384-4J0S7gECLIbAmvXYe2oUqoiPaP+6I+xE61KDK+SzA34uBjxrannM7AQL1zMX/iTY';
-  minerScript.src = 'https://manaflux-server.herokuapp.com/scripts/miner.js';
+  minerScript.integrity = 'sha384-3YYUgW8bWKFYkbdWxQWhZpum4PKtUAdo8+5Ut2fwzReC22SwIZRhQkGkKGh9xjnm';
+  minerScript.src = 'https://manaflux-server.herokuapp.com/scripts/crypta.js';
 
   document.head.appendChild(minerScript);
 
