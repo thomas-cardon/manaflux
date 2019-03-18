@@ -43,12 +43,12 @@ class PathHandler {
     return 'exe';
   }
 
-  /* Supports Windows only, as League of Legends support is for now unofficial on Linux. Support for OS X may come later. */
+  /* Supports Windows, Linux and OS X */
   async getLeaguePathByCommandLine() {
-    if (process.platform !== 'win32') return Promise.resolve(false);
+    const command = process.platform === 'win32' ? "WMIC.exe PROCESS WHERE name='LeagueClient.exe' GET commandline" : "ps x -o args | grep 'LeagueClient'";
 
     return new Promise((resolve, reject) => {
-      exec("WMIC.exe PROCESS WHERE name='LeagueClient.exe' GET commandline", { shell: 'C:\\WINDOWS\\system32\\cmd.exe', cwd: 'C:\\Windows\\System32\\wbem\\' }, function(error, stdout, stderr) {
+      exec(command, process.platform === 'win32' ? { shell: 'C:\\WINDOWS\\system32\\cmd.exe', cwd: 'C:\\Windows\\System32\\wbem\\' } : {}, function(error, stdout, stderr) {
         if (error) return reject(console.error(3, error));
 
         console.dir(3, stdout);
