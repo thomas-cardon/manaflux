@@ -35,8 +35,8 @@ else {
 function createWindow () {
   win = new BrowserWindow({ width: 600, height: 600, frame: false, icon: __dirname + '/build/icon.' + (process.platform === 'win32' ? 'ico' : 'png'), backgroundColor: '#000A13', maximizable: false, resizable: false, show: false, webPreferences: { nodeIntegration: true } });
 
-  win.loadURL(url.format({
-    pathname: path.join(__dirname, 'src/index.html'), // important
+  win.loadURL(require('url').format({
+    pathname: require('path').join(__dirname, 'src/index.html'), // important
     protocol: 'file:',
     slashes: true,
   }));
