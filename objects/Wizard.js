@@ -9,7 +9,7 @@ module.exports = function(dev) {
     slashes: true,
   }));
 
-  wiz.removeMenu();
+  wiz.setMenu(null);
 
   wiz.once('ready-to-show', () => wiz.show());
 
