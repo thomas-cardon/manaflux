@@ -52,7 +52,8 @@ class PathHandler {
         if (error) return reject(console.error(3, error));
 
         console.dir(3, stdout);
-        const matches = stdout.match(/[^"]+?(?=RADS)/gm);
+        const matches = stdout.match(/[^"]+?(?=LeagueClient.exe)/gm);
+        console.log(matches);
 
         if (!matches || matches.length === 0) resolve(false);
         else resolve(matches[0]);
