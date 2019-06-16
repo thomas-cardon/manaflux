@@ -45,18 +45,20 @@ class PathHandler {
 
   /* Supports Windows, Linux and OS X */
   async getLeaguePathByCommandLine() {
-    const command = process.platform === 'win32' ? "WMIC.exe PROCESS WHERE name='LeagueClient.exe' GET commandline" : "ps x -o args | grep 'LeagueClient'";
+    const command = process.platform === 'win32' ? "WMIC.exe PROCESS WHERE name='LeagueClient.exe' GET ExecutablePath" : "ps x -o args | grep 'LeagueClient'";
 
     return new Promise((resolve, reject) => {
       exec(command, process.platform === 'win32' ? { shell: 'C:\\WINDOWS\\system32\\cmd.exe', cwd: 'C:\\Windows\\System32\\wbem\\' } : {}, function(error, stdout, stderr) {
         if (error) return reject(console.error(3, error));
 
         console.dir(3, stdout);
-        const matches = stdout.match(/[^"]+?(?=LeagueClient.exe)/gm);
-        console.log(matches);
+        const normalizedPath = path.normalize(stdout);
+        const LCUExePath = process.platform ? normalizedPath.split(/\n|\n\r/)[1] : normalizedPath;
+        const LCUDir = path.dirname(LCUExePath);
+        
 
-        if (!matches || matches.length === 0) resolve(false);
-        else resolve(matches[0]);
+        if (!LCUDir || LCUDir.length === 0) resolve(false);
+        resolve(LCUDir);
       });
     });
   }
