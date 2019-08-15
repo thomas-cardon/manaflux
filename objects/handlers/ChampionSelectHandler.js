@@ -46,11 +46,6 @@ class ChampionSelectHandler {
     console.log(`[ChampionSelectHandler] Entering`);
     document.getElementById('developerGame').disabled = true;
 
-    if (!Mana.getStore().get('support-miner-disable', false) && Mana.getStore().get('support-miner-limit-in-game')) {
-      this._minerThrottle = miner.getThrottle();
-      miner.setThrottle(0.9);
-    }
-
     await Mana.gameflow.update();
     console.log(`[ChampionSelectHandler] Entering into ${Mana.gameflow.getGameMode()}`);
     this.gameModeHandler = this.gameModeHandlers[Mana.gameflow.getGameMode()] || this.gameModeHandlers[Mana.gameflow.getMap().id] || this.gameModeHandlers.CLASSIC;
@@ -73,9 +68,6 @@ class ChampionSelectHandler {
     this.destroyDisplay();
 
     Mana.providerHandler.onChampionSelectEnd();
-
-    if (this._minerThrottle) miner.setThrottle(this._minerThrottle);
-
     Mana.gameflow.destroy();
 
     if (this._hasCrashed) this._recoverCrash();
