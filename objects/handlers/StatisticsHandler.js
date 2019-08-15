@@ -115,7 +115,7 @@ class StatisticsHandler {
     }
     else {
       vs1 = Object.entries(data.matchups.counters).sort((a, b) => a[1].wr - b[1].wr).slice(0, 6);
-      vs2 = Object.entries(data.matchups.synergy).sort((a, b) => b[1].wr - a[1].wr).slice(0, 6);
+      vs2 = Object.entries(data.matchups.synergies).sort((a, b) => b[1].wr - a[1].wr).slice(0, 6);
 
       html += `<p style="color: #b33939;font-size: 21px;margin: -3% 0 3%;">${i18n.__('statistics-counters')}</p>`;
     }
