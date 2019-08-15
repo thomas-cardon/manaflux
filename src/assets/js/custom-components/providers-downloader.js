@@ -11,10 +11,15 @@ module.exports = {
   click: function(e) {
     this.disabled = true;
 
-    let win = new BrowserWindow({ parent: require('electron').remote.getCurrentWindow(), width: 350, height: 550, frame: false, icon: __dirname + '/build/icon.' + (process.platform === 'win32' ? 'ico' : 'png'), backgroundColor: '#000A13', maximizable: false, resizable: false, modal: true, show: false });
+    let win = new BrowserWindow({ parent: require('electron').remote.getCurrentWindow(), width: 350, height: 550, frame: false, icon: __dirname + '/build/icon.' + (process.platform === 'win32' ? 'ico' : 'png'), backgroundColor: '#000A13', maximizable: false, resizable: false, modal: true, show: false, webPreferences: { nodeIntegration: true } });
+  
+    win.loadURL(require('url').format({
+      pathname: require('path').join(__dirname, '/../../../downloader.html'), // important
+      protocol: 'file:',
+      slashes: true,
+    }));
 
-    win.loadURL(`file://${__dirname}/../../../downloader.html`);
-    win.setMenu(null);
+    win.removeMenu();
 
     win.once('ready-to-show', () => win.show());
     win.once('show', async () => {
