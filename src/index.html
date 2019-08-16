@@ -15,7 +15,6 @@
   <link rel="stylesheet" href="assets/css/components/settings.css">
   <link rel="stylesheet" href="assets/css/components/qrcode.css">
   <link rel="stylesheet" href="assets/css/components/update.css">
-  <link rel="stylesheet" href="assets/css/components/loading.css">
   <link rel="stylesheet" href="assets/css/components/status.css">
   <link rel="stylesheet" href="assets/css/components/connection-icon.css">
   <link rel="stylesheet" href="assets/css/components/version.css">
@@ -43,6 +42,14 @@
       <button type="button" class="btn control" onclick="remote.getCurrentWindow().close();"><i class="material-icons icon">clear</i></button>
     </div>
   </div>
+  <img src="assets/img/components/loading.gif" id="loading" style="
+    display: none;
+    width: 4%;
+    right: 5px;
+    top: 35px;
+    z-index: 5;
+    position: absolute;
+ " class="btn control">
   <div class="side side-left"></div>
   <div class="side side-right"></div>
   <div class="content">
@@ -272,7 +279,6 @@
   <footer>
     <span class="status" data-i18n="status-loading"></span>
     <img src="assets/img/warning.png" id="warning" draggable="false" style="display: none;">
-    <img src="assets/img/components/loading.gif" id="loading" style="display: inline-block;">
     <img src="assets/img/components/connection-img.png" id="connection">
     <p class="version" id="version"></p>
   </footer>
