@@ -48,7 +48,7 @@ class LeagueofGraphsProvider extends Provider {
    * @param {cheerio} $ - The cheerio object
    */
   scrapePerks($, role) {
-    let page = { suffixName: `(${UI.stylize(role)})`, selectedPerkIds: [] };
+    let page = { selectedPerkIds: [] };
 
     $('.perksTableOverview').find('tr').each(function(i, elem) {
       let images = $(this).find('img[src^="//cdn.leagueofgraphs.com/img/perks/"]').toArray().filter(x => $(x.parentNode).css('opacity') != 0.2);
