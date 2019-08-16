@@ -30,6 +30,12 @@ class ProviderHandler {
     return Mana.getStore().get('providers-order', Object.keys(this.providers)).filter(x => this.providers[x] && this.isProviderEnabled(x));
   }
 
+  async asyncForEach(array, callback) {
+    for (let index = 0; index < array.length; index++) {
+      await callback(array[index], index, array);
+    }
+  }
+
   async getChampionData(champion, preferredPosition, gameModeHandler, cache, providers = this.getProviders(), bulkDownloadMode) {
     console.log(2, '[ProviderHandler] Downloading data for', champion.name);
     const gameMode = bulkDownloadMode ? gameModeHandler.getGameMode() : Mana.gameflow.getGameMode();
@@ -53,7 +59,7 @@ class ProviderHandler {
     var BreakException = {};
 
     try {
-      providers.forEach(async provider => {
+      await this.asyncForEach(providers, async (provider, index, array) => {
         provider = this.providers[provider];
         console.log(2, `[ProviderHandler] Using ${provider.name}`);
 
@@ -62,6 +68,7 @@ class ProviderHandler {
           else data = await provider.getData(champion, preferredPosition, gameMode);
 
           DataValidator.onDataChange(data, provider.id, gameMode);
+          data = DataValidator.onDataDownloaded(data, champion);
 
           this.downloads.emit('update', champion, data);
         }
@@ -89,13 +96,9 @@ class ProviderHandler {
       if (e !== BreakException) throw e;
     }
 
-    /* 3/5 - Validate
-    data = DataValidator.onDataDownloaded(data, champion);
-
     /* 4/5 - Saving to offline cache
-       5/5 - Uploading to online cache *
+       5/5 - Uploading to online cache */
     if (cache) this._cache.push(data);
-    return data*/
   }
 
   /**

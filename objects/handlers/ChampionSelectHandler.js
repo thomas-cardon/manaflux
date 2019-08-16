@@ -80,7 +80,7 @@ class ChampionSelectHandler {
     this.onDisplayUpdatePreDownload(champion);
     if (Mana.getStore().get('champion-select-lock') && Mana.gameflow.shouldEnableLockFeature()) return UI.status('champion-select-lock');
 
-    const res = await UI.indicator(Mana.providerHandler.getChampionData(champion, this.getPosition(), this.gameModeHandler, true), 'champion-select-downloading-data', champion.name);
+    UI.indicator(Mana.providerHandler.getChampionData(champion, this.getPosition(), this.gameModeHandler, true), 'champion-select-downloading-data', champion.name);
 
     Mana.providerHandler.downloads.on('update', (champion, data) => {
       console.log('Download update');
