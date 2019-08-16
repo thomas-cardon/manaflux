@@ -2,8 +2,8 @@ module.exports = function(Mana) {
   if (!Mana.getStore().has('providers-order'))
     Mana.getStore().set('providers-order', Object.keys(Mana.providerHandler.providers).sort((a, b) => ['flux', 'championgg'].includes(b)));
 
-  let enabled = Mana.getStore().get('providers-order');
-  let disabled = Object.keys(Mana.providerHandler.providers).filter(x => !Mana.getStore().get('providers-order').includes(x));
+  let enabled = Mana.getStore().get('providers-order').filter(x => Mana.providerHandler.providers[x]);
+  let disabled = Object.keys(Mana.providerHandler.providers).filter(x => Mana.providerHandler.providers[x] && !Mana.getStore().get('providers-order').includes(x));
 
   function toggle() {
     if (this.style.opacity === '0.35') {
