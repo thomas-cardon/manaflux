@@ -65,12 +65,12 @@ class ProviderHandler {
 
         try {
           if (data) this._merge(data, await provider.getData(champion, preferredPosition, gameMode));
-          else data = await provider.getData(champion, preferredPosition, gameMode);
+          else data = await UI.status(provider.getData(champion, preferredPosition, gameMode), i18n.__('providers-downloader-downloading-from', provider.name));
 
           DataValidator.onDataChange(data, provider.id, gameMode);
           data = DataValidator.onDataDownloaded(data, champion);
 
-          this.downloads.emit('update', champion, data);
+          Mana.championSelectHandler.onDataUpdate(champion, data);
         }
         catch(err) {
           console.log('[ProviderHandler] Couldn\'t aggregate data.');

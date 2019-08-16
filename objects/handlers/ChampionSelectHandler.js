@@ -42,6 +42,14 @@ class ChampionSelectHandler {
     ipcRenderer.on('perks-shortcut', this.onShortcutPressedEvent);
   }
 
+  onDataUpdate(champion, data) {
+    if (!this._inChampionSelect || this._lastChampionPicked != champion.id) return;
+
+    console.log('Download update');
+    console.dir(data);
+    this.onDisplayUpdate(champion, data);
+  }
+
   async onChampionSelectStart() {
     console.log(`[ChampionSelectHandler] Entering`);
     document.getElementById('developerGame').disabled = true;
@@ -81,12 +89,6 @@ class ChampionSelectHandler {
     if (Mana.getStore().get('champion-select-lock') && Mana.gameflow.shouldEnableLockFeature()) return UI.status('champion-select-lock');
 
     UI.indicator(Mana.providerHandler.getChampionData(champion, this.getPosition(), this.gameModeHandler, true), 'champion-select-downloading-data', champion.name);
-
-    Mana.providerHandler.downloads.on('update', (champion, data) => {
-      console.log('Download update');
-      console.dir(data);
-      this.onDisplayUpdate(champion, data);
-    });
   }
 
   onChampionNotPicked() {
