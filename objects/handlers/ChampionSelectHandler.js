@@ -197,20 +197,17 @@ class ChampionSelectHandler {
 
   async onDisplayUpdate(champion, res) {
     if (!this._inChampionSelect) return;
-    if (!res || Object.keys(res.roles).length === 0) throw this._onCrash(i18n.__('champion-select-error-empty'));
-    else if (this._hasCrashed) this._recoverCrash();
+    if (!res || Object.keys(res.roles).length === 0) return;
 
     const self = this;
 
     console.dir(res);
 
-    let roles = '';
-    Object.keys(res.roles).filter(x => res.roles[x].perks.length > 0).forEach(r => {
+    Object.keys(res.roles).filter(x => res.roles[x].perks.length > 0 && !document.getElementById(`position-${x}`)).forEach(r => {
       console.log('[ChampionSelect] Added position:', r);
-      roles += `<option value="${r}">${UI.stylizeRole(r)}</option>`;
+      document.getElementById('positions').innerHTML += `<option id="position-${r}" value="${r}">${UI.stylizeRole(r)}</option>`;
     });
 
-    document.getElementById('positions').innerHTML = roles;
     document.getElementById('positions').onchange = function() {
       console.log('[ChampionSelect] Selected position:', this.value.toUpperCase());
       self.onPerkPositionChange(champion, this.value.toUpperCase(), res.roles[this.value.toUpperCase()]);
@@ -250,6 +247,9 @@ class ChampionSelectHandler {
     UI.enableHextechAnimation(champion, (data && data.perks && data.perks[0]) ? data.perks[0].primaryStyleId : 'white');
 
     $('#loadRunes, #loadSummonerSpells').disableManualButton(true);
+
+    console.log('onPerkPositionChange');
+    console.dir(arguments);
 
     if (data.perks.length > 0) this._updatePerksDisplay(champion, position, data.perks);
     if (data.summonerspells.length > 0) this._updateSummonerSpellsDisplay(champion, position, data.summonerspells);
