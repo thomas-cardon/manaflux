@@ -65,7 +65,7 @@ class ProviderHandler {
 
         try {
           if (data) this._merge(data, await provider.getData(champion, preferredPosition, gameMode));
-          else data = await UI.status(provider.getData(champion, preferredPosition, gameMode), i18n.__('providers-downloader-downloading-from', provider.name));
+          else data = await UI.status(provider.getData(champion, preferredPosition, gameMode), i18n.__('providers-downloader-downloading-from', provider.name, index + 1, array.length));
 
           DataValidator.onDataChange(data, provider.id, gameMode);
           data = DataValidator.onDataDownloaded(data, champion);
