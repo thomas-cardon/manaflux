@@ -12,6 +12,10 @@ class UGGProvider extends Provider {
     // These variables can't change without warning. See here https://gist.github.com/paolostyle/fe8ce06313d3e53c134a24762b9e519c
     this.dataVersion = '1.2';
     this.apiVersion = '1.1';
+
+    this.lolVersion = '9_16';
+    this.overviewVersion = '1.2.6';
+
     this.u = {
       positions: {
         JUNGLE: 1,
@@ -86,15 +90,7 @@ class UGGProvider extends Provider {
   }
 
   async getData(champion, preferredPosition, gameMode) {
-    if (Mana.getStore().get('lastUpdatedUGGVersion') !== this.formatToUGGVersion()) {
-      console.log('[U.GG] Outdated. Updating versions..');
-      const versions = await rp({ uri: `https://u.gg/json/new_ugg_versions/${this.dataVersion}.json`, json: true });
-      Mana.getStore().set('lastUpdatedUGGVersion', Object.keys(versions)[1]);
-
-      Mana.getStore().set('UGGOverviewVersion', versions.latest.overview);
-    }
-
-    const data = await rp({ uri: `https://stats2.u.gg/lol/${this.apiVersion}/overview/${Mana.getStore().get('lastUpdatedUGGVersion')}/ranked_solo_5x5/${champion.id}/${Mana.getStore().get('UGGOverviewVersion')}.json`, json: true });
+    const data = await rp({ uri: `https://stats2.u.gg/lol/${this.apiVersion}/overview/${this.lolVersion}/ranked_solo_5x5/${champion.id}/${this.overviewVersion}.json`, json: true });
     const d = this.scrape(data);
 
     return { roles: d };
