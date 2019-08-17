@@ -9,29 +9,11 @@ class LeagueofGraphsProvider extends Provider {
     this.base = 'https://www.leagueofgraphs.com/champions';
   }
 
-  async getData(champion, preferredPosition, gameMode) {
-    let data = { roles: {} };
-    let roles = gameMode === 'ARAM' ? ['ARAM'] : ['JUNGLE', 'MIDDLE', 'TOP', 'ADC', 'SUPPORT'];
-
-    if (gameMode !== 'ARAM' && preferredPosition)
-      roles = roles.sort((a, b) => b === preferredPosition)
-
-    for (let x of roles) {
-      console.log(2, `[ProviderHandler] [League of Graphs] Gathering data (${x})`);
-
-      try {
-        data.roles[x] = await this._scrape(champion, x, gameMode);
-      }
-      catch(err) {
-        console.log(`[ProviderHandler] [League of Graphs] Something happened while gathering data (${x})`);
-        console.error(err);
-      }
-    }
-
-    return data;
+  async request(gameMode, champion, position) {
+    return { roles: { [position] : await this._scrape(gameMode, champion, position) } };
   }
 
-  async _scrape(champion, position, gameMode) {
+  async _scrape(gameMode, champion, position) {
     const data = await rp({ uri: `${this.base}/overview/${champion.key}${position ? '/' + position : ''}/${gameMode === 'ARAM' ? 'aram' : ''}`.toLowerCase(), transform: body => cheerio.load(body) });
 
     const perks = this.scrapePerks(data, position);

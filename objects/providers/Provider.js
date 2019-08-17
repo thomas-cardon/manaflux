@@ -4,23 +4,9 @@ class Provider {
     this.name = name;
   }
 
-  async getData(champion, preferredPosition, gameMode) {
-    throw UI.error('providers-skipped', this.name, 'getData');
-  }
-
-  async getSummonerSpells(champion, position, gameMode) {
-    const x = await this.getData(champion, position, gameMode);
-    return x[position] && x[position].summonerspells ? x[position].summonerspells : {};
-  }
-
-  async getItemSets(champion, position, gameMode) {
-    const x = await this.getData(champion, position, gameMode);
-    return x[position] && x[position].itemsets ? x[position].itemsets : {};
-  }
-
-  async getPerks(champion, position, gameMode) {
-    const x = await this.getData(champion, position, gameMode);
-    return x[position] && x[position].perks ? x[position].perks : {};
+  request(gameMode, champion, position) {
+    console.log(2, `${this.name} >> Requesting ${champion.name} - POS/${position} - GM/${gameMode}`);
+    throw UI.error('providers-skipped', this.name, 'request');
   }
 
   // WIP

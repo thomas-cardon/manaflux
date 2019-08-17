@@ -16,50 +16,41 @@ let fixes = {
 class ChampionGGProvider extends Provider {
   constructor() {
     super('championgg', 'ChampionGG');
+
     this.base = 'https://champion.gg/';
+    this.cachedPositions = {};
   }
 
-  async getData(champion, preferredPosition, gameMode) {
-    const res = await rp(`${this.base}champion/${champion.key}`);
-    const d = this._scrape(res, champion, gameMode, true);
+  async request(gameMode, champion, position) {
+    console.log(2, `${this.name} >> Requesting ${champion.name} - POS/${position} - GM/${gameMode}`);
 
-    let data = { roles: { [d.position]: d } };
+    try {
+      const res = await rp(`${this.base}champion/${champion.key}`);
+      const d = this._scrape(res, champion, gameMode, position);
+    }
+    catch(err) {
+      console.log(`[ProviderHandler] [Champion.GG] Something happened while gathering data (${position.name})`);
 
-    for (const position of d.availablePositions) {
-      console.log(2, `[Champion.GG] Gathering data (${position.name})`);
-
-      try {
-        data.roles[position.name] = this._scrape(await rp(position.link), champion, gameMode);
-        delete data.roles[position.name].position;
+      if (err.toString().includes('Data is outdated')) {
+        throw UI.error('providers-error-outdated', this.name);
       }
-      catch(err) {
-        console.log(`[ProviderHandler] [Champion.GG] Something happened while gathering data (${position.name})`);
-
-        if (err.toString().includes('Data is outdated')) {
-          throw UI.error('providers-error-outdated', this.name);
-        }
-        else console.error(err);
-      }
+      else console.error(err);
     }
 
-    delete data.roles[d.position].availablePositions;
-    delete data.roles[d.position].position;
+    if (d.availablePositions)
+      this.cachedPositions[champion.id] = d.availablePositions;
 
-    return data;
+    delete d.availablePositions;
+
+    return { roles: { [position]: d } };
   }
 
-  _scrape(html, champion, gameMode, firstScrape = false) {
+  _scrape(html, champion, gameMode, position, statsHtml) {
     const $ = cheerio.load(html);
 
     if ($('.matchup-header').eq(0).text().trim() === "We are still gathering data for this stat, please check again later!") throw UI.error('providers-error-outdated', this.name);
     const position = $(`li[class^='selected-role'] > a[href^='/champion/']`).first().text().trim();
     const availablePositions = [];
-
-    if (firstScrape) {
-      $(`li[class!='selected-role'] > a[href^='/champion/']`).each(function(index) {
-        availablePositions.push({ name: $(this).first().text().trim().toUpperCase(), link: 'https://champion.gg' + $(this).attr('href') });
-      });
-    }
 
     const summonerspells = this.scrapeSummonerSpells($, gameMode);
 
@@ -68,13 +59,15 @@ class ChampionGGProvider extends Provider {
 
     let perks = this.scrapePerks($, champion, position);
 
-    return { perks, summonerspells, itemsets, availablePositions, position: position.toUpperCase(), gameMode };
+    let statistics = statsHtml ? this.scrapeStatistics($, statsHtml, champion, position) : {};
+
+    return { roles: { [d.position]: d } }{ perks, summonerspells, itemsets, availablePositions, gameMode, statistics };
   }
 
   /**
-   * Scrapes item sets from a Champion.gg page
-   * @param {cheerio} $ - The cheerio object
-   */
+  * Scrapes item sets from a Champion.gg page
+  * @param {cheerio} $ - The cheerio object
+  */
   scrapePerks($) {
     let pages = [{ suffixName: `(HW%)`, selectedPerkIds: [] }, { suffixName: `(MF)`, selectedPerkIds: [] }];
 
@@ -92,10 +85,10 @@ class ChampionGGProvider extends Provider {
   }
 
   /**
-   * Scrapes summoner spells from a Champion.gg page
-   * @param {cheerio} $ - The cheerio object
-   * @param {string} gameMode - A gamemode, from League Client, such as CLASSIC, ARAM, etc.
-   */
+  * Scrapes summoner spells from a Champion.gg page
+  * @param {cheerio} $ - The cheerio object
+  * @param {string} gameMode - A gamemode, from League Client, such as CLASSIC, ARAM, etc.
+  */
   scrapeSummonerSpells($, gameMode) {
     let summonerSpells = [];
 
@@ -113,9 +106,9 @@ class ChampionGGProvider extends Provider {
   }
 
   /**
-   * Scrapes skill order from a Champion.gg page
-   * @param {cheerio} $ - The cheerio object
-   */
+  * Scrapes skill order from a Champion.gg page
+  * @param {cheerio} $ - The cheerio object
+  */
   scrapeSkillOrder($) {
     let skills = $('.skill').slice(1, -1);
     skills.splice(3, 2);
@@ -140,12 +133,12 @@ class ChampionGGProvider extends Provider {
   }
 
   /**
-   * Scrapes item sets from a Champion.gg page
-   * @param {cheerio} $ - The cheerio object
-   * @param {object} champion - A champion object, from Mana.gameClient.champions
-   * @param {string} position - Limited to: TOP, JUNGLE, MIDDLE, ADC, SUPPORT
-   * @param {object} skillorder
-   */
+  * Scrapes item sets from a Champion.gg page
+  * @param {cheerio} $ - The cheerio object
+  * @param {object} champion - A champion object, from Mana.gameClient.champions
+  * @param {string} position - Limited to: TOP, JUNGLE, MIDDLE, ADC, SUPPORT
+  * @param {object} skillorder
+  */
   scrapeItemSets($, champion, position, skillorder) {
     let itemset = new ItemSet(champion.key, position.toUpperCase(), this.id).setTitle(`CGG ${champion.name} - ${position}`);
 
@@ -158,13 +151,13 @@ class ChampionGGProvider extends Provider {
       });
 
       if (index === 0)
-          itemset._data.blocks[3] = block.setType({ i18n: 'providers-cgg-blocks-completed-build-mf', arguments: [wr] });
+      itemset._data.blocks[3] = block.setType({ i18n: 'providers-cgg-blocks-completed-build-mf', arguments: [wr] });
       else if (index === 1)
-          itemset._data.blocks[4] = block.setType({ i18n: 'providers-cgg-blocks-completed-build-hw%', arguments: [wr] });
+      itemset._data.blocks[4] = block.setType({ i18n: 'providers-cgg-blocks-completed-build-hw%', arguments: [wr] });
       else if (index === 2)
-        itemset._data.blocks[0] = block.setType({ i18n: 'providers-cgg-blocks-starters-mf', arguments: [wr] });
+      itemset._data.blocks[0] = block.setType({ i18n: 'providers-cgg-blocks-starters-mf', arguments: [wr] });
       else if (index === 3)
-        itemset._data.blocks[1] = block.setType({ i18n: 'providers-cgg-blocks-starters-hw%', arguments: [wr] });
+      itemset._data.blocks[1] = block.setType({ i18n: 'providers-cgg-blocks-starters-hw%', arguments: [wr] });
       else itemset.addBlock(block.setType(type + ` | ${$(this).find('div > strong').text().trim().slice(0, 6)} WR`));
     });
 

@@ -9,7 +9,7 @@ class FluxProvider extends Provider {
     if (devMode) rp('http://localhost:8920/').then(() => this.base = 'http://localhost:8920/').catch(() => console.log('[Flu.x] Local server is unavailable.'));
   }
 
-  async getData(champion, preferredPosition, gameMode) {
+  async request(gameMode, champion, position) {
     console.log(2, '[Flu.x] Fetching data from the cache server');
     let data = JSON.parse(await rp(`${this.base}data/v1/${champion.id}?itemsets=${Mana.getStore().get('item-sets-enable', false)}&summonerspells=${Mana.getStore().get('summoner-spells', false)}&maxperkpages=${Mana.getStore().get('perks-max', 2)}`));
     data.flux = true;
@@ -27,18 +27,6 @@ class FluxProvider extends Provider {
       return data;
     }
     else throw Error('Unexpected error');
-  }
-
-  async getSummonerSpells(champion, position, gameMode) {
-    return await this.getData(champion, position, gameMode).summonerspells;
-  }
-
-  async getItemSets(champion, position, gameMode) {
-    return await this.getData(champion, position, gameMode).itemsets;
-  }
-
-  async getPerks(champion, position, gameMode) {
-    return await this.getData(champion, position, gameMode).perks;
   }
 
   /*

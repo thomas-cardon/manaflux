@@ -5,7 +5,18 @@ const Provider = require('./Provider');
 class METAsrcProvider extends Provider {
   constructor() {
     super('metasrc', 'METAsrc');
+    
     this.base = 'https://www.metasrc.com/';
+    this.cachedPositions = {};
+  }
+
+  async request(gameMode, champion, position) {
+    const res = await rp(`${this.base}${this.getGameMode(gameMode)}/champion/${champion.key.toLowerCase()}`);
+    const d = this._scrape(res, champion, preferredPosition, gameMode);
+
+    let data = ;
+
+    return { roles: { [position]: d } };
   }
 
   async getData(champion, preferredPosition, gameMode) {
@@ -50,7 +61,7 @@ class METAsrcProvider extends Provider {
     else position = gameMode;
 
     let itemsets = this.scrapeItemSets($, champion, position, this.scrapeSkillOrder($));
-    return { position, perks: this.scrapePerks($), summonerspells: this.scrapeSummonerSpells($), itemsets, availablePositions, gameMode };
+    return { perks: this.scrapePerks($), summonerspells: this.scrapeSummonerSpells($), itemsets, availablePositions, gameMode };
   }
 
   /**

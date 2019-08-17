@@ -56,6 +56,14 @@ class ProviderHandler {
 
     console.log('[ProviderHandler] Using providers: ', providers.map(x => this.providers[x].name).join(' => '));
 
+    let positions;
+    if (preferredPosition)
+      positions = [...new Set(preferredPosition, 'TOP', 'MIDDLE', 'JUNGLE', 'ADC', 'SUPPORT')];
+    else if (gameMode === 'CLASSIC')
+      positions = ['TOP', 'MIDDLE', 'JUNGLE', 'ADC', 'SUPPORT'];
+
+    console.log('ProviderHandler >> Positions chosen in the order: ', providers.map(x => this.providers[x].name).join(' => '));
+
     var BreakException = {};
 
     try {
@@ -63,47 +71,48 @@ class ProviderHandler {
         provider = this.providers[provider];
         console.log(2, `[ProviderHandler] Using ${provider.name}`);
 
-        try {
-          if (data) this._merge(data, await provider.getData(champion, preferredPosition, gameMode));
-          // TODO: status is removed every time download finishes, user doesn't have time to read status
-          else data = await UI.status(provider.getData(champion, preferredPosition, gameMode), i18n.__('providers-downloader-downloading-from', provider.name, index + 1, array.length));
+        if (positions) {
+          this.asyncForEach(positions, async pos => await this.process(provider, gameMode, champion, pos, index + 1, array.length)).then(() => {
+            /* If a provider can't get any data on that role/position, let's use another provider */
+            if (!data || preferredPosition && !data.roles[preferredPosition] || !preferredPosition && Object.keys(data.roles).length < Mana.getStore().get('champion-select-min-roles', 2)) return;
+            else if (!preferredPosition) preferredPosition = Object.keys(data.roles)[0];
 
-          DataValidator.onDataChange(data, provider.id, gameMode);
-          data = DataValidator.onDataDownloaded(data, champion);
-
-          Mana.championSelectHandler.onDataUpdate(champion, data);
+            throw BreakException;
+          });
         }
-        catch(err) {
-          console.log('[ProviderHandler] Couldn\'t aggregate data.');
-          console.error(err);
-        }
-
-        /* If a provider can't get any data on that role/position, let's use another provider */
-        if (!data || preferredPosition && !data.roles[preferredPosition] || !preferredPosition && Object.keys(data.roles).length < Mana.getStore().get('champion-select-min-roles', 2)) return;
-        else if (!preferredPosition) preferredPosition = Object.keys(data.roles)[0];
-
-        /* Else we need to check the provider provided the required data */
-        if (data.roles[preferredPosition].perks.length === 0)
-            data.roles[preferredPosition] = { ...data.roles[preferredPosition], ...await provider.getPerks(champion, preferredPosition, gameMode) || {} };
-        else if (data.roles[preferredPosition].itemsets.length === 0 && Mana.getStore().get('item-sets-enable'))
-            data.roles[preferredPosition] = { ...data.roles[preferredPosition], ...await provider.getItemSets(champion, preferredPosition, gameMode) || {} };
-        else if (data.roles[preferredPosition].summonerspells.length === 0 && Mana.getStore().get('summoner-spells'))
-            data.roles[preferredPosition] = { ...data.roles[preferredPosition], ...await provider.getSummonerSpells(champion, preferredPosition, gameMode) || {} };
-
-        throw BreakException;
+        else await this.process(provider, gameMode, champion);
       });
-
-      Mana.championSelectHandler.onDownloadFinished();
     }
     catch(e) {
       if (e !== BreakException) throw e;
     }
+
+    Mana.championSelectHandler.onDownloadFinished();
 
     /* 4/5 - Saving to offline cache
        5/5 - Uploading to online cache */
     if (cache) this._cache.push(data);
   }
 
+  async process(provider, gameMode, champion, position, x, y) {
+    try {
+      // TODO: status is removed every time download finishes, user doesn't have time to read status
+
+      let d = await UI.status(provider.request(gameMode, champion, position), i18n.__('providers-downloader-downloading-from', provider.name, x, y));
+      if (data && d) this._merge(data, d);
+
+      DataValidator.onDataChange(data, provider.id, gameMode);
+      data = DataValidator.onDataDownloaded(data, champion);
+
+      Mana.championSelectHandler.onDataUpdate(champion, data);
+    }
+    catch(err) {
+      console.log(`ProviderHandler >> Something happened while downloading data! (${provider.name}) - ${champion.name} - ${position}`);
+      console.error(err);
+
+      return null;
+    }
+  }
   /**
    * Runs tasks when champion select ends
    */
