@@ -177,6 +177,30 @@ class OPGGProvider extends Provider {
 
     return [itemset];
   }
+
+  async scrapeStatistics($, html, champion, position) {
+    if (!Mana.getStore().get('statistics')) return null;
+
+    const $stats = cheerio.load(html);
+
+    let stats = {
+      winrate: { avg: $('.champion-stats-trend-rate').eq(0).text().trim(), rolePlacement: $('.champion-stats-trend-rank').eq(0).text().replace(/[^0-9a-z-A-Z]/g, "").replace('th', '/').replace('st', '/').replace('nd', '/').replace('rd', '/') },
+      playrate: { avg: $('.champion-stats-trend-rate').eq(1).text().trim(), rolePlacement: $('.champion-stats-trend-rank').eq(1).text().replace(/[^0-9a-z-A-Z]/g, "").replace('th', '/').replace('st', '/').replace('nd', '/').replace('rd', '/') },
+      matchups: {
+        counters: {},
+        synergies: {}
+      }
+    };
+
+    $stats('.champion-matchup-champion-list__item').each(function(index) {
+      const d = $stats(this).data();
+      stats.matchups.counters[d.championId] = {
+        games: d.valueTotalplayed,
+        wr: parseFloat(d.valueWinrate) * 100,
+        position
+      };
+    });
+  }
 }
 
 module.exports = OPGGProvider;
