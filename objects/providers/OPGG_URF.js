@@ -8,7 +8,7 @@ class OPGG_URFProvider extends Provider {
     this.base = 'https://www.op.gg/urf';
   }
 
-  async getData(champion, gameMode) {
+  async request(gameMode, champion, position) {
     if (gameMode !== 'URF') throw Error('[Providers] OP.GG URF >> Can\'t be called on a different gamemode than URF!');
 
     const res = await rp({ uri: `${this.base}/${champion.key}/statistics`, transform: body => cheerio.load(body) });

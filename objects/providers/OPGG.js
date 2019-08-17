@@ -5,7 +5,9 @@ const Provider = require('./Provider');
 class OPGGProvider extends Provider {
   constructor() {
     super('opgg', 'OP.GG');
+
     this.base = 'https://www.op.gg';
+    this.cachedPositions = {};
   }
 
   convertOPGGPosition(pos) {
@@ -21,29 +23,24 @@ class OPGGProvider extends Provider {
     }
   }
 
-  async getData(champion, preferredPosition, gameMode) {
-    const res = await rp(`${this.base}/champion/${champion.key}/statistics${preferredPosition ? '/' + this.convertOPGGPosition(preferredPosition) : ''}`);
-    const d = this._scrape(res, champion, gameMode, preferredPosition, true);
+  async request(gameMode, champion, position) {
+    console.log(2, `${this.name} >> Requesting ${champion.name} - POS/${position} - GM/${gameMode}`);
 
-    let data = { roles: { [d.position]: d } };
-
-    for (const position of d.availablePositions) {
-      console.log(2, `[ProviderHandler] [OP.GG] Gathering data (${position.name})`);
-
-      try {
-        data.roles[position.name] = this._scrape(await rp(position.link), champion, gameMode, position.name);
-        delete data.roles[position.name].position;
-      }
-      catch(err) {
-        console.log(`[ProviderHandler] [OP.GG] Something happened while gathering data (${position.name})`);
-        console.error(err);
-      }
+    try {
+      const res = await rp(`${this.base}/champion/${champion.key}/statistics${preferredPosition ? '/' + this.convertOPGGPosition(preferredPosition) : ''}`);
+      const d = this._scrape(res, champion, gameMode, position);
+    }
+    catch(err) {
+      console.log(`[ProviderHandler] [OP.GG] Something happened while gathering data (${position.name})`);
+      console.error(err);
     }
 
-    delete data.roles[d.position].availablePositions;
-    delete data.roles[d.position].position;
+    if (d.availablePositions)
+      this.cachedPositions[champion.id] = d.availablePositions;
 
-    return data;
+    delete d.availablePositions;
+
+    return { roles: { [position]: d } };
   }
 
   _scrape(html, champion, gameMode, position, firstScrape) {
@@ -68,7 +65,7 @@ class OPGGProvider extends Provider {
 
     const perks = this.scrapePerks($, champion, position);
 
-    return { perks, summonerspells, itemsets, availablePositions, position: position.toUpperCase(), gameMode };
+    return { perks, summonerspells, itemsets, availablePositions, gameMode };
   }
 
   /**

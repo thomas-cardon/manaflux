@@ -89,7 +89,7 @@ class UGGProvider extends Provider {
     };
   }
 
-  async getData(champion, preferredPosition, gameMode) {
+  async request(gameMode, champion, position) {
     const data = await rp({ uri: `https://stats2.u.gg/lol/${this.apiVersion}/overview/${this.lolVersion}/ranked_solo_5x5/${champion.id}/${this.overviewVersion}.json`, json: true });
     const d = this.scrape(data);
 
