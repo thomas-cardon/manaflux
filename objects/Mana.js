@@ -60,6 +60,8 @@ class Mana {
 
     this.providerHandler = new (require('./handlers/ProviderHandler'))(this.devMode);
 
+    this.overlayHandler = new (require('./handlers/OverlayHandler'))();
+
     this.gameflow = require('./riot/leagueoflegends/Gameflow');
 
     UI.loadSettings(this);
@@ -123,6 +125,8 @@ class Mana {
     this.alertHandler.load();
 
     ipcRenderer.send('lcu-preload-done');
+
+    //this.overlayHandler.start();
   }
 
   onLeagueUserConnected(data) {

@@ -1,6 +1,6 @@
 const rp = require('request-promise-native');
 const DataValidator = new (require('../helpers/DataValidator'))();
-const EventEmitter = require('events');
+const { EventEmitter } = require('events');
 
 class ProviderHandler {
   constructor() {
@@ -10,11 +10,12 @@ class ProviderHandler {
       opgg: new (require('../providers/OPGG'))(),
       opgg_urf: new (require('../providers/OPGG_URF'))(),
       leagueofgraphs: new (require('../providers/LeagueofGraphs'))(),
-      lolflavor: new (require('../providers/LoLFlavor'))(),
       metasrc: new (require('../providers/METAsrc'))(),
       ugg: new (require('../providers/UGG'))(),
       flux: new (require('../providers/Flux'))()
     };
+
+    this.downloads = new EventEmitter();
   }
 
   getProvider(x) {
@@ -25,7 +26,17 @@ class ProviderHandler {
     return Mana.getStore().get('providers-order-' + x.id, true);
   }
 
-  async getChampionData(champion, preferredPosition, gameModeHandler, cache, providerList, bulkDownloadMode) {
+  getProviders() {
+    return Mana.getStore().get('providers-order', Object.keys(this.providers)).filter(x => this.providers[x] && this.isProviderEnabled(x));
+  }
+
+  async asyncForEach(array, callback) {
+    for (let index = 0; index < array.length; index++) {
+      await callback(array[index], index, array);
+    }
+  }
+
+  async getChampionData(champion, preferredPosition, gameModeHandler, cache, providers = this.getProviders(), bulkDownloadMode) {
     console.log(2, '[ProviderHandler] Downloading data for', champion.name);
     const gameMode = bulkDownloadMode ? gameModeHandler.getGameMode() : Mana.gameflow.getGameMode();
 
@@ -41,49 +52,56 @@ class ProviderHandler {
     }
 
     /* 2/5 - Downloading */
-    let providers = providerList || Mana.getStore().get('providers-order', Object.keys(this.providers)).filter(x => this.isProviderEnabled(x));
     if (gameModeHandler.getProviders() !== null) providers = providers.filter(x => gameModeHandler.getProviders() === null || gameModeHandler.getProviders().includes(x));
 
     console.log('[ProviderHandler] Using providers: ', providers.map(x => this.providers[x].name).join(' => '));
 
-    for (let provider of providers) {
-      provider = this.providers[provider];
-      console.log(2, `[ProviderHandler] Using ${provider.name}`);
+    var BreakException = {};
 
-      try {
-        if (data) this._merge(data, await provider.getData(champion, preferredPosition, gameMode));
-        else data = await provider.getData(champion, preferredPosition, gameMode);
+    try {
+      await this.asyncForEach(providers, async (provider, index, array) => {
+        provider = this.providers[provider];
+        console.log(2, `[ProviderHandler] Using ${provider.name}`);
 
-        DataValidator.onDataChange(data, provider.id, gameMode);
-      }
-      catch(err) {
-        console.log('[ProviderHandler] Couldn\'t aggregate data.');
-        console.error(err);
-        continue;
-      }
+        try {
+          if (data) this._merge(data, await provider.getData(champion, preferredPosition, gameMode));
+          // TODO: status is removed every time download finishes, user doesn't have time to read status
+          else data = await UI.status(provider.getData(champion, preferredPosition, gameMode), i18n.__('providers-downloader-downloading-from', provider.name, index + 1, array.length));
 
-      /* If a provider can't get any data on that role/position, let's use another provider */
-      if (!data || preferredPosition && !data.roles[preferredPosition] || !preferredPosition && Object.keys(data.roles).length < Mana.getStore().get('champion-select-min-roles', 2)) continue;
-      else if (!preferredPosition) preferredPosition = Object.keys(data.roles)[0];
+          DataValidator.onDataChange(data, provider.id, gameMode);
+          data = DataValidator.onDataDownloaded(data, champion);
 
-      /* Else we need to check the provider provided the required data */
-      if (data.roles[preferredPosition].perks.length === 0)
-          data.roles[preferredPosition] = { ...data.roles[preferredPosition], ...await provider.getPerks(champion, preferredPosition, gameMode) || {} };
-      else if (data.roles[preferredPosition].itemsets.length === 0 && Mana.getStore().get('item-sets-enable'))
-          data.roles[preferredPosition] = { ...data.roles[preferredPosition], ...await provider.getItemSets(champion, preferredPosition, gameMode) || {} };
-      else if (data.roles[preferredPosition].summonerspells.length === 0 && Mana.getStore().get('summoner-spells'))
-          data.roles[preferredPosition] = { ...data.roles[preferredPosition], ...await provider.getSummonerSpells(champion, preferredPosition, gameMode) || {} };
+          Mana.championSelectHandler.onDataUpdate(champion, data);
+        }
+        catch(err) {
+          console.log('[ProviderHandler] Couldn\'t aggregate data.');
+          console.error(err);
+        }
 
-      break;
+        /* If a provider can't get any data on that role/position, let's use another provider */
+        if (!data || preferredPosition && !data.roles[preferredPosition] || !preferredPosition && Object.keys(data.roles).length < Mana.getStore().get('champion-select-min-roles', 2)) return;
+        else if (!preferredPosition) preferredPosition = Object.keys(data.roles)[0];
+
+        /* Else we need to check the provider provided the required data */
+        if (data.roles[preferredPosition].perks.length === 0)
+            data.roles[preferredPosition] = { ...data.roles[preferredPosition], ...await provider.getPerks(champion, preferredPosition, gameMode) || {} };
+        else if (data.roles[preferredPosition].itemsets.length === 0 && Mana.getStore().get('item-sets-enable'))
+            data.roles[preferredPosition] = { ...data.roles[preferredPosition], ...await provider.getItemSets(champion, preferredPosition, gameMode) || {} };
+        else if (data.roles[preferredPosition].summonerspells.length === 0 && Mana.getStore().get('summoner-spells'))
+            data.roles[preferredPosition] = { ...data.roles[preferredPosition], ...await provider.getSummonerSpells(champion, preferredPosition, gameMode) || {} };
+
+        throw BreakException;
+      });
+
+      Mana.championSelectHandler.onDownloadFinished();
     }
-
-    /* 3/5 - Validate */
-    data = DataValidator.onDataDownloaded(data, champion);
+    catch(e) {
+      if (e !== BreakException) throw e;
+    }
 
     /* 4/5 - Saving to offline cache
        5/5 - Uploading to online cache */
     if (cache) this._cache.push(data);
-    return data;
   }
 
   /**
