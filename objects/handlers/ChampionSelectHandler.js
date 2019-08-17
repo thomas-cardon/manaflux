@@ -43,6 +43,8 @@ class ChampionSelectHandler {
   }
 
   onDataUpdate(champion, data) {
+    console.log(3, 'ChampionSelectHandler >> Data update');
+
     if (!this._inChampionSelect || this._lastChampionPicked != champion.id) return;
 
     console.log('Download update');
@@ -50,8 +52,27 @@ class ChampionSelectHandler {
     this.onDisplayUpdate(champion, data);
   }
 
+  async onDownloadFinished() {
+    console.log(3, 'ChampionSelectHandler >> Download has finished');
+    UI.status('common-ready');
+
+    if (Mana.getStore().get('item-sets-enable')) {
+      try {
+        /* Delete ItemSets before downloading */
+        await UI.indicator(ItemSetHandler.deleteItemSets(await UI.indicator(ItemSetHandler.getItemSetsByChampionKey(champion.key), 'item-sets-collecting-champion', champion.name)), 'item-sets-deleting');
+        await UI.indicator(Promise.all([].concat(...Object.values(res.roles).map(r => r.itemsets.map(x => x.save())))), 'item-sets-save-status', champion.name);
+      }
+      catch(err) {
+        UI.error('item-sets-error-loading');
+        console.error(err);
+      }
+    }
+
+    Sounds.play('dataLoaded');
+  }
+
   async onChampionSelectStart() {
-    console.log(`[ChampionSelectHandler] Entering`);
+    console.log(`[ChampionSelectHandler] Entering champion select`);
     document.getElementById('developerGame').disabled = true;
 
     await Mana.gameflow.update();
@@ -63,7 +84,7 @@ class ChampionSelectHandler {
   }
 
   async onChampionSelectEnd() {
-    console.log(`[ChampionSelectHandler] Leaving`);
+    console.log(`[ChampionSelectHandler] Leaving champion select`);
     document.getElementById('developerGame').disabled = false;
 
     this._inChampionSelect = false;
@@ -181,6 +202,8 @@ class ChampionSelectHandler {
   }
 
   onDisplayUpdatePreDownload(champion) {
+    console.log(3, 'ChampionSelectHandler >> Display Update PreDownload');
+
     if (!this._inChampionSelect || this._lastChampionPicked !== champion.id) return;
     UI.status('champion-select-updating-display', champion.name);
 
@@ -198,11 +221,12 @@ class ChampionSelectHandler {
   }
 
   async onDisplayUpdate(champion, res) {
+    console.log(3, 'ChampionSelectHandler >> Display Update');
+
     if (!this._inChampionSelect) return;
     if (!res || Object.keys(res.roles).length === 0) return;
 
-    const self = this;
-
+    this._lastChampionPicked = champion.id;
     console.dir(res);
 
     Object.keys(res.roles).filter(x => res.roles[x].perks.length > 0 && !document.getElementById(`position-${x}`)).forEach(r => {
@@ -210,6 +234,7 @@ class ChampionSelectHandler {
       document.getElementById('positions').innerHTML += `<option id="position-${r}" value="${r}">${UI.stylizeRole(r)}</option>`;
     });
 
+    const self = this;
     document.getElementById('positions').onchange = function() {
       console.log('[ChampionSelect] Selected position:', this.value.toUpperCase());
       self.onPerkPositionChange(champion, this.value.toUpperCase(), res.roles[this.value.toUpperCase()]);
@@ -227,22 +252,6 @@ class ChampionSelectHandler {
     document.getElementById('buttons').style.display = 'block';
 
     UI.tray(false);
-    UI.status('common-ready');
-
-    if (Mana.getStore().get('item-sets-enable')) {
-      try {
-        /* Delete ItemSets before downloading */
-        await UI.indicator(ItemSetHandler.deleteItemSets(await UI.indicator(ItemSetHandler.getItemSetsByChampionKey(champion.key), 'item-sets-collecting-champion', champion.name)), 'item-sets-deleting');
-        await UI.indicator(Promise.all([].concat(...Object.values(res.roles).map(r => r.itemsets.map(x => x.save())))), 'item-sets-save-status', champion.name);
-      }
-      catch(err) {
-        UI.error('item-sets-error-loading');
-        console.error(err);
-      }
-    }
-
-    Sounds.play('dataLoaded');
-    this._lastChampionPicked = champion.id;
   }
 
   onPerkPositionChange(champion, position, data) {

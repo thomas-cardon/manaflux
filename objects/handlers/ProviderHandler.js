@@ -65,6 +65,7 @@ class ProviderHandler {
 
         try {
           if (data) this._merge(data, await provider.getData(champion, preferredPosition, gameMode));
+          // TODO: status is removed every time download finishes, user doesn't have time to read status
           else data = await UI.status(provider.getData(champion, preferredPosition, gameMode), i18n.__('providers-downloader-downloading-from', provider.name, index + 1, array.length));
 
           DataValidator.onDataChange(data, provider.id, gameMode);
@@ -91,6 +92,8 @@ class ProviderHandler {
 
         throw BreakException;
       });
+
+      Mana.championSelectHandler.onDownloadFinished();
     }
     catch(e) {
       if (e !== BreakException) throw e;
