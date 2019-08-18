@@ -44,15 +44,14 @@ class ChampionSelectHandler {
 
   onDataUpdate(champion, data) {
     console.log(3, 'ChampionSelectHandler >> Data update');
+    console.dir(data);
 
     if (!this._inChampionSelect || this._lastChampionPicked != champion.id) return;
 
-    console.log('Download update');
-    console.dir(data);
     this.onDisplayUpdate(champion, data);
   }
 
-  async onDownloadFinished() {
+  async onDownloadFinished(res) {
     console.log(3, 'ChampionSelectHandler >> Download has finished');
     UI.status('common-ready');
 

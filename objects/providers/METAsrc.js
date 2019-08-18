@@ -5,16 +5,14 @@ const Provider = require('./Provider');
 class METAsrcProvider extends Provider {
   constructor() {
     super('metasrc', 'METAsrc');
-    
+
     this.base = 'https://www.metasrc.com/';
     this.cachedPositions = {};
   }
 
   async request(gameMode, champion, position) {
     const res = await rp(`${this.base}${this.getGameMode(gameMode)}/champion/${champion.key.toLowerCase()}`);
-    const d = this._scrape(res, champion, preferredPosition, gameMode);
-
-    let data = ;
+    const d = this._scrape(res, champion, position, gameMode);
 
     return { roles: { [position]: d } };
   }

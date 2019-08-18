@@ -27,20 +27,20 @@ class OPGGProvider extends Provider {
     console.log(2, `${this.name} >> Requesting ${champion.name} - POS/${position} - GM/${gameMode}`);
 
     try {
-      const res = await rp(`${this.base}/champion/${champion.key}/statistics${preferredPosition ? '/' + this.convertOPGGPosition(preferredPosition) : ''}`);
+      const res = await rp(`${this.base}/champion/${champion.key}/statistics${position ? '/' + this.convertOPGGPosition(position) : ''}`);
       const d = this._scrape(res, champion, gameMode, position);
+
+      if (d.availablePositions)
+        this.cachedPositions[champion.id] = d.availablePositions;
+
+      delete d.availablePositions;
+
+      return { roles: { [position]: d } };
     }
     catch(err) {
       console.log(`[ProviderHandler] [OP.GG] Something happened while gathering data (${position.name})`);
       console.error(err);
     }
-
-    if (d.availablePositions)
-      this.cachedPositions[champion.id] = d.availablePositions;
-
-    delete d.availablePositions;
-
-    return { roles: { [position]: d } };
   }
 
   _scrape(html, champion, gameMode, position, firstScrape) {

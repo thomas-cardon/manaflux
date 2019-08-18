@@ -50,6 +50,7 @@ class ProviderHandler {
         return data;
       }
     }
+    else data = {};
 
     /* 2/5 - Downloading */
     if (gameModeHandler.getProviders() !== null) providers = providers.filter(x => gameModeHandler.getProviders() === null || gameModeHandler.getProviders().includes(x));
@@ -62,7 +63,7 @@ class ProviderHandler {
     else if (gameMode === 'CLASSIC')
       positions = ['TOP', 'MIDDLE', 'JUNGLE', 'ADC', 'SUPPORT'];
 
-    console.log('ProviderHandler >> Positions chosen in the order: ', providers.map(x => this.providers[x].name).join(' => '));
+    console.log('ProviderHandler >> Positions chosen in the order:', positions.join(' => '));
 
     var BreakException = {};
 
@@ -72,33 +73,39 @@ class ProviderHandler {
         console.log(2, `[ProviderHandler] Using ${provider.name}`);
 
         if (positions) {
-          this.asyncForEach(positions, async pos => await this.process(provider, gameMode, champion, pos, index + 1, array.length)).then(() => {
+          this.asyncForEach(positions, async pos => await this.process(provider, gameMode, champion, pos, data, index + 1, array.length)).then(() => {
             /* If a provider can't get any data on that role/position, let's use another provider */
-            if (!data || preferredPosition && !data.roles[preferredPosition] || !preferredPosition && Object.keys(data.roles).length < Mana.getStore().get('champion-select-min-roles', 2)) return;
+            if (!data.roles || preferredPosition && !data.roles[preferredPosition] || !preferredPosition && Object.keys(data.roles).length < Mana.getStore().get('champion-select-min-roles', 2)) return;
             else if (!preferredPosition) preferredPosition = Object.keys(data.roles)[0];
 
             throw BreakException;
           });
         }
-        else await this.process(provider, gameMode, champion);
+        else await this.process(provider, gameMode, champion, undefined, data);
       });
     }
     catch(e) {
       if (e !== BreakException) throw e;
     }
 
-    Mana.championSelectHandler.onDownloadFinished();
+    Mana.championSelectHandler.onDownloadFinished(data);
 
     /* 4/5 - Saving to offline cache
        5/5 - Uploading to online cache */
     if (cache) this._cache.push(data);
   }
 
-  async process(provider, gameMode, champion, position, x, y) {
+  async process(provider, gameMode, champion, position, data = {}, x, y) {
     try {
       // TODO: status is removed every time download finishes, user doesn't have time to read status
 
+      console.log('Data: ');
+      console.dir(data);
+
       let d = await UI.status(provider.request(gameMode, champion, position), i18n.__('providers-downloader-downloading-from', provider.name, x, y));
+      console.log('Aggregated data: ');
+      console.dir(d);
+
       if (data && d) this._merge(data, d);
 
       DataValidator.onDataChange(data, provider.id, gameMode);
@@ -156,7 +163,10 @@ class ProviderHandler {
    * @param {object} y - The object to copy properties from
    */
   _merge(x, y) {
-    if (!x) return y;
+    console.log('Merging');
+    console.dir(arguments);
+
+    if (!x || !x.roles) return y;
     else if (!y) return x;
 
     for (const [name, role] of Object.entries(y.roles)) {

@@ -27,6 +27,13 @@ class ChampionGGProvider extends Provider {
     try {
       const res = await rp(`${this.base}champion/${champion.key}`);
       const d = this._scrape(res, champion, gameMode, position);
+
+      if (d.availablePositions)
+        this.cachedPositions[champion.id] = d.availablePositions;
+
+      delete d.availablePositions;
+
+      return { roles: { [position]: d } };
     }
     catch(err) {
       console.log(`[ProviderHandler] [Champion.GG] Something happened while gathering data (${position.name})`);
@@ -36,20 +43,12 @@ class ChampionGGProvider extends Provider {
       }
       else console.error(err);
     }
-
-    if (d.availablePositions)
-      this.cachedPositions[champion.id] = d.availablePositions;
-
-    delete d.availablePositions;
-
-    return { roles: { [position]: d } };
   }
 
   _scrape(html, champion, gameMode, position, statsHtml) {
     const $ = cheerio.load(html);
 
     if ($('.matchup-header').eq(0).text().trim() === "We are still gathering data for this stat, please check again later!") throw UI.error('providers-error-outdated', this.name);
-    const position = $(`li[class^='selected-role'] > a[href^='/champion/']`).first().text().trim();
     const availablePositions = [];
 
     const summonerspells = this.scrapeSummonerSpells($, gameMode);
@@ -61,7 +60,7 @@ class ChampionGGProvider extends Provider {
 
     let statistics = statsHtml ? this.scrapeStatistics($, statsHtml, champion, position) : {};
 
-    return { roles: { [d.position]: d } }{ perks, summonerspells, itemsets, availablePositions, gameMode, statistics };
+    return { perks, summonerspells, itemsets, availablePositions, gameMode, statistics };
   }
 
   /**
