@@ -1,4 +1,3 @@
-const fs = require('fs'), path = require('path');
 const { ItemSet, Block } = M.Models;
 
 class ItemSetHandler {

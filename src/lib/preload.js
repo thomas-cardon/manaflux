@@ -1,4 +1,6 @@
 console.log('Injecting Mana\'s util functions and models');
+const fs = require('fs'), path = require('path');
+
 global.M = {
   Models: {
     /* Injecting ItemSet and Block class */
