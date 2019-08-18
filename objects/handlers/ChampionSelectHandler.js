@@ -53,6 +53,8 @@ class ChampionSelectHandler {
 
   async onDownloadFinished(res) {
     console.log(3, 'ChampionSelectHandler >> Download has finished');
+    console.dir(res);
+
     UI.status('common-ready');
 
     if (Mana.getStore().get('item-sets-enable')) {
@@ -228,6 +230,7 @@ class ChampionSelectHandler {
     this._lastChampionPicked = champion.id;
     console.dir(res);
 
+    Array.from(document.getElementById('positions').childNodes).filter(x => !Object.keys(res.roles).includes(x.id.split('-')[1])).forEach(x => document.getElementById('positions').removeChild(x));
     Object.keys(res.roles).filter(x => res.roles[x].perks.length > 0 && !document.getElementById(`position-${x}`)).forEach(r => {
       console.log('[ChampionSelect] Added position:', r);
       document.getElementById('positions').innerHTML += `<option id="position-${r}" value="${r}">${UI.stylizeRole(r)}</option>`;
@@ -257,9 +260,6 @@ class ChampionSelectHandler {
     UI.enableHextechAnimation(champion, (data && data.perks && data.perks[0]) ? data.perks[0].primaryStyleId : 'white');
 
     $('#loadRunes, #loadSummonerSpells').disableManualButton(true);
-
-    console.log('onPerkPositionChange');
-    console.dir(arguments);
 
     if (data.perks.length > 0) this._updatePerksDisplay(champion, position, data.perks);
     if (data.summonerspells.length > 0) this._updateSummonerSpellsDisplay(champion, position, data.summonerspells);

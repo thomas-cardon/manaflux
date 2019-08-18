@@ -14,6 +14,8 @@ class ChampionSelectHandler {
 
     try {
       const x = await this._readFile(path.join(this.path, championId + '.json'));
+      console.dir(JSON.parse(x));
+
       return this._cache[championId] = JSON.parse(x);
     }
     catch(err) {

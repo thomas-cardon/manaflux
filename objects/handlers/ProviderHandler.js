@@ -36,13 +36,27 @@ class ProviderHandler {
     }
   }
 
+  isEmpty(myObject) {
+    for(var key in myObject) {
+        if (myObject.hasOwnProperty(key)) {
+            return false;
+        }
+    }
+
+    return true;
+  }
+
   async getChampionData(champion, preferredPosition, gameModeHandler, cache, providers = this.getProviders(), bulkDownloadMode) {
     console.log(2, '[ProviderHandler] Downloading data for', champion.name);
     const gameMode = bulkDownloadMode ? gameModeHandler.getGameMode() : Mana.gameflow.getGameMode();
 
     /* 1/5 - Storage Checking */
-    let data = await Mana.championStorageHandler.get(champion.id);
-    if (data && cache) {
+    console.log(3, '[ProviderHandler] Checking in offline storage');
+
+    let data = await Mana.championStorageHandler.get(champion.id) || {};
+    console.dir(data);
+
+    if (!this.isEmpty(data) && cache) {
       if (!bulkDownloadMode && (data.roles[preferredPosition || Object.keys(data.roles)[0]]).gameMode === gameMode) {
         console.log(2, `[ProviderHandler] Using local storage`);
 
@@ -50,10 +64,11 @@ class ProviderHandler {
         return data;
       }
     }
-    else data = {};
+
+    console.log(3, '[ProviderHandler] Downloading from providers');
 
     /* 2/5 - Downloading */
-    if (gameModeHandler.getProviders() !== null) providers = providers.filter(x => gameModeHandler.getProviders() === null || gameModeHandler.getProviders().includes(x));
+    if (gameModeHandler.getProviders() !== null) providers = providers.filter(x => gameModeHandler.getProviders() === null || gameModeHandler.getProviders().includes(x)).slice(0, 1);
 
     console.log('[ProviderHandler] Using providers: ', providers.map(x => this.providers[x].name).join(' => '));
 
@@ -72,15 +87,7 @@ class ProviderHandler {
         provider = this.providers[provider];
         console.log(2, `[ProviderHandler] Using ${provider.name}`);
 
-        if (positions) {
-          this.asyncForEach(positions, async pos => await this.process(provider, gameMode, champion, pos, data, index + 1, array.length)).then(() => {
-            /* If a provider can't get any data on that role/position, let's use another provider */
-            if (!data.roles || preferredPosition && !data.roles[preferredPosition] || !preferredPosition && Object.keys(data.roles).length < Mana.getStore().get('champion-select-min-roles', 2)) return;
-            else if (!preferredPosition) preferredPosition = Object.keys(data.roles)[0];
-
-            throw BreakException;
-          });
-        }
+        if (positions) this.asyncForEach(positions, async pos => this.process(provider, gameMode, champion, pos, data, index + 1, array.length));
         else await this.process(provider, gameMode, champion, undefined, data);
       });
     }
@@ -99,14 +106,9 @@ class ProviderHandler {
     try {
       // TODO: status is removed every time download finishes, user doesn't have time to read status
 
-      console.log('Data: ');
-      console.dir(data);
-
       let d = await UI.status(provider.request(gameMode, champion, position), i18n.__('providers-downloader-downloading-from', provider.name, x, y));
-      console.log('Aggregated data: ');
-      console.dir(d);
 
-      if (data && d) this._merge(data, d);
+      if (data && d) data = this._merge(data, d);
 
       DataValidator.onDataChange(data, provider.id, gameMode);
       data = DataValidator.onDataDownloaded(data, champion);
@@ -163,11 +165,11 @@ class ProviderHandler {
    * @param {object} y - The object to copy properties from
    */
   _merge(x, y) {
-    console.log('Merging');
-    console.dir(arguments);
+    console.log(3, 'Merging two objects');
+    console.dir(3, arguments);
 
-    if (!x || !x.roles) return y;
-    else if (!y) return x;
+    if (!x || this.isEmpty(x)) return x = y;
+    if (!y) return x;
 
     for (const [name, role] of Object.entries(y.roles)) {
       if (!x.roles[name]) x.roles[name] = role;

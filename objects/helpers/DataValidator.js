@@ -16,8 +16,19 @@ class DataValidator {
     });
   }
 
+  isEmpty(myObject) {
+    for(var key in myObject) {
+        if (myObject.hasOwnProperty(key)) {
+            return false;
+        }
+    }
+
+    return true;
+  }
+
   onDataDownloaded(data, champion) {
-    if (!data) return null;
+    if (!data || this.isEmpty(data)) return null;
+    
     data.championId = champion.id;
 
     for (const [roleName, role] of Object.entries(data.roles)) {
