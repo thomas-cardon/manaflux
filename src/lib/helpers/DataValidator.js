@@ -28,7 +28,7 @@ class DataValidator {
 
   onDataDownloaded(data, champion) {
     if (!data || this.isEmpty(data)) return null;
-    
+
     data.championId = champion.id;
 
     for (const [roleName, role] of Object.entries(data.roles)) {
@@ -50,6 +50,12 @@ class DataValidator {
     data.gameRegion = Mana.gameClient.region;
 
     data.version = Mana.version;
+
+    if (!data.roles) {
+      console.log('[DataValidator] The object returned by a provider is invalid.');
+      console.dir(3, d);
+      return null;
+    }
 
     for (const [roleName, role] of Object.entries(data.roles)) {
       role.perks.forEach(x => delete x.name);
