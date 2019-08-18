@@ -1,6 +1,6 @@
 const rp = require('request-promise-native');
-const Summoner = require('./riot/leagueoflegends/Summoner');
-const PerksInventory = require('./riot/leagueoflegends/inventories/Perks');
+const Summoner = require('./Summoner');
+const PerksInventory = require('./inventories/Perks');
 
 class User extends Summoner {
   constructor(d) {
