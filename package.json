@@ -2,11 +2,12 @@
   "name": "manaflux",
   "version": "2.5.0",
   "description": "Manaflux downloads automatically your runes, itemsets, and summonerspells and injects them to your League client seamlessly!",
-  "main": "main.js",
+  "main": "src/main.js",
   "scripts": {
     "build": "build --win",
     "ship": "build --win --ia32 --x64 -p always",
-    "test": "mocha ./tests"
+    "test": "mocha ./tests",
+    "start": "electron src/main.js --dev"
   },
   "keywords": [
     "League of Legends",
@@ -58,7 +59,7 @@
       "!*.md",
       "!_config.yml",
       "!docs/*",
-      "!src/assets/img/themes/unused/*"
+      "!src/views/assets/img/themes/unused/*"
     ],
     "nsis": {
       "license": "LICENSE.md"

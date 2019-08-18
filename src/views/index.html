@@ -295,7 +295,7 @@
   <script src="vendor/alertify.min.js"></script>
   <script>
   const { ipcRenderer, remote } = require('electron');
-  const LoggingHandler = new (require('../objects/handlers/LoggingHandler'))(3);
+  const LoggingHandler = new (require('../lib/handlers/LoggingHandler'))(3);
   </script>
   <script src="assets/js/ui.js"></script>
   <script src="assets/js/ui/sounds.js"></script>
@@ -303,7 +303,7 @@
   <script src="assets/js/ui/custom-components.js"></script>
   <script src="assets/js/ui/tooltips.js"></script>
   <script>
-  require('../objects/crash-reporter');
+  require('../lib/crash-reporter');
 
   window.eval = global.eval = () => console.warn(i18n.__('security-eval'));
 
@@ -314,7 +314,8 @@
     if (e.detail === 3) remote.getCurrentWindow().toggleDevTools();
   });
 
-  global.Mana = new (require('../objects/Mana'))(ipcRenderer);
+  require('../lib/preload.js');
+  global.Mana = new (require('../lib/Mana'))(ipcRenderer);
   </script>
   <script src="assets/js/ui/i18n.js"></script>
   <script src="assets/js/ui/update.js"></script>

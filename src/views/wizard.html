@@ -36,14 +36,14 @@
   </audio>
   <script src="vendor/jquery-3.3.1.min.js" onload="window.$ = window.jQuery = module.exports;"></script>
   <script>
-  require('../objects/crash-reporter');
+  require('../lib/crash-reporter');
   window.eval = global.eval = function () { throw new Error(i18n.__('eval')) };
 
   const { ipcRenderer, remote } = require('electron');
   const fs = require('fs'), path = require('path');
   const { dialog } = remote;
 
-  global.i18n = new (require('../objects/i18n'));
+  global.i18n = new (require('../lib/i18n'));
 
   ipcRenderer.on('lcu-find-path', (event, path) => {
     if (path) ipcRenderer.send('lcu-set-path', path);

@@ -47,9 +47,9 @@ class Mana {
   }
 
   async load() {
-    this.gameClient = new (require('./riot/leagueoflegends/GameClient'))();
+    this.gameClient = new (require('../controllers/riot/leagueoflegends/GameClient'))();
 
-    this.assetsProxy = new (require('./riot/leagueoflegends/GameAssetsProxy'))();
+    this.assetsProxy = new (require('../controllers/riot/leagueoflegends/GameAssetsProxy'))();
     this.remoteConnectionHandler = new (require('./handlers/RemoteConnectionHandler'))();
 
     this.alertHandler = new (require('./handlers/AlertHandler'))();
@@ -60,13 +60,13 @@ class Mana {
 
     this.overlayHandler = new (require('./handlers/OverlayHandler'))();
 
-    this.gameflow = require('./riot/leagueoflegends/Gameflow');
+    this.gameflow = require('../models/riot/leagueoflegends/Gameflow');
 
     UI.loadSettings(this);
     UI.loadCustomComponents(this);
 
     if (!this.getStore().get('league-client-path'))
-    require('../objects/Wizard')(this.devMode).on('closed', () => {
+    require('../lib/Wizard')(this.devMode).on('closed', () => {
       const path = ipcRenderer.sendSync('lcu-get-path');
       console.log('[UI] Wizard has been closed');
 
@@ -129,7 +129,7 @@ class Mana {
     if (this.user && this.user.getSummonerId() === data.summonerId) return;
     UI.status('league-client-connection');
 
-    this.user = new (require('./User'))(data);
+    this.user = new (require('../models/riot/leagueoflegends/User'))(data);
 
     global._devChampionSelect = () => new (require('../CustomGame'))().create().then(game => game.start());
     document.querySelectorAll('[data-custom-component]').forEach(x => x.dispatchEvent(new Event('userConnected')));

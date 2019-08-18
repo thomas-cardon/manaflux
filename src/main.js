@@ -3,14 +3,14 @@ const { app, BrowserWindow, ipcMain, globalShortcut, Menu, Tray } = require('ele
 /* Command line parameters */
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
 
-global.log = new (require('./objects/handlers/LoggingHandler'))(3);
-const i18n = new (require('./objects/i18n'));
+global.log = new (require('./lib/handlers/LoggingHandler'))(3);
+const i18n = new (require('./lib/i18n'));
 
 const { autoUpdater } = require('electron-updater');
 
-const LeaguePlug = require('./objects/leagueplug');
+const LeaguePlug = require('./controllers/riot/leagueoflegends/connection');
 
-require('./objects/crash-reporter');
+require('./lib/crash-reporter');
 
 let connector = new LeaguePlug();
 let win, tray;
@@ -36,7 +36,7 @@ function createWindow () {
   win = new BrowserWindow({ width: 600, height: 600, frame: false, icon: __dirname + '/build/icon.' + (process.platform === 'win32' ? 'ico' : 'png'), backgroundColor: '#000A13', maximizable: false, resizable: false, show: false, webPreferences: { nodeIntegration: true } });
 
   win.loadURL(require('url').format({
-    pathname: require('path').join(__dirname, 'src/index.html'), // important
+    pathname: require('path').join(__dirname, 'views/index.html'), // important
     protocol: 'file:',
     slashes: true,
   }));

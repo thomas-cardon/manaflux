@@ -1,5 +1,5 @@
 const rp = require('request-promise-native');
-const { ItemSet, Block } = require('../ItemSet');
+const { ItemSet, Block } = M.Models;
 const Provider = require('./Provider');
 
 /*
