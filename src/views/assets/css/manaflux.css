@@ -20,6 +20,8 @@
   width: 200px;
   height: 600px;
   background: #33333340;
+  overflow-y: scroll;
+  overflow-x: hidden;
 }
 
 #window {

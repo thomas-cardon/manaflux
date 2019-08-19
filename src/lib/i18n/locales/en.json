@@ -116,6 +116,8 @@
     "settings-logs-open-folder": "Open logs folder",
     "settings-restart-app": "Restart app",
     "settings-restart-app-button": "Restart",
+    "sidebar-runes-available": "AVAILABLE RUNES",
+    "sidebar-runes-inventory": "YOUR RUNES",
     "startup": "Startup",
     "startup-windows": "Run at Windows startup",
     "status-connected": "Connected",
