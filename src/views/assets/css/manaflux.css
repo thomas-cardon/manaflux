@@ -13,6 +13,21 @@
   src: url("../fonts/Spiegel Regular.ttf");
 }
 
+#sidebar {
+  display: none;
+  top: 0;
+  position: absolute;
+  width: 200px;
+  height: 600px;
+  background-color: beige;
+}
+
+#window {
+  position: absolute;
+  height: 600px;
+  width: 600px;
+}
+
 body {
   font-family: "beaufort-bold";
   text-transform: uppercase;
@@ -328,7 +343,7 @@ textarea:disabled {
 /* Style the tab */
 
 .tab-container {
-  position: fixed;
+  position: absolute;
   top: 0px;
   margin: 0px auto;
   width: 100%;
