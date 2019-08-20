@@ -10,12 +10,15 @@ class PerksInventory {
   }
 
   async setCurrentPage(id) {
-    return await rp({
+    await rp({
       method: 'PUT',
       uri: Mana.base + 'lol-perks/v1/currentpage',
-      body: { id },
+      body: id,
       json: true
     });
+
+    this._perks.filter(x => x.id != id).forEach(x => x.current = false);
+    this._perks.find(p => p.id == id).current = true;
   }
 
   async updatePerksPages(pages) {
