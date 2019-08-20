@@ -73,7 +73,7 @@ class Mana {
       ipcRenderer.send('lcu-connection', path);
       this.getStore().set('league-client-path', path);
 
-      document.getElementById('league-client-path').dispatchEvent(new Event('leaguePathChange'));
+      this.emit('leaguePathChange');
     });
     else ipcRenderer.send('lcu-connection', this.getStore().get('league-client-path'));
 
@@ -116,7 +116,7 @@ class Mana {
     }
 
     this.getStore().set('lastVersionSeen', this.gameClient.version);
-    document.querySelectorAll('[data-custom-component]').forEach(x => x.dispatchEvent(new Event('clientLoaded')));
+    this.emit('clientLoaded');
 
     this.alertHandler.load();
 
@@ -132,12 +132,17 @@ class Mana {
     this.user = new (require('../models/riot/leagueoflegends/User'))(data);
 
     global._devChampionSelect = () => new (require('../CustomGame'))().create().then(game => game.start());
-    document.querySelectorAll('[data-custom-component]').forEach(x => x.dispatchEvent(new Event('userConnected')));
+    this.emit('userConnected');
 
     this.championSelectHandler.loop();
     UI.status('champion-select-waiting');
 
     this.alertHandler.login();
+  }
+
+  emit(ev) {
+    if (typeof ev === 'string') ev = new Event(ev);
+    document.querySelectorAll('[data-custom-component]').forEach(x => x.dispatchEvent(ev));
   }
 
   onLeagueDisconnect() {
@@ -148,7 +153,7 @@ class Mana {
     document.getElementById('connection').style.display = 'block';
 
     UI.status('status-disconnected');
-    document.querySelectorAll('[data-custom-component]').forEach(x => x.dispatchEvent(new Event('userDisconnected')));
+    this.emit('userDisconnected');
   }
 
   updateAuthenticationTokens(data) {

@@ -82,6 +82,8 @@ class ChampionSelectHandler {
 
     await Mana.user.getPerksInventory().queryCount();
     ipcRenderer.send('champion-select-in');
+
+    Mana.emit('inChampionSelect');
   }
 
   async onChampionSelectEnd() {
@@ -102,6 +104,8 @@ class ChampionSelectHandler {
 
     if (this._hasCrashed) this._recoverCrash();
     this.loop();
+
+    Mana.emit('outChampionSelect');
   }
 
   async onChampionChange(champion) {
