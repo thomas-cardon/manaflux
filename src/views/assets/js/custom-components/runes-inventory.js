@@ -1,14 +1,14 @@
 const { Menu, MenuItem } = remote;
 const Runes = {
-  delete: async () => {
+  remove: async () => {
     if (!document.getElementById('runes-' + Runes._selected)) return console.error('Runes >> Context Menu: selected item doesn\'t exist !');
 
     try {
-      await Mana.user.getPerksInventory().deletePerkPage(Runes._selected);
+      await Mana.user.getPerksInventory().removePerkPage(Runes._selected);
       document.getElementById('runes-' + Runes._selected).remove();
     }
     catch(err) {
-      console.error('Runes >> Context Menu: couldn\'t delete rune page !');
+      console.error('Runes >> Context Menu: couldn\'t remove rune page !');
       console.error(err);
     }
   },
@@ -27,9 +27,9 @@ const Runes = {
 };
 
 const menu = new Menu();
-menu.append(new MenuItem({ label: i18n.__('ui-sidebar-runes-context-delete'), id: 'delete', click: Runes.delete }));
+menu.append(new MenuItem({ label: i18n.__('sidebar-runes-context-remove'), id: 'remove', click: Runes.remove }));
 menu.append(new MenuItem({ type: 'separator' }));
-menu.append(new MenuItem({ label: i18n.__('ui-sidebar-runes-context-select'), id: 'select', type: 'checkbox', checked: true, click: Runes.select }));
+menu.append(new MenuItem({ label: i18n.__('sidebar-runes-context-select'), id: 'select', type: 'checkbox', checked: true, click: Runes.select }));
 
 window.addEventListener('contextmenu', (e) => {
   e.preventDefault();
@@ -39,6 +39,8 @@ window.addEventListener('contextmenu', (e) => {
     Runes._selected = e.target.id.split('-')[1];
 
     menu.getMenuItemById('select').checked = Mana.user.getPerksInventory().getPerks().find(x => x.current) && Mana.user.getPerksInventory().getPerks().find(x => x.current).id == Runes._selected;
+    menu.getMenuItemById('select').enabled = !menu.getMenuItemById('select').checked;
+
     menu.popup({ window: remote.getCurrentWindow() });
   }
 }, false);

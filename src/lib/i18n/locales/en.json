@@ -118,6 +118,8 @@
     "settings-restart-app-button": "Restart",
     "sidebar-runes-available": "AVAILABLE RUNES",
     "sidebar-runes-inventory": "YOUR RUNES",
+    "sidebar-runes-context-remove": "Remove",
+    "sidebar-runes-context-select": "Set as current page",
     "startup": "Startup",
     "startup-windows": "Run at Windows startup",
     "status-connected": "Connected",
