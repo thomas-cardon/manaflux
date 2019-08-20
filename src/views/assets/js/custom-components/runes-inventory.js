@@ -4,7 +4,7 @@ const Runes = {
     if (!document.getElementById('runes-' + Runes._selected)) return console.error('Runes >> Context Menu: selected item doesn\'t exist !');
 
     try {
-      await Mana.user.getPerksInventory().removePerkPage(Runes._selected);
+      await Mana.user.getPerksInventory().deletePerkPage(Runes._selected);
       document.getElementById('runes-' + Runes._selected).remove();
     }
     catch(err) {
