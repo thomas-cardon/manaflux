@@ -1,11 +1,11 @@
 const { Menu, MenuItem } = remote;
 const Runes = {
   delete: async () => {
-    if (!document.getElementById(Runes._selected)) return console.error('Runes >> Context Menu: selected item doesn\'t exist !');
+    if (!document.getElementById('runes-' + Runes._selected)) return console.error('Runes >> Context Menu: selected item doesn\'t exist !');
 
     try {
-      await Mana.user.getPerksInventory().deletePerkPage(Runes._selected.split('-')[1]);
-      document.getElementById(Runes._selected).remove();
+      await Mana.user.getPerksInventory().deletePerkPage(Runes._selected);
+      document.getElementById('runes-' + Runes._selected).remove();
     }
     catch(err) {
       console.error('Runes >> Context Menu: couldn\'t delete rune page !');
@@ -13,11 +13,11 @@ const Runes = {
     }
   },
   select: async () => {
-    if (!document.getElementById(Runes._selected)) return console.error('Runes >> Context Menu: selected item doesn\'t exist !');
+    if (!document.getElementById('runes-' + Runes._selected)) return console.error('Runes >> Context Menu: selected item doesn\'t exist !');
 
     try {
-      await Mana.user.getPerksInventory().setCurrentPage(Runes._selected.split('-')[1]);
-      menu.getMenuItemById('checked') = true;
+      await Mana.user.getPerksInventory().setCurrentPage(Runes._selected);
+      menu.getMenuItemById('select').checked = true;
     }
     catch(err) {
       console.error('Runes >> Context Menu: couldn\'t select rune page !');
@@ -34,10 +34,11 @@ menu.append(new MenuItem({ label: i18n.__('ui-sidebar-runes-context-select'), id
 window.addEventListener('contextmenu', (e) => {
   e.preventDefault();
 
+  if (!Mana.user.isLoggedIn) return; /* Security measure in case context menu is still opened when user disconnects */
   if (e.target.id.startsWith('runes-')) {
-    Runes._selected = e.target.id;
+    Runes._selected = e.target.id.split('-')[1];
 
-    menu.getMenuItemById('select').checked = true;
+    menu.getMenuItemById('select').checked = Mana.user.getPerksInventory().getPerks().find(x => x.current) && Mana.user.getPerksInventory().getPerks().find(x => x.current).id == Runes._selected;
     menu.popup({ window: remote.getCurrentWindow() });
   }
 }, false);
