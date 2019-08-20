@@ -129,6 +129,7 @@
     "status-loading-resources": "Loading resources",
     "status-loading-storage": "Loading storage",
     "status-please-login": "Please login",
+    "status-tft": "Stopped due to Teamfight tactics",
     "summoner-spells": "Summoner Spells",
     "summoner-spells-load-button": "LOAD SUMMONER SPELLS",
     "summoner-spells-loading": "Loading summoner spells for %s (%s)",

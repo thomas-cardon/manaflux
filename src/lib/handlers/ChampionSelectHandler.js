@@ -78,6 +78,9 @@ class ChampionSelectHandler {
 
     await Mana.gameflow.update();
     console.log(`[ChampionSelectHandler] Entering into ${Mana.gameflow.getGameMode()}`);
+
+    if (Mana.gameflow.getGameMode() === 'TFT') return UI.status('status-tft');
+
     this.gameModeHandler = this.gameModeHandlers[Mana.gameflow.getGameMode()] || this.gameModeHandlers[Mana.gameflow.getMap().id] || this.gameModeHandlers.CLASSIC;
 
     await Mana.user.getPerksInventory().queryCount();
@@ -110,6 +113,7 @@ class ChampionSelectHandler {
 
   async onChampionChange(champion) {
     console.log(`[ChampionSelectHandler] Champion changed to: ${champion.name}`);
+    if (Mana.gameflow.getGameMode() === 'TFT') return UI.status('status-tft');
 
     this.onDisplayUpdatePreDownload(champion);
     if (Mana.getStore().get('champion-select-lock') && Mana.gameflow.shouldEnableLockFeature()) return UI.status('champion-select-lock');
