@@ -13,7 +13,7 @@ module.exports = {
 
     const win = new BrowserWindow({ parent: require('electron').remote.getCurrentWindow(), width: 350, height: 570, frame: false, icon: __dirname + '/build/icon.' + (process.platform === 'win32' ? 'ico' : 'png'), backgroundColor: '#000A13', maximizable: false, resizable: false, modal: true, webPreferences: { nodeIntegration: true }, show: false });
 
-    win.loadURL(`file://${__dirname}/../../../bugreports.html`);
+    win.loadURL(`file://${__dirname}/../../../feedbacks.html`);
     win.setMenu(null);
 
     win.once('ready-to-show', () => win.show());
@@ -23,7 +23,7 @@ module.exports = {
   }
 };
 
-ipcRenderer.on('bug-report', (event, data) => {
+ipcRenderer.on('feedback', (event, data) => {
   console.log('[Bug Report] Sending one..');
 
   try {
@@ -39,11 +39,11 @@ ipcRenderer.on('bug-report', (event, data) => {
         uri: 'https://manaflux-server.herokuapp.com/reports/v1',
         body: { ...data, summonerId: Mana.user.getSummonerId(), summonerName: Mana.user.getDisplayName(), gameVersion: Mana.gameClient.fullVersion, version: Mana.version, logs },
         json: true
-      }), 'bug-report-sending-status');
+      }), 'feedback-sending-status');
 
       if (d.message && d.error) UI.error(d.message);
       else if (d.error) throw UI.error(Error(d.error));
-      else if (d.statusCode === 200) UI.success(i18n.__('bug-report-sent'));
+      else if (d.statusCode === 200) UI.success(i18n.__('feedback-sent'));
     });
   }
   catch(err) {

@@ -6,7 +6,6 @@
   <link rel="stylesheet" href="assets/css/manaflux.css">
   <link rel="stylesheet" href="assets/css/components/button.css">
   <link rel="stylesheet" href="assets/css/components/settings.css">
-  <link rel="stylesheet" href="assets/css/components/loading.css">
   <link rel="stylesheet" href="assets/css/components/status.css">
   <link rel="stylesheet" href="assets/css/components/version.css">
   <link rel="stylesheet" href="assets/css/components/input.css">
@@ -22,21 +21,21 @@
   </div>
   <div class="content">
     <center>
-      <h2 class="title" data-i18n="bug-report"></h2>
+      <h2 class="title" data-i18n="feedback"></h2>
       <div class="option">
-        <p class="suboption-name" data-i18n="bug-report-type"></p>
+        <p class="suboption-name" data-i18n="feedback-type"></p>
         <select class="dropdown" id="type">
-          <option data-i18n="bug-report-error" value="error"></option>
-          <option data-i18n="bug-report-feature" value="feature"></option>
+          <option data-i18n="feedback-error" value="error"></option>
+          <option data-i18n="feedback-feature" value="feature"></option>
         </select>
       </div>
       <textarea class="textcontainer" id="text" onchange="document.getElementById('send').disabled = this.value.trim().length === 0 || document.getElementById('contact').value.trim().length === 0;" required></textarea>
       <div class="option">
-        <p class="suboption-name" data-i18n="bug-report-contact"></p>
+        <p class="suboption-name" data-i18n="feedback-contact"></p>
         <input type="text" id="contact" onchange="document.getElementById('send').disabled = this.value.trim().length === 0 || document.getElementById('text').value.trim().length === 0;" required />
       </div>
-      <p data-i18n="bug-report-consent" id="consent-note"></p>
-      <button class="btn normal" data-i18n="bug-report-send" id="send" onclick="send()" disabled></button>
+      <p data-i18n="feedback-consent" id="consent-note"></p>
+      <button class="btn normal" data-i18n="feedback-send" id="send" onclick="send()" disabled></button>
     </center>
   </div>
   <script src="vendor/jquery-3.3.1.min.js" onload="window.$ = window.jQuery = module.exports;"></script>
@@ -55,7 +54,7 @@
   global.i18n = new (require('../lib/i18n'));
 
   function send() {
-    ipcRenderer.sendTo(remote.getCurrentWindow().getParentWindow().id, 'bug-report', { text: document.getElementById('text').value.trim(), contact: document.getElementById('contact').value, type: document.getElementById('type').value });
+    ipcRenderer.sendTo(remote.getCurrentWindow().getParentWindow().id, 'feedback', { text: document.getElementById('text').value.trim(), contact: document.getElementById('contact').value, type: document.getElementById('type').value });
     remote.getCurrentWindow().close();
   }
 
