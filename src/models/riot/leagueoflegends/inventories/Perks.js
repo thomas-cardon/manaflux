@@ -65,10 +65,13 @@ class PerksInventory {
     });
   }
 
-  async deletePerkPage(page, index = this._perks.indexOf(page)) {
+  async deletePerkPage(page, index) {
+    if (typeof page !== 'object')
+      page = this._perks.find(p => p.id == page);
+
     try {
       await rp.del(Mana.base + 'lol-perks/v1/pages/' + page.id);
-      this._perks[index] = null;
+      this._perks[index || this._perks.indexOf(page)] = null;
     }
     catch(err) {
       if (err.statuscode === 404) {
