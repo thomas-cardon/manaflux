@@ -11,7 +11,7 @@ module.exports = {
   click: function(e) {
     this.disabled = true;
 
-    const win = new BrowserWindow({ parent: require('electron').remote.getCurrentWindow(), width: 350, height: 570, frame: false, icon: __dirname + '/build/icon.' + (process.platform === 'win32' ? 'ico' : 'png'), backgroundColor: '#000A13', maximizable: false, resizable: false, modal: true, show: false });
+    const win = new BrowserWindow({ parent: require('electron').remote.getCurrentWindow(), width: 350, height: 570, frame: false, icon: __dirname + '/build/icon.' + (process.platform === 'win32' ? 'ico' : 'png'), backgroundColor: '#000A13', maximizable: false, resizable: false, modal: true, webPreferences: { nodeIntegration: true }, show: false });
 
     win.loadURL(`file://${__dirname}/../../../bugreports.html`);
     win.setMenu(null);
