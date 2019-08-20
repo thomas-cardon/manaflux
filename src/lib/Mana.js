@@ -101,7 +101,8 @@ class Mana {
     document.getElementById('connection').style.display = 'none';
     UI.status('status-please-login');
 
-    this.assetsProxy.load();
+    if (!this.assetsProxy._server || !this.assetsProxy._server.listening)
+      this.assetsProxy.load();
 
     const data = await UI.indicator(Promise.all([this.gameClient.load(), this.gameClient.queryChampionSummary(), this.gameClient.querySummonerSpells()]), 'status-loading-resources');
 
