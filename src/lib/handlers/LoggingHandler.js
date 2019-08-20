@@ -157,8 +157,15 @@ LoggingHandler.prototype.onMessageCallback = function(t, arg) {
 
 LoggingHandler.prototype.send = function(level, type, ...message) {
   if (!message || message.length === 0) return;
+  let d;
 
-  let d = { level, timestamp: this._getTimestamp(), msg: message.map(x => type === 'dir' ? JSON.stringify(x) : x) };
+  try {
+    d = { level, timestamp: this._getTimestamp(), msg: message.map(x => type === 'dir' ? JSON.stringify(x) : x) };
+  }
+  catch(err) {
+    if (err.message === 'Converting circular structure to JSON') return console.log(4, 'Message avoided due to circular structure');
+    throw err;
+  }
 
   if (this[this.isRenderer ? 'ipc' : 'webContents']) this[this.isRenderer ? 'ipc' : 'webContents'].send('logging-' + type, d);
   if (this.stream) this.write(type, d);
