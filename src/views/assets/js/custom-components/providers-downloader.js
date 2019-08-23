@@ -1,5 +1,4 @@
 const { BrowserWindow } = require('electron').remote;
-const rp = require('request-promise-native');
 
 module.exports = {
   userConnected: function(e) {
@@ -12,7 +11,7 @@ module.exports = {
     this.disabled = true;
 
     let win = new BrowserWindow({ parent: require('electron').remote.getCurrentWindow(), width: 350, height: 550, frame: false, icon: __dirname + '/build/icon.' + (process.platform === 'win32' ? 'ico' : 'png'), backgroundColor: '#000A13', maximizable: false, resizable: false, modal: true, show: false, webPreferences: { nodeIntegration: true } });
-  
+
     win.loadURL(require('url').format({
       pathname: require('path').join(__dirname, '/../../../downloader.html'), // important
       protocol: 'file:',
