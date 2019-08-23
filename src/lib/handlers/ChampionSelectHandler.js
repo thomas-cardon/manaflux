@@ -39,6 +39,17 @@ class ChampionSelectHandler {
       }
     };
 
+    document.getElementById('positions').onfocus = function() {
+      this.oldValue = this.value;
+    }
+
+    document.getElementById('positions').onchange = function() {
+      console.log('[ChampionSelect] Selected position:', this.value.toUpperCase());
+      Mana.emit('positionChange', { old: this.oldValue, value: this.value });
+
+      this.oldValue = this.value;
+    };
+
     ipcRenderer.on('perks-shortcut', this.onShortcutPressedEvent);
   }
 
@@ -105,6 +116,8 @@ class ChampionSelectHandler {
   async onChampionChange(champion) {
     console.log(`[ChampionSelectHandler] Champion changed to: ${champion.name}`);
     if (Mana.gameflow.getGameMode() === 'TFT') return UI.status('status-tft');
+
+    Mana.emit('championChanged', champion);
 
     this.onDisplayUpdatePreDownload(champion);
     if (Mana.getStore().get('champion-select-lock') && Mana.gameflow.shouldEnableLockFeature()) return UI.status('champion-select-lock');
@@ -226,10 +239,6 @@ class ChampionSelectHandler {
     this._lastChampionPicked = champion.id;
 
     const self = this;
-    document.getElementById('positions').onchange = function() {
-      console.log('[ChampionSelect] Selected position:', this.value.toUpperCase());
-      self.onPerkPositionChange(champion, this.value.toUpperCase(), res.roles[this.value.toUpperCase()]);
-    };
 
     // Sets value and checks if it's not null, if it is then let's stop everything
     if (!(document.getElementById('positions').value = res.roles[this.getPosition()] ? this.gameModeHandler.getPosition(this.getPosition()) : Object.keys(res.roles).filter(x => res.roles[x].perks.length > 0)[0])) {
@@ -241,7 +250,6 @@ class ChampionSelectHandler {
   }
 
   treatPerkPages(role, perks) {
-    console.log('position-' + role);
     if (!document.getElementById('position-' + role)) return console.error(`ChampionSelectHandler >> Role ${role} doesn\'t exist!`);
 
     document.getElementById('position-' + role).style.display = '';
