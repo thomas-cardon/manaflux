@@ -143,8 +143,8 @@ class Mana {
     this.alertHandler.login();
   }
 
-  emit(ev) {
-    if (typeof ev === 'string') ev = new Event(ev);
+  emit(ev, x) {
+    if (typeof ev === 'string') ev = new CustomEvent(ev, { detail: x });
     document.querySelectorAll('[data-custom-component]').forEach(x => x.dispatchEvent(ev));
   }
 
