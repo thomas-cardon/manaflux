@@ -1,6 +1,8 @@
+const path = require('path');
+
 class ChampionSelectHandler {
   constructor() {
-    this.path = require('path').join(require('electron').remote.app.getPath('userData'), '\\ChampionData');
+    this.path = path.join(require('electron').remote.app.getPath('userData'), '\\ChampionData');
     this._cache = {};
   }
 
