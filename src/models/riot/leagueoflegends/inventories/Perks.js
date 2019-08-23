@@ -74,7 +74,7 @@ class PerksInventory {
 
     try {
       await rp.del(Mana.base + 'lol-perks/v1/pages/' + page.id);
-      this._perks[index || this._perks.indexOf(page)] = null;
+      delete this._perks[index || this._perks.indexOf(page)];
     }
     catch(err) {
       if (err.statuscode === 404) {
