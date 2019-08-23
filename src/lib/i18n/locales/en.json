@@ -120,6 +120,7 @@
     "sidebar-runes-inventory": "YOUR RUNES",
     "sidebar-runes-context-remove": "Remove",
     "sidebar-runes-context-select": "Set as current page",
+    "sidebar-runes-context-transfer": "Transfer",
     "startup": "Startup",
     "startup-windows": "Run at Windows startup",
     "status-connected": "Connected",
