@@ -1,0 +1,36 @@
+body {
+  height: 100%;
+}
+
+#loading {
+  width: 6%;
+  bottom: 13px;
+  right: 15px;
+}
+
+#consent-note {
+  color: #fdcb6e;
+  font-size: 13px;
+  margin-top: 25px;
+  letter-spacing: 0.025rem;
+}
+
+.title {
+  color: #fff;
+  margin-top: 20px;
+}
+
+.option {
+  float: none;
+  width: 100%;
+}
+
+.controls {
+  margin-top: 0;
+}
+
+.textcontainer {
+  font-family: "beaufort-bold";
+  width: 80%;
+  min-height: 200px;
+}

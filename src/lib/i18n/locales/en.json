@@ -121,6 +121,8 @@
     "sidebar-runes-context-remove": "Remove",
     "sidebar-runes-context-select": "Set as current page",
     "sidebar-runes-context-transfer": "Transfer",
+    "sidebar-rune-pages-chooser": "Choose the rune pages you'd want Manaflux to update",
+    "sidebar-rune-pages-chooser-title": "Choose rune pages",
     "startup": "Startup",
     "startup-windows": "Run at Windows startup",
     "status-connected": "Connected",
