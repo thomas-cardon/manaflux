@@ -62,6 +62,8 @@ class Mana {
 
     this.gameflow = require('../models/riot/leagueoflegends/Gameflow');
 
+    this.helpers = { DataValidator: new (require('./helpers/DataValidator'))() };
+
     UI.loadSettings(this);
     UI.loadCustomComponents(this);
 
