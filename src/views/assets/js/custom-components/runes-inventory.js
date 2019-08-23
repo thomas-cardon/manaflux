@@ -112,7 +112,7 @@ function trigger(now) {
       $('#runesInventory').children().remove();
 
       for (let perk of perks)
-        $('#runesInventory').append(`<li class="ui-state-default sidebar-button ui-sortable-handle" id="runes-${perk.id}">${perk.name}</li>`);
+        $('#runesInventory').append(`<li class="sidebar-button ui-sortable-handle" id="runes-${perk.id}">${perk.name}</li>`);
 
       $('#runesInventory').sortable('refresh');
       trigger();
