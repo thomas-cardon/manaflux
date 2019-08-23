@@ -58,7 +58,11 @@ class DataValidator {
     }
 
     for (const [roleName, role] of Object.entries(data.roles)) {
-      role.perks.forEach(x => delete x.name);
+      for (let i = 0; i > role.perks.length; i++) {
+        delete role.perks[i]._manaMeta;
+        delete role.perks[i].name;
+      }
+
       role.itemsets = role.itemsets.map(x => x._data ? x.build(false, false) : ItemSetHandler.parse(Mana.gameClient.champions[data.championId].key, x, x.provider).build(false, false));
     }
 
@@ -89,6 +93,7 @@ class DataValidator {
       console.log(`[DataValidator] Page check >> Validating perk pages from ${provider.name}, for ${champion.name} - ${role}`);
 
       page.name = `${provider.getCondensedName() || 'XXX'}${array.length > 1 ? i + 1 : ''} ${champion.name} > ${UI.stylize(role)}${page.suffixName ? ' ' + page.suffixName : ''}`;
+      page._manaMeta = { id: `c${champion.id}-${provider.getCondensedName()}-${UI.stylize(role)}-${i}`.toLowerCase() };
 
       page.primaryStyleId = parseInt(page.primaryStyleId || Mana.gameClient.findPerkStyleByPerkId(page.selectedPerkIds[0]).id);
       page.subStyleId = parseInt(page.subStyleId || Mana.gameClient.findPerkStyleByPerkId(page.selectedPerkIds[4]).id);
