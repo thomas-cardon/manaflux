@@ -50,8 +50,16 @@ module.exports = {
   load: function(Mana) {
     $('#runesInventory').sortable({
       connectWith: '#availableRunes',
-      update: function( event, ui ) {
+      receive: function(event, ui) {
+        if (ui.sender[0].id !== 'availableRunes') return;
         console.dir(arguments);
+
+        let page = searchRunePages(Mana.championSelectHandler._cachedData, ui.item[0].textContent);
+
+        if (!page) {
+          console.log('Runes Inventory >> Page not found! Reverting...');
+          $(ui.sender).sortable('cancel');
+        }
       }
     });
   },
@@ -83,4 +91,9 @@ function trigger(now) {
       trigger();
     });
   }, now ? 0 : timer);
+}
+
+function searchRunePages(data, name) {
+  if (!data) return null;
+  return Object.values(data.roles).find(x => x.perks.find(y => y.name === name));
 }
