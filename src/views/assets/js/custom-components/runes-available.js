@@ -15,7 +15,7 @@ const AvailableRunes = UI.sidebar.runesList = {
   add: page => {
     if (document.getElementById(page._manaMeta.id)) return;
     AvailableRunes.cached[page._manaMeta.id] = page;
-    document.getElementById('availableRunes').innerHTML += `<li id="${page._manaMeta.id}" + class="ui-state-default sortable-button ui-sortable-handle">${page.name}</li>`;
+    document.getElementById('availableRunes').innerHTML += `<li id="${page._manaMeta.id}" + class="ui-state-default sidebar-button ui-sortable-handle">${page.name}</li>`;
   },
   remove: page => {
     console.error('Runes >> Context Menu: method not working yet !');

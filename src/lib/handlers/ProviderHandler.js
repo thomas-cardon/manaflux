@@ -5,17 +5,20 @@ const { EventEmitter } = require('events');
 class ProviderHandler {
   constructor() {
     this._cache = [];
-    this.providers = {
-      championgg: new (require('../providers/ChampionGG'))(),
-      opgg: new (require('../providers/OPGG'))(),
-      opgg_urf: new (require('../providers/OPGG_URF'))(),
-      leagueofgraphs: new (require('../providers/LeagueofGraphs'))(),
-      metasrc: new (require('../providers/METAsrc'))(),
-      ugg: new (require('../providers/UGG'))(),
-      flux: new (require('../providers/Flux'))()
-    };
 
     this.downloads = new EventEmitter();
+
+    this.providers = {
+      championgg: new (require('../providers/ChampionGG'))(this.downloads),
+      opgg: new (require('../providers/OPGG'))(this.downloads),
+      opgg_urf: new (require('../providers/OPGG_URF'))(this.downloads),
+      leagueofgraphs: new (require('../providers/LeagueofGraphs'))(this.downloads),
+      metasrc: new (require('../providers/METAsrc'))(this.downloads),
+      ugg: new (require('../providers/UGG'))(this.downloads),
+      flux: new (require('../providers/Flux'))(this.downloads)
+    };
+
+    Object.values(this.providers).forEach(x => x._dataValidator = DataValidator);
   }
 
   getProvider(x) {
@@ -68,52 +71,63 @@ class ProviderHandler {
     console.log(3, '[ProviderHandler] Downloading from providers');
 
     /* 2/5 - Downloading */
-    if (gameModeHandler.getProviders() !== null) providers = providers.filter(x => gameModeHandler.getProviders() === null || gameModeHandler.getProviders().includes(x)).slice(0, 1);
+    if (gameModeHandler.getProviders() !== null) providers = providers.filter(x => gameModeHandler.getProviders() === null || gameModeHandler.getProviders().includes(x));
 
     console.log('[ProviderHandler] Using providers: ', providers.map(x => this.providers[x].name).join(' => '));
 
-    let positions;
-    if (preferredPosition)
+    let positions;/*
+    if (preferredPosition && gameMode === 'CLASSIC')
       positions = [...new Set(preferredPosition, 'TOP', 'MIDDLE', 'JUNGLE', 'ADC', 'SUPPORT')];
     else if (gameMode === 'CLASSIC')
-      positions = ['TOP', 'MIDDLE', 'JUNGLE', 'ADC', 'SUPPORT'];
+      positions = ['TOP', 'MIDDLE', 'JUNGLE', 'ADC', 'SUPPORT'];*/
+    positions = ['TOP'];
 
     console.log('ProviderHandler >> Positions chosen in the order:', positions.join(' => '));
+    data.roles = {
+      TOP: { perks: [], summonerspells: [], itemsets: [] },
+      MIDDLE: { perks: [], summonerspells: [], itemsets: [] },
+      JUNGLE: { perks: [], summonerspells: [], itemsets: [] },
+      ADC: {perks: [], summonerspells: [], itemsets: [] },
+      SUPPORT: { perks: [], summonerspells: [], itemsets: [] }
+    };
 
-    var BreakException = {};
-
-    try {
-      await this.asyncForEach(providers, async (provider, index, array) => {
-        provider = this.providers[provider];
-        console.log(2, `[ProviderHandler] Using ${provider.name}`);
-
-        if (positions) this.asyncForEach(positions, async pos => this.process(provider, gameMode, champion, pos, data, index + 1, array.length));
-        else await this.process(provider, gameMode, champion, undefined, data);
-      });
-    }
-    catch(e) {
-      if (e !== BreakException) throw e;
+    let Settings = {
+      maxPerkPagesPerRole: 2
     }
 
-    Mana.championSelectHandler.onDownloadFinished(data);
+    this.downloads.on('data', (provider, type, d, role) => {
+      console.log('ProviderHandler >> Received data');
+      console.dir([provider, type, d, role]);
 
-    /* 4/5 - Saving to offline cache
-       5/5 - Uploading to online cache */
-    if (cache) this._cache.push(data);
+      if (type === 'perks' && data.roles[role].perks.length < Settings.maxPerkPagesPerRole) {
+        data.roles[role].perks = d.slice(0, Settings.maxPerkPagesPerRole);
+
+        if (Mana.championSelectHandler._inChampionSelect)
+          Mana.championSelectHandler.treatPerkPages(role, data.roles[role].perks);
+      }
+    });
+
+    providers.forEach(async (provider, index, array) => {
+      provider = this.providers[provider];
+      console.log(2, `[ProviderHandler] Using ${provider.name}`);
+
+      if (positions) positions.forEach(pos => this.process(provider, gameMode, champion, pos, data, index + 1, array.length));
+      else await this.process(provider, gameMode, champion, undefined, data);
+    });
+
+    setTimeout(() => {
+      Mana.championSelectHandler.onDownloadFinished(data);
+
+      /* 4/5 - Saving to offline cache
+      5/5 - Uploading to online cache */
+      //if (cache) this._cache.push(data);
+    }, 10000);
   }
 
   async process(provider, gameMode, champion, position, data = {}, x, y) {
     try {
       // TODO: status is removed every time download finishes, user doesn't have time to read status
-
       let d = await UI.status(provider.request(gameMode, champion, position), i18n.__('providers-downloader-downloading-from', provider.name, x, y));
-
-      if (data && d) data = this._merge(data, d);
-
-      DataValidator.onDataChange(data, provider.id, gameMode);
-      data = DataValidator.onDataDownloaded(data, champion);
-
-      Mana.championSelectHandler.onDataUpdate(champion, data);
     }
     catch(err) {
       console.log(`ProviderHandler >> Something happened while downloading data! (${provider.name}) - ${champion.name} - ${position}`);

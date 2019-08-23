@@ -29,11 +29,12 @@
 <body>
   <div id="sidebar" data-custom-component="sidebar">
     <div id="availableRunesLabel" data-i18n="sidebar-runes-available" style="color: #fff; text-align: center; width: 200px; margin-top: 6px; display: none;"></div>
-    <ul id="availableRunes" class="sortable ui-sortable" data-custom-component="runes-available" style="list-style: none !important;font-size: 12px;margin-top: 5%;margin-left: 5%; display: none;">
+    <ul id="availableRunes" class="sortable ui-sortable" data-custom-component="runes-available" style="list-style: none !important;font-size: 12px;margin-top: 5%;margin-left: 5%; width: 94%; display: none;">
     </ul>
     <div data-i18n="sidebar-runes-inventory" style="color: #fff; text-align: center; width: 200px; margin-top: 6px;"></div>
-    <ul id="runesInventory" class="sortable ui-sortable" data-custom-component="runes-inventory" style="list-style: none !important;font-size: 12px;margin-top: 5%;margin-left: 5%;">
+    <ul id="runesInventory" class="sortable ui-sortable" data-custom-component="runes-inventory" style="list-style: none !important;font-size: 12px;margin-top: 5%;margin-left: 5%;min-height: 100px;border: 1px solid #b88d35;width: 94%;">
     </ul>
+    <p id="runes-inventory-placeholder" style="color: #fff; text-align: center;">Vous n'avez aucune pages de runes.</p>
   </div>
   <div id="window">
     <video id="smokeAnimation" style="z-index: -30; position: absolute; display: none;" loop><source src="assets/video/smoke.webm" type="video/webm">
@@ -68,7 +69,14 @@
           <img src="assets/img/underline.png" draggable="false">
         </div>
         <div id="buttons" style="display: none;">
-          <select style="display: none; margin-bottom: -14px;" id="positions" class="dropdown xs"></select>
+          <select style="display: none; margin-bottom: -14px;" id="positions" class="dropdown xs">
+            <option id="position-MIDDLE" value="MIDDLE">Mid</option>
+            <option id="position-TOP" value="TOP">Top</option>
+            <option id="position-JUNGLE" value="JUNGLE">Jungle</option>
+            <option id="position-ADC" value="ADC">ADC</option>
+            <option id="position-SUPPORT" value="SUPPORT">Support</option>
+            <option id="position-ARAM" value="ARAM">ARAM</option>
+          </select>
           <button type="button" class="btn normal" data-i18n="summoner-spells-load-button" id="loadSummonerSpells"></button>
           <button type="button" class="btn normal" data-i18n="perks-load-button" id="loadRunes"></button>
         </div>

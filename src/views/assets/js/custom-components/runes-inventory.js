@@ -1,4 +1,5 @@
 const { Menu, MenuItem } = remote;
+
 const Runes = {
   remove: async () => {
     if (!document.getElementById('runes-' + Runes._selected)) return console.error('Runes >> Context Menu: selected item doesn\'t exist !');
@@ -48,18 +49,43 @@ window.addEventListener('contextmenu', (e) => {
 let timer = 0;
 module.exports = {
   load: function(Mana) {
+    const { DataValidator } = Mana.helpers;
+
     $('#runesInventory').sortable({
       connectWith: '#availableRunes',
+      over: function() {
+        $('#runes-inventory-placeholder').hide();
+      },
+      out: function() {
+          $('#runes-inventory-placeholder').show();
+      },
+      stop: function() {
+          $('#runes-inventory-placeholder').remove();
+      },
       receive: function(event, ui) {
         if (ui.sender[0].id !== 'availableRunes') return;
         console.dir(arguments);
 
-        let page = searchRunePages(Mana.championSelectHandler._cachedData, ui.item[0].textContent);
+        let page = UI.sidebar.runesList.cached[ui.item[0].id];
 
         if (!page) {
-          console.log('Runes Inventory >> Page not found! Reverting...');
-          $(ui.sender).sortable('cancel');
+          console.log('Runes Inventory >> Page not found! Aborting');
+          return $(ui.sender).sortable('cancel');
         }
+        else if (Mana.user.getPerksInventory().getPerks().length === Mana.user.getPerksInventory().getCount()) {
+          console.log('Runes Inventory >> Reach maximum perk pages, aborting');
+          return $(ui.sender).sortable('cancel');
+        }
+
+        Mana.user.getPerksInventory().createPerkPage(DataValidator.getLeagueReadablePerkPage(page)).then(() => {
+          console.log('Runes Inventory >> Successfully injected rune page');
+        }).catch(err => {
+          console.log('Runes Inventory >> Something happened while injecting rune page');
+          console.error(err);
+          $(ui.sender).sortable('cancel');
+        });
+
+        console.dir(page);
       }
     });
   },
@@ -86,14 +112,10 @@ function trigger(now) {
       $('#runesInventory').children().remove();
 
       for (let perk of perks)
-        $('#runesInventory').append(`<li class="ui-state-default sortable-button ui-sortable-handle" id="runes-${perk.id}">${perk.name}</li>`);
+        $('#runesInventory').append(`<li class="ui-state-default sidebar-button ui-sortable-handle" id="runes-${perk.id}">${perk.name}</li>`);
+
       $('#runesInventory').sortable('refresh');
       trigger();
     });
   }, now ? 0 : timer);
-}
-
-function searchRunePages(data, name) {
-  if (!data) return null;
-  return Object.values(data.roles).find(x => x.perks.find(y => y.name === name));
 }

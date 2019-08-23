@@ -14,29 +14,23 @@ let fixes = {
 };
 
 class ChampionGGProvider extends Provider {
-  constructor() {
-    super('championgg', 'ChampionGG');
+  constructor(emitter) {
+    super('championgg', 'ChampionGG', emitter);
 
     this.base = 'https://champion.gg/';
-    this.cachedPositions = {};
   }
 
-  async request(gameMode, champion, position) {
-    console.log(2, `${this.name} >> Requesting ${champion.name} - POS/${position} - GM/${gameMode}`);
+  async request(gameMode, champion, role) {
+    console.log(2, `${this.name} >> Requesting ${champion.name} - POS/${role} - GM/${gameMode}`);
 
     try {
       const res = await rp(`${this.base}champion/${champion.key}`);
-      const d = this._scrape(res, champion, gameMode, position);
+      const d = this._scrape(res, champion, gameMode, role);
 
-      if (d.availablePositions)
-        this.cachedPositions[champion.id] = d.availablePositions;
-
-      delete d.availablePositions;
-
-      return { roles: { [position]: d } };
+      return { roles: { [role]: d } };
     }
     catch(err) {
-      console.log(`[ProviderHandler] [Champion.GG] Something happened while gathering data (${position.name})`);
+      console.log(`[ProviderHandler] [Champion.GG] Something happened while gathering data (${role.name})`);
 
       if (err.toString().includes('Data is outdated')) {
         throw UI.error('providers-error-outdated', this.name);
@@ -45,22 +39,42 @@ class ChampionGGProvider extends Provider {
     }
   }
 
-  _scrape(html, champion, gameMode, position, statsHtml) {
+  _scrape(html, champion, gameMode, role, statsHtml) {
     const $ = cheerio.load(html);
 
     if ($('.matchup-header').eq(0).text().trim() === "We are still gathering data for this stat, please check again later!") throw UI.error('providers-error-outdated', this.name);
-    const availablePositions = [];
 
-    const summonerspells = this.scrapeSummonerSpells($, gameMode);
+    try {
+      const summonerspells = this.scrapeSummonerSpells($, gameMode);
+      this.sendSummonerSpells(summonerspells, champion, role);
+    }
+    catch(err) {
+      console.error('[Champion.GG] Something happened while downloading perk pages');
+      console.error(err);
+    }
 
-    const skillorder = this.scrapeSkillOrder($);
-    const itemsets = this.scrapeItemSets($, champion, position, skillorder);
+    try {
+      const skillorder = this.scrapeSkillOrder($);
+      const itemsets = this.scrapeItemSets($, champion, role, skillorder);
+      this.sendItemSets(itemsets, champion, role);
+    }
+    catch(err) {
+      console.error('[Champion.GG] Something happened while downloading itemsets');
+      console.error(err);
+    }
 
-    let perks = this.scrapePerks($, champion, position);
+    try {
+      const perks = this.scrapePerks($, champion, role);
+      this.sendPerkPages(perks, champion, role);
+    }
+    catch(err) {
+      console.error('[Champion.GG] Something happened while downloading perk pages');
+      console.error(err);
+    }
 
-    let statistics = statsHtml ? this.scrapeStatistics($, statsHtml, champion, position) : {};
+    let statistics = statsHtml ? this.scrapeStatistics($, statsHtml, champion, role) : {};
 
-    return { perks, summonerspells, itemsets, availablePositions, gameMode, statistics };
+    return { gameMode, statistics };
   }
 
   /**
@@ -135,11 +149,11 @@ class ChampionGGProvider extends Provider {
   * Scrapes item sets from a Champion.gg page
   * @param {cheerio} $ - The cheerio object
   * @param {object} champion - A champion object, from Mana.gameClient.champions
-  * @param {string} position - Limited to: TOP, JUNGLE, MIDDLE, ADC, SUPPORT
+  * @param {string} role - Limited to: TOP, JUNGLE, MIDDLE, ADC, SUPPORT
   * @param {object} skillorder
   */
-  scrapeItemSets($, champion, position, skillorder) {
-    let itemset = new ItemSet(champion.key, position.toUpperCase(), this.id).setTitle(`CGG ${champion.name} - ${position}`);
+  scrapeItemSets($, champion, role, skillorder) {
+    let itemset = new ItemSet(champion.key, role.toUpperCase(), this.id).setTitle(`CGG ${champion.name} - ${role}`);
 
     $('.build-wrapper').each(function(index) {
       const type = $(this).parent().find('h2').eq(index % 2).text();

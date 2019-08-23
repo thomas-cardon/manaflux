@@ -24,6 +24,25 @@
   overflow-x: hidden;
 }
 
+.sidebar-button {
+  font-weight: normal ;
+  color: #cdbe91 ;
+  cursor: pointer ;
+  padding: 9px ;
+  border-top: 1px solid #1f2123 ;
+  text-overflow: ellipsis ;
+  white-space: nowrap ;
+  height: 20px ;
+  margin-top: 5px ;
+  background-color: rgba(30, 35, 40, 0.5) ;
+  border: 1px solid transparent ;
+  border-image: linear-gradient(to top, #695625 0%, #A9852D 23%, #B88D35 93%, #C8AA6E 100%) 1;
+}
+
+.sidebar-button:first-child {
+  margin-top: 0 !important;
+}
+
 #window {
   position: absolute;
   height: 600px;
@@ -54,8 +73,7 @@ footer > * {
 }
 
 #buttons {
-  position: fixed;
-  bottom: 50px;
+  margin-top: 38%;
   width: 100%;
 }
 

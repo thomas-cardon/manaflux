@@ -16,14 +16,8 @@ class DataValidator {
     });
   }
 
-  isEmpty(myObject) {
-    for(var key in myObject) {
-        if (myObject.hasOwnProperty(key)) {
-            return false;
-        }
-    }
-
-    return true;
+  getLeagueReadablePerkPage(page) {
+    return { name: page.name, primaryStyleId: page.primaryStyleId, subStyleId: page.subStyleId, selectedPerkIds: page.selectedPerkIds };
   }
 
   onDataDownloaded(data, champion) {
@@ -80,12 +74,12 @@ class DataValidator {
   /*
   * Ensure every rune is at its slot, that styles are the good ones, creates page names, etc.
   */
-  onPerkPagesCheck(array, champion, role) {
+  checkPerkPages(array, champion, role, provider) {
     array = array.filter(x => x.selectedPerkIds && x.selectedPerkIds.length >= 6);
 
     for (let i = 0; i < array.length; i++) {
       const page = array[i];
-      const provider = Mana.providerHandler.getProvider(page.provider);
+      provider = provider || Mana.providerHandler.getProvider(page.provider);
 
       console.log(3, '[DataValidator] Page check >> Outputting page before changing it');
       console.dir(3, page);
@@ -144,7 +138,7 @@ class DataValidator {
     return array;
   }
 
-  onItemSetsCheck(array, champion, role) {
+  checkItemSets(array, champion, role) {
     let indexes = {};
 
     return array.map((x, index) => {
@@ -189,6 +183,16 @@ class DataValidator {
     console.log(`[DataValidator] Summoner Spells >> Done: ${data.length} spells validated`);
 
     return data;
+  }
+
+  isEmpty(myObject) {
+    for(var key in myObject) {
+        if (myObject.hasOwnProperty(key)) {
+            return false;
+        }
+    }
+
+    return true;
   }
 
   _hasDuplicates(array) {

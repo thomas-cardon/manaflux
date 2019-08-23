@@ -6,8 +6,8 @@ const Provider = require('./Provider');
 * This provider uses an internal private API directly from U.GG. It can (and probably will) change without warning.
 */
 class UGGProvider extends Provider {
-  constructor() {
-    super('ugg', 'U.GG');
+  constructor(emitter) {
+    super('ugg', 'U.GG', emitter);
 
     // These variables can't change without warning. See here https://gist.github.com/paolostyle/fe8ce06313d3e53c134a24762b9e519c
     this.dataVersion = '1.2';

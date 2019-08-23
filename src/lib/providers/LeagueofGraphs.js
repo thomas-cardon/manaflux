@@ -3,8 +3,8 @@ const { ItemSet, Block } = M.Models;
 const Provider = require('./Provider');
 
 class LeagueofGraphsProvider extends Provider {
-  constructor() {
-    super('leagueofgraphs', 'League of Graphs');
+  constructor(emitter) {
+    super('leagueofgraphs', 'League of Graphs', emitter);
 
     this.base = 'https://www.leagueofgraphs.com/champions';
   }

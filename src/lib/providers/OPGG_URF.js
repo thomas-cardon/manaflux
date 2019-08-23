@@ -3,8 +3,8 @@ const { ItemSet, Block } = M.Models;
 const Provider = require('./Provider');
 
 class OPGG_URFProvider extends Provider {
-  constructor() {
-    super('opgg_urf', 'OP.GG (URF!)');
+  constructor(emitter) {
+    super('opgg_urf', 'OP.GG (URF!)', emitter);
     this.base = 'https://www.op.gg/urf';
   }
 

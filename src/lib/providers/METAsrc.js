@@ -3,8 +3,8 @@ const { ItemSet, Block } = M.Models;
 const Provider = require('./Provider');
 
 class METAsrcProvider extends Provider {
-  constructor() {
-    super('metasrc', 'METAsrc');
+  constructor(emitter) {
+    super('metasrc', 'METAsrc', emitter);
 
     this.base = 'https://www.metasrc.com/';
     this.cachedPositions = {};

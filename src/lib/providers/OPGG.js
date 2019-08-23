@@ -3,8 +3,8 @@ const { ItemSet, Block } = M.Models;
 const Provider = require('./Provider');
 
 class OPGGProvider extends Provider {
-  constructor() {
-    super('opgg', 'OP.GG');
+  constructor(emitter) {
+    super('opgg', 'OP.GG', emitter);
 
     this.base = 'https://www.op.gg';
     this.cachedPositions = {};

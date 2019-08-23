@@ -42,15 +42,6 @@ class ChampionSelectHandler {
     ipcRenderer.on('perks-shortcut', this.onShortcutPressedEvent);
   }
 
-  onDataUpdate(champion, data) {
-    console.log(3, 'ChampionSelectHandler >> Data update');
-    console.dir(data);
-
-    if (!this._inChampionSelect || this._lastChampionPicked != champion.id) return;
-
-    this.onDisplayUpdate(champion, data);
-  }
-
   async onDownloadFinished(res) {
     console.log(3, 'ChampionSelectHandler >> Download has finished');
     console.dir(res);
@@ -202,7 +193,7 @@ class ChampionSelectHandler {
     catch(err) {
       if (err.statusCode === 404 && this._inChampionSelect) await this.onChampionSelectEnd();
       else if (err.statusCode === 404 && !this._inChampionSelect) this.loop();
-      else if (err.cause.code !== 'ECONNREFUSED' && err.cause.code !== 'ECONNRESET' && err.cause.code !== 'EPROTO') return this._onCrash(err);
+      else if (!err.cause || err.cause.code !== 'ECONNREFUSED' && err.cause.code !== 'ECONNRESET' && err.cause.code !== 'EPROTO') throw err;
     }
   }
 
@@ -217,9 +208,6 @@ class ChampionSelectHandler {
     UI.status('champion-select-updating-display', champion.name);
 
     document.getElementById('buttons').style.display = 'none';
-    while (document.getElementById('positions').firstChild) {
-      document.getElementById('positions').removeChild(document.getElementById('positions').firstChild);
-    }
 
     $('#loadRunes, #loadSummonerSpells').disableManualButton(true);
 
@@ -236,13 +224,6 @@ class ChampionSelectHandler {
     if (!res || Object.keys(res.roles).length === 0) return;
 
     this._lastChampionPicked = champion.id;
-    console.dir(res);
-
-    Array.from(document.getElementById('positions').childNodes).filter(x => !Object.keys(res.roles).includes(x.id.split('-')[1])).forEach(x => document.getElementById('positions').removeChild(x));
-    Object.keys(res.roles).filter(x => res.roles[x].perks.length > 0 && !document.getElementById(`position-${x}`)).forEach(r => {
-      console.log('[ChampionSelect] Added position:', r);
-      document.getElementById('positions').innerHTML += `<option id="position-${r}" value="${r}">${UI.stylizeRole(r)}</option>`;
-    });
 
     const self = this;
     document.getElementById('positions').onchange = function() {
@@ -256,14 +237,18 @@ class ChampionSelectHandler {
       throw this._onCrash(i18n.__('champion-select-error-empty'));
     }
 
-    Object.values(res.roles).map(x => x.perks).forEach(x => x.forEach(y => UI.sidebar.runesList.add(y)));
+    UI.tray(false);
+  }
 
-    document.getElementById('positions').onchange();
+  treatPerkPages(role, perks) {
+    console.log('position-' + role);
+    if (!document.getElementById('position-' + role)) return console.error(`ChampionSelectHandler >> Role ${role} doesn\'t exist!`);
+
+    document.getElementById('position-' + role).style.display = '';
+    perks.forEach(UI.sidebar.runesList.add);
 
     document.getElementById('positions').style.display = 'unset';
     document.getElementById('buttons').style.display = 'block';
-
-    UI.tray(false);
   }
 
   onPerkPositionChange(champion, position, data) {
@@ -326,6 +311,7 @@ class ChampionSelectHandler {
     UI.disableHextechAnimation();
 
     document.getElementById('positions').style.display = document.getElementById('buttons').style.display = 'none';
+    Array.from(document.getElementById('positions').childNodes).filter(x => x.nodeName === 'OPTION').forEach(x => x.style.display = 'none');
 
     $('#loadRunes').disableManualButton(!Mana.getStore().get('perks-automatic-load'));
     $('#loadSummonerSpells').disableManualButton(true);
