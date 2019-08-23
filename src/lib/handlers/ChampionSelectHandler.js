@@ -256,6 +256,8 @@ class ChampionSelectHandler {
       throw this._onCrash(i18n.__('champion-select-error-empty'));
     }
 
+    Object.values(res.roles).map(x => x.perks).forEach(x => x.forEach(y => UI.sidebar.runesList.add(y)));
+
     document.getElementById('positions').onchange();
 
     document.getElementById('positions').style.display = 'unset';
