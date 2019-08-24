@@ -36,6 +36,10 @@ class AlertHandler {
   }
 
   _alert(message) {
+    /* Prevent spamming same message */
+    if (this._message === message) return;
+
+    this._message = message;
     alertify.warning(message);
   }
 }
