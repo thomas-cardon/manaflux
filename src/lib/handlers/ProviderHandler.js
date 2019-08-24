@@ -80,7 +80,7 @@ class ProviderHandler {
       positions = [...new Set(preferredPosition, 'TOP', 'MIDDLE', 'JUNGLE', 'ADC', 'SUPPORT')];
     else if (gameMode === 'CLASSIC')
       positions = ['TOP', 'MIDDLE', 'JUNGLE', 'ADC', 'SUPPORT'];*/
-    positions = ['TOP'];
+    positions = ['TOP', 'MIDDLE'];
 
     console.log('ProviderHandler >> Positions chosen in the order:', positions.join(' => '));
     data.roles = {
@@ -101,11 +101,19 @@ class ProviderHandler {
 
       if (type === 'perks' && data.roles[role].perks.length < Settings.maxPerkPagesPerRole) {
         data.roles[role].perks = d.slice(0, Settings.maxPerkPagesPerRole);
-
-        if (Mana.championSelectHandler._inChampionSelect)
-          Mana.championSelectHandler.treatPerkPages(role, data.roles[role].perks);
       }
     });
+
+    let ended = [];
+    this.downloads.on('provider-ended', provider => {
+      ended.push(provider.id);
+
+      if (ended.length !== providers.length || !Mana.championSelectHandler._inChampionSelect) return;
+      console.log('ProviderHandler >> Download is done. Passing data to ChampionSelectHandler');
+
+      Mana.championSelectHandler.onDataReceived(data);
+      //if (cache) this._cache.push(data);
+    })
 
     providers.forEach(async (provider, index, array) => {
       provider = this.providers[provider];
@@ -114,14 +122,6 @@ class ProviderHandler {
       if (positions) positions.forEach(pos => this.process(provider, gameMode, champion, pos, data, index + 1, array.length));
       else await this.process(provider, gameMode, champion, undefined, data);
     });
-
-    setTimeout(() => {
-      Mana.championSelectHandler.onDownloadFinished(data);
-
-      /* 4/5 - Saving to offline cache
-      5/5 - Uploading to online cache */
-      //if (cache) this._cache.push(data);
-    }, 10000);
   }
 
   async process(provider, gameMode, champion, position, data = {}, x, y) {
