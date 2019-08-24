@@ -23,33 +23,34 @@ class OPGGProvider extends Provider {
     }
   }
 
-  async request(gameMode, champion, position) {
-    console.log(2, `${this.name} >> Requesting ${champion.name} - POS/${position} - GM/${gameMode}`);
+  async request(gameMode, champion, role) {
+    console.log(2, `${this.name} >> Requesting ${champion.name} - POS/${role} - GM/${gameMode}`);
 
     try {
-      const res = await rp(`${this.base}/champion/${champion.key}/statistics${position ? '/' + this.convertOPGGPosition(position) : ''}`);
-      const d = this._scrape(res, champion, gameMode, position);
+      const res = await rp(`${this.base}/champion/${champion.key}/statistics${role ? '/' + this.convertOPGGPosition(role) : ''}`);
+      const d = this._scrape(res, champion, gameMode, role);
 
       if (d.availablePositions)
         this.cachedPositions[champion.id] = d.availablePositions;
 
       delete d.availablePositions;
 
-      return { roles: { [position]: d } };
+      this.end();
+      return { roles: { [role]: d } };
     }
     catch(err) {
-      console.log(`[ProviderHandler] [OP.GG] Something happened while gathering data (${position.name})`);
+      console.log(`[ProviderHandler] [OP.GG] Something happened while gathering data (${role.name})`);
       console.error(err);
     }
   }
 
-  _scrape(html, champion, gameMode, position, firstScrape) {
+  _scrape(html, champion, gameMode, role, firstScrape) {
     let $ = cheerio.load(html), convertOPGGPosition = this.convertOPGGPosition;
 
-    if ($('.champion-stats-header-version').text().trim().slice(-4) != Mana.gameClient.version) UI.error('providers-error-outdated', this.name);
-    if ($('.WorkingTitle').text().trim().startsWith('Maintenance')) UI.error('providers-error-offline', this.name);
+    if ($('.champion-stats-header-version').text().trim().slice(-4) != Mana.gameClient.version) throw UI.error('providers-error-outdated', this.name);
+    if ($('.WorkingTitle').text().trim().startsWith('Maintenance')) throw UI.error('providers-error-offline', this.name);
 
-    position = $('li.champion-stats-header__position.champion-stats-header__position--active').data('position') ? this.convertOPGGPosition($('li.champion-stats-header__position.champion-stats-header__position--active').data('position')).toUpperCase() : position;
+    role = $('li.champion-stats-header__position.champion-stats-header__position--active').data('position') ? this.convertOPGGPosition($('li.champion-stats-header__position.champion-stats-header__position--active').data('position')).toUpperCase() : position;
     const availablePositions = [];
 
     if (firstScrape) {
@@ -58,23 +59,44 @@ class OPGGProvider extends Provider {
       });
     }
 
-    const summonerspells = this.scrapeSummonerSpells($);
+    try {
+      const summonerspells = this.scrapeSummonerSpells($);
+      this.sendSummonerSpells(summonerspells, champion, role);
+    }
+    catch(err) {
+      console.error('[OP.GG] Something happened while downloading perk pages');
+      console.error(err);
+    }
 
-    const skillorder = this.scrapeSkillOrder($);
-    const itemsets = this.scrapeItemSets($, champion, position.charAt(0) + position.slice(1).toLowerCase(), skillorder);
+    try {
+      const skillorder = this.scrapeSkillOrder($);
+      const itemsets = this.scrapeItemSets($, champion, role.charAt(0) + role.slice(1).toLowerCase(), skillorder);
+      this.sendItemSets(itemsets, champion, role);
+    }
+    catch(err) {
+      console.error('[OP.GG] Something happened while downloading itemsets');
+      console.error(err);
+    }
 
-    const perks = this.scrapePerks($, champion, position);
+    try {
+      const perks = this.scrapePerks($, champion, role);
+      this.sendPerkPages(perks, champion, role);
+    }
+    catch(err) {
+      console.error('[OP.GG] Something happened while downloading perk pages');
+      console.error(err);
+    }
 
-    return { perks, summonerspells, itemsets, availablePositions, gameMode };
+    return { availablePositions, gameMode };
   }
 
   /**
    * Scrapes item sets from a OP.GG page
    * @param {cheerio} $ - The cheerio object
    * @param {object} champion - A champion object, from Mana.gameClient.champions
-   * @param {string} position - Limited to: TOP, JUNGLE, MIDDLE, ADC, SUPPORT
+   * @param {string} role - Limited to: TOP, JUNGLE, MIDDLE, ADC, SUPPORT
    */
-  scrapePerks($, champion, position) {
+  scrapePerks($, champion, role) {
     let pages = [{ selectedPerkIds: [] }, { selectedPerkIds: [] }];
 
     $('.perk-page').find('img.perk-page__image.tip').slice(0, 4).each(function(index) {
@@ -128,13 +150,13 @@ class OPGGProvider extends Provider {
    * Scrapes item sets from a OP.GG page
    * @param {cheerio} $ - The cheerio object
    * @param {object} champion - A champion object, from Mana.gameClient.champions
-   * @param {string} position - Limited to: TOP, JUNGLE, MIDDLE, ADC, SUPPORT
+   * @param {string} role - Limited to: TOP, JUNGLE, MIDDLE, ADC, SUPPORT
    * @param {object} skillorder
    */
-  scrapeItemSets($, champion, position, skillorder) {
+  scrapeItemSets($, champion, role, skillorder) {
     const itemrows = $('.champion-overview__table').eq(1).find('.champion-overview__row');
 
-    let itemset = new ItemSet(champion.key, position, this.id);
+    let itemset = new ItemSet(champion.key, role, this.id);
     let boots = new Block().setType({ i18n: 'item-sets-block-boots' });
 
     /* Block Starter */
