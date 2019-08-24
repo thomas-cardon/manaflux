@@ -38,6 +38,10 @@ class Provider {
     if (!Array.isArray(data)) return console.error('Provider Validation - SummonerSpells >> Expected array, received:', x);
     this._emitter.emit('data', this, 'summonerspells', this._dataValidator.validateSummonerSpells(data), role);
   }
+
+  end() {
+    this._emitter.emit('provider-ended', this);
+  }
 }
 
 module.exports = Provider;

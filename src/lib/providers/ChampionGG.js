@@ -27,7 +27,7 @@ class ChampionGGProvider extends Provider {
       const res = await rp(`${this.base}champion/${champion.key}`);
       const d = this._scrape(res, champion, gameMode, role);
 
-      return { roles: { [role]: d } };
+      this.end();
     }
     catch(err) {
       console.log(`[ProviderHandler] [Champion.GG] Something happened while gathering data (${role.name})`);
