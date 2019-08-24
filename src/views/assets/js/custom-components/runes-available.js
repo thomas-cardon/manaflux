@@ -1,4 +1,6 @@
 const { Menu, MenuItem } = remote;
+
+// TODO: rename to RuneStash?
 const AvailableRunes = UI.sidebar.runesList = {
   cached: {},
   remove: async () => {
@@ -19,14 +21,17 @@ const AvailableRunes = UI.sidebar.runesList = {
       if (document.getElementById(page._manaMeta.id)) return;
 
       /* Adding automatically if max hasn't been reached */
-      if (Mana.user.getPerksInventory().getPerks().length < parseInt(Mana.getStore().get('perks-max', 2))) {
+
+      let canBeCreated = (Mana.user.getPerksInventory().getPerks().length - parseInt(Mana.getStore().get('perks-max', 2))) > 0;
+
+      if (canBeCreated) {
         console.log(`Available Runes >> Adding automatically: ${page.name}`);
         return await Mana.user.getPerksInventory().createPerkPage(Mana.helpers.DataValidator.getLeagueReadablePerkPage(page));
       }
       else {
         for (let i = 0; i < parseInt(Mana.getStore().get('perks-max', 2)); i++) {
           if (Object.values(AvailableRunes.cached).find(x => x.name === Mana.user.getPerksInventory().getPerks()[i].name)) continue;
-          return await Mana.user.getPerksInventory().updatePerkPage({ ...page, id: Mana.user.getPerksInventory().getPerks()[i].id });
+          return await Mana.user.getPerksInventory().updatePerkPage({ ...Mana.helpers.DataValidator.getLeagueReadablePerkPage(page), id: Mana.user.getPerksInventory().getPerks()[i].id });
         }
       }
     }
@@ -38,6 +43,7 @@ const AvailableRunes = UI.sidebar.runesList = {
       else console.error(err);
     }
 
+    console.log('Available Runes >> Adding to stash');
     document.getElementById('availableRunes').innerHTML += `<li id="${page._manaMeta.id}" + class="sidebar-button ui-sortable-handle">${page.name}</li>`;
   }
 };
@@ -54,8 +60,8 @@ window.addEventListener('contextmenu', (e) => {
   if (!Mana.user.isLoggedIn) return; /* Security measure in case context menu is still opened when user disconnects */
   AvailableRunes._selected = e.target.id;
 
-  menu.getMenuItemById('transfer').checked = Mana.user.getPerksInventory().getPerks().find(x => x.name == AvailableRunes.cached[e.target.id].name);
-  menu.getMenuItemById('transfer').enabled = !menu.getMenuItemById('transfer').checked;
+  //menu.getMenuItemById('transfer').checked = Mana.user.getPerksInventory().getPerks().find(x => x.name == AvailableRunes.cached[e.target.id].name);
+  //menu.getMenuItemById('transfer').enabled = !menu.getMenuItemById('transfer').checked;
 
   menu.popup({ window: remote.getCurrentWindow() });
 }, false);
