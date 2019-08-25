@@ -49,7 +49,7 @@ class ProviderHandler {
     return true;
   }
 
-  async getChampionData(champion, preferredPosition, gameModeHandler, cache, providers = this.getProviders(), bulkDownloadMode) {
+  async getChampionData(champion, preferredRole, gameModeHandler, cache, providers = this.getProviders(), bulkDownloadMode) {
     console.log(2, '[ProviderHandler] Downloading data for', champion.name);
     const gameMode = bulkDownloadMode ? gameModeHandler.getGameMode() : Mana.gameflow.getGameMode();
 
@@ -60,7 +60,7 @@ class ProviderHandler {
     console.dir(data);
 
     if (!this.isEmpty(data) && cache) {
-      if (!bulkDownloadMode && (data.roles[preferredPosition || Object.keys(data.roles)[0]]).gameMode === gameMode) {
+      if (!bulkDownloadMode && (data.roles[preferredRole || Object.keys(data.roles)[0]]).gameMode === gameMode) {
         console.log(2, `[ProviderHandler] Using local storage`);
 
         DataValidator.onDataDownloaded(data, champion);
@@ -75,14 +75,14 @@ class ProviderHandler {
 
     console.log('[ProviderHandler] Using providers: ', providers.map(x => this.providers[x].name).join(' => '));
 
-    let positions;/*
-    if (preferredPosition && gameMode === 'CLASSIC')
-      positions = [...new Set(preferredPosition, 'TOP', 'MIDDLE', 'JUNGLE', 'ADC', 'SUPPORT')];
+    let roles;/*
+    if (preferredRole && gameMode === 'CLASSIC')
+      roles = [...new Set(preferredRole, 'TOP', 'MIDDLE', 'JUNGLE', 'ADC', 'SUPPORT')];
     else if (gameMode === 'CLASSIC')
-      positions = ['TOP', 'MIDDLE', 'JUNGLE', 'ADC', 'SUPPORT'];*/
-    positions = ['TOP', 'MIDDLE'];
+      roles = ['TOP', 'MIDDLE', 'JUNGLE', 'ADC', 'SUPPORT'];*/
+    roles = ['TOP', 'MIDDLE'];
 
-    console.log('ProviderHandler >> Positions chosen in the order:', positions.join(' => '));
+    console.log('ProviderHandler >> Roles chosen in the order:', roles.join(' => '));
     data.roles = {
       TOP: { perks: [], summonerspells: [], itemsets: [] },
       MIDDLE: { perks: [], summonerspells: [], itemsets: [] },
@@ -99,16 +99,15 @@ class ProviderHandler {
       console.log('ProviderHandler >> Received data');
       console.dir([provider, type, d, role]);
 
-      if (type === 'perks' && data.roles[role].perks.length < Settings.maxPerkPagesPerRole) {
-        data.roles[role].perks = d.slice(0, Settings.maxPerkPagesPerRole);
-      }
+      if (type === 'perks' && data.roles[role].perks.length < Settings.maxPerkPagesPerRole)
+        data.roles[role].perks = data.roles[role].perks.concat(d).slice(0, Settings.maxPerkPagesPerRole);
     });
 
     let ended = [];
     this.downloads.on('provider-ended', provider => {
       ended.push(provider.id);
 
-      if (ended.length !== providers.length || !Mana.championSelectHandler._inChampionSelect) return;
+      if (ended.length < providers.length || !Mana.championSelectHandler._inChampionSelect) return;
       console.log('ProviderHandler >> Download is done. Passing data to ChampionSelectHandler');
 
       Mana.championSelectHandler.onDataReceived(data);
@@ -119,7 +118,7 @@ class ProviderHandler {
       provider = this.providers[provider];
       console.log(2, `[ProviderHandler] Using ${provider.name}`);
 
-      if (positions) positions.forEach(pos => this.process(provider, gameMode, champion, pos, data, index + 1, array.length));
+      if (roles) roles.forEach(pos => this.process(provider, gameMode, champion, pos, data, index + 1, array.length));
       else await this.process(provider, gameMode, champion, undefined, data);
     });
   }
