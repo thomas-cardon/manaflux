@@ -13,6 +13,37 @@
   src: url("../fonts/Spiegel Regular.ttf");
 }
 
+.runes-menu {
+  width: 207px;
+  height: 81px;
+  border: 1.5px solid #735828;
+  border-radius: 24px;
+  position: absolute;
+  background: #08182b;
+}
+
+@keyframes runesMenuHover {
+  0% {
+    border: 1.5px solid #735828;
+  }
+
+  100% {
+    border: 1.5px solid #c8aa6e;
+  }
+}
+
+.runes-menu:hover {
+  animation: runesMenuHover 0.3s linear 0s 1 forwards;
+}
+
+.runes-menu > .btn {
+  width: 35px !important;
+  height: 35px !important;
+  margin: 1px;
+  margin-top: 3px;
+  outline: none;
+}
+
 #sidebar {
   display: none;
   top: 0;
@@ -40,14 +71,20 @@
   color: #cdbe91 ;
   cursor: pointer ;
   padding: 9px ;
-  border-top: 1px solid #1f2123 ;
   text-overflow: ellipsis ;
   white-space: nowrap ;
   height: 20px ;
   margin-top: 5px ;
   background-color: rgba(30, 35, 40, 0.5) ;
-  border: 1px solid transparent ;
-  border-image: linear-gradient(to top, #695625 0%, #A9852D 23%, #B88D35 93%, #C8AA6E 100%) 1;
+  border: none !important;
+}
+
+.sidebar-button > p {
+  text-overflow: ellipsis;
+  max-width: 152.41px;
+  white-space: nowrap;
+  overflow: hidden;
+  margin: 0;
 }
 
 .sidebar-button:first-child {

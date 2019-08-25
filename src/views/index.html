@@ -31,11 +31,10 @@
     <div id="availableRunesLabel" data-i18n="sidebar-runes-available" style="color: #fff; text-align: center; width: 200px; margin-top: 6px; display: none;"></div>
     <ul id="availableRunes" class="sortable ui-sortable" data-custom-component="runes-available" style="list-style: none !important;font-size: 12px;margin-top: 5%;margin-left: 5%; width: 94%; display: none;">
     </ul>
-    <div data-i18n="sidebar-runes-inventory" style="color: #fff; text-align: center; width: 200px; margin-top: 6px;"></div>
-    <ul id="runesInventory" class="sortable ui-sortable" data-custom-component="runes-inventory" style="list-style: none !important;font-size: 12px;margin-top: 5%;margin-left: 5%;min-height: 85px;border: 1px solid #b88d35;width: 94%;">
+    <div data-i18n="sidebar-runes-inventory" style="display: none;color: #fff; text-align: center; width: 200px; margin-top: 6px;"></div>
+    <ul id="runesInventory" class="sortable ui-sortable" data-custom-component="runes-inventory" style="display: none;list-style: none !important;font-size: 12px;margin-top: 5%;margin-left: 5%;min-height: 85px;border: 1px solid #b88d35;width: 94%;">
     </ul>
     <p id="runes-inventory-placeholder" style="color: #fff; text-align: center; display: none;">Vous n'avez aucune pages de runes.</p>
-    <!--button id="edit-runes" class="btn search" data-custom-component="rune-pages-chooser" data-tippy-content="sidebar-rune-pages-chooser"></button-->
   </div>
   <div id="window">
     <video id="smokeAnimation" style="z-index: -30; position: absolute; display: none;" loop><source src="assets/video/smoke.webm" type="video/webm">
@@ -68,6 +67,18 @@
         <div class="title">
           <h1 id="dev">MANAFLUX</h1>
           <img src="assets/img/underline.png" draggable="false">
+        </div>
+        <div id="runes-menu-copy" class="runes-menu" style="display: none;">
+          <button class="btn round" style="margin-left: 5px;">1</button>
+          <button class="btn round">2</button>
+          <button class="btn round">3</button>
+          <button class="btn round">4</button>
+          <button class="btn round">5</button>
+          <button class="btn round" style="margin-left: 5px;">6</button>
+          <button class="btn round">7</button>
+          <button class="btn round">8</button>
+          <button class="btn round">9</button>
+          <button class="btn round">10</button>
         </div>
         <div id="buttons" style="display: none;">
           <select style="display: none; margin-bottom: -14px;" id="positions" class="dropdown xs">

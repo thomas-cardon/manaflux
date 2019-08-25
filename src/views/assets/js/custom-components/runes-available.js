@@ -38,13 +38,34 @@ const AvailableRunes = UI.sidebar.runesList = {
     catch(err) {
       console.log('Available Runes >> Something happened while injecting runes');
 
-      if (err.error.message)
+      if (err.error && err.error.message)
         console.log('Message:', err.error.message);
       else console.error(err);
     }
 
     console.log('Available Runes >> Adding to stash');
-    document.getElementById('availableRunes').innerHTML += `<li id="${page._manaMeta.id}" + class="sidebar-button ui-sortable-handle">${page.name}</li>`;
+    $('#availableRunes').append(`<li id="${page._manaMeta.id}" + class="sidebar-button ui-sortable-handle"><p>${page.name}</p><button class="btn arrow ui-sortable-handle" style="float: right;width: 29px;height: 29px;margin-top: -20px;margin-right: -8px;position: relative;z-index: 1;"></button></li>`);
+    $('#availableRunes').sortable('refresh');
+  },
+  openMenu: function(el) {
+    let menu = document.getElementById(UI.sidebar.runesList._openedMenu);
+
+    if (menu)
+      menu.remove();
+
+    menu = document.getElementById('runes-menu-copy').cloneNode(true);
+    menu.id = UI.sidebar.runesList._openedMenu = el.parentElement.id + '-runes-menu';
+    menu.style.top = el.parentElement.offsetTop + 'px';
+    menu.style.display = 'block';
+
+    menu.style['z-index'] = 15;
+
+    Array.from(menu.childNodes).slice(Mana.getStore().get('perks-max')).forEach(x => x.display = 'none');
+    Array.from(menu.childNodes).slice(0, Mana.getStore().get('perks-max')).forEach(x => {
+      x.disabled = true;
+    });
+
+    $('#window').append(menu);
   }
 };
 
@@ -74,6 +95,20 @@ module.exports = {
         if (ui.sender[0].id === 'runesInventory')
           $(ui.sender).sortable('cancel');
       }
+    });
+
+    Mana.getStore().get('perks-max')
+
+    $('li.sidebar-button > .btn').click(function(e) {
+      e.stopPropagation();
+      UI.sidebar.runesList.openMenu(this);
+    });
+
+    $(document).click(function(e) {
+        let menu = document.getElementById(UI.sidebar.runesList._openedMenu);
+
+        if (menu)
+          menu.remove();
     });
   },
   inChampionSelect: function(e) {
