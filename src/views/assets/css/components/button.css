@@ -7,7 +7,67 @@
   font-weight: 100;
   letter-spacing: 1px;
   white-space: nowrap;
+  cursor: auto;
+}
+
+.btn:hover {
   cursor: pointer;
+}
+
+.btn.arrow {
+  border: none;
+  outline: none;
+
+  background: url(../../img/components/border-arrow-up.png);
+  background-size: 100% auto;
+  background-position-y: 0px;
+}
+
+.btn.arrow:hover {
+  background: url(../../img/components/border-arrow-hover.png);
+  background-size: 100% auto;
+  background-position-y: 0px;
+}
+
+.btn.arrow:disabled {
+  background: url(../../img/components/border-arrow-disabled.png);
+  background-size: 100% auto;
+  background-position-y: 0px;
+}
+
+.btn.arrow:active {
+  background: url(../../img/components/border-arrow-click.png);
+  background-size: 100% auto;
+  background-position-y: 0px;
+}
+
+.btn.round {
+  border: none;
+  outline: none;
+
+  background: url(../../img/components/button-normal.png);
+  background-size: 100% auto;
+  background-position-y: 0px;
+
+  font-size: 19px;
+}
+
+.btn.round:hover {
+  background: url(../../img/components/button-hover.png);
+  background-size: 100% auto;
+  background-position-y: 0px;
+}
+
+.btn.round:disabled {
+  background: url(../../img/components/button-disabled.png);
+  background-size: 100% auto;
+  background-position-y: 0px;
+}
+
+.btn.round:active {
+  background: url(../../img/components/button-clicked.png);
+  background-size: 100% auto;
+  background-position-y: 0px;
 }
 
 /* Normal buttons */
