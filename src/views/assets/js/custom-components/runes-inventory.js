@@ -54,27 +54,27 @@ module.exports = {
     $('#runesInventory').sortable({
       connectWith: '#availableRunes',
       over: function() {
-        $('#runes-inventory-placeholder').hide();
+        if ($('#runesInventory').children().length > 0) $('#runes-inventory-placeholder').hide();
       },
       out: function() {
-          $('#runes-inventory-placeholder').show();
+          if ($('#runesInventory').children().length == 0) $('#runes-inventory-placeholder').show();
       },
       stop: function() {
           $('#runes-inventory-placeholder').remove();
       },
-      receive: function(event, ui) {
-        if (ui.sender[0].id !== 'availableRunes') return;
+      beforeStop: function(event, ui) {
+        if (ui.sender[0].id !== 'availableRunes') return $(this).sortable('cancel');
         console.dir(arguments);
 
         let page = UI.sidebar.runesList.cached[ui.item[0].id];
 
         if (!page) {
           console.log('Runes Inventory >> Page not found! Aborting');
-          return $(ui.sender).sortable('cancel');
+          return $(this).sortable('cancel');
         }
         else if (Mana.user.getPerksInventory().getPerks().length === Mana.user.getPerksInventory().getCount()) {
           console.log('Runes Inventory >> Reach maximum perk pages, aborting');
-          return $(ui.sender).sortable('cancel');
+          return $(this).sortable('cancel');
         }
 
         Mana.user.getPerksInventory().createPerkPage(DataValidator.getLeagueReadablePerkPage(page)).then(() => {
@@ -82,10 +82,8 @@ module.exports = {
         }).catch(err => {
           console.log('Runes Inventory >> Something happened while injecting rune page');
           console.error(err);
-          $(ui.sender).sortable('cancel');
+          $(this).sortable('cancel');
         });
-
-        console.dir(page);
       }
     });
   },

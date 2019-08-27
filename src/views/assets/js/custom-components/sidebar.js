@@ -21,11 +21,21 @@ module.exports = {
   load: function(Mana) {
     UI.sidebar = Sidebar;
     Sidebar.reset();
+
+    if (Mana.devMode)
+      Sidebar.on();
   },
-  userConnected: function(e) {
-    Sidebar.on();
+  inChampionSelect: () => {
+    if (!Mana.devMode)
+      Sidebar.on();
   },
-  userDisconnected: function(e) {
-    Sidebar.off();
-  }
+  outChampionSelect: () => {
+    if (!Mana.devMode)
+      Sidebar.off();
+  },
+  userConnected: () => {
+    if (!Mana.devMode)
+      Sidebar.on();
+  },
+  userDisconnected: Sidebar.off
 };
