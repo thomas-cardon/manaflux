@@ -2,8 +2,8 @@
 const Dots = {
 	isEnabled: document.getElementById('dots') !== null,
 	onClickEvent: function(dot, tabId, i) {
-		document.querySelectorAll('.tabcontent').forEach(x => x.style.display = 'none');
-		document.querySelector(`.tabcontent[data-tabid="${tabId}"][data-tabn="${i}"]`).style.display = 'block';
+		document.querySelectorAll('app-tab').forEach(x => x.style.display = 'none');
+		document.querySelector(`app-tab[data-tabid="${tabId}"][data-tabn="${i}"]`).style.display = 'block';
 
 		if (!Dots.isEnabled || !dot) return;
 
@@ -36,7 +36,7 @@ class Tab extends HTMLElement {
 		return this.getAttribute('data-tabn');
 	}
 
-	open() {
+	open(event) {
 		Sounds.play('buttonClick');
 
 		let active = document.querySelector('.tab.active');
@@ -44,7 +44,7 @@ class Tab extends HTMLElement {
 
 		event.target.classList.add('active');
 
-		const dotsNumber = document.querySelectorAll(`.tabcontent[data-tabid="${$(event.target).data('tabid')}"]`).length;
+		const dotsNumber = document.querySelectorAll(`app-tab[data-tabid="${event.target.getAttribute('data-tabid')}"]`).length;
 
 		if (dotsNumber === 0) Dots.onClickEvent(null, event.target.getAttribute('data-tabid'), 0);
 		else if (Dots.isEnabled) {
@@ -56,7 +56,7 @@ class Tab extends HTMLElement {
 					const dot = document.createElement('div');
 
 					dot.className = 'dot';
-					dot.onclick = () => Dots.onClickEvent(dot, $(event.target).data('tabid'), i);
+					dot.onclick = () => Dots.onClickEvent(dot, event.target.getAttribute('data-tabid'), i);
 					dots.appendChild(dot);
 				}
 
