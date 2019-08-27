@@ -1,3 +1,11 @@
+const devMode = (process.argv || []).indexOf('--dev') !== -1;
+
+if (devMode) {
+  // load the app dependencies
+  const PATH_APP_NODE_MODULES = require('path').join(__dirname, '..', 'app', 'node_modules')
+  require('module').globalPaths.push(PATH_APP_NODE_MODULES);
+}
+
 const { app, BrowserWindow, ipcMain, globalShortcut, Menu, Tray } = require('electron');
 
 // Commandline parameters

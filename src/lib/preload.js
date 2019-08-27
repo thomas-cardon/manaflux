@@ -1,6 +1,7 @@
 console.log('Injecting Mana\'s util functions and models');
 const fs = require('fs'), path = require('path');
 
+
 global.M = {
   Models: {
     /* Injecting ItemSet and Block class */
@@ -9,8 +10,11 @@ global.M = {
   Utils: {
     fs: {
       ensureDir: function(path) {
+        if (fs.promises)
+          return fs.promises.mkdir(path, { recursive: true });
+
         return new Promise((resolve, reject) => {
-          fs.mkdir(path, err => {
+          fs.mkdir(path, { recursive: true }, err => {
             if (err && err.code === 'EEXIST') resolve();
             else if (err) reject(err);
             else resolve();
@@ -46,3 +50,10 @@ global.M = {
     }
   }
 };
+
+M.devMode = ipcRenderer.sendSync('is-dev');
+if (M.devMode) {
+  // load the app dependencies
+  const PATH_APP_NODE_MODULES = path.join(__dirname, '..', '..', 'app', 'node_modules')
+  require('module').globalPaths.push(PATH_APP_NODE_MODULES);
+}
