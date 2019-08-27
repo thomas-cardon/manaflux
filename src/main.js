@@ -1,6 +1,6 @@
 const { app, BrowserWindow, ipcMain, globalShortcut, Menu, Tray } = require('electron');
 
-/* Command line parameters */
+// Commandline parameters
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
 
 global.log = new (require('./lib/handlers/LoggingHandler'))(3);
