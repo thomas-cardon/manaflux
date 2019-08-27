@@ -27,6 +27,8 @@
   <link crossorigin href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
+  <div id="system-loading" style="background: #1f2123;z-index: 9999;width: 800;height: 600;position: absolute;top: 0;left: 0;">
+    <img src="assets/img/components/loading.gif" style="margin-left: 42%;margin-top: 31%;width: 12%;"></div>
   <div id="sidebar" data-custom-component="sidebar">
     <div id="availableRunesLabel" data-i18n="sidebar-runes-available" style="color: #fff; text-align: center; width: 200px; margin-top: 6px; display: none;"></div>
     <ul id="availableRunes" class="sortable ui-sortable" data-custom-component="runes-available" style="list-style: none !important;font-size: 12px;margin-top: 5%;margin-left: 5%; width: 94%; display: none;">
@@ -42,7 +44,7 @@
     <div class="tab-container">
       <img src="assets/img/selected.png" id="selected" draggable="false">
       <div class="tab">
-        <button type="button" class="btn tab active" data-i18n="ui-menu-home" data-tabid="home"></button>
+        <button type="button" class="btn tab" data-i18n="ui-menu-home" data-tabid="home"></button>
         <button type="button" class="btn tab" data-i18n="ui-menu-settings" data-tabid="settings"></button>
         <button type="button" class="btn tab flash" data-i18n="ui-menu-update" data-tabid="update" style="display: none;"></button>
       </div>
@@ -63,7 +65,7 @@
     <div class="content">
       <div id="dots"></div>
       <!-- BEGIN SECTIONS -->
-      <div id="home" data-tabid="home" data-tabn=0 class="tabcontent center" style="display: block;">
+      <app-tab data-tabid="home" data-tabn=0 class="tabcontent center">
         <div class="title">
           <h1 id="dev">MANAFLUX</h1>
           <img src="assets/img/underline.png" draggable="false">
@@ -96,8 +98,8 @@
           <img id="hextechAnimationBackground" data-custom-component="hextech-background">
           <p id="championName"></p>
         </div>
-      </div>
-      <div data-tabid="settings" data-tabn=0 class="tabcontent" style="display: none; margin-left: 9%;">
+      </app-tab>
+      <app-tab data-tabid="settings" data-tabn=0 class="tabcontent" style="margin-left: 9%;">
         <p class="option-name" data-i18n="category-perks"></p>
         <div class="option" data-tippy-content="ui-tooltips-max-perks">
           <p class="suboption-name" data-i18n="perks-max"></p>
@@ -140,8 +142,8 @@
             <label data-i18n="champion-select-hide"></label>
           </div>
         </div>
-      </div>
-      <div data-tabid="settings" data-tabn=1 class="tabcontent" style="display: none; margin-left: 9%;">
+      </app-tab>
+      <app-tab data-tabid="settings" data-tabn=1 class="tabcontent" style="margin-left: 9%;">
         <p class="option-name" data-i18n="category-misc"></p>
         <div class="option" data-tippy-content="ui-tooltips-min-roles">
           <p class="suboption-name" data-i18n="champion-select-min-roles"></p>
@@ -208,8 +210,8 @@
             <option data-i18n="ui-background-precision" value="themes/styles-precision.png" data-background-position="center"></option>
           </select>
         </div>
-      </div>
-      <div data-tabid="settings" data-tabn=2 class="tabcontent" style="display: none; margin-left: 9%;">
+      </app-tab>
+      <app-tab data-tabid="settings" data-tabn=2 class="tabcontent" style="margin-left: 9%;">
         <p class="option-name" data-i18n="category-advanced"></p>
         <div class="option" data-tippy-content="ui-tooltips-league-path">
           <p class="suboption-name" data-i18n="league-client-path"></p>
@@ -236,8 +238,8 @@
           <p class="suboption-name" data-i18n="settings-logs-open-folder"></p>
           <button class="btn normal" data-custom-component="settings-logs-open" data-i18n="common-open"></button>
         </div>
-      </div>
-      <div data-tabid="settings" data-tabn=3 class="tabcontent" style="display: none; margin-left: 9%;">
+      </app-tab>
+      <app-tab data-tabid="settings" data-tabn=3 class="tabcontent" style="margin-left: 9%;">
         <p class="option-name" data-i18n="category-advanced"></p>
         <div class="option" data-tippy-content="ui-tooltips-providers-order">
           <p class="suboption-name" data-i18n="providers-order"></p>
@@ -272,8 +274,8 @@
             <label data-i18n="common-enable"></label>
           </div>
         </div>
-      </div>
-      <div data-tabid="settings" data-tabn=4 class="tabcontent" style="display: none; margin-left: 9%;">
+      </app-tab>
+      <app-tab data-tabid="settings" data-tabn=4 class="tabcontent" style="margin-left: 9%;">
         <p class="option-name" data-i18n="category-mobile-app"></p>
         <p data-i18n="mobile-app-note" style="color: #c0392b;"></p>
         <p id="remote-ip-address" style="color: #fdcb6e; position: absolute; margin: 43% 0 0 25%;"></p>
@@ -287,8 +289,8 @@
           <img id="qrcode-frame" src="assets/img/components/border.png">
           <canvas id="qrcode"></canvas>
         </div>
-      </div>
-      <div data-tabid="update" data-tabn=0 class="tabcontent" style="display: none; margin-left: 9%;">
+      </app-tab>
+      <app-tab data-tabid="update" data-tabn=0 class="tabcontent" style="margin-left: 9%;">
         <p data-i18n="update-available" id="updateAvailableText"></p>
         <div id="updateStatus">
           <p id="updateVersion">VX.X.X</p>
@@ -299,7 +301,7 @@
         <button class="btn normal" type="button" id="update" data-i18n="update-button-download"></button>
         <span id="updateSize">XXX.XXMB</span>
         <progress id="updateProgress" max="100" style="margin: 30px 0 0 -10px;"></progress>
-      </div>
+      </app-tab>
       <!-- END SECTIONS -->
     </div>
     <footer id="footer">

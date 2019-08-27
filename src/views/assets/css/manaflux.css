@@ -113,7 +113,7 @@ footer {
   left: 20px;
   bottom: 20px;
   position: fixed;
-  z-index: 9999999;
+  z-index: 9000;
 }
 
 footer > * {
