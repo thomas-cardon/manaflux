@@ -104,10 +104,13 @@ class ProviderHandler {
     });
 
     let ended = [];
+
     this.downloads.on('provider-ended', provider => {
       ended.push(provider.id);
 
-      if (ended.length < providers.length || !Mana.championSelectHandler._inChampionSelect) return;
+      if (!Mana.championSelectHandler._inChampionSelect) return console.log('ProviderHandler >> Data won\'t be passed because you left champion select');
+      if (ended.length < providers.length) return console.log('ProviderHandler >> Download:', `${ended.length}/${providers.length}`);
+      
       console.log('ProviderHandler >> Download is done. Passing data to ChampionSelectHandler');
 
       Mana.championSelectHandler.onDataReceived(data);
