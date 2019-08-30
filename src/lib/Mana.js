@@ -43,6 +43,13 @@ class Mana {
       if (d) this.onLeagueUserConnected(d);
     });
 
+    ipcRenderer.on('lcu-game-running', (event, d) => {
+      console.dir([event, d]);
+
+      if (d) this.onGameStart();
+      else this.onGameEnd();
+    });
+
     setTimeout(() => Sounds.play('loaded'), 800);
   }
 
@@ -128,6 +135,19 @@ class Mana {
     //this.overlayHandler.start();
   }
 
+  onLeagueDisconnect() {
+    if (this.user)
+      this.user.connected = false;
+
+    this.assetsProxy.stop();
+
+    global._devChampionSelect = () => console.log(`[${i18n.__('error')}] ${i18n.__('developer-game-start-error')}\n${i18n.__('league-client-disconnected')}`);
+    document.getElementById('connection').style.display = 'block';
+
+    UI.status('status-disconnected');
+    this.emit('userDisconnected');
+  }
+
   onLeagueUserConnected(data) {
     if (this.user && this.user.getSummonerId() === data.summonerId) return;
     UI.status('league-client-connection');
@@ -143,27 +163,25 @@ class Mana {
     this.alertHandler.login();
   }
 
-  emit(ev, x) {
-    if (typeof ev === 'string') ev = new CustomEvent(ev, { detail: x });
-    document.querySelectorAll('[data-custom-component]').forEach(x => x.dispatchEvent(ev));
+  onGameStart() {
+    console.log('>> Game has started!');
+    if (!Mana.getStore().get('close-on-game-start')) return;
+
+    remote.getCurrentWindow().close();
   }
 
-  onLeagueDisconnect() {
-    if (this.user)
-      this.user.connected = false;
-      
-    this.assetsProxy.stop();
-
-    global._devChampionSelect = () => console.log(`[${i18n.__('error')}] ${i18n.__('developer-game-start-error')}\n${i18n.__('league-client-disconnected')}`);
-    document.getElementById('connection').style.display = 'block';
-
-    UI.status('status-disconnected');
-    this.emit('userDisconnected');
+  onGameEnd() {
+    console.log('>> Game has ended!');
   }
 
   updateAuthenticationTokens(data) {
     this.base = data.baseUri;
     this.riot = data;
+  }
+
+  emit(ev, x) {
+    if (typeof ev === 'string') ev = new CustomEvent(ev, { detail: x });
+    document.querySelectorAll('[data-custom-component]').forEach(x => x.dispatchEvent(ev));
   }
 
   getStore() {

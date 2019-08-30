@@ -40,7 +40,7 @@ else {
   });
 }
 
-function createWindow () {
+function createWindow() {
   win = new BrowserWindow({ width: 600, height: 600, frame: false, icon: __dirname + '/build/icon.' + (process.platform === 'win32' ? 'ico' : 'png'), backgroundColor: '#000A13', maximizable: false, resizable: false, show: false, webPreferences: { nodeIntegration: true } });
 
   win.loadURL(require('url').format({
@@ -58,7 +58,7 @@ function createWindow () {
   if (process.argv[2] === '--dev')
     win.webContents.openDevTools({ mode: 'detach' });
 
-  win.on('closed', () => {
+  win.once('closed', () => {
     if (connector) connector.getConnectionHandler().end();
     if (tray && !tray.isDestroyed()) tray.destroy();
     if (log.stream) log.stream.end();
@@ -135,6 +135,12 @@ ipcMain.on('lcu-connection', (event, path) => {
   }
 
   connector.start(path);
+
+  connector.getGameHandler().onGameStart = () => event.sender.send('lcu-game-running', true);
+  connector.getGameHandler().onGameEnd = () => {
+    if (win) event.sender.send('lcu-game-running', false);
+    else createWindow();
+  };
 
   connector.getConnectionHandler().on('connected', d => event.sender.send('lcu-connected', d));
   connector.getConnectionHandler().on('logged-in', d => event.sender.send('lcu-logged-in', d));
