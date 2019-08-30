@@ -259,7 +259,7 @@ class ChampionSelectHandler {
     document.getElementById('position-' + role).style.display = '';
 
     for (let perk of perks)
-      await UI.sidebar.runesList.add(perk);
+      await UI.sidebar.stash.add(perk);
 
     document.getElementById('positions').style.display = 'unset';
     document.getElementById('buttons').style.display = 'block';

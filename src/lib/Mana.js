@@ -165,7 +165,7 @@ class Mana {
 
   onGameStart() {
     console.log('>> Game has started!');
-    if (!Mana.getStore().get('close-on-game-start')) return;
+    if (!this.getStore().get('close-on-game-start')) return;
 
     remote.getCurrentWindow().close();
   }

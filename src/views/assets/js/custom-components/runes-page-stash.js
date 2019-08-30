@@ -3,17 +3,17 @@ const { Menu, MenuItem } = remote;
 const RunesPageStash = UI.sidebar.stash = {
   cached: {},
   remove: async () => {
-    if (!document.getElementById(RunesPageStash._selected)) return console.error('Available Runes >> Context Menu: selected item doesn\'t exist !');
+    if (!document.getElementById(RunesPageStash._selected)) return console.error('Stash >> Context Menu: selected item doesn\'t exist !');
 
     document.getElementById(RunesPageStash._selected).remove();
     delete RunesPageStash.cached[RunesPageStash._selected];
   },
   transfer: () => {
-    if (!document.getElementById(RunesPageStash._selected)) return console.error('Available Runes >> Context Menu: selected item doesn\'t exist !');
+    if (!document.getElementById(RunesPageStash._selected)) return console.error('Stash >> Context Menu: selected item doesn\'t exist !');
     $('#runesInventory').sortable('option', 'update')(null, { item: $('#' + RunesPageStash._selected), sender: $('#runesInventory') });
   },
   add: async page => {
-    console.log('Available Runes >> Adding perk page: ' + page.name);
+    console.log('Stash >> Adding perk page: ' + page.name);
     RunesPageStash.cached[page._manaMeta.id] = page;
 
     try {
@@ -24,10 +24,12 @@ const RunesPageStash = UI.sidebar.stash = {
       let canBeCreated = (Mana.user.getPerksInventory().getPerks().length - parseInt(Mana.getStore().get('perks-max', 2))) > 0;
 
       if (canBeCreated) {
-        console.log(`Available Runes >> Adding automatically: ${page.name}`);
+        console.log(`Stash >> Creating perk page for: ${page.name}`);
         return await Mana.user.getPerksInventory().createPerkPage(Mana.helpers.DataValidator.getLeagueReadablePerkPage(page));
       }
       else {
+        console.log(`Stash >> Trying to update perk page for: ${page.name}`);
+
         for (let i = 0; i < parseInt(Mana.getStore().get('perks-max', 2)); i++) {
           if (Object.values(RunesPageStash.cached).find(x => x.name === Mana.user.getPerksInventory().getPerks()[i].name)) continue;
           return await Mana.user.getPerksInventory().updatePerkPage({ ...Mana.helpers.DataValidator.getLeagueReadablePerkPage(page), id: Mana.user.getPerksInventory().getPerks()[i].id });
@@ -35,21 +37,21 @@ const RunesPageStash = UI.sidebar.stash = {
       }
     }
     catch(err) {
-      console.log('Available Runes >> Something happened while injecting runes');
+      console.log('Stash >> Something happened while injecting runes');
 
       if (err.error && err.error.message)
         console.log('Message:', err.error.message);
       else console.error(err);
     }
 
-    console.log('Available Runes >> Adding to stash');
-    $('#RunesPageStash').append(`<li id="${page._manaMeta.id}" class="sidebar-button ui-sortable-handle"><p>${page.name}</p><button class="btn arrow ui-sortable-handle" style="float: right;width: 29px;height: 29px;margin-top: -20px;margin-right: -8px;position: relative;z-index: 1;"></button></li>`);
+    console.log('Stash >> Adding to stash');
+    $('#runes-page-stash').append(`<li id="${page._manaMeta.id}" class="sidebar-button ui-sortable-handle"><p>${page.name}</p><button class="btn arrow ui-sortable-handle" style="float: right;width: 29px;height: 29px;margin-top: -20px;margin-right: -8px;position: relative;z-index: 1;"></button></li>`);
     $(`li#${page._manaMeta.id} > button`).click(function(e) {
       e.stopPropagation();
       RunesPageStash.openMenu(this);
     });
 
-    $('#RunesPageStash').sortable('refresh');
+    $('#runes-page-stash').sortable('refresh');
   },
   openMenu: function(el) {
     let menu = document.getElementById(RunesPageStash._openedMenu);
@@ -96,7 +98,7 @@ window.addEventListener('contextmenu', (e) => {
 
 module.exports = {
   load: function(Mana) {
-    $('#RunesPageStash').sortable({
+    $('#runes-page-stash').sortable({
       connectWith: '#runesInventory',
       receive: function(event, ui) {
         if (ui.sender[0].id === 'runesInventory')
@@ -112,14 +114,14 @@ module.exports = {
     });
   },
   inChampionSelect: function(e) {
-    document.getElementById('RunesPageStash').style.display = 'block';
-    document.getElementById('RunesPageStashLabel').style.display = 'block';
+    document.getElementById('runes-page-stash').style.display = 'block';
+    document.getElementById('runes-page-stash-label').style.display = 'block';
 
     if (Mana.dev) RunesPageStash.cached = {};
   },
   outChampionSelect: function(e) {
-    document.getElementById('RunesPageStash').style.display = 'none';
-    document.getElementById('RunesPageStashLabel').style.display = 'none';
+    document.getElementById('runes-page-stash').style.display = 'none';
+    document.getElementById('runes-page-stash-label').style.display = 'none';
 
     let menu = document.getElementById(RunesPageStash._openedMenu);
 
@@ -130,7 +132,7 @@ module.exports = {
     if (!Mana.dev) RunesPageStash.cached = {}; /* Leaves data in memory so we can easily lookup without starting a new game */
   },
   championChanged: function(e) {
-    document.getElementById('RunesPageStash').childNodes.forEach(x => document.getElementById('RunesPageStash').removeChild(x));
+    document.getElementById('runes-page-stash').childNodes.forEach(x => document.getElementById('runes-page-stash').removeChild(x));
     RunesPageStash.cached = {};
   },
   positionChange: function(e) {
