@@ -206,6 +206,17 @@ class ChampionSelectHandler {
     UI.enableHextechAnimation(champion);
     document.querySelector('button[data-tabid]').click();
 
+    if (Mana.getStore().get('item-sets-enable')) {
+      try {
+        /* Delete ItemSets before downloading */
+        await UI.indicator(ItemSetHandler.deleteItemSets(await UI.indicator(ItemSetHandler.getItemSetsByChampionKey(champion.key), 'item-sets-collecting-champion', champion.name)), 'item-sets-deleting');
+      }
+      catch(err) {
+        UI.error('item-sets-error-loading');
+        console.error(err);
+      }
+    }
+
     UI.status('common-ready', champion.name);
   }
 
@@ -240,7 +251,6 @@ class ChampionSelectHandler {
     if (Mana.getStore().get('item-sets-enable')) {
       try {
         /* Delete ItemSets before downloading */
-        await UI.indicator(ItemSetHandler.deleteItemSets(await UI.indicator(ItemSetHandler.getItemSetsByChampionKey(champion.key), 'item-sets-collecting-champion', champion.name)), 'item-sets-deleting');
         await UI.indicator(Promise.all([].concat(...Object.values(d.roles).map(r => r.itemsets.map(x => x.save())))), 'item-sets-save-status', champion.name);
       }
       catch(err) {
