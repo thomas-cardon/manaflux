@@ -37,14 +37,14 @@ class PathHandler {
   getExtensionByPlatform(platform) {
     switch(platform) {
       case 'darwin':
-      return 'app';
+        return 'app';
     }
 
     return 'exe';
   }
 
   /* Supports Windows, Linux and OS X */
-  async getLeaguePathByCommandLine() {
+  getLeaguePathByCommandLine() {
     const command = process.platform === 'win32' ? "WMIC.exe PROCESS WHERE name='LeagueClient.exe' GET ExecutablePath" : "ps x -o args | grep 'LeagueClient'";
 
     return new Promise((resolve, reject) => {
