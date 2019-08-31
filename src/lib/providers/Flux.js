@@ -2,11 +2,13 @@ const rp = require('request-promise-native');
 const Provider = require('./Provider');
 
 class FluxProvider extends Provider {
-  constructor(emitter, devMode = ipcRenderer.sendSync('is-dev')) {
+  constructor(emitter, devMode = M.devMode) {
     super('flux', 'Flu.x', emitter);
     this.base = 'https://manaflux-server.herokuapp.com/';
 
-    if (devMode) rp('http://localhost:8920/').then(() => this.base = 'http://localhost:8920/').catch(() => console.log('[Flu.x] Local server is unavailable.'));
+    if (devMode) rp('http://localhost:8920/')
+    .then(() => this.base = 'http://localhost:8920/')
+    .catch(() => console.log('[Flu.x] Local server is unavailable.'));
   }
 
   async request(gameMode, champion, position) {

@@ -7,7 +7,7 @@ class ChampionSelectHandler {
     this.gameModeHandlers = {
       CLASSIC: {
         getGameMode: () => 'CLASSIC',
-        getPosition: pos => {
+        getRole: pos => {
           switch(pos) {
             case 'UTILITY':
               return 'SUPPORT';
@@ -23,29 +23,29 @@ class ChampionSelectHandler {
       },
       ARAM: {
         getGameMode: () => 'ARAM',
-        getPosition: pos => null,
+        getRole: pos => null,
         getProviders: () => ['metasrc', 'lolflavor', 'leagueofgraphs']
       },
       URF: {
         getGameMode: () => 'URF',
-        getPosition: pos => null,
+        getRole: pos => null,
         getProviders: () => ['opgg_urf', 'metasrc']
       },
       '10': {
         getGameMode: () => 'TWISTED_TREELINE',
-        getPosition: pos => null,
+        getRole: pos => null,
         getMap: map => 10,
         getProviders: () => ['metasrc']
       }
     };
 
-    document.getElementById('positions').onfocus = function() {
+    document.getElementById('roles').onfocus = function() {
       this.oldValue = this.value;
     }
 
-    document.getElementById('positions').onchange = function() {
-      console.log('[ChampionSelect] Selected position:', this.value.toUpperCase());
-      Mana.emit('positionChange', { old: this.oldValue, value: this.value });
+    document.getElementById('roles').onchange = function() {
+      console.log('[ChampionSelect] Selected role:', this.value.toUpperCase());
+      Mana.emit('roleChange', { old: this.oldValue, value: this.value });
 
       this.oldValue = this.value;
     };
@@ -101,7 +101,7 @@ class ChampionSelectHandler {
 
     Mana.emit('championChanged', champion);
 
-    UI.indicator(Mana.providerHandler.getChampionData(champion, this.getPosition(), this.gameModeHandler, true), 'champion-select-downloading-data', champion.name);
+    UI.indicator(Mana.providerHandler.getChampionData(champion, this.getRole(), this.gameModeHandler, true), 'champion-select-downloading-data', champion.name);
   }
 
   onChampionNotPicked() {
@@ -111,7 +111,7 @@ class ChampionSelectHandler {
   async onChampionLocked(champion) {
     console.log(`[ChampionSelectHandler] Champion locked: ${champion.name}`);
 
-    const res = await UI.indicator(Mana.providerHandler.getChampionData(champion, this.getPosition(), this.gameModeHandler, true), 'champion-select-downloading-data', champion.name);
+    const res = await UI.indicator(Mana.providerHandler.getChampionData(champion, this.getRole(), this.gameModeHandler, true), 'champion-select-downloading-data', champion.name);
 
     if (res.championId !== champion.id) UI.status('champion-select-error-invalid-data-status');
     else await this.onDisplayUpdate(champion, res);
@@ -137,8 +137,8 @@ class ChampionSelectHandler {
     }
   }
 
-  getPosition() {
-    return this.getPlayer().assignedPosition === '' ? null : this.gameModeHandler.getPosition(this.getPlayer().assignedPosition) || this.getPlayer().assignedPosition;
+  getRole() {
+    return this.getPlayer().assignedRole === '' ? null : this.gameModeHandler.getRole(this.getPlayer().assignedRole) || this.getPlayer().assignedRole;
   }
 
   getPlayer() {
@@ -206,18 +206,13 @@ class ChampionSelectHandler {
     UI.enableHextechAnimation(champion);
     document.querySelector('button[data-tabid]').click();
 
-    if (Mana.getStore().get('item-sets-enable')) {
-      try {
-        /* Delete ItemSets before downloading */
-        await UI.indicator(ItemSetHandler.deleteItemSets(await UI.indicator(ItemSetHandler.getItemSetsByChampionKey(champion.key), 'item-sets-collecting-champion', champion.name)), 'item-sets-deleting');
-      }
-      catch(err) {
+    if (Mana.getStore().get('item-sets-enable'))
+      UI.indicator(ItemSetHandler.getItemSetsByChampionKey(champion.key), 'item-sets-collecting-champion', champion.name, 'item-sets-deleting')
+      .then(d => ItemSetHandler.deleteItemSets(d).then(() => UI.status('common-ready', champion.name)))
+      .catch(err => {
         UI.error('item-sets-error-loading');
         console.error(err);
-      }
-    }
-
-    UI.status('common-ready', champion.name);
+      })
   }
 
   async onDisplayUpdate(champion, res) {
@@ -231,7 +226,7 @@ class ChampionSelectHandler {
     const self = this;
 
     // Sets value and checks if it's not null, if it is then let's stop everything
-    if (!(document.getElementById('positions').value = res.roles[this.getPosition()] ? this.gameModeHandler.getPosition(this.getPosition()) : Object.keys(res.roles).filter(x => res.roles[x].perks.length > 0)[0])) {
+    if (!(document.getElementById('roles').value = res.roles[this.getRole()] ? this.gameModeHandler.getRole(this.getRole()) : Object.keys(res.roles).filter(x => res.roles[x].perks.length > 0)[0])) {
       Mana.championStorageHandler.remove(champion.id);
       throw this._onCrash(i18n.__('champion-select-error-empty'));
     }
@@ -264,35 +259,35 @@ class ChampionSelectHandler {
   }
 
   async treatPerkPages(role, perks) {
-    if (!document.getElementById('position-' + role)) return console.error(`ChampionSelectHandler >> Role ${role} doesn\'t exist!`);
+    if (!document.getElementById('role-' + role)) return console.error(`ChampionSelectHandler >> Role ${role} doesn\'t exist!`);
 
-    document.getElementById('position-' + role).style.display = '';
+    document.getElementById('role-' + role).style.display = '';
 
     for (let perk of perks)
       await UI.sidebar.stash.add(perk);
 
-    document.getElementById('positions').style.display = 'unset';
+    document.getElementById('roles').style.display = 'unset';
     document.getElementById('buttons').style.display = 'block';
   }
 
-  onPerkPositionChange(champion, position, data) {
+  onPerkRoleChange(champion, role, data) {
     UI.enableHextechAnimation(champion, (data && data.perks && data.perks[0]) ? data.perks[0].primaryStyleId : 'white');
 
     $('#loadSummonerSpells').disableManualButton(true);
 
-    if (data.summonerspells.length > 0) this._updateSummonerSpellsDisplay(champion, position, data.summonerspells);
+    if (data.summonerspells.length > 0) this._updateSummonerSpellsDisplay(champion, role, data.summonerspells);
   }
 
-  _updateSummonerSpellsDisplay(champion, position, spells) {
-    if (Mana.getStore().get('summoner-spells')) $('#loadSummonerSpells').enableManualButton(() => UI.indicator(Mana.user.updateSummonerSpells(spells), 'summoner-spells-loading', champion.name, position).catch(UI.error), true);
+  _updateSummonerSpellsDisplay(champion, role, spells) {
+    if (Mana.getStore().get('summoner-spells')) $('#loadSummonerSpells').enableManualButton(() => UI.indicator(Mana.user.updateSummonerSpells(spells), 'summoner-spells-loading', champion.name, role).catch(UI.error), true);
   }
 
   onShortcutPressedEvent(event, next) {
-    if (document.getElementById('positions').style.display === 'none') return;
-    console.log(2, `[Shortcuts] Selecting ${next ? 'next' : 'previous'} position..`);
+    if (document.getElementById('roles').style.display === 'none') return;
+    console.log(2, `[Shortcuts] Selecting ${next ? 'next' : 'previous'} role..`);
 
-    let i = document.getElementById('positions').childNodes.length, positionIndex = document.getElementById('positions').selectedIndex;
-    let newIndex = positionIndex;
+    let i = document.getElementById('roles').childNodes.length, roleIndex = document.getElementById('roles').selectedIndex;
+    let newIndex = roleIndex;
 
     if (next) {
       if (newIndex === i - 1) newIndex = 0;
@@ -303,10 +298,10 @@ class ChampionSelectHandler {
       else newIndex--;
     }
 
-    /* Useless to change position if it's already the one chosen */
-    if (newIndex !== positionIndex) {
-      document.getElementById('positions').selectedIndex = newIndex;
-      document.getElementById('positions').onchange();
+    /* Useless to change role if it's already the one chosen */
+    if (newIndex !== roleIndex) {
+      document.getElementById('roles').selectedIndex = newIndex;
+      document.getElementById('roles').onchange();
     };
   }
 
@@ -328,8 +323,8 @@ class ChampionSelectHandler {
     UI.status('champion-select-waiting');
     UI.disableHextechAnimation();
 
-    document.getElementById('positions').style.display = document.getElementById('buttons').style.display = 'none';
-    Array.from(document.getElementById('positions').childNodes).filter(x => x.nodeName === 'OPTION').forEach(x => x.style.display = 'none');
+    document.getElementById('roles').style.display = document.getElementById('buttons').style.display = 'none';
+    Array.from(document.getElementById('roles').childNodes).filter(x => x.nodeName === 'OPTION').forEach(x => x.style.display = 'none');
 
     $('#loadSummonerSpells').disableManualButton(true);
 

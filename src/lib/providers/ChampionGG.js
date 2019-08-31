@@ -24,10 +24,10 @@ class ChampionGGProvider extends Provider {
     console.log(2, `${this.name} >> Requesting ${champion.name} - POS/${role} - GM/${gameMode}`);
 
     try {
-      const res = await rp(`${this.base}champion/${champion.key}`);
+      const res = await rp(`${this.base}champion/${champion.key}${role ? '/' + this.toCGGRole(role) : ''}`);
       const d = this._scrape(res, champion, gameMode, role);
 
-      this.end();
+      this.end(role);
     }
     catch(err) {
       console.log(`[ProviderHandler] [Champion.GG] Something happened while gathering data (${role.name})`);
@@ -43,6 +43,7 @@ class ChampionGGProvider extends Provider {
     const $ = cheerio.load(html);
 
     if ($('.matchup-header').eq(0).text().trim() === "We are still gathering data for this stat, please check again later!") throw UI.error('providers-error-outdated', this.name);
+    if (!role) role = $('.selected-role > a').text().trim().toUpperCase();
 
     try {
       const summonerspells = this.scrapeSummonerSpells($, gameMode);
@@ -74,7 +75,7 @@ class ChampionGGProvider extends Provider {
 
     let statistics = statsHtml ? this.scrapeStatistics($, statsHtml, champion, role) : {};
 
-    return { gameMode, statistics };
+    return { gameMode, statistics, role };
   }
 
   /**
@@ -178,6 +179,19 @@ class ChampionGGProvider extends Provider {
     itemset._data.blocks[2] = new Block().setType({ i18n: 'item-sets-block-trinkets' }).addItem(2055).addItem(3340).addItem(3341).addItem(3348).addItem(3363);
 
     return [itemset];
+  }
+
+  toCGGRole(r) {
+    if (!r) return r;
+
+    switch(r.toLowerCase()) {
+      case 'mid':
+        return 'Middle';
+      case 'bottom':
+        return 'ADC';
+      default:
+        return r.slice(0, 1).toUpperCase() + r.slice(1).toLowerCase();
+    }
   }
 
   getCondensedName() {

@@ -19,6 +19,13 @@ class ProviderHandler {
     };
 
     Object.values(this.providers).forEach(x => x._dataValidator = DataValidator);
+
+    this.downloads.on('provider-ended', (provider, role) => {
+      console.log('Passing data to ChampionSelectHandler');
+      Mana.championSelectHandler.onDataReceived(data);
+
+      //if (cache) this._cache.push(data);
+    });
   }
 
   getProvider(x) {
@@ -68,12 +75,12 @@ class ProviderHandler {
       }
     }
 
-    console.log(3, '[ProviderHandler] Downloading from providers');
+    console.log(3, 'ProviderHandler >> Downloading from providers');
 
     /* 2/5 - Downloading */
     if (gameModeHandler.getProviders() !== null) providers = providers.filter(x => gameModeHandler.getProviders() === null || gameModeHandler.getProviders().includes(x));
 
-    console.log('[ProviderHandler] Using providers: ', providers.map(x => this.providers[x].name).join(' => '));
+    console.log('ProviderHandler >> Using providers:', providers.map(x => this.providers[x].name).join(' => '));
 
     let roles;/*
     if (preferredRole && gameMode === 'CLASSIC')
@@ -91,31 +98,15 @@ class ProviderHandler {
       SUPPORT: { perks: [], summonerspells: [], itemsets: [] }
     };
 
-    let Settings = {
-      maxPerkPagesPerRole: 2
-    }
+    let Settings = { maxPerkPagesPerRole: 2 };
 
     this.downloads.on('data', (provider, type, d, role) => {
-      console.log('ProviderHandler >> Received data');
+      console.log('ProviderHandler >> Received data from', provider.name, 'role: ' + role);
       console.dir([provider, type, d, role]);
 
       if (type === 'perks' && data.roles[role].perks.length < Settings.maxPerkPagesPerRole)
         data.roles[role].perks = data.roles[role].perks.concat(d).slice(0, Settings.maxPerkPagesPerRole);
     });
-
-    let ended = [];
-
-    this.downloads.on('provider-ended', provider => {
-      ended.push(provider.id);
-
-      if (!Mana.championSelectHandler._inChampionSelect) return console.log('ProviderHandler >> Data won\'t be passed because you left champion select');
-      if (ended.length < providers.length) return console.log('ProviderHandler >> Download:', `${ended.length}/${providers.length}`);
-      
-      console.log('ProviderHandler >> Download is done. Passing data to ChampionSelectHandler');
-
-      Mana.championSelectHandler.onDataReceived(data);
-      //if (cache) this._cache.push(data);
-    })
 
     providers.forEach(async (provider, index, array) => {
       provider = this.providers[provider];

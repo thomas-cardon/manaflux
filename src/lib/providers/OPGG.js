@@ -30,13 +30,13 @@ class OPGGProvider extends Provider {
       const res = await rp(`${this.base}/champion/${champion.key}/statistics${role ? '/' + this.convertOPGGPosition(role) : ''}`);
       const d = this._scrape(res, champion, gameMode, role);
 
-      if (d.availablePositions)
-        this.cachedPositions[champion.id] = d.availablePositions;
+      if (d.availableRoles)
+        this.cachedPositions[champion.id] = d.availableRoles;
 
-      delete d.availablePositions;
+      delete d.availableRoles;
 
-      this.end();
-      return { roles: { [role]: d } };
+      this.end(d.role);
+      return { roles: { [d.role]: d } };
     }
     catch(err) {
       console.log(`[ProviderHandler] [OP.GG] Something happened while gathering data (${role.name})`);
@@ -51,11 +51,11 @@ class OPGGProvider extends Provider {
     if ($('.WorkingTitle').text().trim().startsWith('Maintenance')) throw UI.error('providers-error-offline', this.name);
 
     role = $('li.champion-stats-header__position.champion-stats-header__position--active').data('position') ? this.convertOPGGPosition($('li.champion-stats-header__position.champion-stats-header__position--active').data('position')).toUpperCase() : role;
-    const availablePositions = [];
+    const availableRoles = [];
 
     if (firstScrape) {
       $('[data-position] > a').each(function(index) {
-        availablePositions.push({ name: convertOPGGPosition($(this).parent().data('position')).toUpperCase(), link: 'https://op.gg' + $(this).attr('href') });
+        availableRoles.push({ name: convertOPGGPosition($(this).parent().data('position')).toUpperCase(), link: 'https://op.gg' + $(this).attr('href') });
       });
     }
 
@@ -87,7 +87,7 @@ class OPGGProvider extends Provider {
       console.error(err);
     }
 
-    return { availablePositions, gameMode };
+    return { availableRoles, role, gameMode };
   }
 
   /**
