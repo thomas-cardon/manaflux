@@ -9,6 +9,8 @@ class Mana {
 
     this.devMode = ipcRenderer.sendSync('is-dev');
 
+    global.DamageControl = require('./helpers/DamageControl');
+
     document.getElementById('version').innerHTML = `V${this.version = app.getVersion() + (!require('electron').remote.app.isPackaged ? '-BUILD' : '')}`;
     console.log('Mana >> Starting backend, version:', document.getElementById('version').innerHTML);
 
