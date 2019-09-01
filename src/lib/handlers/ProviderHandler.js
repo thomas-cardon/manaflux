@@ -22,7 +22,7 @@ class ProviderHandler {
 
     this.downloads.on('provider-ended', (provider, role) => {
       console.log('Passing data to ChampionSelectHandler');
-      Mana.championSelectHandler.onDataReceived(data);
+      Mana.championSelectHandler.onDataReceived(this._data);
 
       //if (cache) this._cache.push(data);
     });
@@ -63,15 +63,14 @@ class ProviderHandler {
     /* 1/5 - Storage Checking */
     console.log(3, '[ProviderHandler] Checking in offline storage');
 
-    let data = await Mana.championStorageHandler.get(champion.id) || {};
-    console.dir(data);
+    this._data = await Mana.championStorageHandler.get(champion.id) || {};
 
-    if (!this.isEmpty(data) && cache) {
-      if (!bulkDownloadMode && (data.roles[preferredRole || Object.keys(data.roles)[0]]).gameMode === gameMode) {
+    if (!this.isEmpty(this._data) && cache) {
+      if (!bulkDownloadMode && (this._data.roles[preferredRole || Object.keys(this._data.roles)[0]]).gameMode === gameMode) {
         console.log(2, `[ProviderHandler] Using local storage`);
 
-        DataValidator.onDataDownloaded(data, champion);
-        return data;
+        DataValidator.onDataDownloaded(this._data, champion);
+        return this._data;
       }
     }
 
@@ -82,15 +81,14 @@ class ProviderHandler {
 
     console.log('ProviderHandler >> Using providers:', providers.map(x => this.providers[x].name).join(' => '));
 
-    let roles;/*
+    let roles;
     if (preferredRole && gameMode === 'CLASSIC')
       roles = [...new Set(preferredRole, 'TOP', 'MIDDLE', 'JUNGLE', 'ADC', 'SUPPORT')];
     else if (gameMode === 'CLASSIC')
-      roles = ['TOP', 'MIDDLE', 'JUNGLE', 'ADC', 'SUPPORT'];*/
-    roles = ['TOP', 'MIDDLE'];
+      roles = ['TOP', 'MIDDLE', 'JUNGLE', 'ADC', 'SUPPORT'];
 
     console.log('ProviderHandler >> Roles chosen in the order:', roles.join(' => '));
-    data.roles = {
+    this._data.roles = {
       TOP: { perks: [], summonerspells: [], itemsets: [] },
       MIDDLE: { perks: [], summonerspells: [], itemsets: [] },
       JUNGLE: { perks: [], summonerspells: [], itemsets: [] },
@@ -98,22 +96,22 @@ class ProviderHandler {
       SUPPORT: { perks: [], summonerspells: [], itemsets: [] }
     };
 
-    let Settings = { maxPerkPagesPerRole: 2 };
-
     this.downloads.on('data', (provider, type, d, role) => {
       console.log('ProviderHandler >> Received data from', provider.name, 'role: ' + role);
       console.dir([provider, type, d, role]);
 
-      if (type === 'perks' && data.roles[role].perks.length < Settings.maxPerkPagesPerRole)
-        data.roles[role].perks = data.roles[role].perks.concat(d).slice(0, Settings.maxPerkPagesPerRole);
+      if (type === 'perks')
+        this._data.roles[role].perks = DamageControl.Perks.concat(this._data.roles[role][type], d);
+      else
+        this._data.roles[role][type] = this._data.roles[role][type].concat(d);
     });
 
     providers.forEach(async (provider, index, array) => {
       provider = this.providers[provider];
       console.log(2, `[ProviderHandler] Using ${provider.name}`);
 
-      if (roles) roles.forEach(pos => this.process(provider, gameMode, champion, pos, data, index + 1, array.length));
-      else await this.process(provider, gameMode, champion, undefined, data);
+      if (roles) roles.forEach(pos => this.process(provider, gameMode, champion, pos, this._data, index + 1, array.length));
+      else await this.process(provider, gameMode, champion, undefined, this._data);
     });
   }
 
@@ -159,36 +157,11 @@ class ProviderHandler {
 
       DataValidator.onDataStore(cache[i]);
 
-      await Mana.championStorageHandler.update(cache[i].championId, x => this._merge(cache[i], x));
+      await Mana.championStorageHandler.update(cache[i].championId, x => cache[i]);
       cache.splice(i, 1);
     }
 
     await Mana.championStorageHandler.save();
-  }
-
-  /**
-   * Copies properties or merges arrays if necessary
-   * @param {object} x - The source object
-   * @param {object} y - The object to copy properties from
-   */
-  _merge(x, y) {
-    console.log(3, 'Merging two objects');
-    console.dir(3, arguments);
-
-    if (!x || this.isEmpty(x)) return x = y;
-    if (!y) return x;
-
-    for (const [name, role] of Object.entries(y.roles)) {
-      if (!x.roles[name]) x.roles[name] = role;
-      else {
-        for (const [k, v] of Object.entries(role)) {
-          if (!x.roles[name][k]) x.roles[name][k] = v;
-          else if (Array.isArray(x.roles[name][k])) x.roles[name][k] = x.roles[name][k].concat(v).filter((x, pos, self) => self.indexOf(x) === pos);
-        }
-      }
-    }
-
-    return x;
   }
 }
 
