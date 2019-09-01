@@ -19,7 +19,7 @@ An assistant that can choose your runes, summoner spells, and item sets for Leag
  > Download the last .exe file in the releases tab, and execute it. That's all !
  The software will be installed on your computer then launched.
 
-#### Mac OS X and Linux
+#### macOS and Linux
  > You'll need to clone and build it by yourself: `npm install && electron .` Support is unofficial, but if you find an issue feel free to open a ticket.
 
 #### Will I get banned if I use this ?
