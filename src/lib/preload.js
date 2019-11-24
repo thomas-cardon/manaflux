@@ -1,6 +1,10 @@
 console.log('Injecting Mana\'s util functions and models');
 const fs = require('fs'), path = require('path');
 
+/* Prototypes */
+Array.prototype.random = function () {
+  return this[Math.floor((Math.random()*this.length))];
+}
 
 global.M = {
   Models: {
