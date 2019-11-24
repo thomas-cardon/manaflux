@@ -43,11 +43,13 @@ class ChampionSelectHandler {
       this.oldValue = this.value;
     }
 
+    let self = this;
     document.getElementById('roles').onchange = function() {
       console.log('[ChampionSelect] Selected role:', this.value.toUpperCase());
       Mana.emit('roleChange', { old: this.oldValue, value: this.value });
 
       this.oldValue = this.value;
+      self.onPerkRoleChange(Mana.gameClient.champions[this._lastChampionPicked], this.value);
     };
 
     ipcRenderer.on('perks-shortcut', this.onShortcutPressedEvent);
@@ -64,7 +66,9 @@ class ChampionSelectHandler {
 
     this.gameModeHandler = this.gameModeHandlers[Mana.gameflow.getGameMode()] || this.gameModeHandlers[Mana.gameflow.getMap().id] || this.gameModeHandlers.CLASSIC;
 
+    await Mana.user.getPerksInventory().queryPerks();
     await Mana.user.getPerksInventory().queryCount();
+
     ipcRenderer.send('champion-select-in');
 
     Mana.emit('inChampionSelect');
@@ -266,7 +270,7 @@ class ChampionSelectHandler {
     console.log('ChampionSelectHandler >> Loading perk pages');
 
     for (const [role, data] of Object.entries(d.roles))
-      await Mana.championSelectHandler.treatPerkPages(role, data.perks);
+      await this.treatPerkPages(role, data.perks);
 
     if (Mana.getStore().get('item-sets-enable')) {
       try {
@@ -284,22 +288,27 @@ class ChampionSelectHandler {
   }
 
   async treatPerkPages(role, perks) {
-    if (!document.getElementById('role-' + role)) return console.error(`ChampionSelectHandler >> Role ${role} doesn\'t exist!`);
+    if (!document.getElementById('role-' + role)) return console.error(`Stash >> Role ${role} doesn\'t exist!`);
 
     document.getElementById('role-' + role).style.display = '';
 
     for (let perk of perks)
-      await UI.sidebar.stash.add(perk);
+      await UI.sidebar.stash.add(perk, role === document.getElementById('roles').value);
 
     document.getElementById('roles').style.display = 'unset';
     document.getElementById('buttons').style.display = 'block';
   }
 
+  getSelectedRole() {
+    return document.getElementById('roles').value;
+  }
+
   onPerkRoleChange(champion, role, data) {
-    UI.enableHextechAnimation(champion, (data && data.perks && data.perks[0]) ? data.perks[0].primaryStyleId : 'white');
+    UI.enableHextechAnimation(champion, 'white');
+
+    Array.from(UI.sidebar.stash.element.children).forEach(x => x.display = 'none').filter(x => x.id.contains(role.toLowerCase())).forEach(x => x.display = 'block');
 
     $('#loadSummonerSpells').disableManualButton(true);
-
     if (data.summonerspells.length > 0) this._updateSummonerSpellsDisplay(champion, role, data.summonerspells);
   }
 

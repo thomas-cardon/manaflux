@@ -2,6 +2,7 @@ const { Menu, MenuItem } = remote;
 
 const RunesPageStash = UI.sidebar.stash = {
   cached: {},
+  element: document.getElementById('runes-page-stash'),
   remove: async () => {
     if (!document.getElementById(RunesPageStash._selected)) return console.error('Stash >> Context Menu: selected item doesn\'t exist !');
 
@@ -12,15 +13,14 @@ const RunesPageStash = UI.sidebar.stash = {
     if (!document.getElementById(RunesPageStash._selected)) return console.error('Stash >> Context Menu: selected item doesn\'t exist !');
     $('#runesInventory').sortable('option', 'update')(null, { item: $('#' + RunesPageStash._selected), sender: $('#runesInventory') });
   },
-  add: async page => {
+  add: async (page, display) => {
     console.log('Stash >> Adding perk page: ' + page.name);
     RunesPageStash.cached[page._manaMeta.id] = page;
 
     try {
-      if (document.getElementById(page._manaMeta.id)) return;
+      if (document.getElementById(page._manaMeta.id) || !display) return;
 
       /* Adding automatically if max hasn't been reached */
-
       let canBeCreated = (Mana.user.getPerksInventory().getPerks().length - parseInt(Mana.getStore().get('perks-max', 2))) > 0;
 
       if (canBeCreated) {
@@ -45,7 +45,7 @@ const RunesPageStash = UI.sidebar.stash = {
     }
 
     console.log('Stash >> Adding to stash');
-    $('#runes-page-stash').append(`<li id="${page._manaMeta.id}" class="sidebar-button ui-sortable-handle"><p>${page.name}</p><button class="btn arrow ui-sortable-handle" style="float: right;width: 29px;height: 29px;margin-top: -20px;margin-right: -8px;position: relative;z-index: 1;"></button></li>`);
+    $('#runes-page-stash').append(`<li id="${page._manaMeta.id}" class="sidebar-button ui-sortable-handle" style="display: ${display ? 'block' : 'none'};"><p>${page.name}</p><button class="btn arrow ui-sortable-handle" style="float: right;width: 29px;height: 29px;margin-top: -20px;margin-right: -8px;position: relative;z-index: 1;"></button></li>`);
     $(`li#${page._manaMeta.id} > button`).click(function(e) {
       e.stopPropagation();
       RunesPageStash.openMenu(this);
