@@ -129,7 +129,7 @@ class ChampionSelectHandler {
     else if (this.getPlayer().championId === 0) return this.onChampionNotPicked();
     else if (this._lastChampionPicked !== this.getPlayer().championId) {
       this._lastChampionPicked = this.getPlayer().championId;
-      return await this.onChampionChange(Mana.gameClient.champions[this.getPlayer().championId]);
+      return await this.onChampionChange(Mana.gameClient.champions[this._lastChampionPicked]);
     }
     else if (!this._locked && Mana.getStore().get('champion-select-lock') && Mana.gameflow.shouldEnableLockFeature()) {
       if (this._locked = await this.isChampionLocked())
@@ -137,11 +137,36 @@ class ChampionSelectHandler {
     }
   }
 
+  async emulation(toggle) {
+    if (toggle) {
+      Mana.gameflow.emulate(true);
+      await this.onChampionSelectStart();
+
+      this._step = 0;
+      this._emulationTick = setInterval(async () => {
+        if (this._step <= 30)
+          this.onChampionNotPicked();
+        else if (!this._lastChampionPicked) {
+          this._lastChampionPicked = Object.keys(Mana.gameClient.champions).random();
+          await this.onChampionChange(Mana.gameClient.champions[this._lastChampionPicked]);
+        }
+
+        this._step++;
+      }, 100);
+    }
+    else if (this._emulationTick) {
+      clearInterval(this._emulationTick);
+      await this.onChampionSelectEnd();
+      Mana.gameflow.emulate(false);
+    }
+  }
+
   getRole() {
-    return this.getPlayer().assignedRole === '' ? null : this.gameModeHandler.getRole(this.getPlayer().assignedRole) || this.getPlayer().assignedRole;
+    return !this.getPlayer() || this.getPlayer().assignedRole === '' ? null : this.gameModeHandler.getRole(this.getPlayer().assignedRole) || this.getPlayer().assignedRole;
   }
 
   getPlayer() {
+    if (!this._myTeam) return null;
     return this._myTeam.find(x => x.summonerId === Mana.user.getSummonerId());
   }
 
